@@ -1,0 +1,18 @@
+To do:
+
+2023-07-13
+	keyboard functions (hold, press, release)
+	texture on rectangles
+	investigate 3d with opengl
+
+----------------
+Finished:
+
+2023-07-12
+	keyboard detection (hold, release)
+	texture on renderer
+
+2023-07-11
+	.exe-file that displays a red rectangle in a black window canvas
+
+

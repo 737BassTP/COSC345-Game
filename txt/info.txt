@@ -1,0 +1,18 @@
+Language:
+	C
+
+API:
+	SDL2, Allegro
+
+Licences:
+	SDL 2.0 	zlib
+		https://wiki.libsdl.org/SDL2/FAQLicensing
+
+SDL2 Documentation:
+	https://wiki.libsdl.org/SDL2/APIByCategory
+	https://wiki.libsdl.org/SDL2/CategoryAPI
+
+----------------------
+Sources and inspiration
+	https://www.matsson.com/prog/platformer.c
+

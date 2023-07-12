@@ -1,0 +1,19 @@
+Use command or Makefile
+Export to Windows' .exe-file.
+	Run "make all" in a CMD-terminal (without quotes).
+
+Install Cygwin
+	Add libSDL2 packages.
+Add folder containing gcc.exe to Environment Path
+	User: PATH
+
+----------------
+gcc mingw ...
+
+tutorial
+https://www.matsson.com/prog/sdl2-mingw-w64-tutorial.php
+
+add mingw gcc to environment path
+
+compile
+gcc -std=c17 main.c -I "C:\Users\Thomas Pedersen\Documents\UiT\UTV-0001\University of Otago\COSC345 - Game\SDL2\include" -L "C:\Users\Thomas Pedersen\Documents\UiT\UTV-0001\University of Otago\COSC345 - Game\SDL2\lib" -Wall -Wextra -lmingw32 -lSDL2main -lSDL2 -o main
