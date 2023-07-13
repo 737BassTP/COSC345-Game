@@ -13,7 +13,7 @@ all:
 	@echo $(WORKDIR)
 	$(CC) -std=c17 $(PROGRAM).c -I "$(SDL2)\include" -L "$(SDL2)\lib" $(CFLAGS) -o $(PROGRAM)
 	$(MAKE) asm
-
+	@echo Build succeeded!
 asm:
 	gcc $(PROGRAM).c -O0 -S -o $(PROGRAM).s $<
 	
