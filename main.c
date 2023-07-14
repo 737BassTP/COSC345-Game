@@ -2,20 +2,26 @@
 COSC345 - Game
 
 Authors: (sorted alphabetically)
-	Matthew
-	Sven
-	Thomas 
-	?
+	Matthew Yi
+	Nicholas Campbell
+	Sven Russell
+	Thomas Pedersen
 
 SDL2 Documentation:
 https://wiki.libsdl.org/SDL2/APIByCategory
 
 */
 
+//Includes.
+#include <stdio.h>
+#include <math.h>
+//#include <.h>
 //#include "SDL2.dll"
 #include "SDL2/include/SDL2/SDL.h"
 #include "SDL2/include/SDL2/SDL_image.h"
-#include <stdio.h>
+
+//Definitions.
+#define PI 3.1415926535897932
 
 //Typedef'ing.
 typedef unsigned char byte;//0-255, 0x00-0xFF
@@ -51,6 +57,8 @@ int glob_vk_right 	= 0;
 int glob_vk_left 	= 0;
 int glob_vk_up 		= 0;
 int glob_vk_down 	= 0;
+int glob_vk_space   = 0;
+int glob_vk_enter   = 0;
 
 //Functions.
 //Clear the surface by filling it with a colour.
@@ -131,6 +139,21 @@ void draw_image(SDL_Renderer *renderer,int x1,int y1,int x2,int y2,SDL_Texture *
 	r.h = y2-y1;
 	SDL_RenderCopy(renderer,texture,NULL,&r);//texture fill whole renderer.
 }
+void draw_image_part(SDL_Renderer *renderer,int x1,int y1,int x2,int y2,SDL_Texture *texture,int left,int top,int width,int height)
+{
+	SDL_Rect r;
+	r.x = x1;
+	r.y = y1;
+	r.w = x2-x1;//convert x2,y2 to w,h
+	r.h = y2-y1;
+	SDL_Rect s;
+	s.x = left;
+	s.y = top;
+	s.w = width;
+	s.h = height;
+	SDL_RenderCopy(renderer,texture,&s,&r);
+}
+
 int keyboard_check(int key)
 {
 	return glob_vk_down;
@@ -190,6 +213,32 @@ int sqr(int v)
 {
 	return v*v;
 }
+double degtorad(double deg)
+{
+	return (deg/180)*PI;
+}
+double radtodeg(double rad)
+{
+	return (rad/PI)*180;
+}
+long get_timer()
+{
+	return SDL_GetTicks();
+}
+
+//Structs.
+struct player
+{
+	int x;
+	int y;
+	byte facedir;
+	byte anim_spd_cur;//counter.
+	byte anim_spd_spd;//inc counter by spd per frame.
+	byte anim_spd_wrap;//inc sprite frame when counter exceeds this value.
+	byte anim_cur;//current sprite frame.
+	byte anim_max;//max sprite frame before rollover.
+	byte move_spd;//moving speed of player.
+};
 
 //Entry point.
 int SDL_main(int argc, char *argv[])
@@ -213,6 +262,10 @@ int SDL_main(int argc, char *argv[])
 	const int win_game_tile_num = 16;//16 "tiles" per screen axis.
 	const int win_game_tile_dim = 16;//each tile is 16 "pixels" along each axis.
 	
+	int gw,gh;//scaling.
+	gw = screen_h/sqr(win_game_tile_num);// == 3, an int (for res. 1366/768 and 16x 16*16 px tiles per axis).
+	gh = gw;
+		
 	SDL_Surface* surface;
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -255,6 +308,8 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *spr_sand  = IMG_LoadTexture(renderer,"img/spr_sand.png");
 	SDL_Texture *spr_water = IMG_LoadTexture(renderer,"img/spr_water.png");
 	SDL_Texture *spr_lava  = IMG_LoadTexture(renderer,"img/spr_lava.png");
+	//Player.
+	SDL_Texture *sprstrip_player = IMG_LoadTexture(renderer,"img/player_strip8.png");
 	
 	//Game Level.
 	int level_size = sqr(win_game_tile_num);//16=256
@@ -266,6 +321,37 @@ int SDL_main(int argc, char *argv[])
 	}
 	fread(level_data,sizeof(level_data),1,fil);
 	fclose(fil);
+	
+	//Player.
+	struct player Player;
+	Player.x = win_game_x + 8*gw*win_game_tile_dim;
+	Player.y = win_game_y + 8*gh*win_game_tile_dim;
+	Player.facedir = 0;
+	Player.anim_spd_cur = 0;//counter.
+	Player.anim_spd_spd = 1;//inc counter by spd per frame.
+	Player.anim_spd_wrap = 12;//inc sprite frame when counter exceeds this value.
+	Player.anim_cur = 0;//current sprite frame.
+	Player.anim_max = 2;//max sprite frame before rollover.
+	Player.move_spd = 3;
+	
+	//Music.
+	/*
+	SDL_AudioSpec *audio_spec;
+	SDL_AudioDeviceID *audio_dev;		
+	audio_spec.freq=44100;
+	audio_spec.format=AUDIO_S16;
+	audio_spec.channels=2;
+	audio_spec.samples=4096;
+	audio_dev = SDL_OpenAudioDevice(NULL,0,&audio_spec,&audio_spec,SDL_AUDIO_ALLOW_FORMAT_CHANGE);
+	audio_buf = 0;
+	audio_len = 0;
+	SDL_LoadWAV("music.wav",&audio_spec,&audio_buf,&audio_len);
+	/**/
+	
+	//Splash intro screen.
+	int splashintro_bool=1;
+	SDL_Texture *splashintro_img  = IMG_LoadTexture(renderer,"img/img_lands.png");
+	
 	
 	//Mainloop here.
 	int running=1;
@@ -294,6 +380,8 @@ int SDL_main(int argc, char *argv[])
 						case SDLK_LEFT:  {glob_vk_left	=v;} break;
 						case SDLK_UP:    {glob_vk_up	=v;} break;
 						case SDLK_DOWN:  {glob_vk_down	=v;} break;
+						case SDLK_SPACE: {glob_vk_space	=v;} break;
+						case SDLK_KP_ENTER: {glob_vk_enter	=v;} break;//seems broken.
 						//case SDLK_:  {glob_vk_	=v;} break;
 						
 					}
@@ -309,6 +397,8 @@ int SDL_main(int argc, char *argv[])
 						case SDLK_LEFT:  {glob_vk_left	=v;} break;
 						case SDLK_UP:    {glob_vk_up	=v;} break;
 						case SDLK_DOWN:  {glob_vk_down	=v;} break;
+						case SDLK_SPACE: {glob_vk_space	=v;} break;
+						case SDLK_KP_ENTER: {glob_vk_enter	=v;} break;
 						//case SDLK_:  {glob_vk_	=v;} break;
 						
 					}
@@ -318,10 +408,62 @@ int SDL_main(int argc, char *argv[])
             }
         }
 		
-		//Draw here.
+		/*
+		Process inputs.
+		*/
+		//Player movement.
+		if (glob_vk_right)
+		{
+			Player.facedir=0;
+			Player.x += Player.move_spd;
+		}
+		if (glob_vk_up)
+		{
+			Player.facedir=1;
+			Player.y -= Player.move_spd;
+		}
+		if (glob_vk_left)
+		{
+			Player.facedir=2;
+			Player.x -= Player.move_spd;
+		}
+		if (glob_vk_down)
+		{
+			Player.facedir=3;
+			Player.y += Player.move_spd;
+		}
+		if (glob_vk_right|glob_vk_left|glob_vk_up|glob_vk_down)
+		{
+			//Animation.
+			Player.anim_spd_cur += Player.anim_spd_spd;
+			Player.anim_cur += (Player.anim_spd_cur >= Player.anim_spd_wrap);
+			Player.anim_spd_cur %= Player.anim_spd_wrap;
+			Player.anim_cur %= Player.anim_max;
+			//Position wrapping.
+			if (Player.x > win_game_x2-win_game_tile_dim*gw) {Player.x = win_game_x;}
+			if (Player.y > win_game_y2-win_game_tile_dim*gh) {Player.y = win_game_y;}
+			if (Player.x < win_game_x) {Player.x = win_game_x2-win_game_tile_dim*gw;}
+			if (Player.y < win_game_y) {Player.y = win_game_y2-win_game_tile_dim*gh;}
+			
+		}
+		else
+		{
+			Player.anim_spd_cur = 0;
+			Player.anim_cur = 0;
+		}
+		if (glob_vk_space|glob_vk_enter)
+		{
+			splashintro_bool=0;
+		}
+		
+		/*
+		Draw to the screen.
+		*/
+		//Drawing settings.
 		draw_clear(renderer,c_black);
 		draw_set_color(renderer,c_white);
 		
+		//UI areas.
 		draw_rectangle_color(renderer,//left
 			0,0,
 			win_game_x,screen_h,
@@ -338,85 +480,44 @@ int SDL_main(int argc, char *argv[])
 		//SDL_RenderCopy(renderer,png,NULL,NULL);//test: texture fills whole renderer.
 		
 		//Game area.
-		int gw,gh;
-		gw = screen_h/sqr(win_game_tile_num);// == 3, an int (for res. 1366/768 and 16x 16*16 px tiles per axis).
-		gh = gw;
 		for (int j=0; j<win_game_tile_num; j++)
 		{
 			for (int i=0; i<win_game_tile_num; i++)
 			{
-				int ij = i+j*16;//hardcoded.
+				int ij = i+j*win_game_tile_num;
 				int x1,y1,x2,y2;
-				x1 = win_game_x + (i+0)*win_game_tile_dim*gw;
-				y1 = win_game_y + (j+0)*win_game_tile_dim*gh;
-				x2 = win_game_x + (i+1)*win_game_tile_dim*gw;
-				y2 = win_game_y + (j+1)*win_game_tile_dim*gh;
+				x1 = win_game_x + (i+0)*gw*win_game_tile_dim;
+				y1 = win_game_y + (j+0)*gh*win_game_tile_dim;
+				x2 = win_game_x + (i+1)*gw*win_game_tile_dim;
+				y2 = win_game_y + (j+1)*gh*win_game_tile_dim;
 				
-				int col = mux_int(ij%3,c_red,c_green,c_blue)
-				draw_rectangle(renderer,x1,y1,x2,y2,col);//will show if image drawing below fails.
+				int col = mux_int(ij%3,c_red,c_green,c_blue);
+				draw_rectangle_color(renderer,x1,y1,x2,y2,col);//will show if image drawing below fails.
 				int tex = level_data[ij];//%4;//restrict to available textures (4 below).
 				draw_image(renderer,x1,y1,x2,y2,mux_int(tex,spr_grass,spr_sand,spr_water,spr_lava));
 				
 			}
 		}
+		//Player.
+		int d = win_game_tile_dim;
+		draw_image_part(renderer,
+			Player.x,Player.y,
+			Player.x+d*gw,Player.y+d*gh,
+			sprstrip_player,
+			(Player.facedir*d*Player.anim_max)+(Player.anim_cur*d*1),0,
+			d,d);
 		
-		
-		//Process inputs.
-		if (glob_vk_right)
+		//Splash intro screen.
+		if (splashintro_bool)
 		{
-			draw_set_color(renderer,c_green);
+			draw_image(renderer,win_game_x,win_game_y,win_game_x2,win_game_y2,splashintro_img);
 		}
-		if (glob_vk_left)
-		{
-			draw_set_color(renderer,c_yellow);
-		}
-		if (glob_vk_up)
-		{
-			draw_set_color(renderer,c_orange);
-		}
-		if (glob_vk_down)
-		{
-			draw_set_color(renderer,c_rose);
-		}
-		if (glob_vk_right|glob_vk_left|glob_vk_up|glob_vk_down)
-		{
-			draw_rectangle(renderer,0,0,128,128);
-		}
-		/*
-		//int keyval = (glob_vk_right*1)+(glob_vk_up*2)+(glob_vk_left*3)+(glob_vk_down*4);
-		int k0,k1,k2,k3;
-		k0=glob_vk_right<<0;
-		k1=glob_vk_up<<1;
-		k2=glob_vk_left<<2;
-		k3=glob_vk_down<<3;
-		//int keyval = (glob_vk_right<<0)|(glob_vk_up<<1)|(glob_vk_left<<2)|(glob_vk_down<<3);
-		int keyval=(k0|k1|k2|k3);
-		if (keyval != 0)
-		{
-			draw_set_color(renderer,mux_int(keyval%4,c_yellow,c_green,c_aqua,c_fuchsia));
-			draw_rectangle(renderer,128,128,160,160);
-		}
-		/**/
 		
 		//Render to screen.
 		SDL_RenderPresent(renderer);
 		SDL_Delay(16);//60 fps.
 		
-		/*
-		//clear_screen(surface);
-        SDL_FillRect(surface, NULL, 0xFF0066CC);
-		SDL_FillRect(surface, rect, 0xFFCC6600);
-		
-		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-		//SDL_RenderFillRect(renderer, &rect);
-		SDL_RenderDrawRect(renderer, &rect);
-		
-		//???
-		//SDL_BlitSurface(surface,rect,surface,NULL);
-	
-		//Update window.
-		SDL_UpdateWindowSurface(window);
-		/**/
+		//End of main loop.
 	}
 	printf("...exited main loop.\n");
 
@@ -425,7 +526,11 @@ int SDL_main(int argc, char *argv[])
 	SDL_DestroyTexture(spr_sand);
 	SDL_DestroyTexture(spr_water);
 	SDL_DestroyTexture(spr_lava);
+	SDL_DestroyTexture(sprstrip_player);
+	SDL_DestroyTexture(splashintro_img);
 	IMG_Quit();
+	
+	//SDL_FreeWAV(&audio_spec);
 	
 	SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -443,3 +548,34 @@ error:
     exit(EXIT_FAILURE);
 }
 
+//Faulty, unfinished, or obsolete code:
+/*
+		//clear_screen(surface);
+        SDL_FillRect(surface, NULL, 0xFF0066CC);
+		SDL_FillRect(surface, rect, 0xFFCC6600);
+		
+		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+		//SDL_RenderFillRect(renderer, &rect);
+		SDL_RenderDrawRect(renderer, &rect);
+		
+		//???
+		//SDL_BlitSurface(surface,rect,surface,NULL);
+	
+		//Update window.
+		SDL_UpdateWindowSurface(window);
+		/**/
+/*
+		//int keyval = (glob_vk_right*1)+(glob_vk_up*2)+(glob_vk_left*3)+(glob_vk_down*4);
+		int k0,k1,k2,k3;
+		k0=glob_vk_right<<0;
+		k1=glob_vk_up<<1;
+		k2=glob_vk_left<<2;
+		k3=glob_vk_down<<3;
+		//int keyval = (glob_vk_right<<0)|(glob_vk_up<<1)|(glob_vk_left<<2)|(glob_vk_down<<3);
+		int keyval=(k0|k1|k2|k3);
+		if (keyval != 0)
+		{
+			draw_set_color(renderer,mux_int(keyval%4,c_yellow,c_green,c_aqua,c_fuchsia));
+			draw_rectangle(renderer,128,128,160,160);
+		}
+		/**/
