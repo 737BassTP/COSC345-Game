@@ -153,7 +153,34 @@ void draw_image_part(SDL_Renderer *renderer,int x1,int y1,int x2,int y2,SDL_Text
 	s.h = height;
 	SDL_RenderCopy(renderer,texture,&s,&r);
 }
-
+void draw_text(SDL_Renderer *renderer,int x,int y,int w,int h,SDL_Texture *font,char* str,int fontw,int fonth)
+{
+	//"#" = newline.
+	//"##" = prints "#" with newline (unfinished: without newline).
+	int len=strlen(str);
+	int ch=0;
+	int xo=0;
+	int yo=0;
+	int nl=((int)"#"[0])-32;//should I be proud or scared of myself?
+	for (int i=0; i<len; i++)
+	{
+		ch = ((int)str[i])-32;
+		if (ch == nl)
+		{
+			if (!(((int)str[i+1])-32 == nl))//next char is not nl.
+			{
+				xo = 0;
+				yo += h;
+				continue;
+			}
+		}
+		draw_image_part(renderer,
+			x+xo+0,y+yo,x+xo+w,y+yo+h,
+			font,
+			ch*fontw,0,fontw,fonth);
+		xo += w;
+	}
+}
 int keyboard_check(int key)
 {
 	return glob_vk_down;
@@ -225,12 +252,73 @@ long get_timer()
 {
 	return SDL_GetTicks();
 }
+int point_in_rectangle(int px,int py,int rx1,int ry1,int rx2,int ry2)
+{
+	return ((px>=rx1 && px<rx2) && (py>=ry1 && py<ry2));
+}
+int rectangle_in_rectangle(int sx1,int sy1,int sx2,int sy2,int dx1,int dy1,int dx2,int dy2)
+{
+	//returns: 0=outside, 1=inside, 2=partially
+	//ensure that *x2,*y2 are larger than *x1,*y1 for best results.
+	int tmp=0;
+	tmp += point_in_rectangle(sx1,sy1,dx1,dy1,dx2,dy2);
+	tmp += point_in_rectangle(sx2,sy1,dx1,dy1,dx2,dy2);
+	tmp += point_in_rectangle(sx1,sy2,dx1,dy1,dx2,dy2);
+	tmp += point_in_rectangle(sx2,sy2,dx1,dy1,dx2,dy2);
+	     if (tmp == 0) {return 0;}
+	else if (tmp == 4) {return 1;}
+	else {return 2;}
+}
+int string_pos(char *substr,char *str)
+{
+	//finds single-char substr in str.
+	//todo: find multiple-char substr in str.
+	//if not found, returns -1
+	char *a = substr[0];
+	char *b;// = str[0];
+	int len=strlen(str);
+	int ret=0;
+	for (int i=0; i<len; i++)
+	{
+		b = str[i];
+		if ((char)a == (char)b)
+		//if (strcmp((const char*)&a,(const char*)&b)==0)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+void game_level_load(int lvl,int lvlmax)
+{
+	//done in main-loop.
+}
+void a()
+{
+	
+}
 
-//Structs.
+
+/*
+Structs.
+*/
+//NPC.
+struct NPC
+{
+	int x;
+	int y;
+	int xprevious;
+	int yprevious;
+	byte face_dir;
+};
+
+//Player.
 struct player
 {
 	int x;
 	int y;
+	int xprevious;
+	int yprevious;
 	byte facedir;
 	byte anim_spd_cur;//counter.
 	byte anim_spd_spd;//inc counter by spd per frame.
@@ -238,9 +326,13 @@ struct player
 	byte anim_cur;//current sprite frame.
 	byte anim_max;//max sprite frame before rollover.
 	byte move_spd;//moving speed of player.
+	byte can_move;//bit-flag to be set while displaying map, questions, etc..., to prevent the player from moving.
 };
 
-//Entry point.
+
+/*
+Entry point.
+*/
 int SDL_main(int argc, char *argv[])
 {
 	//Error priting.
@@ -310,12 +402,20 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *spr_lava  = IMG_LoadTexture(renderer,"img/spr_lava.png");
 	//Player.
 	SDL_Texture *sprstrip_player = IMG_LoadTexture(renderer,"img/player_strip8.png");
+	//Text.
+	SDL_Texture *font_ascii = IMG_LoadTexture(renderer,"img/ascii_strip96.png");
+	int font_ascii_w = 8;
+	int font_ascii_h = 16;
+	
 	
 	//Game Level.
-	int level_size = sqr(win_game_tile_num);//16=256
-	byte level_data[256];//static; can not be free'd.
+	int level_size = sqr(win_game_tile_num);//16*16=256
+	int level_count = 4;
+	int level_cur=0;//4 = 2*2 
+	byte level_data[1024];//static; can not be free'd.
+	//1024 = 256*4 (level size * level count)
 	FILE *fil = fopen("level.dat","rb");
-	for (int i=0; i<level_size; i++)
+	for (int i=0; i<level_size*level_count; i++)
 	{
 		level_data[i] = 0;
 	}
@@ -351,7 +451,7 @@ int SDL_main(int argc, char *argv[])
 	//Splash intro screen.
 	int splashintro_bool=1;
 	SDL_Texture *splashintro_img  = IMG_LoadTexture(renderer,"img/img_lands.png");
-	
+	char* splashintro_string = "Press SPACE to continue.";
 	
 	//Mainloop here.
 	int running=1;
@@ -434,17 +534,51 @@ int SDL_main(int argc, char *argv[])
 		}
 		if (glob_vk_right|glob_vk_left|glob_vk_up|glob_vk_down)
 		{
+			//Position.
+			
 			//Animation.
 			Player.anim_spd_cur += Player.anim_spd_spd;
 			Player.anim_cur += (Player.anim_spd_cur >= Player.anim_spd_wrap);
 			Player.anim_spd_cur %= Player.anim_spd_wrap;
 			Player.anim_cur %= Player.anim_max;
-			//Position wrapping.
-			if (Player.x > win_game_x2-win_game_tile_dim*gw) {Player.x = win_game_x;}
-			if (Player.y > win_game_y2-win_game_tile_dim*gh) {Player.y = win_game_y;}
-			if (Player.x < win_game_x) {Player.x = win_game_x2-win_game_tile_dim*gw;}
-			if (Player.y < win_game_y) {Player.y = win_game_y2-win_game_tile_dim*gh;}
-			
+			//Position wrapping and level loading.
+			int p_east,p_north,p_west,p_south;
+			p_east  = win_game_x2-win_game_tile_dim*gw;
+			p_north = win_game_y;
+			p_west  = win_game_x;
+			p_south = win_game_y2-win_game_tile_dim*gh;
+			int lvlbool = 0;
+			lvlbool = ((Player.x > p_east)||(Player.y > p_south)||(Player.x < p_west)||(Player.y < p_north));//must be here, and not below the individual checks!
+			if (Player.x > p_east)
+			{
+				//at east side
+				Player.x = p_west;
+				level_cur += 1;
+			}
+			if (Player.y < p_north)
+			{
+				//at north side
+				Player.y = p_south;
+				level_cur -= (int)sqrt(level_count);
+			}
+			if (Player.x < p_west)
+			{
+				//at west side
+				Player.x = p_east;
+				level_cur -= 1;
+			}
+			if (Player.y > p_south)
+			{
+				//at south side
+				Player.y = p_north;
+				level_cur += (int)sqrt(level_count);
+			}
+			if (lvlbool)//has changed level
+			{
+				level_cur += level_count;//allows negative wrap.
+				level_cur %= level_count;//prevents overflow.
+				//printf("lvl=%i\n",level_cur);
+			}
 		}
 		else
 		{
@@ -455,6 +589,12 @@ int SDL_main(int argc, char *argv[])
 		{
 			splashintro_bool=0;
 		}
+		
+		/*
+		Post-update of inputs.
+		*/
+		Player.xprevious = Player.x;
+		Player.yprevious = Player.y;
 		
 		/*
 		Draw to the screen.
@@ -479,6 +619,28 @@ int SDL_main(int argc, char *argv[])
 		
 		//SDL_RenderCopy(renderer,png,NULL,NULL);//test: texture fills whole renderer.
 		
+		//UI.
+		int uix,uiy;
+		//UI Left.
+		uix = 0; 
+		uiy = 0;
+		if (!splashintro_bool)
+		{
+			draw_text(renderer,uix,uiy,8*gw,16*gh,font_ascii,"Location:#DUNEDIN#NEW ZEALAND",font_ascii_w,font_ascii_h);
+		}
+		//UI Right.
+		uix = win_game_x2;
+		uiy = 0;
+		if (!splashintro_bool)
+		{
+			char *lvlstrold = "Level: X/3";
+			char lvlstrnew[strlen(lvlstrold)];//a hard-coded value too small causes a code-overwrite bug that messes with player movement!
+			strcpy(lvlstrnew,lvlstrold);
+			//lvlstrnew[7] = ((char)level_cur)+48;//7 is "X" above.
+			lvlstrnew[string_pos("X",lvlstrnew)] = ((char)level_cur)+48;//48="0"
+			//sprintf(lvlstr,"Level:#",level_cur);
+			draw_text(renderer,uix,uiy,8*gw,16*gh,font_ascii,lvlstrnew,font_ascii_w,font_ascii_h);
+		}
 		//Game area.
 		for (int j=0; j<win_game_tile_num; j++)
 		{
@@ -493,8 +655,9 @@ int SDL_main(int argc, char *argv[])
 				
 				int col = mux_int(ij%3,c_red,c_green,c_blue);
 				draw_rectangle_color(renderer,x1,y1,x2,y2,col);//will show if image drawing below fails.
-				int tex = level_data[ij];//%4;//restrict to available textures (4 below).
-				draw_image(renderer,x1,y1,x2,y2,mux_int(tex,spr_grass,spr_sand,spr_water,spr_lava));
+				int off = ij + level_size*level_cur;
+				int tex = level_data[off] % 4;//restrict to available textures (4 below).
+				draw_image(renderer,x1,y1,x2,y2,(SDL_Texture*)mux_int(tex,spr_grass,spr_sand,spr_water,spr_lava));
 				
 			}
 		}
@@ -511,6 +674,7 @@ int SDL_main(int argc, char *argv[])
 		if (splashintro_bool)
 		{
 			draw_image(renderer,win_game_x,win_game_y,win_game_x2,win_game_y2,splashintro_img);
+			draw_text(renderer,win_game_x,win_game_y,8*gw,16*gh,font_ascii,splashintro_string,font_ascii_w,font_ascii_h);
 		}
 		
 		//Render to screen.
@@ -528,6 +692,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_DestroyTexture(spr_lava);
 	SDL_DestroyTexture(sprstrip_player);
 	SDL_DestroyTexture(splashintro_img);
+	SDL_DestroyTexture(font_ascii);
 	IMG_Quit();
 	
 	//SDL_FreeWAV(&audio_spec);

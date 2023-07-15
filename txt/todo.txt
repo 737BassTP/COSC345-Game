@@ -1,12 +1,32 @@
 To do:
 
-2023-07-13
+2023-07-16
+	animated text
+	animated tiles
+	tileset for tiles and objects
+	audio for sfx and music
 	keyboard functions (hold, press, release)
-	texture on rectangles
 	investigate 3d with opengl
 
 ----------------
 Finished:
+
+2023-07-15
+	static text using images
+	multiple levels
+
+2023-07-14
+	player movement
+	player animation
+	splash intro screen
+
+2023-07-13
+	texture on rectangles
+	single level
+	ui areas
+		ui left
+		game area
+		ui right
 
 2023-07-12
 	keyboard detection (hold, release)
