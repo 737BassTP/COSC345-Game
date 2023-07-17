@@ -59,6 +59,7 @@ int glob_vk_up 		= 0;
 int glob_vk_down 	= 0;
 int glob_vk_space   = 0;
 int glob_vk_enter   = 0;
+int glob_vk_f2      = 0;
 
 //Functions.
 //Clear the surface by filling it with a colour.
@@ -293,8 +294,102 @@ void game_level_load(int lvl,int lvlmax)
 {
 	//done in main-loop.
 }
-void a()
+void dev_tiled_to_leveldata()
 {
+	printf("faulty at the moment.\n");
+	glob_vk_f2=0;//fakes a keyboard press event (fails if held).
+	/**/
+	//extracts Tiles and Objects.
+	//hardcoded.
+	FILE *filin;
+	FILE *filout;
+	
+	filin = fopen("cosc345-game.tmx","r");
+	filout = fopen("level-new.dat","wb");
+	
+	int maxsize = 65536*2;//131072
+	byte array[131072];//tiles + objects.
+	maxsize = 32;//16*16*32;//debug only.
+	for (int i=0; i<maxsize; i++)
+	{
+		array[i] = 0;
+	}
+	
+	//Discard input header.
+	for (int i=0; i<0x1F7-1; i++)
+	{
+		fgetc(filin);
+	}
+	//Read Tiles and Objects.
+	byte comma=","[0];
+	byte ch;
+	byte entry[3];
+	int counter=0;
+	while (1)
+	{
+		//fseek(filin,1,SEEK_CUR);
+		ch = fgetc(filin);
+		//printf("%i\n",ch;
+		//if (ch == "<"[0])
+		if (ch == 60)
+		{
+			break;
+		}
+		if (counter>=maxsize) 
+		{
+			break;
+		}
+		//Clear.
+		for (int i=0; i<3; i++)
+		{
+			entry[i]=48;
+		}
+		//Populate.
+		entry[0] = ch;
+		ch = fgetc(filin);
+		if (ch != comma)
+		{
+			entry[1]=ch;
+			ch = fgetc(filin);
+			if (ch != comma)
+			{
+				entry[2]=ch;
+				fgetc(filin);//remove implied comma.
+			}
+			else
+			{
+				entry[2]=entry[1];
+				entry[1]=entry[0];
+				entry[0]=48;
+			}
+		}
+		else
+		{
+			entry[2]=entry[0];
+			entry[0]=48;
+		}
+		
+		//Calculate.
+		for (int i=0; i<3; i++)
+		{
+			entry[i] -= 48;
+		}
+		byte val = entry[0]*100 + entry[1]*10 + entry[2]*1;//e.g "179" -> 179
+		if (val == 0) {val=255;}//0 is undefined.
+		else {val -= 1;}//map [1,256] to [0,255]
+		printf("i=%i/%i: %i (%i,%i,%i)\n,",counter,maxsize,val,entry[0],entry[1],entry[2]);
+		//fputc(val,filout);
+		array[counter] = val&0xFF;
+		counter++;
+	}
+	fwrite(array,maxsize,1,filout);
+	fclose(filin);
+	fclose(filout);
+	/**/
+}
+void play_WAV(const char* wavfile)
+{
+	//done manually in main.
 	
 }
 
@@ -302,6 +397,14 @@ void a()
 /*
 Structs.
 */
+//Position.
+struct pos
+{
+	int x;
+	int y;
+	int xprevious;
+	int yprevious;
+};
 //NPC.
 struct NPC
 {
@@ -315,6 +418,7 @@ struct NPC
 //Player.
 struct player
 {
+	//pos Pos;
 	int x;
 	int y;
 	int xprevious;
@@ -329,6 +433,32 @@ struct player
 	byte can_move;//bit-flag to be set while displaying map, questions, etc..., to prevent the player from moving.
 };
 
+//Pushable block.
+struct pushblock
+{
+	int x;
+	int y;
+	char pushmask;
+};
+
+//Audio.
+typedef struct
+{
+    Uint8* buffer;
+    Uint32 length;
+    Uint32 position;
+} AudioData;//must be typedef'ed like this to fix compile bugs.
+
+void audioCallback(void* userdata, Uint8* stream, int len) {
+    AudioData* audiodata = (AudioData*)userdata;
+    if (audiodata->position >= audiodata->length) {
+        audiodata->position = 0;  // Reset position to the beginning of the buffer
+    }
+    Uint32 remainingBytes = audiodata->length - audiodata->position;
+    Uint32 bytesToCopy = len < remainingBytes ? len : remainingBytes;
+    SDL_memcpy(stream, audiodata->buffer + audiodata->position, bytesToCopy);
+    audiodata->position += bytesToCopy;
+}
 
 /*
 Entry point.
@@ -410,10 +540,10 @@ int SDL_main(int argc, char *argv[])
 	
 	//Game Level.
 	int level_size = sqr(win_game_tile_num);//16*16=256
-	int level_count = 4;
-	int level_cur=0;//4 = 2*2 
-	byte level_data[1024];//static; can not be free'd.
-	//1024 = 256*4 (level size * level count)
+	int level_count = 256;
+	int level_cur=0;//256 = 16*16 
+	byte level_data[65536];//static; can not be free'd.
+	//65536 = 256*256 (level size * level count)
 	FILE *fil = fopen("level.dat","rb");
 	for (int i=0; i<level_size*level_count; i++)
 	{
@@ -424,6 +554,8 @@ int SDL_main(int argc, char *argv[])
 	
 	//Player.
 	struct player Player;
+	//struct pos Pos;
+	//Player.Pos = Pos;
 	Player.x = win_game_x + 8*gw*win_game_tile_dim;
 	Player.y = win_game_y + 8*gh*win_game_tile_dim;
 	Player.facedir = 0;
@@ -432,21 +564,34 @@ int SDL_main(int argc, char *argv[])
 	Player.anim_spd_wrap = 12;//inc sprite frame when counter exceeds this value.
 	Player.anim_cur = 0;//current sprite frame.
 	Player.anim_max = 2;//max sprite frame before rollover.
-	Player.move_spd = 3;
+	Player.move_spd = 3*4;
 	
 	//Music.
-	/*
-	SDL_AudioSpec *audio_spec;
-	SDL_AudioDeviceID *audio_dev;		
-	audio_spec.freq=44100;
-	audio_spec.format=AUDIO_S16;
-	audio_spec.channels=2;
-	audio_spec.samples=4096;
-	audio_dev = SDL_OpenAudioDevice(NULL,0,&audio_spec,&audio_spec,SDL_AUDIO_ALLOW_FORMAT_CHANGE);
-	audio_buf = 0;
-	audio_len = 0;
-	SDL_LoadWAV("music.wav",&audio_spec,&audio_buf,&audio_len);
-	/**/
+	const char *wavfile="music.wav";
+	SDL_AudioSpec wavspec;
+	Uint8 *wavbuffer;
+	Uint32 wavlength;
+	if (SDL_LoadWAV(wavfile, &wavspec, &wavbuffer, &wavlength) == NULL) 
+	{
+        printf("Failed to load WAV file: %s\n", SDL_GetError());
+        return;
+    }
+	AudioData audiodata;
+    audiodata.buffer = wavbuffer;
+    audiodata.length = wavlength;
+    audiodata.position = 0;
+	wavspec.callback = audioCallback;
+    wavspec.userdata = &audiodata;
+	
+	SDL_AudioDeviceID deviceid;
+	deviceid = SDL_OpenAudioDevice(NULL,0,&wavspec,NULL,0);
+	if (deviceid == 0) {
+        printf("Failed to open audio device: %s\n", SDL_GetError());
+        SDL_FreeWAV(wavbuffer);
+        return;
+    }
+	SDL_QueueAudio(deviceid,wavbuffer,wavlength);
+	SDL_PauseAudioDevice(deviceid,0);//0 is unpause
 	
 	//Splash intro screen.
 	int splashintro_bool=1;
@@ -482,6 +627,7 @@ int SDL_main(int argc, char *argv[])
 						case SDLK_DOWN:  {glob_vk_down	=v;} break;
 						case SDLK_SPACE: {glob_vk_space	=v;} break;
 						case SDLK_KP_ENTER: {glob_vk_enter	=v;} break;//seems broken.
+						case SDLK_F2:  {glob_vk_f2	=v;} break;
 						//case SDLK_:  {glob_vk_	=v;} break;
 						
 					}
@@ -499,6 +645,7 @@ int SDL_main(int argc, char *argv[])
 						case SDLK_DOWN:  {glob_vk_down	=v;} break;
 						case SDLK_SPACE: {glob_vk_space	=v;} break;
 						case SDLK_KP_ENTER: {glob_vk_enter	=v;} break;
+						case SDLK_F2:  {glob_vk_f2	=v;} break;
 						//case SDLK_:  {glob_vk_	=v;} break;
 						
 					}
@@ -511,6 +658,14 @@ int SDL_main(int argc, char *argv[])
 		/*
 		Process inputs.
 		*/
+		//Debug input:
+		if (glob_vk_f2)
+		{
+			printf("F2 started!\n");	
+			dev_tiled_to_leveldata();
+			printf("F2 finished!\n");	
+		}
+		
 		//Player movement.
 		if (glob_vk_right)
 		{
@@ -590,6 +745,7 @@ int SDL_main(int argc, char *argv[])
 			splashintro_bool=0;
 		}
 		
+		
 		/*
 		Post-update of inputs.
 		*/
@@ -633,11 +789,14 @@ int SDL_main(int argc, char *argv[])
 		uiy = 0;
 		if (!splashintro_bool)
 		{
-			char *lvlstrold = "Level: X/3";
+			char *lvlstrold = "LVL: XYZ/255";
 			char lvlstrnew[strlen(lvlstrold)];//a hard-coded value too small causes a code-overwrite bug that messes with player movement!
 			strcpy(lvlstrnew,lvlstrold);
 			//lvlstrnew[7] = ((char)level_cur)+48;//7 is "X" above.
-			lvlstrnew[string_pos("X",lvlstrnew)] = ((char)level_cur)+48;//48="0"
+			byte lc = (byte)level_cur;//note: "signed char" causes bugs out in the [128,255] range because it is out of range; "unsigned char" allows 255.
+			lvlstrnew[string_pos("X",lvlstrnew)] = ((lc/100)%10) + 48;//48="0"
+			lvlstrnew[string_pos("Y",lvlstrnew)] = ((lc/10 )%10) + 48;//%10 maps to 0-9.
+			lvlstrnew[string_pos("Z",lvlstrnew)] = ((lc/1  )%10) + 48;//
 			//sprintf(lvlstr,"Level:#",level_cur);
 			draw_text(renderer,uix,uiy,8*gw,16*gh,font_ascii,lvlstrnew,font_ascii_w,font_ascii_h);
 		}
@@ -696,6 +855,8 @@ int SDL_main(int argc, char *argv[])
 	IMG_Quit();
 	
 	//SDL_FreeWAV(&audio_spec);
+	SDL_CloseAudioDevice(deviceid);
+    SDL_FreeWAV(wavbuffer);
 	
 	SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);

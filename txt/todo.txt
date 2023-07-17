@@ -1,19 +1,27 @@
 To do:
 
-2023-07-16
+2023-07-18
 	animated text
 	animated tiles
-	tileset for tiles and objects
-	audio for sfx and music
+	tileset instead of loose files
+	audio sfx (play once)
+	convert from Tiled to leveldata
 	keyboard functions (hold, press, release)
 	investigate 3d with opengl
 
 ----------------
 Finished:
 
+2023-07-17
+	looping music
+	multiple levels (256)
+		1 with 4 variations + 252 empty.
+	tileset created
+	added Tiled project file.
+
 2023-07-15
 	static text using images
-	multiple levels
+	multiple levels (4)
 
 2023-07-14
 	player movement
