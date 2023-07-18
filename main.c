@@ -15,6 +15,8 @@ https://wiki.libsdl.org/SDL2/APIByCategory
 //Includes.
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h> // for rand() and srand()
+#include <time.h>   // for time()
 //#include <.h>
 //#include "SDL2.dll"
 #include "SDL2/include/SDL2/SDL.h"
@@ -429,6 +431,23 @@ struct NPC
 	int yprevious;
 	byte face_dir;
 };
+//rain struct
+struct WaterParticle {
+    float x;
+    float y;
+    float speed;
+    int active;
+};
+//initialize number of water particles wanted
+const int MAX_WATER_PARTICLES = 100;
+struct WaterParticle* waterParticles;
+//function to create water particle.
+void createWaterParticle(int index, int window_width, int window_height) {
+    waterParticles[index].x = rand() % (1366-596)+298;     // Random x position within window width
+    waterParticles[index].y = -(rand() % window_height); // Random initial y position above the window
+    waterParticles[index].speed = 10;        // Rain speed
+    waterParticles[index].active = 1;                    // Set active to 1 (true)
+}
 
 //Player.
 struct player
@@ -475,6 +494,7 @@ void audioCallback(void* userdata, Uint8* stream, int len) {
     audiodata->position += bytesToCopy;
 }
 
+
 /*
 Entry point.
 */
@@ -507,7 +527,21 @@ int SDL_main(int argc, char *argv[])
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Event event;
-	
+	//rain
+
+    // Allocate memory for water particles
+    waterParticles = malloc(MAX_WATER_PARTICLES * sizeof(struct WaterParticle));
+    if (waterParticles == NULL) {
+        // Handle allocation failure
+        fprintf(stderr, "Failed to allocate memory for water particles\n");
+        return 1;
+    }
+	//initialize random number generator seed
+	srand(time(NULL));
+    // Initialize water particles
+    for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
+        createWaterParticle(i, screen_w, screen_h);
+    }
 	//void SDL_SetMainReady(void);
 	//int flags = SDL_INIT_VIDEO|SDL_INIT_AUDIO;
 	int flags = SDL_INIT_EVERYTHING;
@@ -759,8 +793,7 @@ int SDL_main(int argc, char *argv[])
 		{
 			splashintro_bool=0;
 		}
-		
-		
+
 		/*
 		Post-update of inputs.
 		*/
@@ -832,7 +865,15 @@ int SDL_main(int argc, char *argv[])
 				int off = ij + level_size*level_cur;
 				int tex = level_data[off] % 4;//restrict to available textures (4 below).
 				//draw_image(renderer,x1,y1,x2,y2,(SDL_Texture*)mux_int(tex,spr_grass,spr_sand,spr_water,spr_lava));
-				draw_image(renderer,x1,y1,x2,y2,mux_sdltex(tex,spr_grass,spr_sand,spr_water,spr_lava));
+				SDL_Texture* picture;
+				switch(tex){
+					case 0:{picture=spr_grass;break;}
+					case 1:{picture=spr_sand;break;}
+					case 2:{picture=spr_water;break;}
+					case 3:{picture=spr_lava;break;}
+					default:{picture=spr_grass; printf("title has no texture!\n");break;}
+				}
+				draw_image(renderer,x1,y1,x2,y2,picture);
 				
 			}
 		}
@@ -844,7 +885,30 @@ int SDL_main(int argc, char *argv[])
 			sprstrip_player,
 			(Player.facedir*d*Player.anim_max)+(Player.anim_cur*d*1),0,
 			d,d);
-		
+//water stuff
+
+        // Update water particles (rain drops)
+        for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
+            if (waterParticles[i].active) {
+                waterParticles[i].y += waterParticles[i].speed;
+
+                // Check if particle has reached the bottom of the window
+                if (waterParticles[i].y > screen_h) {
+                    // Randomly deactivate particle (remove randomness for constant rain)
+                    if (rand() % 100 < 5) {
+                        waterParticles[i].active = 0; // Set active to 0 (false)
+                    } else {
+                        createWaterParticle(i, screen_w, screen_h);
+                    }
+                }
+            }
+        }
+		        // Draw water particles
+        for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
+            if (waterParticles[i].active) {
+                draw_image(renderer, waterParticles[i].x, waterParticles[i].y, waterParticles[i].x + 5, waterParticles[i].y + 15, spr_water);
+            }
+        }
 		//Splash intro screen.
 		if (splashintro_bool)
 		{
@@ -861,6 +925,7 @@ int SDL_main(int argc, char *argv[])
 	printf("...exited main loop.\n");
 
 	//Shut down SDL
+	free(waterParticles);
 	SDL_DestroyTexture(spr_grass);
 	SDL_DestroyTexture(spr_sand);
 	SDL_DestroyTexture(spr_water);
