@@ -208,6 +208,21 @@ int mux_int(int nth,...)
 	va_end(args);
 	return ret;
 }
+SDL_Texture* mux_sdltex(int nth,...)
+{
+	//Multiplexer for SDL_Texture pointers.
+	//Returns the nth argument.
+	va_list args;
+	va_start(args,nth);
+	int ret = va_arg(args,int);
+	for (int i=0; i<nth; i++)
+	{
+		ret = va_arg(args,SDL_Texture*);
+	}
+	va_end(args);
+	return ret;
+}
+
 int pos_int(int num,int val,...)
 {
 	//A demultiplexer variant for ints.
@@ -816,7 +831,8 @@ int SDL_main(int argc, char *argv[])
 				draw_rectangle_color(renderer,x1,y1,x2,y2,col);//will show if image drawing below fails.
 				int off = ij + level_size*level_cur;
 				int tex = level_data[off] % 4;//restrict to available textures (4 below).
-				draw_image(renderer,x1,y1,x2,y2,(SDL_Texture*)mux_int(tex,spr_grass,spr_sand,spr_water,spr_lava));
+				//draw_image(renderer,x1,y1,x2,y2,(SDL_Texture*)mux_int(tex,spr_grass,spr_sand,spr_water,spr_lava));
+				draw_image(renderer,x1,y1,x2,y2,mux_sdltex(tex,spr_grass,spr_sand,spr_water,spr_lava));
 				
 			}
 		}
