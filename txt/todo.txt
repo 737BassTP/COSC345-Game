@@ -12,6 +12,11 @@ To do:
 ----------------
 Finished:
 
+2023-07-18
+	Sean: rain effect
+	minimap with crosshairs
+	improved font (text using images)
+
 2023-07-17
 	looping music
 	multiple levels (256)

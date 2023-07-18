@@ -254,6 +254,10 @@ int BG(int val,int nth)
 {
 	return (val>>nth)&1;
 }
+int BGG(int val,int size,int nth)
+{
+	return (val>>(nth*size))&((1<<size)-1);
+}
 int sqr(int v)
 {
 	return v*v;
@@ -306,6 +310,17 @@ int string_pos(char *substr,char *str)
 		}
 	}
 	return -1;
+}
+double darctan2(int y,int x)
+{
+	return radtodeg(atan2(y,x));
+}
+double cartodir(int x,int y)
+{
+	//return (darctan2(y,x)+360.0)%360.0;
+	double ret = darctan2(y,x)+360.0;
+	if (ret >= 360.0) {ret -= 360.0;}
+	return ret;
 }
 void game_level_load(int lvl,int lvlmax)
 {
@@ -584,7 +599,9 @@ int SDL_main(int argc, char *argv[])
 	//Text.
 	SDL_Texture *font_ascii = IMG_LoadTexture(renderer,"img/ascii_strip96.png");
 	int font_ascii_w = 8;
-	int font_ascii_h = 16;
+	int font_ascii_h = 24;
+	//Map.
+	SDL_Texture *spr_map = IMG_LoadTexture(renderer,"img/dunedin-map.png");
 	
 	
 	//Game Level.
@@ -826,17 +843,18 @@ int SDL_main(int argc, char *argv[])
 		//UI.
 		int uix,uiy;
 		//UI Left.
-		uix = 0; 
+		uix = gw; 
 		uiy = 0;
 		if (!splashintro_bool)
 		{
-			draw_text(renderer,uix,uiy,8*gw,16*gh,font_ascii,"Location:#DUNEDIN#NEW ZEALAND",font_ascii_w,font_ascii_h);
+			draw_text(renderer,uix,uiy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,"Location:#DUNEDIN#NEW ZEALAND",font_ascii_w,font_ascii_h);
 		}
 		//UI Right.
-		uix = win_game_x2;
+		uix = gw+win_game_x2;
 		uiy = 0;
 		if (!splashintro_bool)
 		{
+			//Level.
 			char *lvlstrold = "LVL: XYZ/255";
 			char lvlstrnew[strlen(lvlstrold)];//a hard-coded value too small causes a code-overwrite bug that messes with player movement!
 			strcpy(lvlstrnew,lvlstrold);
@@ -846,7 +864,24 @@ int SDL_main(int argc, char *argv[])
 			lvlstrnew[string_pos("Y",lvlstrnew)] = ((lc/10 )%10) + 48;//%10 maps to 0-9.
 			lvlstrnew[string_pos("Z",lvlstrnew)] = ((lc/1  )%10) + 48;//
 			//sprintf(lvlstr,"Level:#",level_cur);
-			draw_text(renderer,uix,uiy,8*gw,16*gh,font_ascii,lvlstrnew,font_ascii_w,font_ascii_h);
+			draw_text(renderer,uix,uiy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,lvlstrnew,font_ascii_w,font_ascii_h);
+			
+			//Map.
+			int mapx1,mapy1,mapx2,mapy2;
+			mapx1=uix;
+			mapy1=uiy+font_ascii_h*gh;
+			mapx2=mapx1+256;
+			mapy2=mapy1+256;
+			draw_image(renderer,mapx1,mapy1,mapx2,mapy2,spr_map);
+			//Location crosshair lines.
+			int mcx=(int)lerp((double)mapx1,(double)mapx2,(double)(BGG(lc,4,0)/16.0));
+			draw_rectangle_color(renderer,mcx-1,mapy1,mcx+1,mapy2,c_red);//ver(x)
+			int mcy=(int)lerp((double)mapy1,(double)mapy2,(double)(BGG(lc,4,1)/16.0));
+			draw_rectangle_color(renderer,mapx1,mcy-1,mapx2,mcy+1,c_red);//hor(y)
+			draw_rectangle_color(renderer,mcx,mcy,
+				(int)lerp((double)mapx1,(double)mapx2,(double)((BGG(lc,4,0)+1)/16.0)),
+				(int)lerp((double)mapy1,(double)mapy2,(double)((BGG(lc,4,1)+1)/16.0)),
+				c_red);
 		}
 		//Game area.
 		for (int j=0; j<win_game_tile_num; j++)
@@ -885,9 +920,9 @@ int SDL_main(int argc, char *argv[])
 			sprstrip_player,
 			(Player.facedir*d*Player.anim_max)+(Player.anim_cur*d*1),0,
 			d,d);
-//water stuff
-
-        // Update water particles (rain drops)
+		
+		//water stuff
+		// Update water particles (rain drops)
         for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
             if (waterParticles[i].active) {
                 waterParticles[i].y += waterParticles[i].speed;
@@ -903,7 +938,7 @@ int SDL_main(int argc, char *argv[])
                 }
             }
         }
-		        // Draw water particles
+		// Draw water particles
         for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
             if (waterParticles[i].active) {
                 draw_image(renderer, waterParticles[i].x, waterParticles[i].y, waterParticles[i].x + 5, waterParticles[i].y + 15, spr_water);
@@ -913,7 +948,7 @@ int SDL_main(int argc, char *argv[])
 		if (splashintro_bool)
 		{
 			draw_image(renderer,win_game_x,win_game_y,win_game_x2,win_game_y2,splashintro_img);
-			draw_text(renderer,win_game_x,win_game_y,8*gw,16*gh,font_ascii,splashintro_string,font_ascii_w,font_ascii_h);
+			draw_text(renderer,win_game_x,win_game_y,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashintro_string,font_ascii_w,font_ascii_h);
 		}
 		
 		//Render to screen.
@@ -930,6 +965,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_DestroyTexture(spr_sand);
 	SDL_DestroyTexture(spr_water);
 	SDL_DestroyTexture(spr_lava);
+	SDL_DestroyTexture(spr_map);
 	SDL_DestroyTexture(sprstrip_player);
 	SDL_DestroyTexture(splashintro_img);
 	SDL_DestroyTexture(font_ascii);
