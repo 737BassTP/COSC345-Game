@@ -211,6 +211,21 @@ int mux_int(int nth,...)
 	va_end(args);
 	return ret;
 }
+char* mux_str(int nth,...)
+{
+	//Multiplexer for ints.
+	//Returns the nth argument.
+	va_list args;
+	va_start(args,nth);
+	char* ret = va_arg(args,int);
+	for (int i=0; i<nth; i++)
+	{
+		ret = va_arg(args,char*);
+	}
+	va_end(args);
+	return ret;
+}
+
 SDL_Texture* mux_sdltex(int nth,...)
 {
 	//Multiplexer for SDL_Texture pointers.
@@ -337,25 +352,26 @@ void dev_tiled_to_leveldata()
 	FILE *filin;
 	FILE *filout;
 	
-	filin = fopen("cosc345-game.tmx","r");
+	filin = fopen("tiled/cosc345-game.tmx","r");
 	filout = fopen("level-new.dat","wb");
 	
 	int maxsize = 65536*2;//131072
 	byte array[131072];//tiles + objects.
-	maxsize = 32;//16*16*32;//debug only.
-	for (int i=0; i<maxsize; i++)
-	{
-		array[i] = 0;
-	}
+	//maxsize = 32;//16*16*32;//debug only.
+	for (long i=0; i<maxsize; i++) {array[i] = 0;}
+	fread(array,maxsize,1,filin);
 	
 	//Discard input header.
-	for (int i=0; i<0x1F7-1; i++)
-	{
-		fgetc(filin);
-	}
+	fseek(filin,(long int)0x1F7-0,SEEK_SET);
 	//Read Tiles and Objects.
+	/*
+	fwrite(array,maxsize,1,filout);
+	
+	fclose(filin);
+	fclose(filout);
+	/**/
 	byte comma=","[0];
-	byte ch;
+	int ch=0;
 	byte entry[3];
 	int counter=0;
 	while (1)
@@ -377,16 +393,21 @@ void dev_tiled_to_leveldata()
 		{
 			entry[i]=48;
 		}
+		printf("entries: %i,%i,%i\n",entry[0],entry[1],entry[2]);
+		
 		//Populate.
 		entry[0] = ch;
+		printf("ch0=%i\n",ch);
 		ch = fgetc(filin);
 		if (ch != comma)
 		{
 			entry[1]=ch;
+			printf("ch1=%i\n",ch);
 			ch = fgetc(filin);
 			if (ch != comma)
 			{
 				entry[2]=ch;
+				printf("ch2=%i\n",ch);
 				fgetc(filin);//remove implied comma.
 			}
 			else
@@ -407,12 +428,13 @@ void dev_tiled_to_leveldata()
 		{
 			entry[i] -= 48;
 		}
-		byte val = entry[0]*100 + entry[1]*10 + entry[2]*1;//e.g "179" -> 179
-		if (val == 0) {val=255;}//0 is undefined.
+		byte val = (byte)(entry[0]*100 + entry[1]*10 + entry[2]*1);//e.g "179" -> 179. if buggy, use int val.
+		if (val == 0) {val=255;}//0 is undefined in tiled.
 		else {val -= 1;}//map [1,256] to [0,255]
-		printf("i=%i/%i: %i (%i,%i,%i)\n,",counter,maxsize,val,entry[0],entry[1],entry[2]);
+		printf("i=%i/%i: %i (%i,%i,%i)\n\n",counter,maxsize,val,entry[0],entry[1],entry[2]);
+		val &= 0xFF;
 		//fputc(val,filout);
-		array[counter] = val&0xFF;
+		array[counter] = val;
 		counter++;
 	}
 	fwrite(array,maxsize,1,filout);
@@ -424,6 +446,23 @@ void play_WAV(const char* wavfile)
 {
 	//done manually in main.
 	
+}
+char* level_get_name(int lvl,char* ret)
+{
+	//Translates e.g level 8/256 to "Warrington".
+	FILE *fil;
+	fil=fopen("location.dat","rb");
+	fseek(fil,(long int)lvl,SEEK_SET);
+	int tmp=(int)fgetc(fil);
+	fseek(fil,(long int)256,SEEK_SET);
+	fgets(ret,16,fil);
+	while (tmp>0)
+	{
+		fgets(ret,16,fil);
+		tmp--;
+	}
+	fclose(fil);
+	return ret;
 }
 
 
@@ -617,8 +656,6 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *font_ascii = IMG_LoadTexture(renderer,"img/ascii_strip96.png");
 	int font_ascii_w = 8;
 	int font_ascii_h = 24;
-	//Map.
-	SDL_Texture *spr_map = IMG_LoadTexture(renderer,"img/dunedin-map.png");
 	
 	//Clock (digital).
 	SDL_Texture *spr_clock_digital = IMG_LoadTexture(renderer,"img/clock1_strip10.png");
@@ -626,7 +663,11 @@ int SDL_main(int argc, char *argv[])
 	int time_clock = 0;//range: 0-1439 = 00:00-23:59
 	int time_clock_fps=0;//rapidly emulate sub-seconds.
 	int time_clock_fps_max=57;//below 60 to accommodate for delays.
-	int time_clock_fps_multiplier=4;//1=1/1 second, 4=1/4 second.
+	int time_clock_fps_multiplier=60;//1=1/1 second, 4=1/4 second.
+	char *timestr_a="Night";
+	char *timestr_b="Morning";
+	char *timestr_c="Day";
+	char *timestr_d="Evening";
 	
 	//Game Level.
 	int level_size = sqr(win_game_tile_num);//16*16=256
@@ -641,6 +682,11 @@ int SDL_main(int argc, char *argv[])
 	}
 	fread(level_data,sizeof(level_data),1,fil);
 	fclose(fil);
+	
+	//Map.
+	SDL_Texture *spr_map = IMG_LoadTexture(renderer,"img/dunedin-map.png");
+	char mapstr_location[16];
+	level_get_name(level_cur,mapstr_location);
 	
 	//Player.
 	struct player Player;
@@ -823,6 +869,8 @@ int SDL_main(int argc, char *argv[])
 				level_cur += level_count;//allows negative wrap.
 				level_cur %= level_count;//prevents overflow.
 				//printf("lvl=%i\n",level_cur);
+				level_get_name(level_cur,mapstr_location);
+				
 			}
 		}
 		else
@@ -916,12 +964,15 @@ int SDL_main(int argc, char *argv[])
 			lvlstrnew[string_pos("Y",lvlstrnew)] = ((lc/10 )%10) + 48;//%10 maps to 0-9.
 			lvlstrnew[string_pos("Z",lvlstrnew)] = ((lc/1  )%10) + 48;//
 			//sprintf(lvlstr,"Level:#",level_cur);
-			draw_text(renderer,uix,uiy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,lvlstrnew,font_ascii_w,font_ascii_h);
+			
+			draw_text(renderer,uix,uiy                ,font_ascii_w*gw,font_ascii_h*gh,font_ascii,lvlstrnew,font_ascii_w,font_ascii_h);
+			draw_text(renderer,uix,uiy+font_ascii_h*gh,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mapstr_location,font_ascii_w,font_ascii_h);
+			
 			
 			//Map.
 			int mapx1,mapy1,mapx2,mapy2;
 			mapx1=uix;
-			mapy1=uiy+font_ascii_h*gh;
+			mapy1=uiy+font_ascii_h*2*gh;
 			mapx2=mapx1+256;
 			mapy2=mapy1+256;
 			draw_image(renderer,mapx1,mapy1,mapx2,mapy2,spr_map);
@@ -956,17 +1007,18 @@ int SDL_main(int argc, char *argv[])
 					draw_text(renderer,uix+2*16*gw,mapy2,uix+3*16*gw,clocky2,font_ascii,":",font_ascii_w,font_ascii_h);
 				}
 			}
-			char ct[10];
+			//char ct[10];
 			//const char time_clock_str="Daytime";
 			//strcpy(ct,time_clock_str);
-			if (clock_is_between(time, 0,0, 5,59)) {strcpy(ct,"Ni");}
-			if (clock_is_between(time, 6,0,11,59)) {strcpy(ct,"Mo");}
-			if (clock_is_between(time,12,0,17,59)) {strcpy(ct,"Da");}
-			if (clock_is_between(time,18,0,23,59)) {strcpy(ct,"Ev");}
+			int ct=0;
+			if (clock_is_between(time_clock, 0,0, 5,59)) {ct=0;}
+			if (clock_is_between(time_clock, 6,0,11,59)) {ct=1;}
+			if (clock_is_between(time_clock,12,0,17,59)) {ct=2;}
+			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
 			draw_text(renderer,
-				uix,clocky2,
-				uix+10*gw,clocky2+gh*font_ascii_h,
-				font_ascii,ct,
+				uix,clocky2+gh,
+				font_ascii_w*gw,font_ascii_h*gh,
+				font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
 				font_ascii_w,font_ascii_h);
 			
 		}

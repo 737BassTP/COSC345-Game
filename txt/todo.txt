@@ -1,6 +1,6 @@
 To do:
 
-2023-07-18
+2023-07-20
 	animated text
 	animated tiles
 	tileset instead of loose files
@@ -11,6 +11,12 @@ To do:
 
 ----------------
 Finished:
+
+2023-07-19
+	digital clock for timekeeping
+	description of what time of day it is
+	added some locations to the minimap
+		e.g lvl 8/256 reads "Warrington".
 
 2023-07-18
 	Sean: rain effect
