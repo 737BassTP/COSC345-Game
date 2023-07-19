@@ -1,10 +1,14 @@
 # Assignment 1
 
+## Specs
+Between 2 and 10 pages
+
 ## Members
- - Campbell Nicholas
- - Thomas Pederssen
- - Sven Russel
- - Matthew Yi
+### Campbell Nicholas - Art Designer
+### Thomas Pedersen - Programmer, Music
+### Sven Russel - Programmer
+### Matthew Yi - Team Lead, Writer, Data Scientist
+
 
 ## Data Sets
 ### Food Data
@@ -12,6 +16,11 @@
 ### Weather Data
 [Weather data download link](https://www.physics.otago.ac.nz/eman/weather_station/archive.php)
 
+We are using weather data sourced from the Energy Studies Weather Station of the University of Otago. 
+### Conservation Data
+Native birds
+### Geospatial Data
+Map of Dunedin
 ## The Project
 
 ## Organization
