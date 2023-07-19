@@ -16,7 +16,12 @@ Between 2 and 10 pages
 ### Weather Data
 [Weather data download link](https://www.physics.otago.ac.nz/eman/weather_station/archive.php)
 
-We are using weather data sourced from the Energy Studies Weather Station of the University of Otago. 
+We are using weather data sourced from the Energy Studies Weather Station of the University of Otago. In game weather will be determined by the weather patterns of the last twelve months. In order for players to experience meaningful changes in weather/time of day without playing for hours at a time, each 24 hour period of data is condensed down into 10 minutes of gameplay. Likewise seasons will be 8 days long each.
+
+Variables will be used in game as follows:
+ - Temperature - temperatures outside of a comfortable range
+
+
 ### Conservation Data
 Native birds
 ### Geospatial Data
