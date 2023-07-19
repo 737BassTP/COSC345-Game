@@ -17,6 +17,7 @@ https://wiki.libsdl.org/SDL2/APIByCategory
 #include <math.h>
 #include <stdlib.h> // for rand() and srand()
 #include <time.h>   // for time()
+#include <string.h>
 //#include <.h>
 //#include "SDL2.dll"
 #include "SDL2/include/SDL2/SDL.h"
@@ -270,9 +271,9 @@ double radtodeg(double rad)
 {
 	return (rad/PI)*180;
 }
-long get_timer()
+Uint64 get_timer()
 {
-	return SDL_GetTicks();
+	return SDL_GetTicks64();
 }
 int point_in_rectangle(int px,int py,int rx1,int ry1,int rx2,int ry2)
 {
@@ -509,6 +510,22 @@ void audioCallback(void* userdata, Uint8* stream, int len) {
     audiodata->position += bytesToCopy;
 }
 
+//Game clock. (HH:MM)
+int clock_get_hour(int time) {return (time/60)%24;}
+int clock_get_minute(int time) {return time%60;}
+int clock_is_between(int time,int h1,int m1,int h2,int m2)
+{
+	int c1,c2;
+	c1 = h1*60 + m1;
+	c2 = h2*60 + m2;
+	return ((time>=c1) && (time<=c2));
+	/*
+	int gh,gm;
+	gh = clock_get_hour(time);
+	gm = clock_get_minute(time);
+	return (gh>=h1)&&(gh<)
+	/**/
+}
 
 /*
 Entry point.
@@ -603,6 +620,13 @@ int SDL_main(int argc, char *argv[])
 	//Map.
 	SDL_Texture *spr_map = IMG_LoadTexture(renderer,"img/dunedin-map.png");
 	
+	//Clock (digital).
+	SDL_Texture *spr_clock_digital = IMG_LoadTexture(renderer,"img/clock1_strip10.png");
+	int time_clock_max=1440;
+	int time_clock = 0;//range: 0-1439 = 00:00-23:59
+	int time_clock_fps=0;//rapidly emulate sub-seconds.
+	int time_clock_fps_max=57;//below 60 to accommodate for delays.
+	int time_clock_fps_multiplier=4;//1=1/1 second, 4=1/4 second.
 	
 	//Game Level.
 	int level_size = sqr(win_game_tile_num);//16*16=256
@@ -818,6 +842,34 @@ int SDL_main(int argc, char *argv[])
 		Player.yprevious = Player.y;
 		
 		/*
+		General updates.
+		*/
+		//water stuff
+		// Update water particles (rain drops)
+        for (int i = 0; i < MAX_WATER_PARTICLES; i++) 
+		{
+            if (waterParticles[i].active) 
+			{
+                waterParticles[i].y += waterParticles[i].speed;
+
+                // Check if particle has reached the bottom of the window
+                if (waterParticles[i].y > screen_h) {
+                    // Randomly deactivate particle (remove randomness for constant rain)
+                    if (rand() % 100 < 5) {
+                        waterParticles[i].active = 0; // Set active to 0 (false)
+                    } else {
+                        createWaterParticle(i, screen_w, screen_h);
+                    }
+                }
+            }
+        }
+		//Timekeeping.
+		time_clock_fps += 1*time_clock_fps_multiplier;
+		time_clock += (time_clock_fps>=time_clock_fps_max);
+		time_clock %= time_clock_max;
+		time_clock_fps %= time_clock_fps_max;
+		
+		/*
 		Draw to the screen.
 		*/
 		//Drawing settings.
@@ -882,6 +934,41 @@ int SDL_main(int argc, char *argv[])
 				(int)lerp((double)mapx1,(double)mapx2,(double)((BGG(lc,4,0)+1)/16.0)),
 				(int)lerp((double)mapy1,(double)mapy2,(double)((BGG(lc,4,1)+1)/16.0)),
 				c_red);
+			//Timekeeping.
+			//Digital clock.
+			int coff=0;
+			int clocky2 = mapy2+32*gh;
+			for (int i=0; i<5; i++)
+			{
+				int clo = mux_int(i,(time_clock/600),(time_clock/60)%10,737,(time_clock/10)%6,time_clock%10);
+				if (i != 2)
+				{
+				draw_image_part(renderer,
+					uix+(i+0)*16*gw+coff,mapy2,
+					uix+(i+1)*16*gw+coff,clocky2,
+					spr_clock_digital,
+					clo*16,0,
+					16,32);
+				coff += gw;
+				}
+				else
+				{
+					draw_text(renderer,uix+2*16*gw,mapy2,uix+3*16*gw,clocky2,font_ascii,":",font_ascii_w,font_ascii_h);
+				}
+			}
+			char ct[10];
+			//const char time_clock_str="Daytime";
+			//strcpy(ct,time_clock_str);
+			if (clock_is_between(time, 0,0, 5,59)) {strcpy(ct,"Ni");}
+			if (clock_is_between(time, 6,0,11,59)) {strcpy(ct,"Mo");}
+			if (clock_is_between(time,12,0,17,59)) {strcpy(ct,"Da");}
+			if (clock_is_between(time,18,0,23,59)) {strcpy(ct,"Ev");}
+			draw_text(renderer,
+				uix,clocky2,
+				uix+10*gw,clocky2+gh*font_ascii_h,
+				font_ascii,ct,
+				font_ascii_w,font_ascii_h);
+			
 		}
 		//Game area.
 		for (int j=0; j<win_game_tile_num; j++)
@@ -921,23 +1008,6 @@ int SDL_main(int argc, char *argv[])
 			(Player.facedir*d*Player.anim_max)+(Player.anim_cur*d*1),0,
 			d,d);
 		
-		//water stuff
-		// Update water particles (rain drops)
-        for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
-            if (waterParticles[i].active) {
-                waterParticles[i].y += waterParticles[i].speed;
-
-                // Check if particle has reached the bottom of the window
-                if (waterParticles[i].y > screen_h) {
-                    // Randomly deactivate particle (remove randomness for constant rain)
-                    if (rand() % 100 < 5) {
-                        waterParticles[i].active = 0; // Set active to 0 (false)
-                    } else {
-                        createWaterParticle(i, screen_w, screen_h);
-                    }
-                }
-            }
-        }
 		// Draw water particles
         for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
             if (waterParticles[i].active) {
@@ -969,6 +1039,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_DestroyTexture(sprstrip_player);
 	SDL_DestroyTexture(splashintro_img);
 	SDL_DestroyTexture(font_ascii);
+	SDL_DestroyTexture(spr_clock_digital);
 	IMG_Quit();
 	
 	//SDL_FreeWAV(&audio_spec);
