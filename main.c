@@ -344,103 +344,61 @@ void game_level_load(int lvl,int lvlmax)
 }
 void dev_tiled_to_leveldata()
 {
-	printf("faulty at the moment.\n");
+	//Extracts Tiles (done) and Objects (unfinished).
+	printf("may take a while; please wait.\n");
 	glob_vk_f2=0;//fakes a keyboard press event (fails if held).
-	/**/
-	//extracts Tiles and Objects.
-	//hardcoded.
-	FILE *filin;
-	FILE *filout;
-	
-	filin = fopen("tiled/cosc345-game.tmx","r");
-	filout = fopen("level-new.dat","wb");
-	
-	int maxsize = 65536*2;//131072
+	FILE *filin = fopen("tiled/cosc345-game.tmx","rb");
+	FILE *filout = fopen("level.dat","wb");
+	int layers=2;
+	int layersize=65536;
+	int maxsize = 65536*layers;//131072
 	byte array[131072];//tiles + objects.
-	//maxsize = 32;//16*16*32;//debug only.
 	for (long i=0; i<maxsize; i++) {array[i] = 0;}
-	fread(array,maxsize,1,filin);
-	
 	//Discard input header.
-	fseek(filin,(long int)0x1F7-0,SEEK_SET);
+	fseek(filin,(long int)0x1F7-0,SEEK_SET);//hardcoded; may bug out in future.
 	//Read Tiles and Objects.
-	/*
-	fwrite(array,maxsize,1,filout);
-	
-	fclose(filin);
-	fclose(filout);
-	/**/
 	byte comma=","[0];
 	int ch=0;
 	byte entry[3];
+	byte val;
 	int counter=0;
-	while (1)
+	int off=0;
+	int ij=0;
+	//Extract and restructure.
+	for (int i=0; i<layersize; i++)
 	{
-		//fseek(filin,1,SEEK_CUR);
-		ch = fgetc(filin);
-		//printf("%i\n",ch;
-		//if (ch == "<"[0])
-		if (ch == 60)
+		ch=fgetc(filin);
+		for (int j=0; j<3; j++) {entry[j]=48;}
+		while ((ch==0xD) || (ch==0xA)) {ch=fgetc(filin);}
+		if (ch!=comma)
 		{
-			break;
-		}
-		if (counter>=maxsize) 
-		{
-			break;
-		}
-		//Clear.
-		for (int i=0; i<3; i++)
-		{
-			entry[i]=48;
-		}
-		printf("entries: %i,%i,%i\n",entry[0],entry[1],entry[2]);
-		
-		//Populate.
-		entry[0] = ch;
-		printf("ch0=%i\n",ch);
-		ch = fgetc(filin);
-		if (ch != comma)
-		{
-			entry[1]=ch;
-			printf("ch1=%i\n",ch);
-			ch = fgetc(filin);
-			if (ch != comma)
+			entry[1]=entry[2];
+			entry[2]=ch;
+			ch=fgetc(filin);
+			if (ch!=comma)
 			{
+				entry[0]=entry[1];
+				entry[1]=entry[2];
 				entry[2]=ch;
-				printf("ch2=%i\n",ch);
-				fgetc(filin);//remove implied comma.
-			}
-			else
-			{
-				entry[2]=entry[1];
-				entry[1]=entry[0];
-				entry[0]=48;
 			}
 		}
-		else
-		{
-			entry[2]=entry[0];
-			entry[0]=48;
-		}
-		
-		//Calculate.
-		for (int i=0; i<3; i++)
-		{
-			entry[i] -= 48;
-		}
-		byte val = (byte)(entry[0]*100 + entry[1]*10 + entry[2]*1);//e.g "179" -> 179. if buggy, use int val.
-		if (val == 0) {val=255;}//0 is undefined in tiled.
-		else {val -= 1;}//map [1,256] to [0,255]
-		printf("i=%i/%i: %i (%i,%i,%i)\n\n",counter,maxsize,val,entry[0],entry[1],entry[2]);
-		val &= 0xFF;
-		//fputc(val,filout);
-		array[counter] = val;
-		counter++;
+		val^=val;
+		for (int j=0; j<3; j++) {val+=(entry[j]-48)*(byte)pow((double)10,(double)(2-j));}
+		printf("i=%i/%i (v=%i)\n",i,layersize,val);
+		val-=(val==0)?(-0xFF):(1)&0xFF;
+		array[(1<<(3<<(1<<1)))*(i>>(3<<(1<<1)))+(1<<(1<<3))*((i>>(1<<(1<<1)))&(3*(1<<(1<<1)|1)))+(1<<(1<<(1<<1)))*((i>>(1<<3))&(3*(1<<(1<<1)|1)))+(i&(3*(1<<(1<<1)|1)))]=val;//security through obscurity, or what?
 	}
+	//Compress.
+	val^=val;
+	counter=0;
+	for (int i=0; i<layersize; i++)
+	{
+		break;
+	}
+	//Write to file.
 	fwrite(array,maxsize,1,filout);
 	fclose(filin);
 	fclose(filout);
-	/**/
 }
 void play_WAV(const char* wavfile)
 {
