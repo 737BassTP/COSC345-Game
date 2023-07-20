@@ -6,7 +6,7 @@ Between 2 and 10 pages
 ## Members
 ### Campbell Nicholas - Art Designer
 ### Thomas Pedersen - Programmer, Music
-### Sven Russel - Programmer
+### Sean Russell - Programmer
 ### Matthew Yi - Team Lead, Writer, Data Scientist
 
 
@@ -30,7 +30,7 @@ Map of Dunedin
 
 ## Organization
 We are using a Trello board to organise the tasks that need to be done and to keep track of deadlines.
-
+Communcation is being maintained daily through a messenger group chat.
 There are lists for:
  - To Do
  - Doing
@@ -47,5 +47,11 @@ There are lists for:
 ## Include either a Gantt chart or a PERT chart
 
 ## Risk Analysis
+Risks include:
+Team member dropping out due to unforseen circumstances.
+Technical challenges such as learning SDL2 and advanced C languages while completing the project.
+Creating a polished and fun experience within the 12 week time frame.
 
+We will mitigate these risks working inside a realistic scope, communicating clearly with eachother and sticking to our core vision with extras being added afterwards.
+Feedback
 ## Attribution
