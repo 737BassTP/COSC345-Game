@@ -157,6 +157,10 @@ void draw_image_part(SDL_Renderer *renderer,int x1,int y1,int x2,int y2,SDL_Text
 	s.h = height;
 	SDL_RenderCopy(renderer,texture,&s,&r);
 }
+void draw_tilemap(SDL_Renderer *renderer,SDL_Texture *tilemap,int tile,int width,int height,int x1,int y1,int x2,int y2)
+{
+	//superfluous.
+}
 void draw_text(SDL_Renderer *renderer,int x,int y,int w,int h,SDL_Texture *font,char* str,int fontw,int fonth)
 {
 	//"#" = newline.
@@ -608,6 +612,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *spr_sand  = IMG_LoadTexture(renderer,"img/spr_sand.png");
 	SDL_Texture *spr_water = IMG_LoadTexture(renderer,"img/spr_water.png");
 	SDL_Texture *spr_lava  = IMG_LoadTexture(renderer,"img/spr_lava.png");
+	SDL_Texture *spr_tileset = IMG_LoadTexture(renderer,"tiled/tileset.png");
 	//Player.
 	SDL_Texture *sprstrip_player = IMG_LoadTexture(renderer,"img/player_strip8.png");
 	//Text.
@@ -981,6 +986,7 @@ int SDL_main(int argc, char *argv[])
 			
 		}
 		//Game area.
+		int d = win_game_tile_dim;
 		for (int j=0; j<win_game_tile_num; j++)
 		{
 			for (int i=0; i<win_game_tile_num; i++)
@@ -995,22 +1001,11 @@ int SDL_main(int argc, char *argv[])
 				int col = mux_int(ij%3,c_red,c_green,c_blue);
 				draw_rectangle_color(renderer,x1,y1,x2,y2,col);//will show if image drawing below fails.
 				int off = ij + level_size*level_cur;
-				int tex = level_data[off] % 4;//restrict to available textures (4 below).
-				//draw_image(renderer,x1,y1,x2,y2,(SDL_Texture*)mux_int(tex,spr_grass,spr_sand,spr_water,spr_lava));
-				SDL_Texture* picture;
-				switch(tex){
-					case 0:{picture=spr_grass;break;}
-					case 1:{picture=spr_sand;break;}
-					case 2:{picture=spr_water;break;}
-					case 3:{picture=spr_lava;break;}
-					default:{picture=spr_grass; printf("title has no texture!\n");break;}
-				}
-				draw_image(renderer,x1,y1,x2,y2,picture);
-				
+				int tex = level_data[off];
+				draw_image_part(renderer,x1,y1,x2,y2,spr_tileset,d*(tex%win_game_tile_num),d*(tex/win_game_tile_num),d,d);
 			}
 		}
 		//Player.
-		int d = win_game_tile_dim;
 		draw_image_part(renderer,
 			Player.x,Player.y,
 			Player.x+d*gw,Player.y+d*gh,
@@ -1045,6 +1040,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_DestroyTexture(spr_sand);
 	SDL_DestroyTexture(spr_water);
 	SDL_DestroyTexture(spr_lava);
+	SDL_DestroyTexture(spr_tileset);
 	SDL_DestroyTexture(spr_map);
 	SDL_DestroyTexture(sprstrip_player);
 	SDL_DestroyTexture(splashintro_img);
