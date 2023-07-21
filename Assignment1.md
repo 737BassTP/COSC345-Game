@@ -9,7 +9,7 @@ Between 2 and 10 pages
 ### Sean Russell - Programmer
 ### Matthew Yi - Team Lead, Writer, Data Scientist
 
-
+For our 345 project we will be building a 2d game with puzzles and rpg mechanics using the C programming language and SDL2 libraries. We intend for the game to have educational mechanics while being a fun experience.
 ## Data Sets
 ### Food Data
 [Food data download link]
@@ -23,11 +23,12 @@ Variables will be used in game as follows:
 
 
 ### Conservation Data
-Native birds
+Conservation data will be used inside quizzes with the player earning score for each question answered successfully. The player may need to pass a test in order to progress to the next section.
 ### Geospatial Data
-Map of Dunedin
+Our map is going to be based on the map of Dunedin.
 ## The Project
-
+The datasets go together as the 2d style rpg game we are developing can make great use of weather data, food data and conservation data as gameplay mechanics.
+Examples of this are weather patterns being included in our game as a scene setter and potential enviroment hazard, food data as an rpg energy mechanic and conservation data being used in quizzes and minigames.
 ## Organization
 We are using a Trello board to organise the tasks that need to be done and to keep track of deadlines.
 Communcation is being maintained daily through a messenger group chat.
@@ -51,7 +52,9 @@ Risks include:
 Team member dropping out due to unforseen circumstances.
 Technical challenges such as learning SDL2 and advanced C languages while completing the project.
 Creating a polished and fun experience within the 12 week time frame.
+Scope creep.
+
 
 We will mitigate these risks working inside a realistic scope, communicating clearly with eachother and sticking to our core vision with extras being added afterwards.
-Feedback
+Feedback will be acquired during the testing phases with as many bugs as possible removed before final release.
 ## Attribution
