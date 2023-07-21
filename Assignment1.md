@@ -1,5 +1,13 @@
 # Assignment 1
 
+The player will explore Dunedin.
+Goal - return albatross egg to peninsula
+Weather - from data set. Affects rate of energy depletion
+Random encounters - each region has different distributions of spawning enemy types
+Enemies - sentient food. The player can eat the food to heal and gain status effects if they win, if not nothing happens
+Bosses - us four, each associated with a different macro + sugar
+Final boss - Dr Trotman
+
 ## Specs
 Between 2 and 10 pages
 
