@@ -1,17 +1,26 @@
 To do:
 
-2023-07-20
-	animated text
-	animated tiles
-	tileset instead of loose files
+2023-07-22
 	audio sfx (play once)
-	convert from Tiled to leveldata
+	animated tiles
 	keyboard functions (hold, press, release)
+	compress leveldata
+	animated text
 	investigate 3d with opengl
 
 ----------------
 Finished:
 
+2023-07-21
+	tileset instead of loose files
+	added devtools-program to streamline asset development
+		a tool to edit locations on the map
+	added more locations to the map
+
+2023-07-20
+	convert from Tiled to leveldata
+		press F2 to use, wait some seconds, then restart game.
+	
 2023-07-19
 	digital clock for timekeeping
 	description of what time of day it is
