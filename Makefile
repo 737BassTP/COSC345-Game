@@ -3,7 +3,7 @@ SDL2 = $(WORKDIR)\SDL2
 SDL2b = C:\Users\Thomas Pedersen\Documents\UiT\UTV-0001\University of Otago\COSC345 - Game\SDL2
 
 CC = gcc
-CFLAGS = -Wall -Wextra -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -g `sdl2-config --cflags --libs`
+CFLAGS = -Wall -Wextra -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -g `sdl2-config --cflags --libs`
 PROGRAM = main
 
 HEADERS = main.h

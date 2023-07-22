@@ -21,6 +21,7 @@ https://wiki.libsdl.org/SDL2/APIByCategory
 //#include "SDL2.dll"
 #include "SDL2/include/SDL2/SDL.h"
 #include "SDL2/include/SDL2/SDL_image.h"
+#include "SDL2/include/SDL2/SDL_ttf.h"
 
 //Definitions.
 #define PI 3.1415926535897932
@@ -156,6 +157,8 @@ void draw_image_part(SDL_Renderer *renderer,int x1,int y1,int x2,int y2,SDL_Text
 	s.h = height;
 	SDL_RenderCopy(renderer,texture,&s,&r);
 }
+
+
 void draw_text(SDL_Renderer *renderer,int x,int y,int w,int h,SDL_Texture *font,char* str,int fontw,int fonth)
 {
 	//"#" = newline.
@@ -448,6 +451,7 @@ void createWaterParticle(int index, int window_width, int window_height) {
     waterParticles[index].speed = 10;        // Rain speed
     waterParticles[index].active = 1;                    // Set active to 1 (true)
 }
+// Function to render and update the text
 
 //Player.
 struct player
@@ -551,7 +555,7 @@ int SDL_main(int argc, char *argv[])
 		return -1;
 	}
 	
-	//Create window.
+	//Create window for pop up
 	window = SDL_CreateWindow("COSC345 - Game",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,screen_w,screen_h,0);
 	if (!window)
 	{
@@ -565,13 +569,40 @@ int SDL_main(int argc, char *argv[])
         snprintf(errmsg, bufsize, "Render error");
         goto error;
     }
+
+	int option = 0;
+    char optionText[2] = "0";
     //Create the surface in RAM that we manipulate the pixels of.
     surface = SDL_GetWindowSurface(window);
     if (!surface) {
         snprintf(errmsg, bufsize, "Surface error");
         goto error;
     }
-	
+
+	//pop up window test
+	SDL_Rect buttonRect = { 800, 100, 100, 100 };//dimension of popup
+	char buttonTexts[] = "default message";//message in the window
+	char* buttonText = buttonTexts;
+	int buttonVis = 0;//0 for no window and 1 for visible window
+    // Load a TTF font (adjust the file path and size as needed)
+	    // Initialize SDL_ttf
+    if (TTF_Init() == -1) {
+        printf("SDL_ttf could not initialize! TTF_Error: %s\n", TTF_GetError());
+        return 1;
+    }
+    TTF_Font* font = TTF_OpenFont("font.ttf", 12);
+    if (font == NULL) {
+        printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
+        return 1;
+    }
+	//score display
+	int score = 0; //initial score
+	SDL_Color scoreColour = { 255, 255, 255, 255 };
+    //Create a renderer for the window
+    SDL_Renderer* rendererPop = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (renderer == NULL) {
+        printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+    }
 	//Images.
 	IMG_Init(IMG_INIT_PNG);
 	//SDL_Texture *spr_grass = IMG_LoadTexture(renderer,"image-test.png");
@@ -647,6 +678,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *splashintro_img  = IMG_LoadTexture(renderer,"img/img_lands.png");
 	char* splashintro_string = "Press SPACE to continue.";
 	
+	int popup = 0;
 	//Mainloop here.
 	int running=1;
 	printf("Entering main loop...\n");
@@ -677,6 +709,40 @@ int SDL_main(int argc, char *argv[])
 						case SDLK_SPACE: {glob_vk_space	=v;} break;
 						case SDLK_KP_ENTER: {glob_vk_enter	=v;} break;//seems broken.
 						case SDLK_F2:  {glob_vk_f2	=v;} break;
+						case SDLK_9:  {if(buttonVis==0){buttonVis=1;strcpy(buttonTexts, "press 1,2,3,4");}else{buttonVis=0;}} break;//pressing 9 brings up chat window
+    case SDLK_1:
+        {
+			if(buttonVis==1){
+            strcpy(buttonTexts, "you pressed 1");//pressing 1 changes text inside test box.
+			score += 50;
+			}
+        }
+        break;
+    case SDLK_2:
+        {
+			if(buttonVis==1){
+            strcpy(buttonTexts, "you pressed 2");
+			score += 50;
+			}
+
+        }
+        break;    case SDLK_3:
+        {
+			if(buttonVis==1){
+            strcpy(buttonTexts, "you pressed 3");
+			score += 50;
+			}
+        }
+        break;    case SDLK_4:
+        {
+			if(buttonVis==1){
+            strcpy(buttonTexts, "you pressed 4");
+			score += 50;
+
+			}
+        }
+        break;
+
 						//case SDLK_:  {glob_vk_	=v;} break;
 						
 					}
@@ -822,7 +888,7 @@ int SDL_main(int argc, char *argv[])
 			c_orange);
 		
 		//SDL_RenderCopy(renderer,png,NULL,NULL);//test: texture fills whole renderer.
-		
+        
 		//UI.
 		int uix,uiy;
 		//UI Left.
@@ -915,7 +981,30 @@ int SDL_main(int argc, char *argv[])
 			draw_image(renderer,win_game_x,win_game_y,win_game_x2,win_game_y2,splashintro_img);
 			draw_text(renderer,win_game_x,win_game_y,8*gw,16*gh,font_ascii,splashintro_string,font_ascii_w,font_ascii_h);
 		}
-		
+//test pop up chat box (button)
+if (buttonVis>=1) {
+            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+            SDL_RenderFillRect(renderer, &buttonRect);
+            // Render text on the button
+            SDL_Color textColor = { 255, 0, 0 }; // Red text color
+            SDL_Surface* textSurface = TTF_RenderText_Solid(font, buttonText, textColor);
+            SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+            SDL_Rect textRect = { buttonRect.x + (buttonRect.w - textSurface->w) / 2, buttonRect.y + (buttonRect.h - textSurface->h) / 2, textSurface->w, textSurface->h };
+            SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+            SDL_FreeSurface(textSurface);
+            SDL_DestroyTexture(textTexture);
+        }
+        // Clear the renderer
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		// Render the score at the bottom left
+        char scoreText[20];
+        snprintf(scoreText, sizeof(scoreText), "Score: %d", score);
+        SDL_Surface* surface = TTF_RenderText_Solid(font, scoreText, scoreColour);
+        SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_Rect textRect = { 10, 720, surface->w, surface->h };
+        SDL_RenderCopy(renderer, texture, NULL, &textRect);
+        SDL_FreeSurface(surface);
+        SDL_DestroyTexture(texture);
 		//Render to screen.
 		SDL_RenderPresent(renderer);
 		SDL_Delay(16);//60 fps.
@@ -926,6 +1015,7 @@ int SDL_main(int argc, char *argv[])
 
 	//Shut down SDL
 	free(waterParticles);
+	TTF_CloseFont(font);
 	SDL_DestroyTexture(spr_grass);
 	SDL_DestroyTexture(spr_sand);
 	SDL_DestroyTexture(spr_water);
