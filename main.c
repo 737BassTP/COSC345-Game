@@ -465,6 +465,7 @@ struct WaterParticle {
 //initialize number of water particles wanted
 const int MAX_WATER_PARTICLES = 100;
 struct WaterParticle* waterParticles;
+int waterOn = 0; //decide if raining or not
 //function to create water particle.
 void createWaterParticle(int index, int window_width, int window_height) {
     waterParticles[index].x = rand() % (1366-596)+298;     // Random x position within window width
@@ -472,8 +473,18 @@ void createWaterParticle(int index, int window_width, int window_height) {
     waterParticles[index].speed = 10;        // Rain speed
     waterParticles[index].active = 1;                    // Set active to 1 (true)
 }
-// Function to render and update the text
-
+//function to reactivate water particles
+void activateAllWaterParticles() {
+    for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
+        waterParticles[i].active = 1; // Set active to 1 (true)
+    }
+}
+//deactivate them all
+void deactivateAllWaterParticles() {
+    for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
+        waterParticles[i].active = 0; // Set active to 0 (false)
+    }
+}
 //Player.
 struct player
 {
@@ -758,6 +769,7 @@ int SDL_main(int argc, char *argv[])
 						case SDLK_SPACE: {glob_vk_space	=v;} break;
 						case SDLK_KP_ENTER: {glob_vk_enter	=v;} break;//seems broken.
 						case SDLK_F2:  {glob_vk_f2	=v;} break;
+						case SDLK_0: {if(waterOn==0){waterOn=1;activateAllWaterParticles();}else{waterOn=0;deactivateAllWaterParticles();}}break;//turn water on and off for testing
 						case SDLK_9:  {if(buttonVis==0){buttonVis=1;strcpy(buttonTexts, "press 1,2,3,4");}else{buttonVis=0;}} break;//pressing 9 brings up chat window
     case SDLK_1:
         {
@@ -1073,12 +1085,7 @@ int SDL_main(int argc, char *argv[])
 			(Player.facedir*d*Player.anim_max)+(Player.anim_cur*d*1),0,
 			d,d);
 		
-		// Draw water particles
-        for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
-            if (waterParticles[i].active) {
-                draw_image(renderer, waterParticles[i].x, waterParticles[i].y, waterParticles[i].x + 5, waterParticles[i].y + 15, spr_water);
-            }
-        }
+
 		//Splash intro screen.
 		if (splashintro_bool)
 		{
@@ -1127,8 +1134,36 @@ if (buttonVis >= 1) {
     SDL_FreeSurface(textSurface);
     SDL_DestroyTexture(textTexture);
 }
+		// Draw water particles
+        for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
+            if (waterParticles[i].active) {
+                draw_image(renderer, waterParticles[i].x, waterParticles[i].y, waterParticles[i].x + 5, waterParticles[i].y + 15, spr_water);
+            }
+        }
+//water stuff
 
+        // Update water particles (rain drops)
+        for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
+            if (waterParticles[i].active) {
+                waterParticles[i].y += waterParticles[i].speed;
 
+                // Check if particle has reached the bottom of the window
+                if (waterParticles[i].y > screen_h) {
+                    // Randomly deactivate particle (remove randomness for constant rain)
+                    if (rand() % 100 < 5) {
+                        waterParticles[i].active = 0; // Set active to 0 (false)
+                    } else {
+                        createWaterParticle(i, screen_w, screen_h);
+                    }
+                }
+            }
+        }
+		        // Draw water particles
+        for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
+            if (waterParticles[i].active) {
+                draw_image(renderer, waterParticles[i].x, waterParticles[i].y, waterParticles[i].x + 5, waterParticles[i].y + 15, spr_water);
+            }
+        }
 
 		//
 		//Code to render the score at the bottom left of the screen.
