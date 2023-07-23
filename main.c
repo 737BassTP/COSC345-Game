@@ -17,6 +17,7 @@ https://wiki.libsdl.org/SDL2/APIByCategory
 #include <math.h>
 #include <stdlib.h> // for rand() and srand()
 #include <time.h>   // for time()
+#include <string.h>
 //#include <.h>
 //#include "SDL2.dll"
 #include "SDL2/include/SDL2/SDL.h"
@@ -63,6 +64,16 @@ int glob_vk_down 	= 0;
 int glob_vk_space   = 0;
 int glob_vk_enter   = 0;
 int glob_vk_f2      = 0;
+int glob_vk_0       = 0;
+int glob_vk_1       = 0;
+int glob_vk_2       = 0;
+int glob_vk_3       = 0;
+int glob_vk_4       = 0;
+int glob_vk_5       = 0;
+int glob_vk_6       = 0;
+int glob_vk_7       = 0;
+int glob_vk_8       = 0;
+int glob_vk_9       = 0;
 
 //Functions.
 //Clear the surface by filling it with a colour.
@@ -157,8 +168,6 @@ void draw_image_part(SDL_Renderer *renderer,int x1,int y1,int x2,int y2,SDL_Text
 	s.h = height;
 	SDL_RenderCopy(renderer,texture,&s,&r);
 }
-
-
 void draw_text(SDL_Renderer *renderer,int x,int y,int w,int h,SDL_Texture *font,char* str,int fontw,int fonth)
 {
 	//"#" = newline.
@@ -213,6 +222,21 @@ int mux_int(int nth,...)
 	va_end(args);
 	return ret;
 }
+char* mux_str(int nth,...)
+{
+	//Multiplexer for ints.
+	//Returns the nth argument.
+	va_list args;
+	va_start(args,nth);
+	char* ret = va_arg(args,int);
+	for (int i=0; i<nth; i++)
+	{
+		ret = va_arg(args,char*);
+	}
+	va_end(args);
+	return ret;
+}
+
 SDL_Texture* mux_sdltex(int nth,...)
 {
 	//Multiplexer for SDL_Texture pointers.
@@ -257,6 +281,10 @@ int BG(int val,int nth)
 {
 	return (val>>nth)&1;
 }
+int BGG(int val,int size,int nth)
+{
+	return (val>>(nth*size))&((1<<size)-1);
+}
 int sqr(int v)
 {
 	return v*v;
@@ -269,9 +297,9 @@ double radtodeg(double rad)
 {
 	return (rad/PI)*180;
 }
-long get_timer()
+Uint64 get_timer()
 {
-	return SDL_GetTicks();
+	return SDL_GetTicks64();
 }
 int point_in_rectangle(int px,int py,int rx1,int ry1,int rx2,int ry2)
 {
@@ -310,107 +338,100 @@ int string_pos(char *substr,char *str)
 	}
 	return -1;
 }
+double darctan2(int y,int x)
+{
+	return radtodeg(atan2(y,x));
+}
+double cartodir(int x,int y)
+{
+	//return (darctan2(y,x)+360.0)%360.0;
+	double ret = darctan2(y,x)+360.0;
+	if (ret >= 360.0) {ret -= 360.0;}
+	return ret;
+}
 void game_level_load(int lvl,int lvlmax)
 {
 	//done in main-loop.
 }
 void dev_tiled_to_leveldata()
 {
-	printf("faulty at the moment.\n");
+	//Extracts Tiles (done) and Objects (unfinished).
+	printf("may take a while; please wait.\n");
 	glob_vk_f2=0;//fakes a keyboard press event (fails if held).
-	/**/
-	//extracts Tiles and Objects.
-	//hardcoded.
-	FILE *filin;
-	FILE *filout;
-	
-	filin = fopen("cosc345-game.tmx","r");
-	filout = fopen("level-new.dat","wb");
-	
-	int maxsize = 65536*2;//131072
+	FILE *filin = fopen("tiled/cosc345-game.tmx","rb");
+	FILE *filout = fopen("level.dat","wb");
+	int layers=2;
+	int layersize=65536;
+	int maxsize = 65536*layers;//131072
 	byte array[131072];//tiles + objects.
-	maxsize = 32;//16*16*32;//debug only.
-	for (int i=0; i<maxsize; i++)
-	{
-		array[i] = 0;
-	}
-	
+	for (long i=0; i<maxsize; i++) {array[i] = 0;}
 	//Discard input header.
-	for (int i=0; i<0x1F7-1; i++)
-	{
-		fgetc(filin);
-	}
+	fseek(filin,(long int)0x1F7-0,SEEK_SET);//hardcoded; may bug out in future.
 	//Read Tiles and Objects.
 	byte comma=","[0];
-	byte ch;
+	int ch=0;
 	byte entry[3];
+	byte val;
 	int counter=0;
-	while (1)
+	int off=0;
+	int ij=0;
+	//Extract and restructure.
+	for (int i=0; i<layersize; i++)
 	{
-		//fseek(filin,1,SEEK_CUR);
-		ch = fgetc(filin);
-		//printf("%i\n",ch;
-		//if (ch == "<"[0])
-		if (ch == 60)
+		ch=fgetc(filin);
+		for (int j=0; j<3; j++) {entry[j]=48;}
+		while ((ch==0xD) || (ch==0xA)) {ch=fgetc(filin);}
+		if (ch!=comma)
 		{
-			break;
-		}
-		if (counter>=maxsize) 
-		{
-			break;
-		}
-		//Clear.
-		for (int i=0; i<3; i++)
-		{
-			entry[i]=48;
-		}
-		//Populate.
-		entry[0] = ch;
-		ch = fgetc(filin);
-		if (ch != comma)
-		{
-			entry[1]=ch;
-			ch = fgetc(filin);
-			if (ch != comma)
+			entry[1]=entry[2];
+			entry[2]=ch;
+			ch=fgetc(filin);
+			if (ch!=comma)
 			{
+				entry[0]=entry[1];
+				entry[1]=entry[2];
 				entry[2]=ch;
-				fgetc(filin);//remove implied comma.
-			}
-			else
-			{
-				entry[2]=entry[1];
-				entry[1]=entry[0];
-				entry[0]=48;
 			}
 		}
-		else
-		{
-			entry[2]=entry[0];
-			entry[0]=48;
-		}
-		
-		//Calculate.
-		for (int i=0; i<3; i++)
-		{
-			entry[i] -= 48;
-		}
-		byte val = entry[0]*100 + entry[1]*10 + entry[2]*1;//e.g "179" -> 179
-		if (val == 0) {val=255;}//0 is undefined.
-		else {val -= 1;}//map [1,256] to [0,255]
-		printf("i=%i/%i: %i (%i,%i,%i)\n,",counter,maxsize,val,entry[0],entry[1],entry[2]);
-		//fputc(val,filout);
-		array[counter] = val&0xFF;
-		counter++;
+		val^=val;
+		for (int j=0; j<3; j++) {val+=(entry[j]-48)*(byte)pow((double)10,(double)(2-j));}
+		printf("i=%i/%i (v=%i)\n",i,layersize,val);
+		val-=(val==0)?(-0xFF):(1)&0xFF;
+		array[(1<<(3<<(1<<1)))*(i>>(3<<(1<<1)))+(1<<(1<<3))*((i>>(1<<(1<<1)))&(3*(1<<(1<<1)|1)))+(1<<(1<<(1<<1)))*((i>>(1<<3))&(3*(1<<(1<<1)|1)))+(i&(3*(1<<(1<<1)|1)))]=val;//security through obscurity, or what?
 	}
+	//Compress.
+	val^=val;
+	counter=0;
+	for (int i=0; i<layersize; i++)
+	{
+		break;
+	}
+	//Write to file.
 	fwrite(array,maxsize,1,filout);
 	fclose(filin);
 	fclose(filout);
-	/**/
 }
 void play_WAV(const char* wavfile)
 {
 	//done manually in main.
 	
+}
+char* level_get_name(int lvl,char* ret)
+{
+	//Translates e.g level 8/256 to "Warrington".
+	FILE *fil;
+	fil=fopen("location.dat","rb");
+	fseek(fil,(long int)lvl,SEEK_SET);
+	int tmp=(int)fgetc(fil);
+	fseek(fil,(long int)256,SEEK_SET);
+	fgets(ret,16,fil);
+	while (tmp>0)
+	{
+		fgets(ret,16,fil);
+		tmp--;
+	}
+	fclose(fil);
+	return ret;
 }
 
 
@@ -452,6 +473,7 @@ void createWaterParticle(int index, int window_width, int window_height) {
     waterParticles[index].active = 1;                    // Set active to 1 (true)
 }
 // Function to render and update the text
+
 
 //Player.
 struct player
@@ -498,6 +520,16 @@ void audioCallback(void* userdata, Uint8* stream, int len) {
     audiodata->position += bytesToCopy;
 }
 
+//Game clock. (HH:MM)
+int clock_get_hour(int time) {return (time/60)%24;}
+int clock_get_minute(int time) {return time%60;}
+int clock_is_between(int time,int h1,int m1,int h2,int m2)
+{
+	int c1,c2;
+	c1 = (h1%24)*60 + m1%60;
+	c2 = (h2%24)*60 + m2%60;
+	return ((time>=c1) && (time<=c2));
+}
 
 /*
 Entry point.
@@ -555,7 +587,7 @@ int SDL_main(int argc, char *argv[])
 		return -1;
 	}
 	
-	//Create window for pop up
+	//Create window (main window).
 	window = SDL_CreateWindow("COSC345 - Game",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,screen_w,screen_h,0);
 	if (!window)
 	{
@@ -569,17 +601,16 @@ int SDL_main(int argc, char *argv[])
         snprintf(errmsg, bufsize, "Render error");
         goto error;
     }
-
-	int option = 0;
-    char optionText[2] = "0";
     //Create the surface in RAM that we manipulate the pixels of.
     surface = SDL_GetWindowSurface(window);
     if (!surface) {
         snprintf(errmsg, bufsize, "Surface error");
         goto error;
     }
-
-	//pop up window test
+	
+	int option = 0;
+    char optionText[2] = "0";
+    //pop up window test
 	SDL_Rect buttonRect = { 800, 100, 100, 100 };//dimension of popup
 	char buttonTexts[] = "default message";//message in the window
 	char* buttonText = buttonTexts;
@@ -595,6 +626,8 @@ int SDL_main(int argc, char *argv[])
         printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
         return 1;
     }
+	int popup = 0;
+	
 	//score display
 	int score = 0; //initial score
 	SDL_Color scoreColour = { 255, 255, 255, 255 };
@@ -603,6 +636,7 @@ int SDL_main(int argc, char *argv[])
     if (renderer == NULL) {
         printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
     }
+	
 	//Images.
 	IMG_Init(IMG_INIT_PNG);
 	//SDL_Texture *spr_grass = IMG_LoadTexture(renderer,"image-test.png");
@@ -610,13 +644,25 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *spr_sand  = IMG_LoadTexture(renderer,"img/spr_sand.png");
 	SDL_Texture *spr_water = IMG_LoadTexture(renderer,"img/spr_water.png");
 	SDL_Texture *spr_lava  = IMG_LoadTexture(renderer,"img/spr_lava.png");
+	SDL_Texture *spr_tileset = IMG_LoadTexture(renderer,"tiled/tileset.png");
 	//Player.
 	SDL_Texture *sprstrip_player = IMG_LoadTexture(renderer,"img/player_strip8.png");
 	//Text.
 	SDL_Texture *font_ascii = IMG_LoadTexture(renderer,"img/ascii_strip96.png");
 	int font_ascii_w = 8;
-	int font_ascii_h = 16;
+	int font_ascii_h = 24;
 	
+	//Clock (digital).
+	SDL_Texture *spr_clock_digital = IMG_LoadTexture(renderer,"img/clock1_strip10.png");
+	int time_clock_max=1440;
+	int time_clock = 0;//range: 0-1439 = 00:00-23:59
+	int time_clock_fps=0;//rapidly emulate sub-seconds.
+	int time_clock_fps_max=57;//below 60 to accommodate for delays.
+	int time_clock_fps_multiplier=60;//1=1/1 second, 4=1/4 second.
+	char *timestr_a="Night";
+	char *timestr_b="Morning";
+	char *timestr_c="Day";
+	char *timestr_d="Evening";
 	
 	//Game Level.
 	int level_size = sqr(win_game_tile_num);//16*16=256
@@ -631,6 +677,11 @@ int SDL_main(int argc, char *argv[])
 	}
 	fread(level_data,sizeof(level_data),1,fil);
 	fclose(fil);
+	
+	//Map.
+	SDL_Texture *spr_map = IMG_LoadTexture(renderer,"img/dunedin-map.png");
+	char mapstr_location[16];
+	level_get_name(level_cur,mapstr_location);
 	
 	//Player.
 	struct player Player;
@@ -678,7 +729,6 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *splashintro_img  = IMG_LoadTexture(renderer,"img/img_lands.png");
 	char* splashintro_string = "Press SPACE to continue.";
 	
-	int popup = 0;
 	//Mainloop here.
 	int running=1;
 	printf("Entering main loop...\n");
@@ -709,40 +759,16 @@ int SDL_main(int argc, char *argv[])
 						case SDLK_SPACE: {glob_vk_space	=v;} break;
 						case SDLK_KP_ENTER: {glob_vk_enter	=v;} break;//seems broken.
 						case SDLK_F2:  {glob_vk_f2	=v;} break;
-						case SDLK_9:  {if(buttonVis==0){buttonVis=1;strcpy(buttonTexts, "press 1,2,3,4");}else{buttonVis=0;}} break;//pressing 9 brings up chat window
-    case SDLK_1:
-        {
-			if(buttonVis==1){
-            strcpy(buttonTexts, "you pressed 1");//pressing 1 changes text inside test box.
-			score += 50;
-			}
-        }
-        break;
-    case SDLK_2:
-        {
-			if(buttonVis==1){
-            strcpy(buttonTexts, "you pressed 2");
-			score += 50;
-			}
-
-        }
-        break;    case SDLK_3:
-        {
-			if(buttonVis==1){
-            strcpy(buttonTexts, "you pressed 3");
-			score += 50;
-			}
-        }
-        break;    case SDLK_4:
-        {
-			if(buttonVis==1){
-            strcpy(buttonTexts, "you pressed 4");
-			score += 50;
-
-			}
-        }
-        break;
-
+						case SDLK_0:  {glob_vk_0=v;} break;
+						case SDLK_1:  {glob_vk_1=v;} break;
+						case SDLK_2:  {glob_vk_2=v;} break;
+						case SDLK_3:  {glob_vk_3=v;} break;
+						case SDLK_4:  {glob_vk_4=v;} break;
+						case SDLK_5:  {glob_vk_5=v;} break;
+						case SDLK_6:  {glob_vk_6=v;} break;
+						case SDLK_7:  {glob_vk_7=v;} break;
+						case SDLK_8:  {glob_vk_8=v;} break;
+						case SDLK_9:  {glob_vk_9=v;} break;
 						//case SDLK_:  {glob_vk_	=v;} break;
 						
 					}
@@ -761,6 +787,16 @@ int SDL_main(int argc, char *argv[])
 						case SDLK_SPACE: {glob_vk_space	=v;} break;
 						case SDLK_KP_ENTER: {glob_vk_enter	=v;} break;
 						case SDLK_F2:  {glob_vk_f2	=v;} break;
+						case SDLK_0:  {glob_vk_0=v;} break;
+						case SDLK_1:  {glob_vk_1=v;} break;
+						case SDLK_2:  {glob_vk_2=v;} break;
+						case SDLK_3:  {glob_vk_3=v;} break;
+						case SDLK_4:  {glob_vk_4=v;} break;
+						case SDLK_5:  {glob_vk_5=v;} break;
+						case SDLK_6:  {glob_vk_6=v;} break;
+						case SDLK_7:  {glob_vk_7=v;} break;
+						case SDLK_8:  {glob_vk_8=v;} break;
+						case SDLK_9:  {glob_vk_9=v;} break;
 						//case SDLK_:  {glob_vk_	=v;} break;
 						
 					}
@@ -780,6 +816,60 @@ int SDL_main(int argc, char *argv[])
 			dev_tiled_to_leveldata();
 			printf("F2 finished!\n");	
 		}
+		
+		//Popup window.
+		if (glob_vk_9)
+		{
+			glob_vk_9=0;//press, not hold.
+			//pressing 9 brings up chat window
+			if(buttonVis==0)
+			{
+				buttonVis=1;
+				strcpy(buttonTexts, "press 1,2,3,4");
+			}
+			else
+			{
+				buttonVis=0;
+			}
+		}
+		//pressing 1 changes text inside test box.
+		if (glob_vk_1)
+		{
+			glob_vk_1=0;
+			if(buttonVis==1)
+			{
+				strcpy(buttonTexts, "you pressed 1");
+				score += 10;
+			}
+		}
+		if (glob_vk_2)
+		{
+			glob_vk_2=0;
+			if(buttonVis==1)
+			{
+				strcpy(buttonTexts, "you pressed 2");
+				score += 20;
+			}
+		}
+		if (glob_vk_3)
+		{
+			glob_vk_3=0;
+			if(buttonVis==1)
+			{
+				strcpy(buttonTexts, "you pressed 3");
+				score += 30;
+			}
+		}
+		if (glob_vk_4)
+		{
+			glob_vk_4=0;
+			if(buttonVis==1)
+			{
+				strcpy(buttonTexts, "you pressed 4");
+				score += 40;
+			}
+		}
+		
 		
 		//Player movement.
 		if (glob_vk_right)
@@ -848,6 +938,8 @@ int SDL_main(int argc, char *argv[])
 				level_cur += level_count;//allows negative wrap.
 				level_cur %= level_count;//prevents overflow.
 				//printf("lvl=%i\n",level_cur);
+				level_get_name(level_cur,mapstr_location);
+				
 			}
 		}
 		else
@@ -865,6 +957,34 @@ int SDL_main(int argc, char *argv[])
 		*/
 		Player.xprevious = Player.x;
 		Player.yprevious = Player.y;
+		
+		/*
+		General updates.
+		*/
+		//water stuff
+		// Update water particles (rain drops)
+        for (int i = 0; i < MAX_WATER_PARTICLES; i++) 
+		{
+            if (waterParticles[i].active) 
+			{
+                waterParticles[i].y += waterParticles[i].speed;
+
+                // Check if particle has reached the bottom of the window
+                if (waterParticles[i].y > screen_h) {
+                    // Randomly deactivate particle (remove randomness for constant rain)
+                    if (rand() % 100 < 5) {
+                        waterParticles[i].active = 0; // Set active to 0 (false)
+                    } else {
+                        createWaterParticle(i, screen_w, screen_h);
+                    }
+                }
+            }
+        }
+		//Timekeeping.
+		time_clock_fps += 1*time_clock_fps_multiplier;
+		time_clock += (time_clock_fps>=time_clock_fps_max);
+		time_clock %= time_clock_max;
+		time_clock_fps %= time_clock_fps_max;
 		
 		/*
 		Draw to the screen.
@@ -888,21 +1008,22 @@ int SDL_main(int argc, char *argv[])
 			c_orange);
 		
 		//SDL_RenderCopy(renderer,png,NULL,NULL);//test: texture fills whole renderer.
-        
+		
 		//UI.
 		int uix,uiy;
 		//UI Left.
-		uix = 0; 
+		uix = gw; 
 		uiy = 0;
 		if (!splashintro_bool)
 		{
-			draw_text(renderer,uix,uiy,8*gw,16*gh,font_ascii,"Location:#DUNEDIN#NEW ZEALAND",font_ascii_w,font_ascii_h);
+			draw_text(renderer,uix,uiy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,"Location:#DUNEDIN#NEW ZEALAND",font_ascii_w,font_ascii_h);
 		}
 		//UI Right.
-		uix = win_game_x2;
+		uix = gw+win_game_x2;
 		uiy = 0;
 		if (!splashintro_bool)
 		{
+			//Level.
 			char *lvlstrold = "LVL: XYZ/255";
 			char lvlstrnew[strlen(lvlstrold)];//a hard-coded value too small causes a code-overwrite bug that messes with player movement!
 			strcpy(lvlstrnew,lvlstrold);
@@ -912,9 +1033,66 @@ int SDL_main(int argc, char *argv[])
 			lvlstrnew[string_pos("Y",lvlstrnew)] = ((lc/10 )%10) + 48;//%10 maps to 0-9.
 			lvlstrnew[string_pos("Z",lvlstrnew)] = ((lc/1  )%10) + 48;//
 			//sprintf(lvlstr,"Level:#",level_cur);
-			draw_text(renderer,uix,uiy,8*gw,16*gh,font_ascii,lvlstrnew,font_ascii_w,font_ascii_h);
+			
+			draw_text(renderer,uix,uiy                ,font_ascii_w*gw,font_ascii_h*gh,font_ascii,lvlstrnew,font_ascii_w,font_ascii_h);
+			draw_text(renderer,uix,uiy+font_ascii_h*gh,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mapstr_location,font_ascii_w,font_ascii_h);
+			
+			
+			//Map.
+			int mapx1,mapy1,mapx2,mapy2;
+			mapx1=uix;
+			mapy1=uiy+font_ascii_h*2*gh;
+			mapx2=mapx1+256;
+			mapy2=mapy1+256;
+			draw_image(renderer,mapx1,mapy1,mapx2,mapy2,spr_map);
+			//Location crosshair lines.
+			int mcx=(int)lerp((double)mapx1,(double)mapx2,(double)(BGG(lc,4,0)/16.0));
+			draw_rectangle_color(renderer,mcx-1,mapy1,mcx+1,mapy2,c_red);//ver(x)
+			int mcy=(int)lerp((double)mapy1,(double)mapy2,(double)(BGG(lc,4,1)/16.0));
+			draw_rectangle_color(renderer,mapx1,mcy-1,mapx2,mcy+1,c_red);//hor(y)
+			draw_rectangle_color(renderer,mcx,mcy,
+				(int)lerp((double)mapx1,(double)mapx2,(double)((BGG(lc,4,0)+1)/16.0)),
+				(int)lerp((double)mapy1,(double)mapy2,(double)((BGG(lc,4,1)+1)/16.0)),
+				c_red);
+			//Timekeeping.
+			//Digital clock.
+			int coff=0;
+			int clocky2 = mapy2+32*gh;
+			for (int i=0; i<5; i++)
+			{
+				int clo = mux_int(i,(time_clock/600),(time_clock/60)%10,737,(time_clock/10)%6,time_clock%10);
+				if (i != 2)
+				{
+				draw_image_part(renderer,
+					uix+(i+0)*16*gw+coff,mapy2,
+					uix+(i+1)*16*gw+coff,clocky2,
+					spr_clock_digital,
+					clo*16,0,
+					16,32);
+				coff += gw;
+				}
+				else
+				{
+					draw_text(renderer,uix+2*16*gw,mapy2,uix+3*16*gw,clocky2,font_ascii,":",font_ascii_w,font_ascii_h);
+				}
+			}
+			//char ct[10];
+			//const char time_clock_str="Daytime";
+			//strcpy(ct,time_clock_str);
+			int ct=0;
+			if (clock_is_between(time_clock, 0,0, 5,59)) {ct=0;}
+			if (clock_is_between(time_clock, 6,0,11,59)) {ct=1;}
+			if (clock_is_between(time_clock,12,0,17,59)) {ct=2;}
+			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
+			draw_text(renderer,
+				uix,clocky2+gh,
+				font_ascii_w*gw,font_ascii_h*gh,
+				font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
+				font_ascii_w,font_ascii_h);
+			
 		}
 		//Game area.
+		int d = win_game_tile_dim;
 		for (int j=0; j<win_game_tile_num; j++)
 		{
 			for (int i=0; i<win_game_tile_num; i++)
@@ -929,47 +1107,19 @@ int SDL_main(int argc, char *argv[])
 				int col = mux_int(ij%3,c_red,c_green,c_blue);
 				draw_rectangle_color(renderer,x1,y1,x2,y2,col);//will show if image drawing below fails.
 				int off = ij + level_size*level_cur;
-				int tex = level_data[off] % 4;//restrict to available textures (4 below).
-				//draw_image(renderer,x1,y1,x2,y2,(SDL_Texture*)mux_int(tex,spr_grass,spr_sand,spr_water,spr_lava));
-				SDL_Texture* picture;
-				switch(tex){
-					case 0:{picture=spr_grass;break;}
-					case 1:{picture=spr_sand;break;}
-					case 2:{picture=spr_water;break;}
-					case 3:{picture=spr_lava;break;}
-					default:{picture=spr_grass; printf("title has no texture!\n");break;}
-				}
-				draw_image(renderer,x1,y1,x2,y2,picture);
-				
+				int tex = level_data[off];
+				draw_image_part(renderer,x1,y1,x2,y2,spr_tileset,d*(tex%win_game_tile_num),d*(tex/win_game_tile_num),d,d);
 			}
 		}
 		//Player.
-		int d = win_game_tile_dim;
 		draw_image_part(renderer,
 			Player.x,Player.y,
 			Player.x+d*gw,Player.y+d*gh,
 			sprstrip_player,
 			(Player.facedir*d*Player.anim_max)+(Player.anim_cur*d*1),0,
 			d,d);
-//water stuff
-
-        // Update water particles (rain drops)
-        for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
-            if (waterParticles[i].active) {
-                waterParticles[i].y += waterParticles[i].speed;
-
-                // Check if particle has reached the bottom of the window
-                if (waterParticles[i].y > screen_h) {
-                    // Randomly deactivate particle (remove randomness for constant rain)
-                    if (rand() % 100 < 5) {
-                        waterParticles[i].active = 0; // Set active to 0 (false)
-                    } else {
-                        createWaterParticle(i, screen_w, screen_h);
-                    }
-                }
-            }
-        }
-		        // Draw water particles
+		
+		// Draw water particles
         for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
             if (waterParticles[i].active) {
                 draw_image(renderer, waterParticles[i].x, waterParticles[i].y, waterParticles[i].x + 5, waterParticles[i].y + 15, spr_water);
@@ -979,10 +1129,12 @@ int SDL_main(int argc, char *argv[])
 		if (splashintro_bool)
 		{
 			draw_image(renderer,win_game_x,win_game_y,win_game_x2,win_game_y2,splashintro_img);
-			draw_text(renderer,win_game_x,win_game_y,8*gw,16*gh,font_ascii,splashintro_string,font_ascii_w,font_ascii_h);
+			draw_text(renderer,win_game_x,win_game_y,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashintro_string,font_ascii_w,font_ascii_h);
 		}
-//test pop up chat box (button)
-if (buttonVis>=1) {
+		
+		//test pop up chat box (button)
+		if (buttonVis>=1) 
+		{
             SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
             SDL_RenderFillRect(renderer, &buttonRect);
             // Render text on the button
@@ -994,7 +1146,7 @@ if (buttonVis>=1) {
             SDL_FreeSurface(textSurface);
             SDL_DestroyTexture(textTexture);
         }
-        // Clear the renderer
+		// Clear the renderer
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		// Render the score at the bottom left
         char scoreText[20];
@@ -1005,6 +1157,7 @@ if (buttonVis>=1) {
         SDL_RenderCopy(renderer, texture, NULL, &textRect);
         SDL_FreeSurface(surface);
         SDL_DestroyTexture(texture);
+		
 		//Render to screen.
 		SDL_RenderPresent(renderer);
 		SDL_Delay(16);//60 fps.
@@ -1020,9 +1173,12 @@ if (buttonVis>=1) {
 	SDL_DestroyTexture(spr_sand);
 	SDL_DestroyTexture(spr_water);
 	SDL_DestroyTexture(spr_lava);
+	SDL_DestroyTexture(spr_tileset);
+	SDL_DestroyTexture(spr_map);
 	SDL_DestroyTexture(sprstrip_player);
 	SDL_DestroyTexture(splashintro_img);
 	SDL_DestroyTexture(font_ascii);
+	SDL_DestroyTexture(spr_clock_digital);
 	IMG_Quit();
 	
 	//SDL_FreeWAV(&audio_spec);
@@ -1044,35 +1200,3 @@ error:
     SDL_Quit();
     exit(EXIT_FAILURE);
 }
-
-//Faulty, unfinished, or obsolete code:
-/*
-		//clear_screen(surface);
-        SDL_FillRect(surface, NULL, 0xFF0066CC);
-		SDL_FillRect(surface, rect, 0xFFCC6600);
-		
-		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-		//SDL_RenderFillRect(renderer, &rect);
-		SDL_RenderDrawRect(renderer, &rect);
-		
-		//???
-		//SDL_BlitSurface(surface,rect,surface,NULL);
-	
-		//Update window.
-		SDL_UpdateWindowSurface(window);
-		/**/
-/*
-		//int keyval = (glob_vk_right*1)+(glob_vk_up*2)+(glob_vk_left*3)+(glob_vk_down*4);
-		int k0,k1,k2,k3;
-		k0=glob_vk_right<<0;
-		k1=glob_vk_up<<1;
-		k2=glob_vk_left<<2;
-		k3=glob_vk_down<<3;
-		//int keyval = (glob_vk_right<<0)|(glob_vk_up<<1)|(glob_vk_left<<2)|(glob_vk_down<<3);
-		int keyval=(k0|k1|k2|k3);
-		if (keyval != 0)
-		{
-			draw_set_color(renderer,mux_int(keyval%4,c_yellow,c_green,c_aqua,c_fuchsia));
-			draw_rectangle(renderer,128,128,160,160);
-		}
-		/**/
