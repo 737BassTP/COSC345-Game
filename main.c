@@ -608,9 +608,11 @@ int SDL_main(int argc, char *argv[])
     }
 
 	//pop up window test
-	SDL_Rect buttonRect = { 800, 100, 100, 100 };//dimension of popup
-	char buttonTexts[] = "default message";//message in the window
+	SDL_Rect buttonRect = { 800, 100, 200, 100 };//dimension of popup
+	char buttonTexts[100] = "default message";//message in the window
 	char* buttonText = buttonTexts;
+	SDL_Rect* buttonRectPtr = &buttonRect; // Declare and initialize buttonRectPtr to point to buttonRect
+
 	int buttonVis = 0;//0 for no window and 1 for visible window
     // Load a TTF font (adjust the file path and size as needed)
 	    // Initialize SDL_ttf
@@ -1036,13 +1038,13 @@ int SDL_main(int argc, char *argv[])
 			if (clock_is_between(time_clock, 6,0,11,59)) {ct=1;}
 			if (clock_is_between(time_clock,12,0,17,59)) {ct=2;}
 			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
-		// 	draw_text(renderer,
-		// 		uix,clocky2+gh,
-		// 		font_ascii_w*gw,font_ascii_h*gh,
-		// 		font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
-		// 		font_ascii_w,font_ascii_h);
+			// draw_text(renderer,
+			// 	uix,clocky2+gh,
+			// 	font_ascii_w*gw,font_ascii_h*gh,
+			// 	font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
+			// 	font_ascii_w,font_ascii_h);
 			
-		// }
+		}
 		//Game area.
 		int d = win_game_tile_dim;
 		for (int j=0; j<win_game_tile_num; j++)
@@ -1084,20 +1086,51 @@ int SDL_main(int argc, char *argv[])
 			draw_text(renderer,win_game_x,win_game_y,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashintro_string,font_ascii_w,font_ascii_h);
 		}
 //test pop up chat box (button)
-if (buttonVis>=1) {
-            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-            SDL_RenderFillRect(renderer, &buttonRect);
-            // Render text on the button
-            SDL_Color textColor = { 255, 0, 0 }; // Red text color
-            SDL_Surface* textSurface = TTF_RenderText_Solid(font, buttonText, textColor);
-            SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-            SDL_Rect textRect = { buttonRect.x + (buttonRect.w - textSurface->w) / 2, buttonRect.y + (buttonRect.h - textSurface->h) / 2, textSurface->w, textSurface->h };
-            SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
-            SDL_FreeSurface(textSurface);
-            SDL_DestroyTexture(textTexture);
-        }
-        // Clear the renderer
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+if (buttonVis >= 1) {
+    // Update the buttonRect using the chat box position and size
+    buttonRect.x = Player.x + 60;
+    buttonRect.y = Player.y - 120;
+
+    // Render the filled rectangle using the updated buttonRectPtr
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderFillRect(renderer, buttonRectPtr);
+
+	//Render the lines to make it look chat box-like
+	// Draw a line from the player's mouth to the chat box
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // white color for the line
+    SDL_RenderDrawLine(renderer, Player.x+45, Player.y-15, buttonRectPtr->x + buttonRectPtr->w*0.1, buttonRectPtr->y + buttonRectPtr->h / 4);//top line
+	SDL_RenderDrawLine(renderer, Player.x+45, Player.y-15, buttonRectPtr->x + buttonRectPtr->w*0.3, buttonRectPtr->y + buttonRectPtr->h / 1);//bottom line
+    // Render text on the button (chat box)
+    SDL_Color textColor = { 0, 0, 0 }; // black text color
+    int maxTextWidth = buttonRectPtr->w - 10; // Adjust this value to leave some padding for the text
+    // Use TTF_RenderText_Blended_Wrapped with error-checking
+    SDL_Surface* textSurface = TTF_RenderText_Blended_Wrapped(font, buttonText, textColor, maxTextWidth);
+    if (!textSurface) {
+        // Handle error: Unable to render text
+        // (you can set a default or fallback behavior in case of an error)
+        // For example, create a placeholder surface with the error message
+        textSurface = TTF_RenderText_Solid(font, "Error: Text Rendering Failed", textColor);
+    }
+    // Calculate the actual text dimensions
+    int textWidth = textSurface->w;
+    int textHeight = textSurface->h;
+    // Position the text in the center of the button (chat box)
+    int textX = buttonRectPtr->x + (buttonRectPtr->w - textWidth) / 2;
+    int textY = buttonRectPtr->y + (buttonRectPtr->h - textHeight) / 2;
+    // Create the destination SDL_Rect for the text
+    SDL_Rect textRect = { textX, textY, textWidth, textHeight };
+    // Render the text on the button (chat box)
+    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+
+    // Cleanup
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(textTexture);
+}
+
+
+
+		//
 		//Code to render the score at the bottom left of the screen.
         char scoreText[20];
         snprintf(scoreText, sizeof(scoreText), "Score: %d", score);
@@ -1150,3 +1183,46 @@ error:
     SDL_Quit();
     exit(EXIT_FAILURE);
 }
+// printfs can be read)
+//     SDL_Delay(500);
+    
+// 	return 0;
+	
+//     /* Upon an error, print message and quit properly */
+// error:
+//     fprintf(stderr, "%s Error returned: %s\n", errmsg, SDL_GetError());
+//     SDL_Quit();
+//     exit(EXIT_FAILURE);
+// }
+
+//Faulty, unfinished, or obsolete code:
+/*
+		//clear_screen(surface);
+        SDL_FillRect(surface, NULL, 0xFF0066CC);
+		SDL_FillRect(surface, rect, 0xFFCC6600);
+		
+		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+		//SDL_RenderFillRect(renderer, &rect);
+		SDL_RenderDrawRect(renderer, &rect);
+		
+		//???
+		//SDL_BlitSurface(surface,rect,surface,NULL);
+	
+		//Update window.
+		SDL_UpdateWindowSurface(window);
+		/**/
+/*
+		//int keyval = (glob_vk_right*1)+(glob_vk_up*2)+(glob_vk_left*3)+(glob_vk_down*4);
+		int k0,k1,k2,k3;
+		k0=glob_vk_right<<0;
+		k1=glob_vk_up<<1;
+		k2=glob_vk_left<<2;
+		k3=glob_vk_down<<3;
+		//int keyval = (glob_vk_right<<0)|(glob_vk_up<<1)|(glob_vk_left<<2)|(glob_vk_down<<3);
+		int keyval=(k0|k1|k2|k3);
+		if (keyval != 0)
+		{
+			draw_set_color(renderer,mux_int(keyval%4,c_yellow,c_green,c_aqua,c_fuchsia));
+			draw_rectangle(renderer,128,128,160,160);
+		}
+		/**/
