@@ -1,36 +1,16 @@
 To do:
 
-2023-07-22
-	audio sfx (play once)
-	animated tiles
-	keyboard functions (hold, press, release)
-	compress leveldata
+2023-07-18
 	animated text
+	animated tiles
+	tileset instead of loose files
+	audio sfx (play once)
+	convert from Tiled to leveldata
+	keyboard functions (hold, press, release)
 	investigate 3d with opengl
 
 ----------------
 Finished:
-
-2023-07-21
-	tileset instead of loose files
-	added devtools-program to streamline asset development
-		a tool to edit locations on the map
-	added more locations to the map
-
-2023-07-20
-	convert from Tiled to leveldata
-		press F2 to use, wait some seconds, then restart game.
-	
-2023-07-19
-	digital clock for timekeeping
-	description of what time of day it is
-	added some locations to the minimap
-		e.g lvl 8/256 reads "Warrington".
-
-2023-07-18
-	Sean: rain effect
-	minimap with crosshairs
-	improved font (text using images)
 
 2023-07-17
 	looping music
