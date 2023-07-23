@@ -473,7 +473,6 @@ void createWaterParticle(int index, int window_width, int window_height) {
     waterParticles[index].speed = 10;        // Rain speed
     waterParticles[index].active = 1;                    // Set active to 1 (true)
 }
-<<<<<<< HEAD
 //Function to modify chat box position
 void chatBoxMod(SDL_Rect* ptr, int x, int y, int w, int h) {
     // Modify the members of the SDL_Rect using the pointer
@@ -482,11 +481,6 @@ void chatBoxMod(SDL_Rect* ptr, int x, int y, int w, int h) {
     ptr->w = w;
     ptr->h = h;
 }
-=======
-// Function to render and update the text
-
-
->>>>>>> 488e673008a0b0dc50fb25092bc960d5f693106c
 //Player.
 struct player
 {
@@ -619,20 +613,17 @@ int SDL_main(int argc, char *argv[])
         snprintf(errmsg, bufsize, "Surface error");
         goto error;
     }
-<<<<<<< HEAD
 
 	//pop up window
 	SDL_Rect buttonRect = { 800, 100, 200, 80 };//dimension of popup
     SDL_Rect* buttonRectPtr = &buttonRect;
 	char buttonTexts[100] = "default message";//message in the window allowing 100 chars in the text box.
-=======
 	
 	int option = 0;
     char optionText[2] = "0";
     //pop up window test
 	SDL_Rect buttonRect = { 800, 100, 100, 100 };//dimension of popup
 	char buttonTexts[] = "default message";//message in the window
->>>>>>> 488e673008a0b0dc50fb25092bc960d5f693106c
 	char* buttonText = buttonTexts;
 	int buttonVis = 0;//0 for no window and 1 for visible window
     // Load a TTF font (adjust the file path and size as needed)
@@ -779,7 +770,6 @@ int SDL_main(int argc, char *argv[])
 						case SDLK_SPACE: {glob_vk_space	=v;} break;
 						case SDLK_KP_ENTER: {glob_vk_enter	=v;} break;//seems broken.
 						case SDLK_F2:  {glob_vk_f2	=v;} break;
-<<<<<<< HEAD
 						case SDLK_9:  {if(buttonVis==0){buttonVis=1;strcpy(buttonTexts, "press 1,2,3,4");}else{buttonVis=0;}} break;//pressing 9 brings up chat window
     case SDLK_1:
         {
@@ -826,7 +816,6 @@ int SDL_main(int argc, char *argv[])
         }
         break;
 
-=======
 						case SDLK_0:  {glob_vk_0=v;} break;
 						case SDLK_1:  {glob_vk_1=v;} break;
 						case SDLK_2:  {glob_vk_2=v;} break;
@@ -837,7 +826,6 @@ int SDL_main(int argc, char *argv[])
 						case SDLK_7:  {glob_vk_7=v;} break;
 						case SDLK_8:  {glob_vk_8=v;} break;
 						case SDLK_9:  {glob_vk_9=v;} break;
->>>>>>> 488e673008a0b0dc50fb25092bc960d5f693106c
 						//case SDLK_:  {glob_vk_	=v;} break;
 						
 					}
@@ -1200,7 +1188,6 @@ int SDL_main(int argc, char *argv[])
 			draw_image(renderer,win_game_x,win_game_y,win_game_x2,win_game_y2,splashintro_img);
 			draw_text(renderer,win_game_x,win_game_y,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashintro_string,font_ascii_w,font_ascii_h);
 		}
-<<<<<<< HEAD
 //test pop up chat box (button)
 if (buttonVis >= 1) {
     // Update the buttonRect using the chat box position and size
@@ -1244,7 +1231,6 @@ if (buttonVis >= 1) {
     SDL_DestroyTexture(textTexture);
 }
         // Clear the renderer
-=======
 		
 		//test pop up chat box (button)
 		if (buttonVis>=1) 
@@ -1261,7 +1247,6 @@ if (buttonVis >= 1) {
             SDL_DestroyTexture(textTexture);
         }
 		// Clear the renderer
->>>>>>> 488e673008a0b0dc50fb25092bc960d5f693106c
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		//Code to render the score at the bottom left of the screen.
         char scoreText[20];
