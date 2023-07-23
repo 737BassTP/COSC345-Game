@@ -17,8 +17,10 @@ https://wiki.libsdl.org/SDL2/APIByCategory
 #include <math.h>
 #include <stdlib.h> // for rand() and srand()
 #include <time.h>   // for time()
+#include <string.h>
 //#include <.h>
 //#include "SDL2.dll"
+#include <string.h>
 #include "SDL2/include/SDL2/SDL.h"
 #include "SDL2/include/SDL2/SDL_image.h"
 #include "SDL2/include/SDL2/SDL_ttf.h"
@@ -451,8 +453,14 @@ void createWaterParticle(int index, int window_width, int window_height) {
     waterParticles[index].speed = 10;        // Rain speed
     waterParticles[index].active = 1;                    // Set active to 1 (true)
 }
-// Function to render and update the text
-
+//Function to modify chat box position
+void chatBoxMod(SDL_Rect* ptr, int x, int y, int w, int h) {
+    // Modify the members of the SDL_Rect using the pointer
+    ptr->x = x;
+    ptr->y = y;
+    ptr->w = w;
+    ptr->h = h;
+}
 //Player.
 struct player
 {
@@ -579,9 +587,12 @@ int SDL_main(int argc, char *argv[])
         goto error;
     }
 
-	//pop up window test
-	SDL_Rect buttonRect = { 800, 100, 100, 100 };//dimension of popup
-	char buttonTexts[] = "default message";//message in the window
+	//pop up window
+	SDL_Rect buttonRect = { 800, 100, 200, 80 };//dimension of popup
+    SDL_Rect* buttonRectPtr = &buttonRect;
+	char buttonTexts[100] = "default message";//message in the window allowing 100 chars in the text box.
+	
+    //pop up window test
 	char* buttonText = buttonTexts;
 	int buttonVis = 0;//0 for no window and 1 for visible window
     // Load a TTF font (adjust the file path and size as needed)
@@ -597,7 +608,7 @@ int SDL_main(int argc, char *argv[])
     }
 	//score display
 	int score = 0; //initial score
-	SDL_Color scoreColour = { 255, 255, 255, 255 };
+	SDL_Color scoreColour = { 0, 0, 0, 255 };
     //Create a renderer for the window
     SDL_Renderer* rendererPop = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (renderer == NULL) {
@@ -713,7 +724,11 @@ int SDL_main(int argc, char *argv[])
     case SDLK_1:
         {
 			if(buttonVis==1){
-            strcpy(buttonTexts, "you pressed 1");//pressing 1 changes text inside test box.
+			// chatBoxMod(buttonRectPtr, 100, 200, 300, 400); //testing function to see if it works.
+			const char* newButtonText = "you pressed 1, good job. Lets test the limit";
+			size_t maxButtonLen = sizeof(buttonTexts) - 1; // Leave space for null terminator
+            strncpy(buttonTexts, newButtonText, maxButtonLen);//pressing 1 changes text inside test box.
+			buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
 			score += 50;
 			}
         }
@@ -721,7 +736,10 @@ int SDL_main(int argc, char *argv[])
     case SDLK_2:
         {
 			if(buttonVis==1){
-            strcpy(buttonTexts, "you pressed 2");
+			const char* newButtonText = "you pressed 2, good job. Lets test the limit woo";
+			size_t maxButtonLen = sizeof(buttonTexts) - 1; // Leave space for null terminator
+            strncpy(buttonTexts, newButtonText, maxButtonLen);//pressing 1 changes text inside test box.
+			buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
 			score += 50;
 			}
 
@@ -729,20 +747,35 @@ int SDL_main(int argc, char *argv[])
         break;    case SDLK_3:
         {
 			if(buttonVis==1){
-            strcpy(buttonTexts, "you pressed 3");
+			const char* newButtonText = "you pressed 3";
+			size_t maxButtonLen = sizeof(buttonTexts) - 1; // Leave space for null terminator
+            strncpy(buttonTexts, newButtonText, maxButtonLen);//pressing 1 changes text inside test box.
+			buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
 			score += 50;
 			}
         }
         break;    case SDLK_4:
         {
 			if(buttonVis==1){
-            strcpy(buttonTexts, "you pressed 4");
+			const char* newButtonText = "you pressed 4, good job. Lets test the limit woo";
+			size_t maxButtonLen = sizeof(buttonTexts) - 1; // Leave space for null terminator
+            strncpy(buttonTexts, newButtonText, maxButtonLen);//pressing 1 changes text inside test box.
+			buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
 			score += 50;
-
 			}
         }
         break;
 
+						// case SDLK_0:  {glob_vk_0=v;} break;
+						// case SDLK_1:  {glob_vk_1=v;} break;
+						// case SDLK_2:  {glob_vk_2=v;} break;
+						// case SDLK_3:  {glob_vk_3=v;} break;
+						// case SDLK_4:  {glob_vk_4=v;} break;
+						// case SDLK_5:  {glob_vk_5=v;} break;
+						// case SDLK_6:  {glob_vk_6=v;} break;
+						// case SDLK_7:  {glob_vk_7=v;} break;
+						// case SDLK_8:  {glob_vk_8=v;} break;
+						// case SDLK_9:  {glob_vk_9=v;} break;
 						//case SDLK_:  {glob_vk_	=v;} break;
 						
 					}
@@ -848,6 +881,8 @@ int SDL_main(int argc, char *argv[])
 				level_cur += level_count;//allows negative wrap.
 				level_cur %= level_count;//prevents overflow.
 				//printf("lvl=%i\n",level_cur);
+				// level_get_name(level_cur,mapstr_location);
+				
 			}
 		}
 		else
@@ -865,6 +900,34 @@ int SDL_main(int argc, char *argv[])
 		*/
 		Player.xprevious = Player.x;
 		Player.yprevious = Player.y;
+		
+		/*
+		General updates.
+		*/
+		//water stuff
+		// Update water particles (rain drops)
+        for (int i = 0; i < MAX_WATER_PARTICLES; i++) 
+		{
+            if (waterParticles[i].active) 
+			{
+                waterParticles[i].y += waterParticles[i].speed;
+
+                // Check if particle has reached the bottom of the window
+                if (waterParticles[i].y > screen_h) {
+                    // Randomly deactivate particle (remove randomness for constant rain)
+                    if (rand() % 100 < 5) {
+                        waterParticles[i].active = 0; // Set active to 0 (false)
+                    } else {
+                        createWaterParticle(i, screen_w, screen_h);
+                    }
+                }
+            }
+        }
+		//Timekeeping.
+		// time_clock_fps += 1*time_clock_fps_multiplier;
+		// time_clock += (time_clock_fps>=time_clock_fps_max);
+		// time_clock %= time_clock_max;
+		// time_clock_fps %= time_clock_fps_max;
 		
 		/*
 		Draw to the screen.
@@ -982,21 +1045,50 @@ int SDL_main(int argc, char *argv[])
 			draw_text(renderer,win_game_x,win_game_y,8*gw,16*gh,font_ascii,splashintro_string,font_ascii_w,font_ascii_h);
 		}
 //test pop up chat box (button)
-if (buttonVis>=1) {
-            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-            SDL_RenderFillRect(renderer, &buttonRect);
-            // Render text on the button
-            SDL_Color textColor = { 255, 0, 0 }; // Red text color
-            SDL_Surface* textSurface = TTF_RenderText_Solid(font, buttonText, textColor);
-            SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-            SDL_Rect textRect = { buttonRect.x + (buttonRect.w - textSurface->w) / 2, buttonRect.y + (buttonRect.h - textSurface->h) / 2, textSurface->w, textSurface->h };
-            SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
-            SDL_FreeSurface(textSurface);
-            SDL_DestroyTexture(textTexture);
-        }
+if (buttonVis >= 1) {
+    // Update the buttonRect using the chat box position and size
+    buttonRect.x = Player.x + 60;
+    buttonRect.y = Player.y - 120;
+
+    // Render the filled rectangle using the updated buttonRectPtr
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderFillRect(renderer, buttonRectPtr);
+
+	//Render the lines to make it look chat box-like
+	// Draw a line from the player's mouth to the chat box
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // white color for the line
+    SDL_RenderDrawLine(renderer, Player.x+45, Player.y-15, buttonRectPtr->x + buttonRectPtr->w*0.1, buttonRectPtr->y + buttonRectPtr->h / 4);//top line
+	SDL_RenderDrawLine(renderer, Player.x+45, Player.y-15, buttonRectPtr->x + buttonRectPtr->w*0.3, buttonRectPtr->y + buttonRectPtr->h / 4);//bottom line
+    // Render text on the button (chat box)
+    SDL_Color textColor = { 0, 0, 0 }; // black text color
+    int maxTextWidth = buttonRectPtr->w - 10; // Adjust this value to leave some padding for the text
+    // Use TTF_RenderText_Blended_Wrapped with error-checking
+    SDL_Surface* textSurface = TTF_RenderText_Blended_Wrapped(font, buttonText, textColor, maxTextWidth);
+    if (!textSurface) {
+        // Handle error: Unable to render text
+        // (you can set a default or fallback behavior in case of an error)
+        // For example, create a placeholder surface with the error message
+        textSurface = TTF_RenderText_Solid(font, "Error: Text Rendering Failed", textColor);
+    }
+    // Calculate the actual text dimensions
+    int textWidth = textSurface->w;
+    int textHeight = textSurface->h;
+    // Position the text in the center of the button (chat box)
+    int textX = buttonRectPtr->x + (buttonRectPtr->w - textWidth) / 2;
+    int textY = buttonRectPtr->y + (buttonRectPtr->h - textHeight) / 2;
+    // Create the destination SDL_Rect for the text
+    SDL_Rect textRect = { textX, textY, textWidth, textHeight };
+    // Render the text on the button (chat box)
+    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+
+    // Cleanup
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(textTexture);
+}
         // Clear the renderer
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-		// Render the score at the bottom left
+		//Code to render the score at the bottom left of the screen.
         char scoreText[20];
         snprintf(scoreText, sizeof(scoreText), "Score: %d", score);
         SDL_Surface* surface = TTF_RenderText_Solid(font, scoreText, scoreColour);
