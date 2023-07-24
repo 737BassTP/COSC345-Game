@@ -17,11 +17,12 @@ https://wiki.libsdl.org/SDL2/APIByCategory
 #include <math.h>
 #include <stdlib.h> // for rand() and srand()
 #include <time.h>   // for time()
-#include <string.h>
 //#include <.h>
 //#include "SDL2.dll"
+#include <string.h>
 #include "SDL2/include/SDL2/SDL.h"
 #include "SDL2/include/SDL2/SDL_image.h"
+#include "SDL2/include/SDL2/SDL_ttf.h"
 
 //Definitions.
 #define PI 3.1415926535897932
@@ -63,6 +64,16 @@ int glob_vk_down 	= 0;
 int glob_vk_space   = 0;
 int glob_vk_enter   = 0;
 int glob_vk_f2      = 0;
+int glob_vk_0       = 0;
+int glob_vk_1       = 0;
+int glob_vk_2       = 0;
+int glob_vk_3       = 0;
+int glob_vk_4       = 0;
+int glob_vk_5       = 0;
+int glob_vk_6       = 0;
+int glob_vk_7       = 0;
+int glob_vk_8       = 0;
+int glob_vk_9       = 0;
 
 //Functions.
 //Clear the surface by filling it with a colour.
@@ -156,10 +167,6 @@ void draw_image_part(SDL_Renderer *renderer,int x1,int y1,int x2,int y2,SDL_Text
 	s.w = width;
 	s.h = height;
 	SDL_RenderCopy(renderer,texture,&s,&r);
-}
-void draw_tilemap(SDL_Renderer *renderer,SDL_Texture *tilemap,int tile,int width,int height,int x1,int y1,int x2,int y2)
-{
-	//superfluous.
 }
 void draw_text(SDL_Renderer *renderer,int x,int y,int w,int h,SDL_Texture *font,char* str,int fontw,int fonth)
 {
@@ -458,6 +465,7 @@ struct WaterParticle {
 //initialize number of water particles wanted
 const int MAX_WATER_PARTICLES = 100;
 struct WaterParticle* waterParticles;
+int waterOn = 0; //decide if raining or not
 //function to create water particle.
 void createWaterParticle(int index, int window_width, int window_height) {
     waterParticles[index].x = rand() % (1366-596)+298;     // Random x position within window width
@@ -465,7 +473,18 @@ void createWaterParticle(int index, int window_width, int window_height) {
     waterParticles[index].speed = 10;        // Rain speed
     waterParticles[index].active = 1;                    // Set active to 1 (true)
 }
-
+//function to reactivate water particles
+void activateAllWaterParticles() {
+    for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
+        waterParticles[i].active = 1; // Set active to 1 (true)
+    }
+}
+//deactivate them all
+void deactivateAllWaterParticles() {
+    for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
+        waterParticles[i].active = 0; // Set active to 0 (false)
+    }
+}
 //Player.
 struct player
 {
@@ -517,15 +536,9 @@ int clock_get_minute(int time) {return time%60;}
 int clock_is_between(int time,int h1,int m1,int h2,int m2)
 {
 	int c1,c2;
-	c1 = h1*60 + m1;
-	c2 = h2*60 + m2;
+	c1 = (h1%24)*60 + m1%60;
+	c2 = (h2%24)*60 + m2%60;
 	return ((time>=c1) && (time<=c2));
-	/*
-	int gh,gm;
-	gh = clock_get_hour(time);
-	gm = clock_get_minute(time);
-	return (gh>=h1)&&(gh<)
-	/**/
 }
 
 /*
@@ -584,7 +597,7 @@ int SDL_main(int argc, char *argv[])
 		return -1;
 	}
 	
-	//Create window.
+	//Create window (main window).
 	window = SDL_CreateWindow("COSC345 - Game",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,screen_w,screen_h,0);
 	if (!window)
 	{
@@ -603,6 +616,35 @@ int SDL_main(int argc, char *argv[])
     if (!surface) {
         snprintf(errmsg, bufsize, "Surface error");
         goto error;
+    }
+
+	//pop up window test
+	SDL_Rect buttonRect = { 800, 100, 200, 100 };//dimension of popup
+	char buttonTexts[100] = "default message";//message in the window
+	char* buttonText = buttonTexts;
+	SDL_Rect* buttonRectPtr = &buttonRect; // Declare and initialize buttonRectPtr to point to buttonRect
+
+	int buttonVis = 0;//0 for no window and 1 for visible window
+    // Load a TTF font (adjust the file path and size as needed)
+	    // Initialize SDL_ttf
+    if (TTF_Init() == -1) {
+        printf("SDL_ttf could not initialize! TTF_Error: %s\n", TTF_GetError());
+        return 1;
+    }
+    TTF_Font* font = TTF_OpenFont("font.ttf", 12);
+    if (font == NULL) {
+        printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
+        return 1;
+    }
+	int popup = 0;
+	
+	//score display
+	int score = 0; //initial score
+	SDL_Color scoreColour = { 0, 0, 0, 255 };
+    //Create a renderer for the window
+    SDL_Renderer* rendererPop = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (renderer == NULL) {
+        printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
     }
 	
 	//Images.
@@ -727,6 +769,53 @@ int SDL_main(int argc, char *argv[])
 						case SDLK_SPACE: {glob_vk_space	=v;} break;
 						case SDLK_KP_ENTER: {glob_vk_enter	=v;} break;//seems broken.
 						case SDLK_F2:  {glob_vk_f2	=v;} break;
+						case SDLK_0: {if(waterOn==0){waterOn=1;activateAllWaterParticles();}else{waterOn=0;deactivateAllWaterParticles();}}break;//turn water on and off for testing
+						case SDLK_9:  {if(buttonVis==0){buttonVis=1;strcpy(buttonTexts, "press 1,2,3,4");}else{buttonVis=0;}} break;//pressing 9 brings up chat window
+    case SDLK_1:
+        {
+			if(buttonVis==1){
+			// chatBoxMod(buttonRectPtr, 100, 200, 300, 400); //testing function to see if it works.
+			const char* newButtonText = "you pressed 1, good job. Lets test the limit";
+			size_t maxButtonLen = sizeof(buttonTexts) - 1; // Leave space for null terminator
+            strncpy(buttonTexts, newButtonText, maxButtonLen);//pressing 1 changes text inside test box.
+			buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
+			score += 50;
+			}
+        }
+        break;
+    case SDLK_2:
+        {
+			if(buttonVis==1){
+			const char* newButtonText = "you pressed 2, good job. Lets test the limit woo";
+			size_t maxButtonLen = sizeof(buttonTexts) - 1; // Leave space for null terminator
+            strncpy(buttonTexts, newButtonText, maxButtonLen);//pressing 1 changes text inside test box.
+			buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
+			score += 50;
+			}
+
+        }
+        break;    case SDLK_3:
+        {
+			if(buttonVis==1){
+			const char* newButtonText = "you pressed 3";
+			size_t maxButtonLen = sizeof(buttonTexts) - 1; // Leave space for null terminator
+            strncpy(buttonTexts, newButtonText, maxButtonLen);//pressing 1 changes text inside test box.
+			buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
+			score += 50;
+			}
+        }
+        break;    case SDLK_4:
+        {
+			if(buttonVis==1){
+			const char* newButtonText = "you pressed 4, good job. Lets test the limit woo";
+			size_t maxButtonLen = sizeof(buttonTexts) - 1; // Leave space for null terminator
+            strncpy(buttonTexts, newButtonText, maxButtonLen);//pressing 1 changes text inside test box.
+			buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
+			score += 50;
+			}
+        }
+        break;
+
 						//case SDLK_:  {glob_vk_	=v;} break;
 						
 					}
@@ -745,6 +834,16 @@ int SDL_main(int argc, char *argv[])
 						case SDLK_SPACE: {glob_vk_space	=v;} break;
 						case SDLK_KP_ENTER: {glob_vk_enter	=v;} break;
 						case SDLK_F2:  {glob_vk_f2	=v;} break;
+						// case SDLK_0:  {glob_vk_0=v;} break;
+						// case SDLK_1:  {glob_vk_1=v;} break;
+						// case SDLK_2:  {glob_vk_2=v;} break;
+						// case SDLK_3:  {glob_vk_3=v;} break;
+						// case SDLK_4:  {glob_vk_4=v;} break;
+						// case SDLK_5:  {glob_vk_5=v;} break;
+						// case SDLK_6:  {glob_vk_6=v;} break;
+						// case SDLK_7:  {glob_vk_7=v;} break;
+						// case SDLK_8:  {glob_vk_8=v;} break;
+						// case SDLK_9:  {glob_vk_9=v;} break;
 						//case SDLK_:  {glob_vk_	=v;} break;
 						
 					}
@@ -764,6 +863,9 @@ int SDL_main(int argc, char *argv[])
 			dev_tiled_to_leveldata();
 			printf("F2 finished!\n");	
 		}
+		
+
+		
 		
 		//Player movement.
 		if (glob_vk_right)
@@ -832,8 +934,6 @@ int SDL_main(int argc, char *argv[])
 				level_cur += level_count;//allows negative wrap.
 				level_cur %= level_count;//prevents overflow.
 				//printf("lvl=%i\n",level_cur);
-				level_get_name(level_cur,mapstr_location);
-				
 			}
 		}
 		else
@@ -851,34 +951,6 @@ int SDL_main(int argc, char *argv[])
 		*/
 		Player.xprevious = Player.x;
 		Player.yprevious = Player.y;
-		
-		/*
-		General updates.
-		*/
-		//water stuff
-		// Update water particles (rain drops)
-        for (int i = 0; i < MAX_WATER_PARTICLES; i++) 
-		{
-            if (waterParticles[i].active) 
-			{
-                waterParticles[i].y += waterParticles[i].speed;
-
-                // Check if particle has reached the bottom of the window
-                if (waterParticles[i].y > screen_h) {
-                    // Randomly deactivate particle (remove randomness for constant rain)
-                    if (rand() % 100 < 5) {
-                        waterParticles[i].active = 0; // Set active to 0 (false)
-                    } else {
-                        createWaterParticle(i, screen_w, screen_h);
-                    }
-                }
-            }
-        }
-		//Timekeeping.
-		time_clock_fps += 1*time_clock_fps_multiplier;
-		time_clock += (time_clock_fps>=time_clock_fps_max);
-		time_clock %= time_clock_max;
-		time_clock_fps %= time_clock_fps_max;
 		
 		/*
 		Draw to the screen.
@@ -978,11 +1050,11 @@ int SDL_main(int argc, char *argv[])
 			if (clock_is_between(time_clock, 6,0,11,59)) {ct=1;}
 			if (clock_is_between(time_clock,12,0,17,59)) {ct=2;}
 			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
-			draw_text(renderer,
-				uix,clocky2+gh,
-				font_ascii_w*gw,font_ascii_h*gh,
-				font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
-				font_ascii_w,font_ascii_h);
+			// draw_text(renderer,
+			// 	uix,clocky2+gh,
+			// 	font_ascii_w*gw,font_ascii_h*gh,
+			// 	font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
+			// 	font_ascii_w,font_ascii_h);
 			
 		}
 		//Game area.
@@ -1013,18 +1085,96 @@ int SDL_main(int argc, char *argv[])
 			(Player.facedir*d*Player.anim_max)+(Player.anim_cur*d*1),0,
 			d,d);
 		
-		// Draw water particles
-        for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
-            if (waterParticles[i].active) {
-                draw_image(renderer, waterParticles[i].x, waterParticles[i].y, waterParticles[i].x + 5, waterParticles[i].y + 15, spr_water);
-            }
-        }
+
 		//Splash intro screen.
 		if (splashintro_bool)
 		{
 			draw_image(renderer,win_game_x,win_game_y,win_game_x2,win_game_y2,splashintro_img);
 			draw_text(renderer,win_game_x,win_game_y,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashintro_string,font_ascii_w,font_ascii_h);
 		}
+//test pop up chat box (button)
+if (buttonVis >= 1) {
+    // Update the buttonRect using the chat box position and size
+    buttonRect.x = Player.x + 60;
+    buttonRect.y = Player.y - 120;
+
+    // Render the filled rectangle using the updated buttonRectPtr
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderFillRect(renderer, buttonRectPtr);
+
+	//Render the lines to make it look chat box-like
+	// Draw a line from the player's mouth to the chat box
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // white color for the line
+    SDL_RenderDrawLine(renderer, Player.x+45, Player.y-15, buttonRectPtr->x + buttonRectPtr->w*0.1, buttonRectPtr->y + buttonRectPtr->h / 4);//top line
+	SDL_RenderDrawLine(renderer, Player.x+45, Player.y-15, buttonRectPtr->x + buttonRectPtr->w*0.3, buttonRectPtr->y + buttonRectPtr->h / 1);//bottom line
+    // Render text on the button (chat box)
+    SDL_Color textColor = { 0, 0, 0 }; // black text color
+    int maxTextWidth = buttonRectPtr->w - 10; // Adjust this value to leave some padding for the text
+    // Use TTF_RenderText_Blended_Wrapped with error-checking
+    SDL_Surface* textSurface = TTF_RenderText_Blended_Wrapped(font, buttonText, textColor, maxTextWidth);
+    if (!textSurface) {
+        // Handle error: Unable to render text
+        // (you can set a default or fallback behavior in case of an error)
+        // For example, create a placeholder surface with the error message
+        textSurface = TTF_RenderText_Solid(font, "Error: Text Rendering Failed", textColor);
+    }
+    // Calculate the actual text dimensions
+    int textWidth = textSurface->w;
+    int textHeight = textSurface->h;
+    // Position the text in the center of the button (chat box)
+    int textX = buttonRectPtr->x + (buttonRectPtr->w - textWidth) / 2;
+    int textY = buttonRectPtr->y + (buttonRectPtr->h - textHeight) / 2;
+    // Create the destination SDL_Rect for the text
+    SDL_Rect textRect = { textX, textY, textWidth, textHeight };
+    // Render the text on the button (chat box)
+    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+
+    // Cleanup
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(textTexture);
+}
+		// Draw water particles
+        for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
+            if (waterParticles[i].active) {
+                draw_image(renderer, waterParticles[i].x, waterParticles[i].y, waterParticles[i].x + 5, waterParticles[i].y + 15, spr_water);
+            }
+        }
+//water stuff
+
+        // Update water particles (rain drops)
+        for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
+            if (waterParticles[i].active) {
+                waterParticles[i].y += waterParticles[i].speed;
+
+                // Check if particle has reached the bottom of the window
+                if (waterParticles[i].y > screen_h) {
+                    // Randomly deactivate particle (remove randomness for constant rain)
+                    if (rand() % 100 < 5) {
+                        waterParticles[i].active = 0; // Set active to 0 (false)
+                    } else {
+                        createWaterParticle(i, screen_w, screen_h);
+                    }
+                }
+            }
+        }
+		        // Draw water particles
+        for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
+            if (waterParticles[i].active) {
+                draw_image(renderer, waterParticles[i].x, waterParticles[i].y, waterParticles[i].x + 5, waterParticles[i].y + 15, spr_water);
+            }
+        }
+
+		//
+		//Code to render the score at the bottom left of the screen.
+        char scoreText[20];
+        snprintf(scoreText, sizeof(scoreText), "Score: %d", score);
+        SDL_Surface* surface = TTF_RenderText_Solid(font, scoreText, scoreColour);
+        SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_Rect textRect = { 10, 720, surface->w, surface->h };
+        SDL_RenderCopy(renderer, texture, NULL, &textRect);
+        SDL_FreeSurface(surface);
+        SDL_DestroyTexture(texture);
 		
 		//Render to screen.
 		SDL_RenderPresent(renderer);
@@ -1036,6 +1186,7 @@ int SDL_main(int argc, char *argv[])
 
 	//Shut down SDL
 	free(waterParticles);
+	TTF_CloseFont(font);
 	SDL_DestroyTexture(spr_grass);
 	SDL_DestroyTexture(spr_sand);
 	SDL_DestroyTexture(spr_water);
@@ -1067,6 +1218,17 @@ error:
     SDL_Quit();
     exit(EXIT_FAILURE);
 }
+// printfs can be read)
+//     SDL_Delay(500);
+    
+// 	return 0;
+	
+//     /* Upon an error, print message and quit properly */
+// error:
+//     fprintf(stderr, "%s Error returned: %s\n", errmsg, SDL_GetError());
+//     SDL_Quit();
+//     exit(EXIT_FAILURE);
+// }
 
 //Faulty, unfinished, or obsolete code:
 /*

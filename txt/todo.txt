@@ -1,6 +1,6 @@
 To do:
 
-2023-07-22
+2023-07-24
 	audio sfx (play once)
 	animated tiles
 	keyboard functions (hold, press, release)
@@ -10,6 +10,12 @@ To do:
 
 ----------------
 Finished:
+
+2023-07-23
+	Sean: 
+		Added popup-windows (press <9>).
+		Added score variable that is incremented by pressing <1>,<2>,<3>,<4>.
+	Thomas: Merged Sean's functionality with the newest build.
 
 2023-07-21
 	tileset instead of loose files
