@@ -11,6 +11,15 @@ To do:
 ----------------
 Finished:
 
+2023-07-24
+	Sean:
+		Added toggle to turn on/off rain (press <0>)
+		Improved the popup window so that it follows the player.
+	Thomas:
+		Added temperature counter with a thermometer.
+		Added "undiscovered" map tiles; visit a new level to "discover" it on the map.
+		Prolonged the music somewhat by adding a new section.
+
 2023-07-23
 	Sean: 
 		Added popup-windows (press <9>).
