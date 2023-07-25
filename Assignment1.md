@@ -58,6 +58,12 @@ The carbohydrate, protein, and fat content of foods will determine the enemy's s
 We are using weather data sourced from the Energy Studies Weather Station of the University of Otago. 
 In game weather will be determined by the weather patterns of the last twelve months. 
 
+### Transport Data (Bus Timetable)
+[Bus Timetable](https://www.orc.govt.nz/public-transport/dunedin-buses/check-your-timetables)
+
+Our game has a time mechanic, and in-game fast-travel can happen by travelling with buses according to the timetable.
+This requires the player to be at the bus stop by the time the bus leaves, and the fast-travel destination is wherever the bus drives according to its timetable.
+
 ### Conservation Data
 Conservation data will be used inside quizzes with the player earning score for each question answered successfully. 
 The player may need to pass a test in order to progress to the next section.
