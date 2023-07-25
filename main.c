@@ -486,6 +486,27 @@ void deactivateAllWaterParticles() {
         waterParticles[i].active = 0; // Set active to 0 (false)
     }
 }
+//Health System test
+int health = 100;
+int maxHealth=100;
+//damaging test
+void damageMe(int dmg){
+	if(health-dmg<=0){
+		health=0;
+	}
+	else{
+	health -= dmg;
+	}
+}
+//healing test
+void healMe(int dmg){
+	if(health+dmg>=maxHealth){
+		health=100;
+	}
+	else{
+	health += dmg;
+	}
+}
 //Player.
 struct player
 {
@@ -625,7 +646,7 @@ int SDL_main(int argc, char *argv[])
 	//int option = 0;
     //char optionText[2] = "0";
     //pop up window test
-	SDL_Rect buttonRect = { 800, 100, 200, 100 };//dimension of popup
+	SDL_Rect buttonRect = { 800, 100, 100, 100 };//dimension of popup
 	char buttonTexts[100] = "default message";//message in the window
 	char* buttonText = buttonTexts;
 	SDL_Rect* buttonRectPtr = &buttonRect; // Declare and initialize buttonRectPtr to point to buttonRect
@@ -755,6 +776,8 @@ int SDL_main(int argc, char *argv[])
 	int splashintro_bool=1;
 	SDL_Texture *splashintro_img  = IMG_LoadTexture(renderer,"img/img_lands.png");
 	char* splashintro_string = "Press SPACE to continue.";
+	
+	//durr
 	
 	//Mainloop here.
 	int running=1;
@@ -925,7 +948,16 @@ int SDL_main(int argc, char *argv[])
 				score += 50;
 			}
 		}
-		
+		if (glob_vk_5)
+		{
+			glob_vk_5=0;
+			damageMe(10);
+		}
+				if (glob_vk_6)
+		{
+			glob_vk_6=0;
+			healMe(10);
+		}
 		
 		//Player movement.
 		if (glob_vk_right)
@@ -1266,7 +1298,17 @@ int SDL_main(int argc, char *argv[])
             }
         }
 		
-		
+		//health bar
+		if(!splashintro_bool){
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+		int maxWidth = 200; // Replace this with the maximum width of the health bar
+        int currentWidth = (health * maxWidth) / maxHealth;
+		// Render the red health bar
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_Rect healthBarRect = { 0, 200, currentWidth, 20 };
+        SDL_RenderFillRect(renderer, &healthBarRect);
+		}
+        // SDL_RenderPresent(renderer);
 		/*
 		Overlay Drawing.
 		*/
@@ -1277,20 +1319,6 @@ int SDL_main(int argc, char *argv[])
 			draw_text(renderer,win_game_x,win_game_y,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashintro_string,font_ascii_w,font_ascii_h);
 		}
 		
-		//test pop up chat box (button)
-		if (buttonVis>=1) 
-		{
-            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-            SDL_RenderFillRect(renderer, &buttonRect);
-            // Render text on the button
-            SDL_Color textColor = { 255, 0, 0 }; // Red text color
-            SDL_Surface* textSurface = TTF_RenderText_Solid(font, buttonText, textColor);
-            SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-            SDL_Rect textRect = { buttonRect.x + (buttonRect.w - textSurface->w) / 2, buttonRect.y + (buttonRect.h - textSurface->h) / 2, textSurface->w, textSurface->h };
-            SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
-            SDL_FreeSurface(textSurface);
-            SDL_DestroyTexture(textTexture);
-        }
 		// Clear the renderer
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		// Render the score at the bottom left
