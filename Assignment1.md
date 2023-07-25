@@ -102,6 +102,15 @@ There is also a PERT chart that tracks dependencies and timelines.
 INSERT CHART HERE
 
 ## Similar
+
+### Games using Nutrition
+
+A quick search for nutrition games comes up with lots of educational games from government organisations or museums such as the Smithsonian with a focus on teaching nutrition. These, although suggesting aimed at students, appeared to be for younger children. The main component of these games were to organise food into food groups or to balance a diet with the correct food groups. Although very educational, these games felt more like a classroom exercise than a game. We feel that our game should still be educational in the sense of passive learning - ie knowing this food is good to eat as it boosts this stat - but contain the charm of RPGs that feel fun to play.
+
+In looking for other games with nutrition elements, survival games came to mind. Whilst most survival games such as Minecraft or Rust require you to eat to maintain your hunger, with foods having a calorie or healing statistic, it seems hard to find many which utilise nutritional needs. One game that does utilise this is SCUM, where each food has target nutrition statistics such as protein, carbs, fats, sodium etc, as well as a vitamin composition. In this game players must maintain all their levels to survive. Although this game uses nutritional data that we may use in our game, this seems quite overboard and detailed. It also appears to be utilising this for realism's sake (along with many other meters) in order to make it hard to survive rather than for a more educational viewpoint. A closer alternative to what might be good to utilise into our game is the Minecraft mod Nutritional Balance. This mod gives vegetable, fruit, carb, protein, and sugar values to the food, where players are benefited for being in target range of the nutrients and penalised for having too much/too little of others. This seems more in line with our game, but is still intended for a survival setting.
+
+Although a lot of games on the market utilise nutritional data, we have not been able to find any that do in the way that our game intends. Nutrition appears to be used as the sole focus of active education, or as a means of making it harder to survive in a game. We believe that by using nutritional data as stats for enemies (based on what food they are), players when eating, and the “theme” of the game is an innovative way to bring passive nutritional education whilst still feeling fun.
+
 ### Chibi Knight
 Chibi Knight is a free online that has a lot of similar elements. It is also a 2D RPG with random encounter combat and special boss fights, but lacks our trivia element and a connection to the real world as it is set in a purely fictional fantasy setting.
 ### Pokemon
