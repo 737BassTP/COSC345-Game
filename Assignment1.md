@@ -9,19 +9,26 @@
 - Mascot
 - Duneatin'
 - Scarf City
+- Andrew's Grandchildren
 
 ## Members
 ### Campbell Nicholas - Art Designer
-### Thomas Pedersen - Programmer, Music
+?
+### 3391288, Thomas Pedersen - Programmer, Music
+I have a master's degree from Falmouth University in Game Development (Audio + Design) and have programmed games and composed music since 2010.
+My online presence is under the nickname 737BassTP.
 ### Sven Russel - Programmer
+?
 ### 1831984 Matthew Yi - Team Lead, Writer, Data Scientist
 I was team lead for the COSC 202 ANDIE project and under my management our team produced an excellent product well ahead of the deadline with numerous additional features. My experience as a dungeon master for D&D has honed my creative storytelling abilities. I have taken papers in data science and statistics, which will aid my ability to process, manipulate, and make use of big data that has over 100,000 rows. With my blend of leadership, story-telling, and data-driven approach, I believe I am well suited to fill multiple roles in this project.
 
 ## The Project
-We will be building a 2D game with puzzles and RPG mechanics using the C programming language and SDL2 libraries. We intend for the game to have educational mechanics while being a fun experience.
+We will be building a 2D game with puzzles and RPG mechanics using the C programming language and SDL2 libraries.
+We intend for the game to have educational mechanics while being a fun experience.
 
 ### Story
-Dr Trotman has brought all the food in Duneatin' to life, which now roams around the city attacking civilians. The player rescued an albatross egg and must endure adverse weather and evil food to return it to the peninsula.
+Dr Trotman has brought all the food in Duneatin' to life, which now roams around the city attacking civilians. 
+The player rescued an albatross egg and must endure adverse weather and evil food to return it to the peninsula.
 
 ### Gameplay components
 - Goal - return albatross egg to peninsula.
@@ -42,15 +49,18 @@ There will be two gamemodes:
 ### Food Data
 [Food data download link](https://www.matvaretabellen.no/)
 
-The food data was published by the Norwegian Food Safety Authority and the Department of Nutrition at the University of Oslo. The carbohydrate, protein, and fat content of foods will determine the enemy's stats.
+The food data was published by the Norwegian Food Safety Authority and the Department of Nutrition at the University of Oslo. 
+The carbohydrate, protein, and fat content of foods will determine the enemy's stats.
 
 ### Weather Data
 [Weather data download link](https://www.physics.otago.ac.nz/eman/weather_station/archive.php)
 
-We are using weather data sourced from the Energy Studies Weather Station of the University of Otago. In game weather will be determined by the weather patterns of the last twelve months. 
+We are using weather data sourced from the Energy Studies Weather Station of the University of Otago. 
+In game weather will be determined by the weather patterns of the last twelve months. 
 
 ### Conservation Data
-Conservation data will be used inside quizzes with the player earning score for each question answered successfully. The player may need to pass a test in order to progress to the next section.
+Conservation data will be used inside quizzes with the player earning score for each question answered successfully. 
+The player may need to pass a test in order to progress to the next section.
 
 ### Geospatial Data
 Our map is going to be based on the map of Dunedin.
@@ -89,9 +99,12 @@ INSERT CHART HERE
 ### Chibi Knight
 Chibi Knight is a free online that has a lot of similar elements. It is also a 2D RPG with random encounter combat and special boss fights, but lacks our trivia element and a connection to the real world as it is set in a purely fictional fantasy setting.
 ### Pokemon
+?
 ### Legend of Zelda
-
+The games in the Zelda series more often than not puts the player on a quest to traverse an overworld as a means of gathering items found in dungeons in order to be able to fight bosses responsible for the chaos in the game world.
+The gameplay involves real-time combat, solving mysterious puzzles, and often sees the characters develop in the story.
 ## Evidence of customer interest
+?
 
 ## Risk Analysis
 Risks include:
