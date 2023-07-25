@@ -85,6 +85,14 @@ There is also a PERT chart that tracks dependencies and timelines.
 
 INSERT CHART HERE
 
+## Similar
+### Chibi Knight
+Chibi Knight is a free online that has a lot of similar elements. It is also a 2D RPG with random encounter combat and special boss fights, but lacks our trivia element and a connection to the real world as it is set in a purely fictional fantasy setting.
+### Pokemon
+### Legend of Zelda
+
+## Evidence of customer interest
+
 ## Risk Analysis
 Risks include:
 Team member dropping out due to unforseen circumstances.
