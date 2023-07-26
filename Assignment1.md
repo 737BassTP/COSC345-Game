@@ -6,7 +6,7 @@
 ### 3391288, Thomas Pedersen - Programmer, Music
 I have a master's degree from Falmouth University in Game Development (Audio + Design) and have programmed games and composed music since 2010.
 My online presence is under the nickname 737BassTP.
-### Sean Russell - Programmer
+### 2257106 Sean Russell - Programmer
 I worked with a team for COSC202 as a developer for the ANDIE project, developing image filters and graphic effects to edit an image.
 During summer school I took COSC360 (Video game design) and worked as Head of Development. Our team created a tower defence game named "Alien Interplanetary Defence" using unity and c#.
 ### 1831984 Matthew Yi - Team Lead, Writer, Data Scientist
@@ -94,12 +94,11 @@ INSERT CHART HERE
 ## Similar
 
 ### Games using Nutrition
-
 A quick search for nutrition games comes up with lots of educational games from government organisations or museums such as the Smithsonian with a focus on teaching nutrition. These, although suggesting aimed at students, appeared to be for younger children. The main component of these games were to organise food into food groups or to balance a diet with the correct food groups. Although very educational, these games felt more like a classroom exercise than a game. We feel that our game should still be educational in the sense of passive learning - ie knowing this food is good to eat as it boosts this stat - but contain the charm of RPGs that feel fun to play.
 
 In looking for other games with nutrition elements, survival games came to mind. Whilst most survival games such as Minecraft or Rust require you to eat to maintain your hunger, with foods having a calorie or healing statistic, it seems hard to find many which utilise nutritional needs. One game that does utilise this is SCUM, where each food has target nutrition statistics such as protein, carbs, fats, sodium etc, as well as a vitamin composition. In this game players must maintain all their levels to survive. Although this game uses nutritional data that we may use in our game, this seems quite overboard and detailed. It also appears to be utilising this for realism's sake (along with many other meters) in order to make it hard to survive rather than for a more educational viewpoint. A closer alternative to what might be good to utilise into our game is the Minecraft mod Nutritional Balance. This mod gives vegetable, fruit, carb, protein, and sugar values to the food, where players are benefited for being in target range of the nutrients and penalised for having too much/too little of others. This seems more in line with our game, but is still intended for a survival setting.
 
-Although a lot of games on the market utilise nutritional data, we have not been able to find any that do in the way that our game intends. Nutrition appears to be used as the sole focus of active education, or as a means of making it harder to survive in a game. We believe that by using nutritional data as stats for enemies (based on what food they are), players when eating, and the “theme” of the game is an innovative way to bring passive nutritional education whilst still feeling fun.
+Although a lot of games on the market utilise nutritional data, we have not been able to find any that do in the way that our game intends. Nutrition appears to be used as the sole focus of active education, or as a means of making it harder to survive in a game. We believe that by using nutritional data as stats for enemies (based on what food they are), players when eating, and the “theme” of the game is an innovative way to bring passive nutritional education whilst still being fun.
 
 ### Chibi Knight
 Chibi Knight is a free online game that has a lot of similar elements. It is also a 2D RPG with random encounter combat and special boss fights, but lacks our educational trivia element and a connection to the real world as it is set in a purely fictional fantasy setting.
@@ -110,8 +109,11 @@ Pokemon has a wide map but exploration is limited to an almost linear graph with
 ### Legend of Zelda
 The games in the Zelda series more often than not puts the player on a quest to traverse an overworld as a means of gathering items found in dungeons in order to be able to fight bosses responsible for the chaos in the game world.
 The gameplay involves real-time combat, solving mysterious puzzles, and often sees the characters develop in the story.
+
 ## Evidence of customer interest
 This game has been described to peers and other students not taking this paper, including students in the Master of Teaching and Learning course who will be teaching in secondary schools from next year. Each time, the game has been met with interest and excitement.
+
+Websites like [CoolMathGames](https://www.coolmathgames.com/) have been around for a long time and have maintained popularity throughout. This shows that there is interest in fun games with educational value targeted at children and teenagers.
 
 ## Risk Analysis
 Risks include:
