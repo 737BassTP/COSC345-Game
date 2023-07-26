@@ -17,8 +17,9 @@
 ### 3391288, Thomas Pedersen - Programmer, Music
 I have a master's degree from Falmouth University in Game Development (Audio + Design) and have programmed games and composed music since 2010.
 My online presence is under the nickname 737BassTP.
-### Sven Russel - Programmer
-?
+### Sean Russell - Programmer
+I worked with a team for COSC202 as a developer for the ANDIE project, developing image filters and graphic effects to edit an image.
+During summer school I took COSC360 (Video game design) and worked as Head of Development. Our team created a tower defence game named "Alien Interplanetary Defence" using unity and c#.
 ### 1831984 Matthew Yi - Team Lead, Writer, Data Scientist
 I was team lead for the COSC 202 ANDIE project and under my management our team produced an excellent product well ahead of the deadline with numerous additional features. My experience as a dungeon master for D&D has honed my creative storytelling abilities. I have taken papers in data science and statistics, which will aid my ability to process, manipulate, and make use of big data that has over 100,000 rows. With my blend of leadership, story-telling, and data-driven approach, I believe I am well suited to fill multiple roles in this project.
 
