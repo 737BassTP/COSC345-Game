@@ -1,6 +1,6 @@
 To do:
 
-2023-07-24
+2023-07-27
 	audio sfx (play once)
 	animated tiles
 	keyboard functions (hold, press, release)
@@ -10,6 +10,17 @@ To do:
 
 ----------------
 Finished:
+
+2023-07-26
+	Thomas:
+		Configured the Makefile to run the .exe immediately after compiling.
+		Added a color shade to the two UI interfaces.
+		Added a black background to Sean's health bar.
+		Added prints to identify the SDL version being used (compile + link)
+
+2023-07-25
+	Sean:
+		Added a health bar.
 
 2023-07-24
 	Sean:

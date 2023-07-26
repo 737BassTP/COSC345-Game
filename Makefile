@@ -14,11 +14,15 @@ all:
 	$(CC) -std=c17 $(PROGRAM).c -I "$(SDL2)\include" -L "$(SDL2)\lib" $(CFLAGS) -o $(PROGRAM)
 	$(MAKE) asm
 	@echo Build succeeded!
+	$(MAKE) run
 asm:
 	gcc $(PROGRAM).c -O0 -S -o $(PROGRAM).s $<
 	
 clean:
 	rm -rf *.exe *.s
+	
+run:
+	./$(PROGRAM).exe
 
 obsolete_1:
 	gcc -std=c17 main.c -I "C:\Users\Thomas Pedersen\Documents\UiT\UTV-0001\University of Otago\COSC345 - Game\SDL2\include" -L "C:\Users\Thomas Pedersen\Documents\UiT\UTV-0001\University of Otago\COSC345 - Game\SDL2\lib" -Wall -Wextra -lmingw32 -lSDL2main -lSDL2 -o main

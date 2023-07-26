@@ -95,6 +95,28 @@ double lerp(double from,double to,double percentage)
 	//Lerp = Linear Interpolation.
 	return from+(to-from)*percentage;
 }
+int make_color_hsv(int h,int s,int v)
+{
+	//temporary faulty
+	//source: https://en.wikipedia.org/wiki/HSL_and_HSV
+	double c=(double)v*(double)s;
+	double h1=lerp(0.0,360.0,(double)h/256.0);
+	double h2=(h1/60.0);
+	double x=c*(1.0-(double)abs((int)h2%2-1));
+	double r1,g1,b1;
+	switch ((int)floor(h2))
+	{
+		case 0: {r1=c;g1=x;b1=0.0;} break;
+		case 1: {r1=x;g1=c;b1=0.0;} break;
+		case 2: {r1=0.0;g1=c;b1=x;} break;
+		case 3: {r1=0.0;g1=x;b1=c;} break;
+		case 4: {r1=x;g1=0.0;b1=c;} break;
+		case 5: {r1=c;g1=0.0;b1=x;} break;
+	}
+	double m=(double)v-c;
+	return make_color_rgb(((int)(r1+m))*255,((int)(g1+m))*255,((int)(b1+m))*255);
+}
+
 int draw_get_alpha()
 {
 	return glob_draw_alpha;
@@ -490,23 +512,29 @@ void deactivateAllWaterParticles() {
 int health = 100;
 int maxHealth=100;
 //damaging test
-void damageMe(int dmg){
-	if(health-dmg<=0){
+void damageMe(int dmg)
+{
+	if(health-dmg<=0)
+	{
 		health=0;
 	}
-	else{
-	health -= dmg;
+	else
+	{
+		health -= dmg;
 	}
 }
 //healing test
-void healMe(int dmg){
-	if(health+dmg>=maxHealth){
+void healMe(int dmg)
+{
+	if(health+dmg>=maxHealth)
+	{
 		health=100;
 	}
-	else{
-	health += dmg;
+	else
+	{
+		health += dmg;
 	}
-}
+}					
 //Player.
 struct player
 {
@@ -571,10 +599,21 @@ Entry point.
 */
 int SDL_main(int argc, char *argv[])
 {
-	//Error priting.
+	//Error printing.
 	const size_t bufsize = 0x100;
 	char errmsg[bufsize];
-    
+	
+	//Print SDL2 version.
+	if (1)
+	{
+		SDL_version sdlver_compiled;
+		SDL_version sdlver_linked;
+		SDL_VERSION(&sdlver_compiled);
+		SDL_GetVersion(&sdlver_linked);
+		SDL_Log("Compiled with SDL version %u.%u.%u ...\n",sdlver_compiled.major,sdlver_compiled.minor,sdlver_compiled.patch);
+		SDL_Log("Linked against SDL version %u.%u.%u.\n",sdlver_linked.major,sdlver_linked.minor,sdlver_linked.patch);
+	}
+	
 	//Window size.
 	//Dimensions.
 	const int screen_w = 1366;
@@ -682,6 +721,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *spr_water = IMG_LoadTexture(renderer,"img/spr_water.png");
 	SDL_Texture *spr_lava  = IMG_LoadTexture(renderer,"img/spr_lava.png");
 	SDL_Texture *spr_tileset = IMG_LoadTexture(renderer,"tiled/tileset.png");
+	SDL_Texture *spr_hudshade = IMG_LoadTexture(renderer,"img/hudshade.png");
 	//Player.
 	SDL_Texture *sprstrip_player = IMG_LoadTexture(renderer,"img/player_strip8.png");
 	//Text.
@@ -776,8 +816,6 @@ int SDL_main(int argc, char *argv[])
 	int splashintro_bool=1;
 	SDL_Texture *splashintro_img  = IMG_LoadTexture(renderer,"img/img_lands.png");
 	char* splashintro_string = "Press SPACE to continue.";
-	
-	//durr
 	
 	//Mainloop here.
 	int running=1;
@@ -953,11 +991,12 @@ int SDL_main(int argc, char *argv[])
 			glob_vk_5=0;
 			damageMe(10);
 		}
-				if (glob_vk_6)
+		if (glob_vk_6)
 		{
 			glob_vk_6=0;
 			healMe(10);
-		}
+		}		
+		
 		
 		//Player movement.
 		if (glob_vk_right)
@@ -1097,6 +1136,7 @@ int SDL_main(int argc, char *argv[])
 			0,0,
 			win_game_x,screen_h,
 			c_orange);
+		draw_image(renderer,0,0,win_game_x,screen_h,spr_hudshade);
 		draw_rectangle_color(renderer,//middle
 			win_game_x,0,
 			screen_w-win_game_x,screen_h,
@@ -1105,21 +1145,44 @@ int SDL_main(int argc, char *argv[])
 			screen_w-win_game_x,0,
 			screen_w,screen_h,
 			c_orange);
-		
+		draw_image(renderer,screen_w-win_game_x,0,screen_w,screen_h,spr_hudshade);
 		//SDL_RenderCopy(renderer,png,NULL,NULL);//test: texture fills whole renderer.
 		
 		//UI.
 		int uix,uiy;
-		//UI Left.
+		//UI Left (player).
 		uix = gw; 
-		uiy = 0;
+		uiy = gh;
 		if (!splashintro_bool)
 		{
-			draw_text(renderer,uix,uiy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,"Location:#DUNEDIN#NEW ZEALAND",font_ascii_w,font_ascii_h);
+			draw_text(renderer,uix,uiy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,"HEALTH:",font_ascii_w,font_ascii_h);
+			uiy += font_ascii_h*gh;
+			//health bar
+			if(!splashintro_bool)
+			{
+				//SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+				draw_set_color(renderer,c_white);
+				int maxWidth = 200; // Replace this with the maximum width of the health bar
+				int maxHeight = 20; //this too.
+				int currentWidth = (health * maxWidth) / maxHealth;
+				// Render the red health bar
+				/*
+				SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+				SDL_Rect healthBarRect = { 0, 200, currentWidth, 20 };
+				SDL_RenderFillRect(renderer, &healthBarRect);
+				/**/
+				//int col=make_color_hsv((int)lerp(120.0,0.0,(double)health/(double)maxHealth),255,255);
+				int col=c_red;
+				draw_rectangle_color(renderer,0,uiy,maxWidth,uiy+maxHeight,c_black);
+				draw_rectangle_color(renderer,0,uiy,currentWidth,uiy+maxHeight,col);
+				uiy += maxHeight;
+				
+			}
+			// SDL_RenderPresent(renderer);
 		}
-		//UI Right.
+		//UI Right (world).
 		uix = gw+win_game_x2;
-		uiy = 0;
+		uiy = gh;
 		if (!splashintro_bool)
 		{
 			//Level.
@@ -1298,17 +1361,6 @@ int SDL_main(int argc, char *argv[])
             }
         }
 		
-		//health bar
-		if(!splashintro_bool){
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-		int maxWidth = 200; // Replace this with the maximum width of the health bar
-        int currentWidth = (health * maxWidth) / maxHealth;
-		// Render the red health bar
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_Rect healthBarRect = { 0, 200, currentWidth, 20 };
-        SDL_RenderFillRect(renderer, &healthBarRect);
-		}
-        // SDL_RenderPresent(renderer);
 		/*
 		Overlay Drawing.
 		*/
@@ -1319,6 +1371,20 @@ int SDL_main(int argc, char *argv[])
 			draw_text(renderer,win_game_x,win_game_y,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashintro_string,font_ascii_w,font_ascii_h);
 		}
 		
+		//test pop up chat box (button)
+		if (buttonVis>=1) 
+		{
+            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+            SDL_RenderFillRect(renderer, &buttonRect);
+            // Render text on the button
+            SDL_Color textColor = { 255, 0, 0 }; // Red text color
+            SDL_Surface* textSurface = TTF_RenderText_Solid(font, buttonText, textColor);
+            SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+            SDL_Rect textRect = { buttonRect.x + (buttonRect.w - textSurface->w) / 2, buttonRect.y + (buttonRect.h - textSurface->h) / 2, textSurface->w, textSurface->h };
+            SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+            SDL_FreeSurface(textSurface);
+            SDL_DestroyTexture(textTexture);
+        }
 		// Clear the renderer
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		// Render the score at the bottom left
@@ -1354,6 +1420,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_DestroyTexture(font_ascii);
 	SDL_DestroyTexture(spr_clock_digital);
 	SDL_DestroyTexture(spr_thermometer);
+	SDL_DestroyTexture(spr_hudshade);
 	IMG_Quit();
 	
 	//SDL_FreeWAV(&audio_spec);

@@ -1,21 +1,32 @@
 	.file	"main.c"
 	.text
-	.def	time;	.scl	3;	.type	32;	.endef
-	.seh_proc	time
-time:
+	.def	snprintf;	.scl	3;	.type	32;	.endef
+	.seh_proc	snprintf
+snprintf:
 	pushq	%rbp
 	.seh_pushreg	%rbp
 	movq	%rsp, %rbp
 	.seh_setframe	%rbp, 0
-	subq	$32, %rsp
-	.seh_stackalloc	32
+	subq	$48, %rsp
+	.seh_stackalloc	48
 	.seh_endprologue
 	movq	%rcx, 16(%rbp)
-	movq	16(%rbp), %rax
-	movq	%rax, %rcx
-	movq	__imp__time64(%rip), %rax
-	call	*%rax
-	addq	$32, %rsp
+	movq	%rdx, 24(%rbp)
+	movq	%r8, 32(%rbp)
+	movq	%r9, 40(%rbp)
+	leaq	40(%rbp), %rax
+	movq	%rax, -16(%rbp)
+	movq	-16(%rbp), %rcx
+	movq	32(%rbp), %rdx
+	movq	24(%rbp), %rax
+	movq	%rcx, %r9
+	movq	%rdx, %r8
+	movq	%rax, %rdx
+	movq	16(%rbp), %rcx
+	call	__ms_vsnprintf
+	movl	%eax, -4(%rbp)
+	movl	-4(%rbp), %eax
+	addq	$48, %rsp
 	popq	%rbp
 	ret
 	.seh_endproc
@@ -181,14 +192,13 @@ clear_screen:
 	.seh_pushreg	%rbx
 	subq	$40, %rsp
 	.seh_stackalloc	40
-	leaq	32(%rsp), %rbp
-	.seh_setframe	%rbp, 32
+	leaq	128(%rsp), %rbp
+	.seh_setframe	%rbp, 128
 	.seh_endprologue
-	movq	%rcx, 32(%rbp)
-	movq	32(%rbp), %rax
+	movq	%rcx, -64(%rbp)
 	movl	$-16777152, %r8d
 	movl	$0, %edx
-	movq	%rax, %rcx
+	movq	-64(%rbp), %rcx
 	call	SDL_FillRect
 	testl	%eax, %eax
 	jns	.L5
@@ -197,10 +207,9 @@ clear_screen:
 	movl	$2, %ecx
 	movq	__imp___acrt_iob_func(%rip), %rax
 	call	*%rax
-	movq	%rax, %rcx
 	movq	%rbx, %r8
-	leaq	.LC0(%rip), %rax
-	movq	%rax, %rdx
+	leaq	.LC0(%rip), %rdx
+	movq	%rax, %rcx
 	call	fprintf
 	call	SDL_Quit
 	movl	$1, %ecx
@@ -258,6 +267,160 @@ lerp:
 	popq	%rbp
 	ret
 	.seh_endproc
+	.globl	make_color_hsv
+	.def	make_color_hsv;	.scl	2;	.type	32;	.endef
+	.seh_proc	make_color_hsv
+make_color_hsv:
+	pushq	%rbp
+	.seh_pushreg	%rbp
+	movq	%rsp, %rbp
+	.seh_setframe	%rbp, 0
+	subq	$96, %rsp
+	.seh_stackalloc	96
+	.seh_endprologue
+	movl	%ecx, 16(%rbp)
+	movl	%edx, 24(%rbp)
+	movl	%r8d, 32(%rbp)
+	cvtsi2sd	32(%rbp), %xmm1
+	cvtsi2sd	24(%rbp), %xmm0
+	mulsd	%xmm1, %xmm0
+	movsd	%xmm0, -32(%rbp)
+	cvtsi2sd	16(%rbp), %xmm0
+	movsd	.LC1(%rip), %xmm1
+	divsd	%xmm1, %xmm0
+	movapd	%xmm0, %xmm1
+	movsd	.LC2(%rip), %xmm0
+	movapd	%xmm1, %xmm2
+	movapd	%xmm0, %xmm1
+	pxor	%xmm0, %xmm0
+	call	lerp
+	movq	%xmm0, %rax
+	movq	%rax, -40(%rbp)
+	movsd	-40(%rbp), %xmm0
+	movsd	.LC4(%rip), %xmm1
+	divsd	%xmm1, %xmm0
+	movsd	%xmm0, -48(%rbp)
+	movsd	-48(%rbp), %xmm0
+	cvttsd2si	%xmm0, %eax
+	cltd
+	shrl	$31, %edx
+	addl	%edx, %eax
+	andl	$1, %eax
+	subl	%edx, %eax
+	subl	$1, %eax
+	cltd
+	xorl	%edx, %eax
+	subl	%edx, %eax
+	cvtsi2sd	%eax, %xmm1
+	movsd	.LC5(%rip), %xmm0
+	subsd	%xmm1, %xmm0
+	movsd	-32(%rbp), %xmm1
+	mulsd	%xmm1, %xmm0
+	movsd	%xmm0, -56(%rbp)
+	movq	-48(%rbp), %rax
+	movq	%rax, %xmm0
+	call	floor
+	cvttsd2si	%xmm0, %eax
+	cmpl	$5, %eax
+	ja	.L11
+	movl	%eax, %eax
+	leaq	0(,%rax,4), %rdx
+	leaq	.L13(%rip), %rax
+	movl	(%rdx,%rax), %eax
+	cltq
+	leaq	.L13(%rip), %rdx
+	addq	%rdx, %rax
+	jmp	*%rax
+	.section .rdata,"dr"
+	.align 4
+.L13:
+	.long	.L18-.L13
+	.long	.L17-.L13
+	.long	.L16-.L13
+	.long	.L15-.L13
+	.long	.L14-.L13
+	.long	.L12-.L13
+	.text
+.L18:
+	movsd	-32(%rbp), %xmm0
+	movsd	%xmm0, -8(%rbp)
+	movsd	-56(%rbp), %xmm0
+	movsd	%xmm0, -16(%rbp)
+	pxor	%xmm0, %xmm0
+	movsd	%xmm0, -24(%rbp)
+	jmp	.L11
+.L17:
+	movsd	-56(%rbp), %xmm0
+	movsd	%xmm0, -8(%rbp)
+	movsd	-32(%rbp), %xmm0
+	movsd	%xmm0, -16(%rbp)
+	pxor	%xmm0, %xmm0
+	movsd	%xmm0, -24(%rbp)
+	jmp	.L11
+.L16:
+	pxor	%xmm0, %xmm0
+	movsd	%xmm0, -8(%rbp)
+	movsd	-32(%rbp), %xmm0
+	movsd	%xmm0, -16(%rbp)
+	movsd	-56(%rbp), %xmm0
+	movsd	%xmm0, -24(%rbp)
+	jmp	.L11
+.L15:
+	pxor	%xmm0, %xmm0
+	movsd	%xmm0, -8(%rbp)
+	movsd	-56(%rbp), %xmm0
+	movsd	%xmm0, -16(%rbp)
+	movsd	-32(%rbp), %xmm0
+	movsd	%xmm0, -24(%rbp)
+	jmp	.L11
+.L14:
+	movsd	-56(%rbp), %xmm0
+	movsd	%xmm0, -8(%rbp)
+	pxor	%xmm0, %xmm0
+	movsd	%xmm0, -16(%rbp)
+	movsd	-32(%rbp), %xmm0
+	movsd	%xmm0, -24(%rbp)
+	jmp	.L11
+.L12:
+	movsd	-32(%rbp), %xmm0
+	movsd	%xmm0, -8(%rbp)
+	pxor	%xmm0, %xmm0
+	movsd	%xmm0, -16(%rbp)
+	movsd	-56(%rbp), %xmm0
+	movsd	%xmm0, -24(%rbp)
+	nop
+.L11:
+	cvtsi2sd	32(%rbp), %xmm0
+	subsd	-32(%rbp), %xmm0
+	movsd	%xmm0, -64(%rbp)
+	movsd	-24(%rbp), %xmm0
+	addsd	-64(%rbp), %xmm0
+	cvttsd2si	%xmm0, %eax
+	movl	%eax, %edx
+	sall	$8, %edx
+	subl	%eax, %edx
+	movl	%edx, %r8d
+	movsd	-16(%rbp), %xmm0
+	addsd	-64(%rbp), %xmm0
+	cvttsd2si	%xmm0, %eax
+	movl	%eax, %edx
+	sall	$8, %edx
+	movl	%edx, %ecx
+	subl	%eax, %ecx
+	movsd	-8(%rbp), %xmm0
+	addsd	-64(%rbp), %xmm0
+	cvttsd2si	%xmm0, %eax
+	movl	%eax, %edx
+	sall	$8, %edx
+	subl	%eax, %edx
+	movl	%edx, %eax
+	movl	%ecx, %edx
+	movl	%eax, %ecx
+	call	make_color_rgb
+	addq	$96, %rsp
+	popq	%rbp
+	ret
+	.seh_endproc
 	.globl	draw_get_alpha
 	.def	draw_get_alpha;	.scl	2;	.type	32;	.endef
 	.seh_proc	draw_get_alpha
@@ -304,15 +467,17 @@ draw_set_color:
 	movzbl	%al, %edx
 	movl	24(%rbp), %eax
 	sarl	$16, %eax
-	movzbl	%al, %r9d
-	movl	24(%rbp), %eax
-	sarl	$8, %eax
 	movzbl	%al, %r8d
 	movl	24(%rbp), %eax
+	sarl	$8, %eax
+	movzbl	%al, %ecx
+	movl	24(%rbp), %eax
 	movzbl	%al, %eax
-	movq	16(%rbp), %rcx
 	movl	%edx, 32(%rsp)
+	movl	%r8d, %r9d
+	movl	%ecx, %r8d
 	movl	%eax, %edx
+	movq	16(%rbp), %rcx
 	call	SDL_SetRenderDrawColor
 	nop
 	addq	$48, %rsp
@@ -355,15 +520,17 @@ draw_set_alpha:
 	movzbl	%al, %edx
 	movl	-4(%rbp), %eax
 	sarl	$16, %eax
-	movzbl	%al, %r9d
-	movl	-4(%rbp), %eax
-	sarl	$8, %eax
 	movzbl	%al, %r8d
 	movl	-4(%rbp), %eax
+	sarl	$8, %eax
+	movzbl	%al, %ecx
+	movl	-4(%rbp), %eax
 	movzbl	%al, %eax
-	movq	16(%rbp), %rcx
 	movl	%edx, 32(%rsp)
+	movl	%r8d, %r9d
+	movl	%ecx, %r8d
 	movl	%eax, %edx
+	movq	16(%rbp), %rcx
 	call	SDL_SetRenderDrawColor
 	nop
 	addq	$64, %rsp
@@ -383,12 +550,11 @@ draw_clear:
 	.seh_endprologue
 	movq	%rcx, 16(%rbp)
 	movl	%edx, 24(%rbp)
-	movl	24(%rbp), %edx
-	movq	16(%rbp), %rax
-	movq	%rax, %rcx
+	movl	24(%rbp), %eax
+	movl	%eax, %edx
+	movq	16(%rbp), %rcx
 	call	draw_set_color
-	movq	16(%rbp), %rax
-	movq	%rax, %rcx
+	movq	16(%rbp), %rcx
 	call	SDL_RenderClear
 	nop
 	addq	$32, %rsp
@@ -409,13 +575,13 @@ draw_clear_alpha:
 	movq	%rcx, 16(%rbp)
 	movl	%edx, 24(%rbp)
 	movl	%r8d, 32(%rbp)
-	movl	32(%rbp), %edx
-	movq	16(%rbp), %rax
-	movq	%rax, %rcx
+	movl	32(%rbp), %eax
+	movl	%eax, %edx
+	movq	16(%rbp), %rcx
 	call	draw_set_alpha
-	movl	24(%rbp), %edx
-	movq	16(%rbp), %rax
-	movq	%rax, %rcx
+	movl	24(%rbp), %eax
+	movl	%eax, %edx
+	movq	16(%rbp), %rcx
 	call	draw_clear
 	nop
 	addq	$32, %rsp
@@ -448,8 +614,8 @@ draw_rectangle:
 	subl	32(%rbp), %eax
 	movl	%eax, -4(%rbp)
 	leaq	-16(%rbp), %rax
-	movq	16(%rbp), %rcx
 	movq	%rax, %rdx
+	movq	16(%rbp), %rcx
 	call	SDL_RenderFillRect
 	nop
 	addq	$48, %rsp
@@ -473,21 +639,23 @@ draw_rectangle_color:
 	movl	%r9d, 40(%rbp)
 	call	draw_get_color
 	movl	%eax, -4(%rbp)
-	movl	56(%rbp), %edx
-	movq	16(%rbp), %rax
-	movq	%rax, %rcx
+	movl	56(%rbp), %eax
+	movl	%eax, %edx
+	movq	16(%rbp), %rcx
 	call	draw_set_color
-	movl	40(%rbp), %r9d
-	movl	32(%rbp), %r8d
-	movl	24(%rbp), %edx
-	movq	16(%rbp), %rax
-	movl	48(%rbp), %ecx
-	movl	%ecx, 32(%rsp)
-	movq	%rax, %rcx
+	movl	40(%rbp), %r8d
+	movl	32(%rbp), %ecx
+	movl	24(%rbp), %eax
+	movl	48(%rbp), %edx
+	movl	%edx, 32(%rsp)
+	movl	%r8d, %r9d
+	movl	%ecx, %r8d
+	movl	%eax, %edx
+	movq	16(%rbp), %rcx
 	call	draw_rectangle
-	movl	-4(%rbp), %edx
-	movq	16(%rbp), %rax
-	movq	%rax, %rcx
+	movl	-4(%rbp), %eax
+	movl	%eax, %edx
+	movq	16(%rbp), %rcx
 	call	draw_set_color
 	nop
 	addq	$64, %rsp
@@ -519,12 +687,12 @@ draw_image:
 	movl	48(%rbp), %eax
 	subl	32(%rbp), %eax
 	movl	%eax, -4(%rbp)
-	leaq	-16(%rbp), %rcx
-	movq	56(%rbp), %rdx
-	movq	16(%rbp), %rax
-	movq	%rcx, %r9
+	leaq	-16(%rbp), %rdx
+	movq	56(%rbp), %rax
+	movq	%rdx, %r9
 	movl	$0, %r8d
-	movq	%rax, %rcx
+	movq	%rax, %rdx
+	movq	16(%rbp), %rcx
 	call	SDL_RenderCopy
 	nop
 	addq	$48, %rsp
@@ -564,13 +732,13 @@ draw_image_part:
 	movl	%eax, -24(%rbp)
 	movl	88(%rbp), %eax
 	movl	%eax, -20(%rbp)
-	leaq	-16(%rbp), %r8
-	leaq	-32(%rbp), %rcx
-	movq	56(%rbp), %rdx
-	movq	16(%rbp), %rax
-	movq	%r8, %r9
-	movq	%rcx, %r8
-	movq	%rax, %rcx
+	leaq	-16(%rbp), %rcx
+	leaq	-32(%rbp), %rdx
+	movq	56(%rbp), %rax
+	movq	%rcx, %r9
+	movq	%rdx, %r8
+	movq	%rax, %rdx
+	movq	16(%rbp), %rcx
 	call	SDL_RenderCopy
 	nop
 	addq	$64, %rsp
@@ -604,8 +772,8 @@ draw_text:
 	subl	$32, %eax
 	movl	%eax, -24(%rbp)
 	movl	$0, -12(%rbp)
-	jmp	.L25
-.L28:
+	jmp	.L35
+.L38:
 	movl	-12(%rbp), %eax
 	cltq
 	movq	64(%rbp), %rdx
@@ -616,7 +784,7 @@ draw_text:
 	movl	%eax, -20(%rbp)
 	movl	-20(%rbp), %eax
 	cmpl	-24(%rbp), %eax
-	jne	.L26
+	jne	.L36
 	movl	-12(%rbp), %eax
 	cltq
 	leaq	1(%rax), %rdx
@@ -626,54 +794,50 @@ draw_text:
 	movsbl	%al, %eax
 	subl	$32, %eax
 	cmpl	%eax, -24(%rbp)
-	je	.L26
+	je	.L36
 	movl	$0, -4(%rbp)
 	movl	48(%rbp), %eax
 	addl	%eax, -8(%rbp)
-	jmp	.L27
-.L26:
+	jmp	.L37
+.L36:
 	movl	-20(%rbp), %eax
 	imull	72(%rbp), %eax
-	movl	%eax, %ecx
-	movl	32(%rbp), %edx
-	movl	-8(%rbp), %eax
-	addl	%eax, %edx
-	movl	48(%rbp), %eax
-	leal	(%rdx,%rax), %r8d
-	movl	24(%rbp), %edx
-	movl	-4(%rbp), %eax
-	addl	%eax, %edx
-	movl	40(%rbp), %eax
-	leal	(%rdx,%rax), %r11d
-	movl	32(%rbp), %edx
-	movl	-8(%rbp), %eax
-	leal	(%rdx,%rax), %r10d
-	movl	24(%rbp), %edx
-	movl	-4(%rbp), %eax
-	addl	%eax, %edx
-	movq	16(%rbp), %rax
-	movl	80(%rbp), %r9d
-	movl	%r9d, 72(%rsp)
-	movl	72(%rbp), %r9d
-	movl	%r9d, 64(%rsp)
+	movl	32(%rbp), %ecx
+	movl	-8(%rbp), %edx
+	addl	%edx, %ecx
+	movl	48(%rbp), %edx
+	addl	%edx, %ecx
+	movl	24(%rbp), %r8d
+	movl	-4(%rbp), %edx
+	addl	%edx, %r8d
+	movl	40(%rbp), %edx
+	leal	(%r8,%rdx), %r9d
+	movl	32(%rbp), %r8d
+	movl	-8(%rbp), %edx
+	leal	(%r8,%rdx), %r10d
+	movl	24(%rbp), %r8d
+	movl	-4(%rbp), %edx
+	addl	%r8d, %edx
+	movl	80(%rbp), %r8d
+	movl	%r8d, 72(%rsp)
+	movl	72(%rbp), %r8d
+	movl	%r8d, 64(%rsp)
 	movl	$0, 56(%rsp)
-	movl	%ecx, 48(%rsp)
-	movq	56(%rbp), %rcx
-	movq	%rcx, 40(%rsp)
-	movl	%r8d, 32(%rsp)
-	movl	%r11d, %r9d
+	movl	%eax, 48(%rsp)
+	movq	56(%rbp), %rax
+	movq	%rax, 40(%rsp)
+	movl	%ecx, 32(%rsp)
 	movl	%r10d, %r8d
-	movq	%rax, %rcx
+	movq	16(%rbp), %rcx
 	call	draw_image_part
 	movl	40(%rbp), %eax
 	addl	%eax, -4(%rbp)
-.L27:
+.L37:
 	addl	$1, -12(%rbp)
-.L25:
+.L35:
 	movl	-12(%rbp), %eax
 	cmpl	-16(%rbp), %eax
-	jl	.L28
-	nop
+	jl	.L38
 	nop
 	addq	$112, %rsp
 	popq	%rbp
@@ -744,18 +908,18 @@ mux_int:
 	movl	(%rax), %eax
 	movl	%eax, -4(%rbp)
 	movl	$0, -8(%rbp)
-	jmp	.L36
-.L37:
+	jmp	.L46
+.L47:
 	movq	-16(%rbp), %rax
 	leaq	8(%rax), %rdx
 	movq	%rdx, -16(%rbp)
 	movl	(%rax), %eax
 	movl	%eax, -4(%rbp)
 	addl	$1, -8(%rbp)
-.L36:
+.L46:
 	movl	-8(%rbp), %eax
 	cmpl	16(%rbp), %eax
-	jl	.L37
+	jl	.L47
 	movl	-4(%rbp), %eax
 	addq	$16, %rsp
 	popq	%rbp
@@ -785,18 +949,18 @@ mux_str:
 	cltq
 	movq	%rax, -8(%rbp)
 	movl	$0, -12(%rbp)
-	jmp	.L40
-.L41:
+	jmp	.L50
+.L51:
 	movq	-24(%rbp), %rax
 	leaq	8(%rax), %rdx
 	movq	%rdx, -24(%rbp)
 	movq	(%rax), %rax
 	movq	%rax, -8(%rbp)
 	addl	$1, -12(%rbp)
-.L40:
+.L50:
 	movl	-12(%rbp), %eax
 	cmpl	16(%rbp), %eax
-	jl	.L41
+	jl	.L51
 	movq	-8(%rbp), %rax
 	addq	$32, %rsp
 	popq	%rbp
@@ -825,18 +989,18 @@ mux_sdltex:
 	movl	(%rax), %eax
 	movl	%eax, -4(%rbp)
 	movl	$0, -8(%rbp)
-	jmp	.L44
-.L45:
+	jmp	.L54
+.L55:
 	movq	-16(%rbp), %rax
 	leaq	8(%rax), %rdx
 	movq	%rdx, -16(%rbp)
 	movq	(%rax), %rax
 	movl	%eax, -4(%rbp)
 	addl	$1, -8(%rbp)
-.L44:
+.L54:
 	movl	-8(%rbp), %eax
 	cmpl	16(%rbp), %eax
-	jl	.L45
+	jl	.L55
 	movl	-4(%rbp), %eax
 	cltq
 	addq	$16, %rsp
@@ -867,8 +1031,8 @@ pos_int:
 	movl	%eax, -8(%rbp)
 	movl	$0, -4(%rbp)
 	movl	$0, -4(%rbp)
-	jmp	.L48
-.L51:
+	jmp	.L58
+.L61:
 	movq	-24(%rbp), %rax
 	leaq	8(%rax), %rdx
 	movq	%rdx, -24(%rbp)
@@ -876,17 +1040,17 @@ pos_int:
 	movl	%eax, -12(%rbp)
 	movl	24(%rbp), %eax
 	cmpl	-12(%rbp), %eax
-	jne	.L49
+	jne	.L59
 	movl	-4(%rbp), %eax
-	jmp	.L52
-.L49:
+	jmp	.L62
+.L59:
 	addl	$1, -4(%rbp)
-.L48:
+.L58:
 	movl	-4(%rbp), %eax
 	cmpl	16(%rbp), %eax
-	jl	.L51
+	jl	.L61
 	movl	$-1, %eax
-.L52:
+.L62:
 	addq	$32, %rsp
 	popq	%rbp
 	ret
@@ -949,7 +1113,7 @@ sqr:
 	.seh_endprologue
 	movl	%ecx, 16(%rbp)
 	movl	16(%rbp), %eax
-	imull	%eax, %eax
+	imull	16(%rbp), %eax
 	popq	%rbp
 	ret
 	.seh_endproc
@@ -964,10 +1128,10 @@ degtorad:
 	.seh_endprologue
 	movsd	%xmm0, 16(%rbp)
 	movsd	16(%rbp), %xmm0
-	movsd	.LC1(%rip), %xmm2
+	movsd	.LC6(%rip), %xmm1
+	divsd	%xmm1, %xmm0
 	movapd	%xmm0, %xmm1
-	divsd	%xmm2, %xmm1
-	movsd	.LC2(%rip), %xmm0
+	movsd	.LC7(%rip), %xmm0
 	mulsd	%xmm1, %xmm0
 	movq	%xmm0, %rax
 	movq	%rax, %xmm0
@@ -985,10 +1149,10 @@ radtodeg:
 	.seh_endprologue
 	movsd	%xmm0, 16(%rbp)
 	movsd	16(%rbp), %xmm0
-	movsd	.LC2(%rip), %xmm2
+	movsd	.LC7(%rip), %xmm1
+	divsd	%xmm1, %xmm0
 	movapd	%xmm0, %xmm1
-	divsd	%xmm2, %xmm1
-	movsd	.LC1(%rip), %xmm0
+	movsd	.LC6(%rip), %xmm0
 	mulsd	%xmm1, %xmm0
 	movq	%xmm0, %rax
 	movq	%rax, %xmm0
@@ -1026,21 +1190,21 @@ point_in_rectangle:
 	movl	%r9d, 40(%rbp)
 	movl	16(%rbp), %eax
 	cmpl	32(%rbp), %eax
-	jl	.L66
+	jl	.L76
 	movl	16(%rbp), %eax
 	cmpl	48(%rbp), %eax
-	jge	.L66
+	jge	.L76
 	movl	24(%rbp), %eax
 	cmpl	40(%rbp), %eax
-	jl	.L66
+	jl	.L76
 	movl	24(%rbp), %eax
 	cmpl	56(%rbp), %eax
-	jge	.L66
+	jge	.L76
 	movl	$1, %eax
-	jmp	.L68
-.L66:
+	jmp	.L78
+.L76:
 	movl	$0, %eax
-.L68:
+.L78:
 	popq	%rbp
 	ret
 	.seh_endproc
@@ -1060,15 +1224,17 @@ rectangle_in_rectangle:
 	movl	%r8d, 32(%rbp)
 	movl	%r9d, 40(%rbp)
 	movl	$0, -4(%rbp)
-	movl	56(%rbp), %r9d
-	movl	48(%rbp), %r8d
-	movl	24(%rbp), %edx
-	movl	16(%rbp), %eax
-	movl	72(%rbp), %ecx
-	movl	%ecx, 40(%rsp)
-	movl	64(%rbp), %ecx
-	movl	%ecx, 32(%rsp)
-	movl	%eax, %ecx
+	movl	56(%rbp), %r8d
+	movl	48(%rbp), %ecx
+	movl	24(%rbp), %eax
+	movl	72(%rbp), %edx
+	movl	%edx, 40(%rsp)
+	movl	64(%rbp), %edx
+	movl	%edx, 32(%rsp)
+	movl	%r8d, %r9d
+	movl	%ecx, %r8d
+	movl	%eax, %edx
+	movl	16(%rbp), %ecx
 	call	point_in_rectangle
 	addl	%eax, -4(%rbp)
 	movl	56(%rbp), %r9d
@@ -1082,15 +1248,17 @@ rectangle_in_rectangle:
 	movl	%eax, %ecx
 	call	point_in_rectangle
 	addl	%eax, -4(%rbp)
-	movl	56(%rbp), %r9d
-	movl	48(%rbp), %r8d
-	movl	40(%rbp), %edx
-	movl	16(%rbp), %eax
-	movl	72(%rbp), %ecx
-	movl	%ecx, 40(%rsp)
-	movl	64(%rbp), %ecx
-	movl	%ecx, 32(%rsp)
-	movl	%eax, %ecx
+	movl	56(%rbp), %r8d
+	movl	48(%rbp), %ecx
+	movl	40(%rbp), %eax
+	movl	72(%rbp), %edx
+	movl	%edx, 40(%rsp)
+	movl	64(%rbp), %edx
+	movl	%edx, 32(%rsp)
+	movl	%r8d, %r9d
+	movl	%ecx, %r8d
+	movl	%eax, %edx
+	movl	16(%rbp), %ecx
 	call	point_in_rectangle
 	addl	%eax, -4(%rbp)
 	movl	56(%rbp), %r9d
@@ -1105,17 +1273,17 @@ rectangle_in_rectangle:
 	call	point_in_rectangle
 	addl	%eax, -4(%rbp)
 	cmpl	$0, -4(%rbp)
-	jne	.L70
+	jne	.L80
 	movl	$0, %eax
-	jmp	.L71
-.L70:
+	jmp	.L81
+.L80:
 	cmpl	$4, -4(%rbp)
-	jne	.L72
+	jne	.L82
 	movl	$1, %eax
-	jmp	.L71
-.L72:
+	jmp	.L81
+.L82:
 	movl	$2, %eax
-.L71:
+.L81:
 	addq	$64, %rsp
 	popq	%rbp
 	ret
@@ -1143,8 +1311,8 @@ string_pos:
 	movl	%eax, -20(%rbp)
 	movl	$0, -24(%rbp)
 	movl	$0, -4(%rbp)
-	jmp	.L74
-.L77:
+	jmp	.L84
+.L87:
 	movl	-4(%rbp), %eax
 	cltq
 	movq	24(%rbp), %rdx
@@ -1156,17 +1324,17 @@ string_pos:
 	movl	%eax, %edx
 	movq	-32(%rbp), %rax
 	cmpb	%al, %dl
-	jne	.L75
+	jne	.L85
 	movl	-4(%rbp), %eax
-	jmp	.L76
-.L75:
+	jmp	.L86
+.L85:
 	addl	$1, -4(%rbp)
-.L74:
+.L84:
 	movl	-4(%rbp), %eax
 	cmpl	-20(%rbp), %eax
-	jl	.L77
+	jl	.L87
 	movl	$-1, %eax
-.L76:
+.L86:
 	addq	$64, %rsp
 	popq	%rbp
 	ret
@@ -1184,13 +1352,8 @@ darctan2:
 	.seh_endprologue
 	movl	%ecx, 16(%rbp)
 	movl	%edx, 24(%rbp)
-	pxor	%xmm0, %xmm0
-	cvtsi2sdl	24(%rbp), %xmm0
-	pxor	%xmm2, %xmm2
-	cvtsi2sdl	16(%rbp), %xmm2
-	movq	%xmm2, %rax
-	movapd	%xmm0, %xmm1
-	movq	%rax, %xmm0
+	cvtsi2sd	24(%rbp), %xmm1
+	cvtsi2sd	16(%rbp), %xmm0
 	call	atan2
 	movq	%xmm0, %rax
 	movq	%rax, %xmm0
@@ -1214,21 +1377,22 @@ cartodir:
 	.seh_endprologue
 	movl	%ecx, 16(%rbp)
 	movl	%edx, 24(%rbp)
-	movl	16(%rbp), %edx
 	movl	24(%rbp), %eax
+	movl	16(%rbp), %edx
 	movl	%eax, %ecx
 	call	darctan2
-	movsd	.LC3(%rip), %xmm1
+	movapd	%xmm0, %xmm1
+	movsd	.LC2(%rip), %xmm0
 	addsd	%xmm1, %xmm0
 	movsd	%xmm0, -8(%rbp)
 	movsd	-8(%rbp), %xmm0
-	comisd	.LC3(%rip), %xmm0
-	jb	.L81
+	comisd	.LC2(%rip), %xmm0
+	jb	.L91
 	movsd	-8(%rbp), %xmm0
-	movsd	.LC3(%rip), %xmm1
+	movsd	.LC2(%rip), %xmm1
 	subsd	%xmm1, %xmm0
 	movsd	%xmm0, -8(%rbp)
-.L81:
+.L91:
 	movsd	-8(%rbp), %xmm0
 	movq	%xmm0, %rax
 	movq	%rax, %xmm0
@@ -1253,17 +1417,17 @@ game_level_load:
 	.seh_endproc
 	.section .rdata,"dr"
 	.align 8
-.LC4:
-	.ascii "may take a while; please wait.\0"
-.LC5:
-	.ascii "rb\0"
-.LC6:
-	.ascii "tiled/cosc345-game.tmx\0"
-.LC7:
-	.ascii "wb\0"
 .LC8:
-	.ascii "level.dat\0"
+	.ascii "may take a while; please wait.\0"
+.LC9:
+	.ascii "rb\0"
 .LC10:
+	.ascii "tiled/cosc345-game.tmx\0"
+.LC11:
+	.ascii "wb\0"
+.LC12:
+	.ascii "level.dat\0"
+.LC14:
 	.ascii "i=%i/%i (v=%i)\12\0"
 	.text
 	.globl	dev_tiled_to_leveldata
@@ -1281,20 +1445,15 @@ dev_tiled_to_leveldata:
 	leaq	128(%rsp), %rbp
 	.seh_setframe	%rbp, 128
 	.seh_endprologue
-	leaq	.LC4(%rip), %rax
-	movq	%rax, %rcx
+	leaq	.LC8(%rip), %rcx
 	call	puts
 	movl	$0, glob_vk_f2(%rip)
-	leaq	.LC5(%rip), %rax
-	movq	%rax, %rdx
-	leaq	.LC6(%rip), %rax
-	movq	%rax, %rcx
+	leaq	.LC9(%rip), %rdx
+	leaq	.LC10(%rip), %rcx
 	call	fopen
 	movq	%rax, 131040(%rbp)
-	leaq	.LC7(%rip), %rax
-	movq	%rax, %rdx
-	leaq	.LC8(%rip), %rax
-	movq	%rax, %rcx
+	leaq	.LC11(%rip), %rdx
+	leaq	.LC12(%rip), %rcx
 	call	fopen
 	movq	%rax, 131032(%rbp)
 	movl	$2, 131028(%rbp)
@@ -1303,16 +1462,16 @@ dev_tiled_to_leveldata:
 	sall	$16, %eax
 	movl	%eax, 131020(%rbp)
 	movl	$0, 131068(%rbp)
-	jmp	.L87
-.L88:
+	jmp	.L97
+.L98:
 	movl	131068(%rbp), %eax
 	cltq
 	movb	$0, -80(%rbp,%rax)
 	addl	$1, 131068(%rbp)
-.L87:
+.L97:
 	movl	131068(%rbp), %eax
 	cmpl	131020(%rbp), %eax
-	jl	.L88
+	jl	.L98
 	movq	131040(%rbp), %rax
 	movl	$0, %r8d
 	movl	$503, %edx
@@ -1325,36 +1484,36 @@ dev_tiled_to_leveldata:
 	movl	$0, 131008(%rbp)
 	movl	$0, 131004(%rbp)
 	movl	$0, 131056(%rbp)
-	jmp	.L89
-.L97:
+	jmp	.L99
+.L107:
 	movq	131040(%rbp), %rax
 	movq	%rax, %rcx
 	call	fgetc
 	movl	%eax, 131064(%rbp)
 	movl	$0, 131052(%rbp)
-	jmp	.L90
-.L91:
+	jmp	.L100
+.L101:
 	movl	131052(%rbp), %eax
 	cltq
 	movb	$48, -83(%rbp,%rax)
 	addl	$1, 131052(%rbp)
-.L90:
+.L100:
 	cmpl	$2, 131052(%rbp)
-	jle	.L91
-	jmp	.L92
-.L93:
+	jle	.L101
+	jmp	.L102
+.L103:
 	movq	131040(%rbp), %rax
 	movq	%rax, %rcx
 	call	fgetc
 	movl	%eax, 131064(%rbp)
-.L92:
+.L102:
 	cmpl	$13, 131064(%rbp)
-	je	.L93
+	je	.L103
 	cmpl	$10, 131064(%rbp)
-	je	.L93
+	je	.L103
 	movzbl	131019(%rbp), %eax
 	cmpl	%eax, 131064(%rbp)
-	je	.L94
+	je	.L104
 	movzbl	-81(%rbp), %eax
 	movb	%al, -82(%rbp)
 	movl	131064(%rbp), %eax
@@ -1365,18 +1524,18 @@ dev_tiled_to_leveldata:
 	movl	%eax, 131064(%rbp)
 	movzbl	131019(%rbp), %eax
 	cmpl	%eax, 131064(%rbp)
-	je	.L94
+	je	.L104
 	movzbl	-82(%rbp), %eax
 	movb	%al, -83(%rbp)
 	movzbl	-81(%rbp), %eax
 	movb	%al, -82(%rbp)
 	movl	131064(%rbp), %eax
 	movb	%al, -81(%rbp)
-.L94:
+.L104:
 	movb	$0, 131063(%rbp)
 	movl	$0, 131048(%rbp)
-	jmp	.L95
-.L96:
+	jmp	.L105
+.L106:
 	movl	131048(%rbp), %eax
 	cltq
 	movzbl	-83(%rbp,%rax), %eax
@@ -1384,28 +1543,26 @@ dev_tiled_to_leveldata:
 	leal	-48(%rax), %ebx
 	movl	$2, %eax
 	subl	131048(%rbp), %eax
-	pxor	%xmm0, %xmm0
-	cvtsi2sdl	%eax, %xmm0
-	movq	.LC9(%rip), %rax
+	cvtsi2sd	%eax, %xmm0
+	movq	.LC13(%rip), %rax
 	movapd	%xmm0, %xmm1
 	movq	%rax, %xmm0
 	call	pow
-	cvttsd2sil	%xmm0, %eax
+	cvttsd2si	%xmm0, %eax
 	movzbl	%al, %eax
 	imull	%ebx, %eax
 	addb	%al, 131063(%rbp)
 	addl	$1, 131048(%rbp)
-.L95:
+.L105:
 	cmpl	$2, 131048(%rbp)
-	jle	.L96
+	jle	.L106
 	movzbl	131063(%rbp), %edx
 	movl	131024(%rbp), %ecx
 	movl	131056(%rbp), %eax
 	movl	%edx, %r9d
 	movl	%ecx, %r8d
 	movl	%eax, %edx
-	leaq	.LC10(%rip), %rax
-	movq	%rax, %rcx
+	leaq	.LC14(%rip), %rcx
 	call	printf
 	subb	$1, 131063(%rbp)
 	movl	131056(%rbp), %eax
@@ -1431,14 +1588,13 @@ dev_tiled_to_leveldata:
 	movzbl	131063(%rbp), %eax
 	movb	%al, -80(%rbp,%rdx)
 	addl	$1, 131056(%rbp)
-.L89:
+.L99:
 	movl	131056(%rbp), %eax
 	cmpl	131024(%rbp), %eax
-	jl	.L97
+	jl	.L107
 	movb	$0, 131063(%rbp)
 	movl	$0, 131012(%rbp)
 	movl	$0, 131000(%rbp)
-	nop
 	movl	131000(%rbp), %eax
 	cmpl	131024(%rbp), %eax
 	movl	131020(%rbp), %eax
@@ -1476,7 +1632,7 @@ play_WAV:
 	ret
 	.seh_endproc
 	.section .rdata,"dr"
-.LC11:
+.LC15:
 	.ascii "location.dat\0"
 	.text
 	.globl	level_get_name
@@ -1492,15 +1648,13 @@ level_get_name:
 	.seh_endprologue
 	movl	%ecx, 16(%rbp)
 	movq	%rdx, 24(%rbp)
-	leaq	.LC5(%rip), %rax
-	movq	%rax, %rdx
-	leaq	.LC11(%rip), %rax
-	movq	%rax, %rcx
+	leaq	.LC9(%rip), %rdx
+	leaq	.LC15(%rip), %rcx
 	call	fopen
 	movq	%rax, -16(%rbp)
-	movl	16(%rbp), %edx
 	movq	-16(%rbp), %rax
 	movl	$0, %r8d
+	movl	16(%rbp), %edx
 	movq	%rax, %rcx
 	call	fseek
 	movq	-16(%rbp), %rax
@@ -1518,8 +1672,8 @@ level_get_name:
 	movl	$16, %edx
 	movq	%rax, %rcx
 	call	fgets
-	jmp	.L103
-.L104:
+	jmp	.L111
+.L112:
 	movq	-16(%rbp), %rdx
 	movq	24(%rbp), %rax
 	movq	%rdx, %r8
@@ -1527,9 +1681,9 @@ level_get_name:
 	movq	%rax, %rcx
 	call	fgets
 	subl	$1, -4(%rbp)
-.L103:
+.L111:
 	cmpl	$0, -4(%rbp)
-	jg	.L104
+	jg	.L112
 	movq	-16(%rbp), %rax
 	movq	%rax, %rcx
 	call	fclose
@@ -1543,12 +1697,9 @@ level_get_name:
 	.align 4
 MAX_WATER_PARTICLES:
 	.long	100
-	.globl	waterParticles
-	.bss
-	.align 8
-waterParticles:
-	.space 8
+	.comm	waterParticles, 8, 3
 	.globl	waterOn
+	.bss
 	.align 4
 waterOn:
 	.space 4
@@ -1568,25 +1719,26 @@ createWaterParticle:
 	movl	%edx, 24(%rbp)
 	movl	%r8d, 32(%rbp)
 	call	rand
-	movl	%eax, %edx
-	movslq	%edx, %rax
-	imulq	$1427937179, %rax, %rax
-	shrq	$32, %rax
-	sarl	$8, %eax
-	movl	%edx, %ecx
-	sarl	$31, %ecx
-	subl	%ecx, %eax
-	imull	$770, %eax, %ecx
+	movl	%eax, %ecx
+	movl	$1427937179, %edx
+	movl	%ecx, %eax
+	imull	%edx
+	sarl	$8, %edx
+	movl	%ecx, %eax
+	sarl	$31, %eax
+	subl	%eax, %edx
 	movl	%edx, %eax
-	subl	%ecx, %eax
+	imull	$770, %eax, %eax
+	subl	%eax, %ecx
+	movl	%ecx, %eax
 	leal	298(%rax), %ecx
-	movq	waterParticles(%rip), %rdx
+	leaq	waterParticles(%rip), %rax
+	movq	(%rax), %rdx
 	movl	16(%rbp), %eax
 	cltq
 	salq	$4, %rax
 	addq	%rdx, %rax
-	pxor	%xmm0, %xmm0
-	cvtsi2ssl	%ecx, %xmm0
+	cvtsi2ss	%ecx, %xmm0
 	movss	%xmm0, (%rax)
 	call	rand
 	cltd
@@ -1594,22 +1746,24 @@ createWaterParticle:
 	movl	%edx, %eax
 	negl	%eax
 	movl	%eax, %ecx
-	movq	waterParticles(%rip), %rdx
+	leaq	waterParticles(%rip), %rax
+	movq	(%rax), %rdx
 	movl	16(%rbp), %eax
 	cltq
 	salq	$4, %rax
 	addq	%rdx, %rax
-	pxor	%xmm0, %xmm0
-	cvtsi2ssl	%ecx, %xmm0
+	cvtsi2ss	%ecx, %xmm0
 	movss	%xmm0, 4(%rax)
-	movq	waterParticles(%rip), %rdx
+	leaq	waterParticles(%rip), %rax
+	movq	(%rax), %rdx
 	movl	16(%rbp), %eax
 	cltq
 	salq	$4, %rax
 	addq	%rdx, %rax
-	movss	.LC12(%rip), %xmm0
+	movss	.LC16(%rip), %xmm0
 	movss	%xmm0, 8(%rax)
-	movq	waterParticles(%rip), %rdx
+	leaq	waterParticles(%rip), %rax
+	movq	(%rax), %rdx
 	movl	16(%rbp), %eax
 	cltq
 	salq	$4, %rax
@@ -1632,20 +1786,20 @@ activateAllWaterParticles:
 	.seh_stackalloc	16
 	.seh_endprologue
 	movl	$0, -4(%rbp)
-	jmp	.L108
-.L109:
-	movq	waterParticles(%rip), %rdx
+	jmp	.L116
+.L117:
+	leaq	waterParticles(%rip), %rax
+	movq	(%rax), %rdx
 	movl	-4(%rbp), %eax
 	cltq
 	salq	$4, %rax
 	addq	%rdx, %rax
 	movl	$1, 12(%rax)
 	addl	$1, -4(%rbp)
-.L108:
+.L116:
 	movl	$100, %eax
 	cmpl	%eax, -4(%rbp)
-	jl	.L109
-	nop
+	jl	.L117
 	nop
 	addq	$16, %rsp
 	popq	%rbp
@@ -1663,20 +1817,20 @@ deactivateAllWaterParticles:
 	.seh_stackalloc	16
 	.seh_endprologue
 	movl	$0, -4(%rbp)
-	jmp	.L111
-.L112:
-	movq	waterParticles(%rip), %rdx
+	jmp	.L119
+.L120:
+	leaq	waterParticles(%rip), %rax
+	movq	(%rax), %rdx
 	movl	-4(%rbp), %eax
 	cltq
 	salq	$4, %rax
 	addq	%rdx, %rax
 	movl	$0, 12(%rax)
 	addl	$1, -4(%rbp)
-.L111:
+.L119:
 	movl	$100, %eax
 	cmpl	%eax, -4(%rbp)
-	jl	.L112
-	nop
+	jl	.L120
 	nop
 	addq	$16, %rsp
 	popq	%rbp
@@ -1705,14 +1859,14 @@ damageMe:
 	movl	health(%rip), %eax
 	subl	16(%rbp), %eax
 	testl	%eax, %eax
-	jg	.L114
+	jg	.L122
 	movl	$0, health(%rip)
-	jmp	.L116
-.L114:
+	jmp	.L124
+.L122:
 	movl	health(%rip), %eax
 	subl	16(%rbp), %eax
 	movl	%eax, health(%rip)
-.L116:
+.L124:
 	nop
 	popq	%rbp
 	ret
@@ -1732,15 +1886,15 @@ healMe:
 	addl	%eax, %edx
 	movl	maxHealth(%rip), %eax
 	cmpl	%eax, %edx
-	jl	.L118
+	jl	.L126
 	movl	$100, health(%rip)
-	jmp	.L120
-.L118:
+	jmp	.L128
+.L126:
 	movl	health(%rip), %edx
 	movl	16(%rbp), %eax
 	addl	%edx, %eax
 	movl	%eax, health(%rip)
-.L120:
+.L128:
 	nop
 	popq	%rbp
 	ret
@@ -1766,21 +1920,20 @@ audioCallback:
 	movq	-8(%rbp), %rax
 	movl	8(%rax), %eax
 	cmpl	%eax, %edx
-	jb	.L122
+	jb	.L130
 	movq	-8(%rbp), %rax
 	movl	$0, 12(%rax)
-.L122:
+.L130:
 	movq	-8(%rbp), %rax
-	movl	8(%rax), %ecx
+	movl	8(%rax), %edx
 	movq	-8(%rbp), %rax
-	movl	12(%rax), %edx
-	movl	%ecx, %eax
-	subl	%edx, %eax
+	movl	12(%rax), %eax
+	subl	%eax, %edx
+	movl	%edx, %eax
 	movl	%eax, -12(%rbp)
 	movl	32(%rbp), %eax
-	movl	-12(%rbp), %edx
-	cmpl	%eax, %edx
-	cmovbe	%edx, %eax
+	cmpl	%eax, -12(%rbp)
+	cmovbe	-12(%rbp), %eax
 	movl	%eax, -16(%rbp)
 	movl	-16(%rbp), %ecx
 	movq	-8(%rbp), %rax
@@ -1814,19 +1967,20 @@ clock_get_hour:
 	.seh_setframe	%rbp, 0
 	.seh_endprologue
 	movl	%ecx, 16(%rbp)
-	movl	16(%rbp), %eax
-	movslq	%eax, %rdx
-	imulq	$-2004318071, %rdx, %rdx
-	shrq	$32, %rdx
-	addl	%eax, %edx
-	sarl	$5, %edx
+	movl	16(%rbp), %ecx
+	movl	$-2004318071, %edx
+	movl	%ecx, %eax
+	imull	%edx
+	leal	(%rdx,%rcx), %eax
+	sarl	$5, %eax
+	movl	%eax, %edx
+	movl	%ecx, %eax
 	sarl	$31, %eax
 	movl	%edx, %ecx
 	subl	%eax, %ecx
-	movslq	%ecx, %rax
-	imulq	$715827883, %rax, %rax
-	shrq	$32, %rax
-	movl	%eax, %edx
+	movl	$715827883, %edx
+	movl	%ecx, %eax
+	imull	%edx
 	sarl	$2, %edx
 	movl	%ecx, %eax
 	sarl	$31, %eax
@@ -1856,12 +2010,13 @@ clock_get_minute:
 	imulq	$-2004318071, %rdx, %rdx
 	shrq	$32, %rdx
 	addl	%eax, %edx
-	sarl	$5, %edx
-	movl	%eax, %ecx
-	sarl	$31, %ecx
-	subl	%ecx, %edx
-	imull	$60, %edx, %ecx
-	subl	%ecx, %eax
+	movl	%edx, %ecx
+	sarl	$5, %ecx
+	cltd
+	subl	%edx, %ecx
+	movl	%ecx, %edx
+	imull	$60, %edx, %edx
+	subl	%edx, %eax
 	movl	%eax, %edx
 	movl	%edx, %eax
 	popq	%rbp
@@ -1883,10 +2038,9 @@ clock_is_between:
 	movl	%r8d, 32(%rbp)
 	movl	%r9d, 40(%rbp)
 	movl	24(%rbp), %ecx
-	movslq	%ecx, %rax
-	imulq	$715827883, %rax, %rax
-	shrq	$32, %rax
-	movl	%eax, %edx
+	movl	$715827883, %edx
+	movl	%ecx, %eax
+	imull	%edx
 	sarl	$2, %edx
 	movl	%ecx, %eax
 	sarl	$31, %eax
@@ -1897,26 +2051,26 @@ clock_is_between:
 	sall	$3, %eax
 	subl	%eax, %ecx
 	movl	%ecx, %edx
-	imull	$60, %edx, %r8d
+	imull	$60, %edx, %ecx
 	movl	32(%rbp), %eax
 	movslq	%eax, %rdx
 	imulq	$-2004318071, %rdx, %rdx
 	shrq	$32, %rdx
 	addl	%eax, %edx
 	sarl	$5, %edx
-	movl	%eax, %ecx
-	sarl	$31, %ecx
-	subl	%ecx, %edx
-	imull	$60, %edx, %ecx
-	subl	%ecx, %eax
+	movl	%edx, %r8d
+	cltd
+	subl	%edx, %r8d
+	movl	%r8d, %edx
+	imull	$60, %edx, %edx
+	subl	%edx, %eax
 	movl	%eax, %edx
-	leal	(%r8,%rdx), %eax
+	leal	(%rcx,%rdx), %eax
 	movl	%eax, -4(%rbp)
 	movl	40(%rbp), %ecx
-	movslq	%ecx, %rax
-	imulq	$715827883, %rax, %rax
-	shrq	$32, %rax
-	movl	%eax, %edx
+	movl	$715827883, %edx
+	movl	%ecx, %eax
+	imull	%edx
 	sarl	$2, %edx
 	movl	%ecx, %eax
 	sarl	$31, %eax
@@ -1927,32 +2081,33 @@ clock_is_between:
 	sall	$3, %eax
 	subl	%eax, %ecx
 	movl	%ecx, %edx
-	imull	$60, %edx, %r8d
+	imull	$60, %edx, %ecx
 	movl	48(%rbp), %eax
 	movslq	%eax, %rdx
 	imulq	$-2004318071, %rdx, %rdx
 	shrq	$32, %rdx
 	addl	%eax, %edx
 	sarl	$5, %edx
-	movl	%eax, %ecx
-	sarl	$31, %ecx
-	subl	%ecx, %edx
-	imull	$60, %edx, %ecx
-	subl	%ecx, %eax
+	movl	%edx, %r8d
+	cltd
+	subl	%edx, %r8d
+	movl	%r8d, %edx
+	imull	$60, %edx, %edx
+	subl	%edx, %eax
 	movl	%eax, %edx
-	leal	(%r8,%rdx), %eax
+	leal	(%rcx,%rdx), %eax
 	movl	%eax, -8(%rbp)
 	movl	16(%rbp), %eax
 	cmpl	-4(%rbp), %eax
-	jl	.L128
+	jl	.L136
 	movl	16(%rbp), %eax
 	cmpl	-8(%rbp), %eax
-	jg	.L128
+	jg	.L136
 	movl	$1, %eax
-	jmp	.L130
-.L128:
+	jmp	.L138
+.L136:
 	movl	$0, %eax
-.L130:
+.L138:
 	addq	$16, %rsp
 	popq	%rbp
 	ret
@@ -1967,11 +2122,10 @@ temp_ctof:
 	.seh_setframe	%rbp, 0
 	.seh_endprologue
 	movl	%ecx, 16(%rbp)
-	pxor	%xmm1, %xmm1
-	cvtsi2sdl	16(%rbp), %xmm1
-	movsd	.LC13(%rip), %xmm0
+	cvtsi2sd	16(%rbp), %xmm1
+	movsd	.LC17(%rip), %xmm0
 	mulsd	%xmm0, %xmm1
-	movsd	.LC14(%rip), %xmm0
+	movsd	.LC18(%rip), %xmm0
 	addsd	%xmm1, %xmm0
 	movq	%xmm0, %rax
 	movq	%rax, %xmm0
@@ -1980,106 +2134,114 @@ temp_ctof:
 	.seh_endproc
 	.section .rdata,"dr"
 	.align 8
-.LC15:
-	.ascii "Failed to allocate memory for water particles\12\0"
-.LC16:
-	.ascii "SDL init error:%s\12\0"
-.LC17:
-	.ascii "COSC345 - Game\0"
-.LC18:
-	.ascii "Window error\0"
 .LC19:
-	.ascii "Render error\0"
+	.ascii "Compiled with SDL version %u.%u.%u ...\12\0"
+	.align 8
 .LC20:
-	.ascii "Surface error\0"
+	.ascii "Linked against SDL version %u.%u.%u.\12\0"
 	.align 8
 .LC21:
-	.ascii "SDL_ttf could not initialize! TTF_Error: %s\12\0"
+	.ascii "Failed to allocate memory for water particles\12\0"
 .LC22:
+	.ascii "SDL init error:%s\12\0"
+.LC23:
+	.ascii "COSC345 - Game\0"
+.LC24:
+	.ascii "Window error\0"
+.LC25:
+	.ascii "Render error\0"
+.LC26:
+	.ascii "Surface error\0"
+	.align 8
+.LC27:
+	.ascii "SDL_ttf could not initialize! TTF_Error: %s\12\0"
+.LC28:
 	.ascii "font.ttf\0"
 	.align 8
-.LC23:
+.LC29:
 	.ascii "Failed to load font! SDL_ttf Error: %s\12\0"
 	.align 8
-.LC24:
-	.ascii "Renderer could not be created! SDL_Error: %s\12\0"
-.LC25:
-	.ascii "img/spr_grass.png\0"
-.LC26:
-	.ascii "img/spr_sand.png\0"
-.LC27:
-	.ascii "img/spr_water.png\0"
-.LC28:
-	.ascii "img/spr_lava.png\0"
-.LC29:
-	.ascii "tiled/tileset.png\0"
 .LC30:
-	.ascii "img/player_strip8.png\0"
+	.ascii "Renderer could not be created! SDL_Error: %s\12\0"
 .LC31:
-	.ascii "img/ascii_strip96.png\0"
+	.ascii "img/spr_grass.png\0"
 .LC32:
-	.ascii "img/clock1_strip10.png\0"
+	.ascii "img/spr_sand.png\0"
 .LC33:
-	.ascii "Night\0"
+	.ascii "img/spr_water.png\0"
 .LC34:
-	.ascii "Morning\0"
+	.ascii "img/spr_lava.png\0"
 .LC35:
-	.ascii "Day\0"
+	.ascii "tiled/tileset.png\0"
 .LC36:
-	.ascii "Evening\0"
+	.ascii "img/hudshade.png\0"
 .LC37:
-	.ascii "img/dunedin-map.png\0"
+	.ascii "img/player_strip8.png\0"
 .LC38:
-	.ascii "img/spr_map_unknown.png\0"
+	.ascii "img/ascii_strip96.png\0"
 .LC39:
-	.ascii "img/spr_thermometer.png\0"
+	.ascii "img/clock1_strip10.png\0"
 .LC40:
-	.ascii "music.wav\0"
+	.ascii "Night\0"
 .LC41:
+	.ascii "Morning\0"
+.LC42:
+	.ascii "Day\0"
+.LC43:
+	.ascii "Evening\0"
+.LC44:
+	.ascii "img/dunedin-map.png\0"
+.LC45:
+	.ascii "img/spr_map_unknown.png\0"
+.LC46:
+	.ascii "img/spr_thermometer.png\0"
+.LC47:
+	.ascii "music.wav\0"
+.LC48:
 	.ascii "Failed to load WAV file: %s\12\0"
 	.align 8
-.LC42:
+.LC49:
 	.ascii "Failed to open audio device: %s\12\0"
-.LC43:
+.LC50:
 	.ascii "img/img_lands.png\0"
-.LC44:
+.LC51:
 	.ascii "Press SPACE to continue.\0"
-.LC45:
+.LC52:
 	.ascii "Entering main loop...\0"
-.LC46:
+.LC53:
 	.ascii "F2 started!\0"
-.LC47:
+.LC54:
 	.ascii "F2 finished!\0"
 	.align 8
-.LC48:
+.LC55:
 	.ascii "you pressed 1, good job. Lets test the limit\0"
 	.align 8
-.LC49:
+.LC56:
 	.ascii "you pressed 2, good job. Lets test the limit woo\0"
-.LC50:
+.LC57:
 	.ascii "you pressed 3\0"
 	.align 8
-.LC51:
-	.ascii "you pressed 4, good job. Lets test the limit woo\0"
-.LC52:
-	.ascii "Location:#DUNEDIN#NEW ZEALAND\0"
-.LC53:
-	.ascii "LVL: XYZ/255\0"
-.LC54:
-	.ascii "X\0"
-.LC55:
-	.ascii "Y\0"
-.LC56:
-	.ascii "Z\0"
 .LC58:
-	.ascii ":\0"
+	.ascii "you pressed 4, good job. Lets test the limit woo\0"
+.LC59:
+	.ascii "HEALTH:\0"
+.LC60:
+	.ascii "LVL: XYZ/255\0"
+.LC61:
+	.ascii "X\0"
 .LC62:
-	.ascii "Error: Text Rendering Failed\0"
+	.ascii "Y\0"
+.LC63:
+	.ascii "Z\0"
 .LC65:
+	.ascii ":\0"
+.LC69:
+	.ascii "Error: Text Rendering Failed\0"
+.LC72:
 	.ascii "Score: %d\0"
-.LC66:
+.LC73:
 	.ascii "...exited main loop.\0"
-.LC67:
+.LC74:
 	.ascii "%s Error returned: %s\12\0"
 	.text
 	.globl	SDL_main
@@ -2102,28 +2264,28 @@ SDL_main:
 	.seh_pushreg	%rsi
 	pushq	%rbx
 	.seh_pushreg	%rbx
-	movl	$66776, %eax
+	movl	$66824, %eax
 	call	___chkstk_ms
 	subq	%rax, %rsp
-	.seh_stackalloc	66776
+	.seh_stackalloc	66824
 	leaq	128(%rsp), %rbp
 	.seh_setframe	%rbp, 128
 	.seh_endprologue
-	movl	%ecx, 66720(%rbp)
-	movq	%rdx, 66728(%rbp)
+	movl	%ecx, 66768(%rbp)
+	movq	%rdx, 66776(%rbp)
 	movq	%rsp, %rax
 	movq	%rax, %r12
-	movq	$256, 66552(%rbp)
-	movq	66552(%rbp), %rax
+	movq	$256, 66600(%rbp)
+	movq	66600(%rbp), %rax
 	subq	$1, %rax
-	movq	%rax, 66544(%rbp)
-	movq	66552(%rbp), %rax
+	movq	%rax, 66592(%rbp)
+	movq	66600(%rbp), %rax
 	movq	%rax, %r10
 	movl	$0, %r11d
-	movq	66552(%rbp), %rax
+	movq	66600(%rbp), %rax
 	movq	%rax, %r8
 	movl	$0, %r9d
-	movq	66552(%rbp), %rax
+	movq	66600(%rbp), %rax
 	addq	$15, %rax
 	shrq	$4, %rax
 	salq	$4, %rax
@@ -2131,988 +2293,905 @@ SDL_main:
 	subq	%rax, %rsp
 	leaq	80(%rsp), %rax
 	addq	$0, %rax
-	movq	%rax, 66536(%rbp)
-	movl	$1366, 66532(%rbp)
-	movl	$768, 66528(%rbp)
-	movl	66532(%rbp), %eax
-	subl	66528(%rbp), %eax
+	movq	%rax, 66584(%rbp)
+	movb	$2, 77(%rbp)
+	movb	$28, 78(%rbp)
+	movb	$1, 79(%rbp)
+	leaq	74(%rbp), %rax
+	movq	%rax, %rcx
+	call	SDL_GetVersion
+	movzbl	79(%rbp), %eax
+	movzbl	%al, %ecx
+	movzbl	78(%rbp), %eax
+	movzbl	%al, %edx
+	movzbl	77(%rbp), %eax
+	movzbl	%al, %eax
+	movl	%ecx, %r9d
+	movl	%edx, %r8d
+	movl	%eax, %edx
+	leaq	.LC19(%rip), %rcx
+	call	SDL_Log
+	movzbl	76(%rbp), %eax
+	movzbl	%al, %ecx
+	movzbl	75(%rbp), %eax
+	movzbl	%al, %edx
+	movzbl	74(%rbp), %eax
+	movzbl	%al, %eax
+	movl	%ecx, %r9d
+	movl	%edx, %r8d
+	movl	%eax, %edx
+	leaq	.LC20(%rip), %rcx
+	call	SDL_Log
+	movl	$1366, 66580(%rbp)
+	movl	$768, 66576(%rbp)
+	movl	66580(%rbp), %eax
+	subl	66576(%rbp), %eax
 	movl	%eax, %edx
 	shrl	$31, %edx
 	addl	%edx, %eax
 	sarl	%eax
-	movl	%eax, 66524(%rbp)
-	movl	$0, 66520(%rbp)
-	movl	66528(%rbp), %eax
-	movl	%eax, 66516(%rbp)
-	movl	66528(%rbp), %eax
-	movl	%eax, 66512(%rbp)
-	movl	66524(%rbp), %edx
-	movl	66516(%rbp), %eax
+	movl	%eax, 66572(%rbp)
+	movl	$0, 66568(%rbp)
+	movl	66576(%rbp), %eax
+	movl	%eax, 66564(%rbp)
+	movl	66576(%rbp), %eax
+	movl	%eax, 66560(%rbp)
+	movl	66572(%rbp), %edx
+	movl	66564(%rbp), %eax
 	addl	%edx, %eax
-	movl	%eax, 66508(%rbp)
-	movl	66520(%rbp), %edx
-	movl	66512(%rbp), %eax
+	movl	%eax, 66556(%rbp)
+	movl	66568(%rbp), %edx
+	movl	66560(%rbp), %eax
 	addl	%edx, %eax
-	movl	%eax, 66504(%rbp)
-	movl	$16, 66500(%rbp)
-	movl	$16, 66496(%rbp)
-	movl	66500(%rbp), %eax
+	movl	%eax, 66552(%rbp)
+	movl	$16, 66548(%rbp)
+	movl	$16, 66544(%rbp)
+	movl	66548(%rbp), %eax
 	movl	%eax, %ecx
 	call	sqr
-	movl	%eax, %esi
-	movl	66528(%rbp), %eax
+	movl	%eax, %edi
+	movl	66576(%rbp), %eax
 	cltd
-	idivl	%esi
-	movl	%eax, 66492(%rbp)
-	movl	66492(%rbp), %eax
-	movl	%eax, 66488(%rbp)
+	idivl	%edi
+	movl	%eax, 66540(%rbp)
+	movl	66540(%rbp), %eax
+	movl	%eax, 66536(%rbp)
 	movl	$100, %eax
 	cltq
 	salq	$4, %rax
 	movq	%rax, %rcx
 	call	malloc
-	movq	%rax, waterParticles(%rip)
-	movq	waterParticles(%rip), %rax
+	movq	%rax, %rdx
+	leaq	waterParticles(%rip), %rax
+	movq	%rdx, (%rax)
+	leaq	waterParticles(%rip), %rax
+	movq	(%rax), %rax
 	testq	%rax, %rax
-	jne	.L134
+	jne	.L142
 	movl	$2, %ecx
 	movq	__imp___acrt_iob_func(%rip), %rax
 	call	*%rax
 	movq	%rax, %r9
 	movl	$46, %r8d
 	movl	$1, %edx
-	leaq	.LC15(%rip), %rax
-	movq	%rax, %rcx
+	leaq	.LC21(%rip), %rcx
 	call	fwrite
 	movl	$1, %eax
-	jmp	.L135
-.L134:
+	jmp	.L143
+.L142:
 	movl	$0, %ecx
 	call	time
 	movl	%eax, %ecx
 	call	srand
-	movl	$0, 66636(%rbp)
-	jmp	.L136
-.L137:
-	movl	66528(%rbp), %ecx
-	movl	66532(%rbp), %edx
-	movl	66636(%rbp), %eax
+	movl	$0, 66676(%rbp)
+	jmp	.L144
+.L145:
+	movl	66576(%rbp), %ecx
+	movl	66580(%rbp), %edx
+	movl	66676(%rbp), %eax
 	movl	%ecx, %r8d
 	movl	%eax, %ecx
 	call	createWaterParticle
-	addl	$1, 66636(%rbp)
-.L136:
+	addl	$1, 66676(%rbp)
+.L144:
 	movl	$100, %eax
-	cmpl	%eax, 66636(%rbp)
-	jl	.L137
-	movl	$62001, 66484(%rbp)
-	movl	66484(%rbp), %eax
+	cmpl	%eax, 66676(%rbp)
+	jl	.L145
+	movl	$62001, 66532(%rbp)
+	movl	66532(%rbp), %eax
 	movl	%eax, %ecx
 	call	SDL_Init
 	testl	%eax, %eax
-	je	.L138
+	je	.L146
 	call	SDL_GetError
 	movq	%rax, %rdx
-	leaq	.LC16(%rip), %rax
-	movq	%rax, %rcx
+	leaq	.LC22(%rip), %rcx
 	call	printf
 	movl	$-1, %eax
-	jmp	.L135
-.L138:
-	movl	66532(%rbp), %edx
+	jmp	.L143
+.L146:
+	movl	66580(%rbp), %edx
 	movl	$0, 40(%rsp)
-	movl	66528(%rbp), %eax
+	movl	66576(%rbp), %eax
 	movl	%eax, 32(%rsp)
 	movl	%edx, %r9d
 	movl	$536805376, %r8d
 	movl	$536805376, %edx
-	leaq	.LC17(%rip), %rax
-	movq	%rax, %rcx
+	leaq	.LC23(%rip), %rcx
 	call	SDL_CreateWindow
-	movq	%rax, 66472(%rbp)
-	cmpq	$0, 66472(%rbp)
-	jne	.L139
-	movq	66552(%rbp), %rdx
-	movq	66536(%rbp), %rax
-	leaq	.LC18(%rip), %r8
+	movq	%rax, 66520(%rbp)
+	cmpq	$0, 66520(%rbp)
+	jne	.L147
+	movq	66584(%rbp), %rax
+	movq	66600(%rbp), %rdx
+	leaq	.LC24(%rip), %r8
 	movq	%rax, %rcx
 	call	snprintf
-	jmp	.L140
-.L139:
-	movq	66472(%rbp), %rax
+	jmp	.L148
+.L147:
+	movq	66520(%rbp), %rax
 	movl	$4, %r8d
 	movl	$-1, %edx
 	movq	%rax, %rcx
 	call	SDL_CreateRenderer
-	movq	%rax, 66464(%rbp)
-	cmpq	$0, 66464(%rbp)
-	jne	.L141
-	movq	66552(%rbp), %rdx
-	movq	66536(%rbp), %rax
-	leaq	.LC19(%rip), %r8
+	movq	%rax, 66512(%rbp)
+	cmpq	$0, 66512(%rbp)
+	jne	.L149
+	movq	66584(%rbp), %rax
+	movq	66600(%rbp), %rdx
+	leaq	.LC25(%rip), %r8
 	movq	%rax, %rcx
 	call	snprintf
-	jmp	.L140
-.L141:
-	movq	66472(%rbp), %rax
+	jmp	.L148
+.L149:
+	movq	66520(%rbp), %rax
 	movq	%rax, %rcx
 	call	SDL_GetWindowSurface
-	movq	%rax, 66456(%rbp)
-	cmpq	$0, 66456(%rbp)
-	jne	.L142
-	movq	66552(%rbp), %rdx
-	movq	66536(%rbp), %rax
-	leaq	.LC20(%rip), %r8
+	movq	%rax, 66504(%rbp)
+	cmpq	$0, 66504(%rbp)
+	jne	.L150
+	movq	66584(%rbp), %rax
+	movq	66600(%rbp), %rdx
+	leaq	.LC26(%rip), %r8
 	movq	%rax, %rcx
 	call	snprintf
-	jmp	.L140
-.L142:
-	movl	$800, 65872(%rbp)
-	movl	$100, 65876(%rbp)
-	movl	$100, 65880(%rbp)
-	movl	$100, 65884(%rbp)
+	jmp	.L148
+.L150:
+	movl	$800, 65888(%rbp)
+	movl	$100, 65892(%rbp)
+	movl	$100, 65896(%rbp)
+	movl	$100, 65900(%rbp)
 	movabsq	$2338613357913204068, %rax
-	movq	%rax, 65760(%rbp)
+	movq	%rax, 65776(%rbp)
 	movabsq	$28542640894207341, %rax
-	movq	%rax, 65768(%rbp)
-	movq	$0, 65776(%rbp)
-	movq	$0, 65784(%rbp)
-	movq	$0, 65792(%rbp)
-	movq	$0, 65800(%rbp)
-	movq	$0, 65808(%rbp)
-	movq	$0, 65816(%rbp)
-	movq	$0, 65824(%rbp)
-	movq	$0, 65832(%rbp)
-	movq	$0, 65840(%rbp)
-	movq	$0, 65848(%rbp)
-	movl	$0, 65856(%rbp)
-	leaq	65760(%rbp), %rax
-	movq	%rax, 66448(%rbp)
-	leaq	65872(%rbp), %rax
-	movq	%rax, 66440(%rbp)
-	movl	$0, 66632(%rbp)
+	movq	%rax, 65784(%rbp)
+	leaq	65792(%rbp), %rdx
+	movl	$0, %eax
+	movl	$10, %ecx
+	movq	%rdx, %rdi
+	rep stosq
+	movq	%rdi, %rdx
+	movl	%eax, (%rdx)
+	addq	$4, %rdx
+	leaq	65776(%rbp), %rax
+	movq	%rax, 66496(%rbp)
+	leaq	65888(%rbp), %rax
+	movq	%rax, 66488(%rbp)
+	movl	$0, 66680(%rbp)
 	call	TTF_Init
 	cmpl	$-1, %eax
-	jne	.L143
+	jne	.L151
 	call	SDL_GetError
 	movq	%rax, %rdx
-	leaq	.LC21(%rip), %rax
-	movq	%rax, %rcx
+	leaq	.LC27(%rip), %rcx
 	call	printf
 	movl	$1, %eax
-	jmp	.L135
-.L143:
+	jmp	.L143
+.L151:
 	movl	$12, %edx
-	leaq	.LC22(%rip), %rax
-	movq	%rax, %rcx
+	leaq	.LC28(%rip), %rcx
 	call	TTF_OpenFont
-	movq	%rax, 66432(%rbp)
-	cmpq	$0, 66432(%rbp)
-	jne	.L144
+	movq	%rax, 66480(%rbp)
+	cmpq	$0, 66480(%rbp)
+	jne	.L152
 	call	SDL_GetError
 	movq	%rax, %rdx
-	leaq	.LC23(%rip), %rax
-	movq	%rax, %rcx
+	leaq	.LC29(%rip), %rcx
 	call	printf
 	movl	$1, %eax
-	jmp	.L135
-.L144:
-	movl	$0, 66428(%rbp)
-	movl	$0, 66628(%rbp)
-	movb	$0, 65756(%rbp)
-	movb	$0, 65757(%rbp)
-	movb	$0, 65758(%rbp)
-	movb	$-1, 65759(%rbp)
-	movq	66472(%rbp), %rax
+	jmp	.L143
+.L152:
+	movl	$0, 66476(%rbp)
+	movl	$0, 66684(%rbp)
+	movb	$0, 65772(%rbp)
+	movb	$0, 65773(%rbp)
+	movb	$0, 65774(%rbp)
+	movb	$-1, 65775(%rbp)
+	movq	66520(%rbp), %rax
 	movl	$2, %r8d
 	movl	$-1, %edx
 	movq	%rax, %rcx
 	call	SDL_CreateRenderer
-	movq	%rax, 66416(%rbp)
-	cmpq	$0, 66464(%rbp)
-	jne	.L145
+	movq	%rax, 66464(%rbp)
+	cmpq	$0, 66512(%rbp)
+	jne	.L153
 	call	SDL_GetError
 	movq	%rax, %rdx
-	leaq	.LC24(%rip), %rax
-	movq	%rax, %rcx
+	leaq	.LC30(%rip), %rcx
 	call	printf
-.L145:
+.L153:
 	movl	$2, %ecx
 	call	IMG_Init
-	movq	66464(%rbp), %rax
-	leaq	.LC25(%rip), %rdx
-	movq	%rax, %rcx
-	call	IMG_LoadTexture
-	movq	%rax, 66408(%rbp)
-	movq	66464(%rbp), %rax
-	leaq	.LC26(%rip), %rdx
-	movq	%rax, %rcx
-	call	IMG_LoadTexture
-	movq	%rax, 66400(%rbp)
-	movq	66464(%rbp), %rax
-	leaq	.LC27(%rip), %rdx
-	movq	%rax, %rcx
-	call	IMG_LoadTexture
-	movq	%rax, 66392(%rbp)
-	movq	66464(%rbp), %rax
-	leaq	.LC28(%rip), %rdx
-	movq	%rax, %rcx
-	call	IMG_LoadTexture
-	movq	%rax, 66384(%rbp)
-	movq	66464(%rbp), %rax
-	leaq	.LC29(%rip), %rdx
-	movq	%rax, %rcx
-	call	IMG_LoadTexture
-	movq	%rax, 66376(%rbp)
-	movq	66464(%rbp), %rax
-	leaq	.LC30(%rip), %rdx
-	movq	%rax, %rcx
-	call	IMG_LoadTexture
-	movq	%rax, 66368(%rbp)
-	movq	66464(%rbp), %rax
+	movq	66512(%rbp), %rax
 	leaq	.LC31(%rip), %rdx
 	movq	%rax, %rcx
 	call	IMG_LoadTexture
-	movq	%rax, 66360(%rbp)
-	movl	$8, 66356(%rbp)
-	movl	$24, 66352(%rbp)
-	movq	66464(%rbp), %rax
+	movq	%rax, 66456(%rbp)
+	movq	66512(%rbp), %rax
 	leaq	.LC32(%rip), %rdx
 	movq	%rax, %rcx
 	call	IMG_LoadTexture
+	movq	%rax, 66448(%rbp)
+	movq	66512(%rbp), %rax
+	leaq	.LC33(%rip), %rdx
+	movq	%rax, %rcx
+	call	IMG_LoadTexture
+	movq	%rax, 66440(%rbp)
+	movq	66512(%rbp), %rax
+	leaq	.LC34(%rip), %rdx
+	movq	%rax, %rcx
+	call	IMG_LoadTexture
+	movq	%rax, 66432(%rbp)
+	movq	66512(%rbp), %rax
+	leaq	.LC35(%rip), %rdx
+	movq	%rax, %rcx
+	call	IMG_LoadTexture
+	movq	%rax, 66424(%rbp)
+	movq	66512(%rbp), %rax
+	leaq	.LC36(%rip), %rdx
+	movq	%rax, %rcx
+	call	IMG_LoadTexture
+	movq	%rax, 66416(%rbp)
+	movq	66512(%rbp), %rax
+	leaq	.LC37(%rip), %rdx
+	movq	%rax, %rcx
+	call	IMG_LoadTexture
+	movq	%rax, 66408(%rbp)
+	movq	66512(%rbp), %rax
+	leaq	.LC38(%rip), %rdx
+	movq	%rax, %rcx
+	call	IMG_LoadTexture
+	movq	%rax, 66400(%rbp)
+	movl	$8, 66396(%rbp)
+	movl	$24, 66392(%rbp)
+	movq	66512(%rbp), %rax
+	leaq	.LC39(%rip), %rdx
+	movq	%rax, %rcx
+	call	IMG_LoadTexture
+	movq	%rax, 66384(%rbp)
+	movl	$1440, 66380(%rbp)
+	movl	$0, 66672(%rbp)
+	movl	$0, 66668(%rbp)
+	movl	$57, 66376(%rbp)
+	movl	$60, 66372(%rbp)
+	leaq	.LC40(%rip), %rax
+	movq	%rax, 66360(%rbp)
+	leaq	.LC41(%rip), %rax
+	movq	%rax, 66352(%rbp)
+	leaq	.LC42(%rip), %rax
 	movq	%rax, 66344(%rbp)
-	movl	$1440, 66340(%rbp)
-	movl	$0, 66624(%rbp)
-	movl	$0, 66620(%rbp)
-	movl	$57, 66336(%rbp)
-	movl	$60, 66332(%rbp)
-	leaq	.LC33(%rip), %rax
-	movq	%rax, 66320(%rbp)
-	leaq	.LC34(%rip), %rax
-	movq	%rax, 66312(%rbp)
-	leaq	.LC35(%rip), %rax
-	movq	%rax, 66304(%rbp)
-	leaq	.LC36(%rip), %rax
-	movq	%rax, 66296(%rbp)
-	movl	66500(%rbp), %eax
+	leaq	.LC43(%rip), %rax
+	movq	%rax, 66336(%rbp)
+	movl	66548(%rbp), %eax
 	movl	%eax, %ecx
 	call	sqr
-	movl	%eax, 66292(%rbp)
-	movl	$256, 66288(%rbp)
-	movl	$0, 66616(%rbp)
-	leaq	.LC5(%rip), %rax
-	movq	%rax, %rdx
-	leaq	.LC8(%rip), %rax
-	movq	%rax, %rcx
+	movl	%eax, 66332(%rbp)
+	movl	$256, 66328(%rbp)
+	movl	$0, 66664(%rbp)
+	leaq	.LC9(%rip), %rdx
+	leaq	.LC12(%rip), %rcx
 	call	fopen
-	movq	%rax, 66280(%rbp)
-	movl	$0, 66612(%rbp)
-	jmp	.L146
-.L147:
-	movl	66612(%rbp), %eax
+	movq	%rax, 66320(%rbp)
+	movl	$0, 66660(%rbp)
+	jmp	.L154
+.L155:
+	movl	66660(%rbp), %eax
 	cltq
-	movb	$0, 208(%rbp,%rax)
-	addl	$1, 66612(%rbp)
-.L146:
-	movl	66292(%rbp), %eax
-	imull	66288(%rbp), %eax
-	cmpl	%eax, 66612(%rbp)
-	jl	.L147
-	movq	66280(%rbp), %rdx
-	leaq	208(%rbp), %rax
+	movb	$0, 224(%rbp,%rax)
+	addl	$1, 66660(%rbp)
+.L154:
+	movl	66332(%rbp), %eax
+	imull	66328(%rbp), %eax
+	cmpl	%eax, 66660(%rbp)
+	jl	.L155
+	movq	66320(%rbp), %rdx
+	leaq	224(%rbp), %rax
 	movq	%rdx, %r9
 	movl	$1, %r8d
 	movl	$65536, %edx
 	movq	%rax, %rcx
 	call	fread
-	movq	66280(%rbp), %rax
+	movq	66320(%rbp), %rax
 	movq	%rax, %rcx
 	call	fclose
-	movq	66464(%rbp), %rax
-	leaq	.LC37(%rip), %rdx
+	movq	66512(%rbp), %rax
+	leaq	.LC44(%rip), %rdx
 	movq	%rax, %rcx
 	call	IMG_LoadTexture
-	movq	%rax, 66272(%rbp)
-	movq	66464(%rbp), %rax
-	leaq	.LC38(%rip), %rdx
+	movq	%rax, 66312(%rbp)
+	movq	66512(%rbp), %rax
+	leaq	.LC45(%rip), %rdx
 	movq	%rax, %rcx
 	call	IMG_LoadTexture
-	movq	%rax, 66264(%rbp)
-	leaq	192(%rbp), %rax
-	movl	66616(%rbp), %ecx
+	movq	%rax, 66304(%rbp)
+	leaq	208(%rbp), %rax
+	movl	66664(%rbp), %ecx
 	movq	%rax, %rdx
 	call	level_get_name
-	movl	66616(%rbp), %eax
-	andl	$31, %eax
+	movl	66664(%rbp), %edx
+	movl	%edx, %eax
+	sarl	$31, %eax
+	shrl	$27, %eax
+	addl	%eax, %edx
+	andl	$31, %edx
+	subl	%eax, %edx
+	movl	%edx, %eax
 	movl	$1, %edx
 	movl	%eax, %ecx
 	sall	%cl, %edx
 	movl	%edx, %ecx
-	movl	66616(%rbp), %eax
+	movl	66664(%rbp), %eax
 	leal	31(%rax), %edx
 	testl	%eax, %eax
 	cmovs	%edx, %eax
 	sarl	$5, %eax
 	movl	%ecx, %edx
 	cltq
-	movl	%edx, 160(%rbp,%rax,4)
-	movl	$0, 66260(%rbp)
-	movl	$10, 66256(%rbp)
+	movl	%edx, 176(%rbp,%rax,4)
+	movl	$0, 66300(%rbp)
+	movl	$10, 66296(%rbp)
 	movl	$42, %eax
-	movb	%al, 158(%rbp)
-	movq	66464(%rbp), %rax
-	leaq	.LC39(%rip), %rdx
+	movb	%al, 174(%rbp)
+	movq	66512(%rbp), %rax
+	leaq	.LC46(%rip), %rdx
 	movq	%rax, %rcx
 	call	IMG_LoadTexture
-	movq	%rax, 66248(%rbp)
-	movb	$-128, 66247(%rbp)
-	movl	66492(%rbp), %eax
-	imull	66496(%rbp), %eax
+	movq	%rax, 66288(%rbp)
+	movb	$-128, 66287(%rbp)
+	movl	66540(%rbp), %eax
+	imull	66544(%rbp), %eax
 	leal	0(,%rax,8), %edx
-	movl	66524(%rbp), %eax
+	movl	66572(%rbp), %eax
 	addl	%edx, %eax
-	movl	%eax, 128(%rbp)
-	movl	66488(%rbp), %eax
-	imull	66496(%rbp), %eax
+	movl	%eax, 144(%rbp)
+	movl	66536(%rbp), %eax
+	imull	66544(%rbp), %eax
 	leal	0(,%rax,8), %edx
-	movl	66520(%rbp), %eax
+	movl	66568(%rbp), %eax
 	addl	%edx, %eax
-	movl	%eax, 132(%rbp)
-	movb	$0, 144(%rbp)
-	movb	$0, 145(%rbp)
-	movb	$1, 146(%rbp)
-	movb	$12, 147(%rbp)
-	movb	$0, 148(%rbp)
-	movb	$2, 149(%rbp)
-	movb	$12, 150(%rbp)
-	leaq	.LC40(%rip), %rax
-	movq	%rax, 66232(%rbp)
-	movq	66232(%rbp), %rax
-	leaq	.LC5(%rip), %rdx
+	movl	%eax, 148(%rbp)
+	movb	$0, 160(%rbp)
+	movb	$0, 161(%rbp)
+	movb	$1, 162(%rbp)
+	movb	$12, 163(%rbp)
+	movb	$0, 164(%rbp)
+	movb	$2, 165(%rbp)
+	movb	$12, 166(%rbp)
+	leaq	.LC47(%rip), %rax
+	movq	%rax, 66272(%rbp)
+	movq	66272(%rbp), %rax
+	leaq	.LC9(%rip), %rdx
 	movq	%rax, %rcx
 	call	SDL_RWFromFile
-	movq	%rax, %rcx
-	leaq	88(%rbp), %r8
-	leaq	96(%rbp), %rdx
-	leaq	84(%rbp), %rax
+	movq	%rax, %r10
+	leaq	104(%rbp), %rcx
+	leaq	112(%rbp), %rdx
+	leaq	100(%rbp), %rax
 	movq	%rax, 32(%rsp)
-	movq	%r8, %r9
+	movq	%rcx, %r9
 	movq	%rdx, %r8
 	movl	$1, %edx
+	movq	%r10, %rcx
 	call	SDL_LoadWAV_RW
 	testq	%rax, %rax
-	jne	.L148
+	jne	.L156
 	call	SDL_GetError
 	movq	%rax, %rdx
-	leaq	.LC41(%rip), %rax
-	movq	%rax, %rcx
+	leaq	.LC48(%rip), %rcx
 	call	printf
-	jmp	.L149
-.L148:
-	movq	88(%rbp), %rax
-	movq	%rax, 64(%rbp)
-	movl	84(%rbp), %eax
-	movl	%eax, 72(%rbp)
-	movl	$0, 76(%rbp)
+	jmp	.L157
+.L156:
+	movq	104(%rbp), %rax
+	movq	%rax, 80(%rbp)
+	movl	100(%rbp), %eax
+	movl	%eax, 88(%rbp)
+	movl	$0, 92(%rbp)
 	leaq	audioCallback(%rip), %rax
-	movq	%rax, 112(%rbp)
-	leaq	64(%rbp), %rax
-	movq	%rax, 120(%rbp)
-	leaq	96(%rbp), %rax
+	movq	%rax, 128(%rbp)
+	leaq	80(%rbp), %rax
+	movq	%rax, 136(%rbp)
+	leaq	112(%rbp), %rax
 	movl	$0, 32(%rsp)
 	movl	$0, %r9d
 	movq	%rax, %r8
 	movl	$0, %edx
 	movl	$0, %ecx
 	call	SDL_OpenAudioDevice
-	movl	%eax, 66228(%rbp)
-	cmpl	$0, 66228(%rbp)
-	jne	.L150
+	movl	%eax, 66268(%rbp)
+	cmpl	$0, 66268(%rbp)
+	jne	.L158
 	call	SDL_GetError
 	movq	%rax, %rdx
-	leaq	.LC42(%rip), %rax
-	movq	%rax, %rcx
+	leaq	.LC49(%rip), %rcx
 	call	printf
-	movq	88(%rbp), %rax
+	movq	104(%rbp), %rax
 	movq	%rax, %rcx
 	call	SDL_FreeWAV
-	jmp	.L149
-.L150:
-	movl	84(%rbp), %ecx
-	movq	88(%rbp), %rdx
-	movl	66228(%rbp), %eax
+	jmp	.L157
+.L158:
+	movl	100(%rbp), %ecx
+	movq	104(%rbp), %rdx
+	movl	66268(%rbp), %eax
 	movl	%ecx, %r8d
 	movl	%eax, %ecx
 	call	SDL_QueueAudio
-	movl	66228(%rbp), %eax
+	movl	66268(%rbp), %eax
 	movl	$0, %edx
 	movl	%eax, %ecx
 	call	SDL_PauseAudioDevice
-	movl	$1, 66608(%rbp)
-	movq	66464(%rbp), %rax
-	leaq	.LC43(%rip), %rdx
+	movl	$1, 66656(%rbp)
+	movq	66512(%rbp), %rax
+	leaq	.LC50(%rip), %rdx
 	movq	%rax, %rcx
 	call	IMG_LoadTexture
-	movq	%rax, 66216(%rbp)
-	leaq	.LC44(%rip), %rax
-	movq	%rax, 66208(%rbp)
-	movl	$1, 66604(%rbp)
-	leaq	.LC45(%rip), %rax
-	movq	%rax, %rcx
+	movq	%rax, 66256(%rbp)
+	leaq	.LC51(%rip), %rax
+	movq	%rax, 66248(%rbp)
+	movl	$1, 66652(%rbp)
+	leaq	.LC52(%rip), %rcx
 	call	puts
-	jmp	.L151
-.L203:
-	movl	65888(%rbp), %eax
-	cmpl	$769, %eax
-	je	.L153
-	cmpl	$769, %eax
-	ja	.L152
-	cmpl	$256, %eax
-	je	.L154
+	jmp	.L159
+.L206:
+	movl	65904(%rbp), %eax
 	cmpl	$768, %eax
-	je	.L155
-	jmp	.L152
-.L154:
-	movl	$0, 66604(%rbp)
-	jmp	.L152
-.L155:
-	movl	$1, 65944(%rbp)
-	movl	65908(%rbp), %eax
-	cmpl	$57, %eax
-	jg	.L156
-	cmpl	$27, %eax
-	jge	.L157
-	jmp	.L152
-.L179:
-	subl	$1073741883, %eax
-	cmpl	$29, %eax
-	ja	.L152
-	movl	%eax, %eax
-	leaq	0(,%rax,4), %rdx
-	leaq	.L160(%rip), %rax
-	movl	(%rdx,%rax), %eax
-	cltq
-	leaq	.L160(%rip), %rdx
-	addq	%rdx, %rax
-	jmp	*%rax
-	.section .rdata,"dr"
-	.align 4
-.L160:
-	.long	.L165-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L164-.L160
-	.long	.L163-.L160
-	.long	.L162-.L160
-	.long	.L161-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L152-.L160
-	.long	.L159-.L160
-	.text
-.L157:
-	subl	$27, %eax
-	cmpl	$30, %eax
-	ja	.L152
-	movl	%eax, %eax
-	leaq	0(,%rax,4), %rdx
-	leaq	.L167(%rip), %rax
-	movl	(%rdx,%rax), %eax
-	cltq
-	leaq	.L167(%rip), %rdx
-	addq	%rdx, %rax
-	jmp	*%rax
-	.section .rdata,"dr"
-	.align 4
-.L167:
-	.long	.L178-.L167
-	.long	.L152-.L167
-	.long	.L152-.L167
-	.long	.L152-.L167
-	.long	.L152-.L167
-	.long	.L177-.L167
-	.long	.L152-.L167
-	.long	.L152-.L167
-	.long	.L152-.L167
-	.long	.L152-.L167
-	.long	.L152-.L167
-	.long	.L152-.L167
-	.long	.L152-.L167
-	.long	.L152-.L167
-	.long	.L152-.L167
-	.long	.L152-.L167
-	.long	.L152-.L167
-	.long	.L152-.L167
-	.long	.L152-.L167
-	.long	.L152-.L167
-	.long	.L152-.L167
-	.long	.L176-.L167
-	.long	.L175-.L167
-	.long	.L174-.L167
-	.long	.L173-.L167
-	.long	.L172-.L167
-	.long	.L171-.L167
-	.long	.L170-.L167
-	.long	.L169-.L167
-	.long	.L168-.L167
-	.long	.L166-.L167
-	.text
-.L156:
-	cmpl	$1073741912, %eax
-	jg	.L152
-	cmpl	$1073741883, %eax
-	jge	.L179
-	jmp	.L152
-.L178:
-	movl	$0, 66604(%rbp)
-	jmp	.L158
-.L164:
-	movl	65944(%rbp), %eax
-	movl	%eax, glob_vk_right(%rip)
-	jmp	.L158
-.L163:
-	movl	65944(%rbp), %eax
-	movl	%eax, glob_vk_left(%rip)
-	jmp	.L158
+	je	.L161
+	cmpl	$769, %eax
+	je	.L162
+	cmpl	$256, %eax
+	jne	.L160
+	movl	$0, 66652(%rbp)
+	jmp	.L160
 .L161:
-	movl	65944(%rbp), %eax
-	movl	%eax, glob_vk_up(%rip)
-	jmp	.L158
-.L162:
-	movl	65944(%rbp), %eax
-	movl	%eax, glob_vk_down(%rip)
-	jmp	.L158
-.L177:
-	movl	65944(%rbp), %eax
-	movl	%eax, glob_vk_space(%rip)
-	jmp	.L158
-.L159:
-	movl	65944(%rbp), %eax
-	movl	%eax, glob_vk_enter(%rip)
-	jmp	.L158
-.L165:
-	movl	65944(%rbp), %eax
-	movl	%eax, glob_vk_f2(%rip)
-	jmp	.L158
-.L176:
-	movl	65944(%rbp), %eax
-	movl	%eax, glob_vk_0(%rip)
-	jmp	.L158
-.L175:
-	movl	65944(%rbp), %eax
-	movl	%eax, glob_vk_1(%rip)
-	jmp	.L158
-.L174:
-	movl	65944(%rbp), %eax
-	movl	%eax, glob_vk_2(%rip)
-	jmp	.L158
-.L173:
-	movl	65944(%rbp), %eax
-	movl	%eax, glob_vk_3(%rip)
-	jmp	.L158
-.L172:
-	movl	65944(%rbp), %eax
-	movl	%eax, glob_vk_4(%rip)
-	jmp	.L158
-.L171:
-	movl	65944(%rbp), %eax
-	movl	%eax, glob_vk_5(%rip)
-	jmp	.L158
-.L170:
-	movl	65944(%rbp), %eax
-	movl	%eax, glob_vk_6(%rip)
-	jmp	.L158
-.L169:
-	movl	65944(%rbp), %eax
-	movl	%eax, glob_vk_7(%rip)
-	jmp	.L158
-.L168:
-	movl	65944(%rbp), %eax
-	movl	%eax, glob_vk_8(%rip)
-	jmp	.L158
-.L166:
-	movl	65944(%rbp), %eax
-	movl	%eax, glob_vk_9(%rip)
-	nop
-.L158:
-	jmp	.L152
-.L153:
-	movl	$0, 65948(%rbp)
-	movl	65908(%rbp), %eax
-	cmpl	$57, %eax
-	jg	.L180
+	movl	$1, 66244(%rbp)
+	movl	65924(%rbp), %eax
+	cmpl	$54, %eax
+	je	.L163
+	cmpl	$54, %eax
+	jg	.L164
+	cmpl	$49, %eax
+	je	.L165
+	cmpl	$49, %eax
+	jg	.L166
 	cmpl	$32, %eax
-	jge	.L181
-	jmp	.L266
-.L202:
-	subl	$1073741883, %eax
-	cmpl	$29, %eax
-	ja	.L266
-	movl	%eax, %eax
-	leaq	0(,%rax,4), %rdx
-	leaq	.L184(%rip), %rax
-	movl	(%rdx,%rax), %eax
-	cltq
-	leaq	.L184(%rip), %rdx
-	addq	%rdx, %rax
-	jmp	*%rax
-	.section .rdata,"dr"
-	.align 4
-.L184:
-	.long	.L189-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L188-.L184
-	.long	.L187-.L184
-	.long	.L186-.L184
-	.long	.L185-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L266-.L184
-	.long	.L183-.L184
-	.text
-.L181:
-	subl	$32, %eax
-	cmpl	$25, %eax
-	ja	.L266
-	movl	%eax, %eax
-	leaq	0(,%rax,4), %rdx
-	leaq	.L191(%rip), %rax
-	movl	(%rdx,%rax), %eax
-	cltq
-	leaq	.L191(%rip), %rdx
-	addq	%rdx, %rax
-	jmp	*%rax
-	.section .rdata,"dr"
-	.align 4
-.L191:
-	.long	.L201-.L191
-	.long	.L266-.L191
-	.long	.L266-.L191
-	.long	.L266-.L191
-	.long	.L266-.L191
-	.long	.L266-.L191
-	.long	.L266-.L191
-	.long	.L266-.L191
-	.long	.L266-.L191
-	.long	.L266-.L191
-	.long	.L266-.L191
-	.long	.L266-.L191
-	.long	.L266-.L191
-	.long	.L266-.L191
-	.long	.L266-.L191
-	.long	.L266-.L191
-	.long	.L200-.L191
-	.long	.L199-.L191
-	.long	.L198-.L191
-	.long	.L197-.L191
-	.long	.L196-.L191
-	.long	.L195-.L191
-	.long	.L194-.L191
-	.long	.L193-.L191
-	.long	.L192-.L191
-	.long	.L190-.L191
-	.text
-.L180:
-	cmpl	$1073741912, %eax
-	jg	.L266
+	je	.L167
+	cmpl	$48, %eax
+	je	.L168
+	cmpl	$27, %eax
+	je	.L169
+	jmp	.L160
+.L166:
+	cmpl	$51, %eax
+	je	.L171
+	cmpl	$51, %eax
+	jl	.L172
+	cmpl	$52, %eax
+	je	.L173
+	cmpl	$53, %eax
+	je	.L174
+	jmp	.L160
+.L164:
+	cmpl	$1073741903, %eax
+	je	.L175
+	cmpl	$1073741903, %eax
+	jg	.L176
+	cmpl	$56, %eax
+	je	.L177
+	cmpl	$56, %eax
+	jl	.L178
+	cmpl	$57, %eax
+	je	.L179
 	cmpl	$1073741883, %eax
-	jge	.L202
-	jmp	.L266
-.L188:
-	movl	65948(%rbp), %eax
+	je	.L180
+	jmp	.L160
+.L176:
+	cmpl	$1073741905, %eax
+	je	.L181
+	cmpl	$1073741905, %eax
+	jl	.L182
+	cmpl	$1073741906, %eax
+	je	.L183
+	cmpl	$1073741912, %eax
+	je	.L184
+	jmp	.L160
+.L169:
+	movl	$0, 66652(%rbp)
+	jmp	.L170
+.L175:
+	movl	66244(%rbp), %eax
 	movl	%eax, glob_vk_right(%rip)
-	jmp	.L182
-.L187:
-	movl	65948(%rbp), %eax
+	jmp	.L170
+.L182:
+	movl	66244(%rbp), %eax
 	movl	%eax, glob_vk_left(%rip)
-	jmp	.L182
-.L185:
-	movl	65948(%rbp), %eax
-	movl	%eax, glob_vk_up(%rip)
-	jmp	.L182
-.L186:
-	movl	65948(%rbp), %eax
-	movl	%eax, glob_vk_down(%rip)
-	jmp	.L182
-.L201:
-	movl	65948(%rbp), %eax
-	movl	%eax, glob_vk_space(%rip)
-	jmp	.L182
+	jmp	.L170
 .L183:
-	movl	65948(%rbp), %eax
+	movl	66244(%rbp), %eax
+	movl	%eax, glob_vk_up(%rip)
+	jmp	.L170
+.L181:
+	movl	66244(%rbp), %eax
+	movl	%eax, glob_vk_down(%rip)
+	jmp	.L170
+.L167:
+	movl	66244(%rbp), %eax
+	movl	%eax, glob_vk_space(%rip)
+	jmp	.L170
+.L184:
+	movl	66244(%rbp), %eax
 	movl	%eax, glob_vk_enter(%rip)
-	jmp	.L182
-.L189:
-	movl	65948(%rbp), %eax
+	jmp	.L170
+.L180:
+	movl	66244(%rbp), %eax
 	movl	%eax, glob_vk_f2(%rip)
-	jmp	.L182
-.L200:
-	movl	65948(%rbp), %eax
+	jmp	.L170
+.L168:
+	movl	66244(%rbp), %eax
 	movl	%eax, glob_vk_0(%rip)
-	jmp	.L182
-.L199:
-	movl	65948(%rbp), %eax
+	jmp	.L170
+.L165:
+	movl	66244(%rbp), %eax
 	movl	%eax, glob_vk_1(%rip)
-	jmp	.L182
-.L198:
-	movl	65948(%rbp), %eax
+	jmp	.L170
+.L172:
+	movl	66244(%rbp), %eax
 	movl	%eax, glob_vk_2(%rip)
-	jmp	.L182
-.L197:
-	movl	65948(%rbp), %eax
+	jmp	.L170
+.L171:
+	movl	66244(%rbp), %eax
 	movl	%eax, glob_vk_3(%rip)
-	jmp	.L182
-.L196:
-	movl	65948(%rbp), %eax
+	jmp	.L170
+.L173:
+	movl	66244(%rbp), %eax
 	movl	%eax, glob_vk_4(%rip)
-	jmp	.L182
-.L195:
-	movl	65948(%rbp), %eax
+	jmp	.L170
+.L174:
+	movl	66244(%rbp), %eax
 	movl	%eax, glob_vk_5(%rip)
-	jmp	.L182
-.L194:
-	movl	65948(%rbp), %eax
+	jmp	.L170
+.L163:
+	movl	66244(%rbp), %eax
 	movl	%eax, glob_vk_6(%rip)
-	jmp	.L182
-.L193:
-	movl	65948(%rbp), %eax
+	jmp	.L170
+.L178:
+	movl	66244(%rbp), %eax
 	movl	%eax, glob_vk_7(%rip)
-	jmp	.L182
-.L192:
-	movl	65948(%rbp), %eax
+	jmp	.L170
+.L177:
+	movl	66244(%rbp), %eax
 	movl	%eax, glob_vk_8(%rip)
-	jmp	.L182
-.L190:
-	movl	65948(%rbp), %eax
+	jmp	.L170
+.L179:
+	movl	66244(%rbp), %eax
 	movl	%eax, glob_vk_9(%rip)
 	nop
-.L182:
-.L266:
+.L170:
+	jmp	.L160
+.L162:
+	movl	$0, 66240(%rbp)
+	movl	65924(%rbp), %eax
+	cmpl	$55, %eax
+	je	.L185
+	cmpl	$55, %eax
+	jg	.L186
+	cmpl	$50, %eax
+	je	.L187
+	cmpl	$50, %eax
+	jg	.L188
+	cmpl	$48, %eax
+	je	.L189
+	cmpl	$48, %eax
+	jg	.L190
+	cmpl	$32, %eax
+	je	.L191
+	jmp	.L270
+.L188:
+	cmpl	$52, %eax
+	je	.L193
+	cmpl	$52, %eax
+	jl	.L194
+	cmpl	$53, %eax
+	je	.L195
+	cmpl	$54, %eax
+	je	.L196
+	jmp	.L270
+.L186:
+	cmpl	$1073741903, %eax
+	je	.L197
+	cmpl	$1073741903, %eax
+	jg	.L198
+	cmpl	$57, %eax
+	je	.L199
+	cmpl	$57, %eax
+	jl	.L200
+	cmpl	$1073741883, %eax
+	je	.L201
+	jmp	.L270
+.L198:
+	cmpl	$1073741905, %eax
+	je	.L202
+	cmpl	$1073741905, %eax
+	jl	.L203
+	cmpl	$1073741906, %eax
+	je	.L204
+	cmpl	$1073741912, %eax
+	je	.L205
+	jmp	.L270
+.L197:
+	movl	66240(%rbp), %eax
+	movl	%eax, glob_vk_right(%rip)
+	jmp	.L192
+.L203:
+	movl	66240(%rbp), %eax
+	movl	%eax, glob_vk_left(%rip)
+	jmp	.L192
+.L204:
+	movl	66240(%rbp), %eax
+	movl	%eax, glob_vk_up(%rip)
+	jmp	.L192
+.L202:
+	movl	66240(%rbp), %eax
+	movl	%eax, glob_vk_down(%rip)
+	jmp	.L192
+.L191:
+	movl	66240(%rbp), %eax
+	movl	%eax, glob_vk_space(%rip)
+	jmp	.L192
+.L205:
+	movl	66240(%rbp), %eax
+	movl	%eax, glob_vk_enter(%rip)
+	jmp	.L192
+.L201:
+	movl	66240(%rbp), %eax
+	movl	%eax, glob_vk_f2(%rip)
+	jmp	.L192
+.L189:
+	movl	66240(%rbp), %eax
+	movl	%eax, glob_vk_0(%rip)
+	jmp	.L192
+.L190:
+	movl	66240(%rbp), %eax
+	movl	%eax, glob_vk_1(%rip)
+	jmp	.L192
+.L187:
+	movl	66240(%rbp), %eax
+	movl	%eax, glob_vk_2(%rip)
+	jmp	.L192
+.L194:
+	movl	66240(%rbp), %eax
+	movl	%eax, glob_vk_3(%rip)
+	jmp	.L192
+.L193:
+	movl	66240(%rbp), %eax
+	movl	%eax, glob_vk_4(%rip)
+	jmp	.L192
+.L195:
+	movl	66240(%rbp), %eax
+	movl	%eax, glob_vk_5(%rip)
+	jmp	.L192
+.L196:
+	movl	66240(%rbp), %eax
+	movl	%eax, glob_vk_6(%rip)
+	jmp	.L192
+.L185:
+	movl	66240(%rbp), %eax
+	movl	%eax, glob_vk_7(%rip)
+	jmp	.L192
+.L200:
+	movl	66240(%rbp), %eax
+	movl	%eax, glob_vk_8(%rip)
+	jmp	.L192
+.L199:
+	movl	66240(%rbp), %eax
+	movl	%eax, glob_vk_9(%rip)
 	nop
-.L152:
-	leaq	65888(%rbp), %rax
+.L192:
+.L270:
+	nop
+.L160:
+	leaq	65904(%rbp), %rax
 	movq	%rax, %rcx
 	call	SDL_PollEvent
 	testl	%eax, %eax
-	jne	.L203
+	jne	.L206
 	movl	glob_vk_f2(%rip), %eax
 	testl	%eax, %eax
-	je	.L204
-	leaq	.LC46(%rip), %rax
-	movq	%rax, %rcx
+	je	.L207
+	leaq	.LC53(%rip), %rcx
 	call	puts
 	call	dev_tiled_to_leveldata
-	leaq	.LC47(%rip), %rax
-	movq	%rax, %rcx
+	leaq	.LC54(%rip), %rcx
 	call	puts
-.L204:
+.L207:
 	movl	glob_vk_0(%rip), %eax
 	testl	%eax, %eax
-	je	.L205
+	je	.L208
 	movl	$0, glob_vk_0(%rip)
 	movl	waterOn(%rip), %eax
 	testl	%eax, %eax
-	jne	.L206
+	jne	.L209
 	movl	$1, waterOn(%rip)
 	call	activateAllWaterParticles
-	jmp	.L205
-.L206:
+	jmp	.L208
+.L209:
 	movl	$0, waterOn(%rip)
 	call	deactivateAllWaterParticles
-.L205:
+.L208:
 	movl	glob_vk_9(%rip), %eax
 	testl	%eax, %eax
-	je	.L207
+	je	.L210
 	movl	$0, glob_vk_9(%rip)
-	cmpl	$0, 66632(%rbp)
-	jne	.L208
-	movl	$1, 66632(%rbp)
-	leaq	65760(%rbp), %rax
+	cmpl	$0, 66680(%rbp)
+	jne	.L211
+	movl	$1, 66680(%rbp)
+	leaq	65776(%rbp), %rax
 	movabsq	$3184362091757007472, %rdi
 	movq	%rdi, (%rax)
-	movabsq	$14685297085393969, %rdi
-	movq	%rdi, 6(%rax)
-	jmp	.L207
-.L208:
-	movl	$0, 66632(%rbp)
-.L207:
+	movl	$741551154, 8(%rax)
+	movw	$52, 12(%rax)
+	jmp	.L210
+.L211:
+	movl	$0, 66680(%rbp)
+.L210:
 	movl	glob_vk_1(%rip), %eax
 	testl	%eax, %eax
-	je	.L209
+	je	.L212
 	movl	$0, glob_vk_1(%rip)
-	cmpl	$1, 66632(%rbp)
-	jne	.L209
-	leaq	.LC48(%rip), %rax
+	cmpl	$1, 66680(%rbp)
+	jne	.L212
+	leaq	.LC55(%rip), %rax
+	movq	%rax, 66232(%rbp)
+	movq	$99, 66224(%rbp)
+	movq	66224(%rbp), %rcx
+	movq	66232(%rbp), %rdx
+	leaq	65776(%rbp), %rax
+	movq	%rcx, %r8
+	movq	%rax, %rcx
+	call	strncpy
+	leaq	65776(%rbp), %rax
+	movq	66224(%rbp), %rdx
+	addq	%rdx, %rax
+	movb	$0, (%rax)
+	addl	$50, 66684(%rbp)
+.L212:
+	movl	glob_vk_2(%rip), %eax
+	testl	%eax, %eax
+	je	.L213
+	movl	$0, glob_vk_2(%rip)
+	cmpl	$1, 66680(%rbp)
+	jne	.L213
+	leaq	.LC56(%rip), %rax
+	movq	%rax, 66216(%rbp)
+	movq	$99, 66208(%rbp)
+	movq	66208(%rbp), %rcx
+	movq	66216(%rbp), %rdx
+	leaq	65776(%rbp), %rax
+	movq	%rcx, %r8
+	movq	%rax, %rcx
+	call	strncpy
+	leaq	65776(%rbp), %rax
+	movq	66208(%rbp), %rdx
+	addq	%rdx, %rax
+	movb	$0, (%rax)
+	addl	$50, 66684(%rbp)
+.L213:
+	movl	glob_vk_3(%rip), %eax
+	testl	%eax, %eax
+	je	.L214
+	movl	$0, glob_vk_3(%rip)
+	cmpl	$1, 66680(%rbp)
+	jne	.L214
+	leaq	.LC57(%rip), %rax
 	movq	%rax, 66200(%rbp)
 	movq	$99, 66192(%rbp)
 	movq	66192(%rbp), %rcx
 	movq	66200(%rbp), %rdx
-	leaq	65760(%rbp), %rax
+	leaq	65776(%rbp), %rax
 	movq	%rcx, %r8
 	movq	%rax, %rcx
 	call	strncpy
-	leaq	65760(%rbp), %rax
+	leaq	65776(%rbp), %rax
 	movq	66192(%rbp), %rdx
 	addq	%rdx, %rax
 	movb	$0, (%rax)
-	addl	$50, 66628(%rbp)
-.L209:
-	movl	glob_vk_2(%rip), %eax
+	addl	$50, 66684(%rbp)
+.L214:
+	movl	glob_vk_4(%rip), %eax
 	testl	%eax, %eax
-	je	.L210
-	movl	$0, glob_vk_2(%rip)
-	cmpl	$1, 66632(%rbp)
-	jne	.L210
-	leaq	.LC49(%rip), %rax
+	je	.L215
+	movl	$0, glob_vk_4(%rip)
+	cmpl	$1, 66680(%rbp)
+	jne	.L215
+	leaq	.LC58(%rip), %rax
 	movq	%rax, 66184(%rbp)
 	movq	$99, 66176(%rbp)
 	movq	66176(%rbp), %rcx
 	movq	66184(%rbp), %rdx
-	leaq	65760(%rbp), %rax
+	leaq	65776(%rbp), %rax
 	movq	%rcx, %r8
 	movq	%rax, %rcx
 	call	strncpy
-	leaq	65760(%rbp), %rax
+	leaq	65776(%rbp), %rax
 	movq	66176(%rbp), %rdx
 	addq	%rdx, %rax
 	movb	$0, (%rax)
-	addl	$50, 66628(%rbp)
-.L210:
-	movl	glob_vk_3(%rip), %eax
-	testl	%eax, %eax
-	je	.L211
-	movl	$0, glob_vk_3(%rip)
-	cmpl	$1, 66632(%rbp)
-	jne	.L211
-	leaq	.LC50(%rip), %rax
-	movq	%rax, 66168(%rbp)
-	movq	$99, 66160(%rbp)
-	movq	66160(%rbp), %rcx
-	movq	66168(%rbp), %rdx
-	leaq	65760(%rbp), %rax
-	movq	%rcx, %r8
-	movq	%rax, %rcx
-	call	strncpy
-	leaq	65760(%rbp), %rax
-	movq	66160(%rbp), %rdx
-	addq	%rdx, %rax
-	movb	$0, (%rax)
-	addl	$50, 66628(%rbp)
-.L211:
-	movl	glob_vk_4(%rip), %eax
-	testl	%eax, %eax
-	je	.L212
-	movl	$0, glob_vk_4(%rip)
-	cmpl	$1, 66632(%rbp)
-	jne	.L212
-	leaq	.LC51(%rip), %rax
-	movq	%rax, 66152(%rbp)
-	movq	$99, 66144(%rbp)
-	movq	66144(%rbp), %rcx
-	movq	66152(%rbp), %rdx
-	leaq	65760(%rbp), %rax
-	movq	%rcx, %r8
-	movq	%rax, %rcx
-	call	strncpy
-	leaq	65760(%rbp), %rax
-	movq	66144(%rbp), %rdx
-	addq	%rdx, %rax
-	movb	$0, (%rax)
-	addl	$50, 66628(%rbp)
-.L212:
+	addl	$50, 66684(%rbp)
+.L215:
 	movl	glob_vk_5(%rip), %eax
 	testl	%eax, %eax
-	je	.L213
+	je	.L216
 	movl	$0, glob_vk_5(%rip)
 	movl	$10, %ecx
 	call	damageMe
-.L213:
+.L216:
 	movl	glob_vk_6(%rip), %eax
 	testl	%eax, %eax
-	je	.L214
+	je	.L217
 	movl	$0, glob_vk_6(%rip)
 	movl	$10, %ecx
 	call	healMe
-.L214:
+.L217:
 	movl	glob_vk_right(%rip), %eax
 	testl	%eax, %eax
-	je	.L215
-	movb	$0, 144(%rbp)
-	movl	128(%rbp), %edx
-	movzbl	150(%rbp), %eax
+	je	.L218
+	movb	$0, 160(%rbp)
+	movl	144(%rbp), %edx
+	movzbl	166(%rbp), %eax
 	movzbl	%al, %eax
 	addl	%edx, %eax
-	movl	%eax, 128(%rbp)
-.L215:
+	movl	%eax, 144(%rbp)
+.L218:
 	movl	glob_vk_up(%rip), %eax
 	testl	%eax, %eax
-	je	.L216
-	movb	$1, 144(%rbp)
-	movl	132(%rbp), %edx
-	movzbl	150(%rbp), %eax
+	je	.L219
+	movb	$1, 160(%rbp)
+	movl	148(%rbp), %edx
+	movzbl	166(%rbp), %eax
 	movzbl	%al, %eax
 	subl	%eax, %edx
-	movl	%edx, 132(%rbp)
-.L216:
+	movl	%edx, %eax
+	movl	%eax, 148(%rbp)
+.L219:
 	movl	glob_vk_left(%rip), %eax
 	testl	%eax, %eax
-	je	.L217
-	movb	$2, 144(%rbp)
-	movl	128(%rbp), %edx
-	movzbl	150(%rbp), %eax
+	je	.L220
+	movb	$2, 160(%rbp)
+	movl	144(%rbp), %edx
+	movzbl	166(%rbp), %eax
 	movzbl	%al, %eax
 	subl	%eax, %edx
-	movl	%edx, 128(%rbp)
-.L217:
+	movl	%edx, %eax
+	movl	%eax, 144(%rbp)
+.L220:
 	movl	glob_vk_down(%rip), %eax
 	testl	%eax, %eax
-	je	.L218
-	movb	$3, 144(%rbp)
-	movl	132(%rbp), %edx
-	movzbl	150(%rbp), %eax
+	je	.L221
+	movb	$3, 160(%rbp)
+	movl	148(%rbp), %edx
+	movzbl	166(%rbp), %eax
 	movzbl	%al, %eax
 	addl	%edx, %eax
-	movl	%eax, 132(%rbp)
-.L218:
+	movl	%eax, 148(%rbp)
+.L221:
 	movl	glob_vk_right(%rip), %edx
 	movl	glob_vk_left(%rip), %eax
 	orl	%eax, %edx
@@ -3121,265 +3200,274 @@ SDL_main:
 	movl	glob_vk_down(%rip), %eax
 	orl	%edx, %eax
 	testl	%eax, %eax
-	je	.L219
-	movzbl	145(%rbp), %edx
-	movzbl	146(%rbp), %eax
+	je	.L222
+	movzbl	161(%rbp), %edx
+	movzbl	162(%rbp), %eax
 	addl	%edx, %eax
-	movb	%al, 145(%rbp)
-	movzbl	148(%rbp), %ecx
-	movzbl	145(%rbp), %edx
-	movzbl	147(%rbp), %eax
-	cmpb	%al, %dl
-	setnb	%al
-	addl	%ecx, %eax
-	movb	%al, 148(%rbp)
-	movzbl	145(%rbp), %eax
-	movzbl	147(%rbp), %edx
+	movb	%al, 161(%rbp)
+	movzbl	164(%rbp), %eax
+	movzbl	161(%rbp), %ecx
+	movzbl	163(%rbp), %edx
+	cmpb	%dl, %cl
+	setnb	%dl
+	addl	%edx, %eax
+	movb	%al, 164(%rbp)
+	movzbl	161(%rbp), %eax
+	movzbl	163(%rbp), %edx
 	movzbl	%al, %eax
 	divb	%dl
 	movzbl	%ah, %eax
-	movb	%al, 145(%rbp)
-	movzbl	148(%rbp), %eax
-	movzbl	149(%rbp), %edx
+	movb	%al, 161(%rbp)
+	movzbl	164(%rbp), %eax
+	movzbl	165(%rbp), %edx
 	movzbl	%al, %eax
 	divb	%dl
 	movzbl	%ah, %eax
-	movb	%al, 148(%rbp)
-	movl	66496(%rbp), %eax
-	imull	66492(%rbp), %eax
-	movl	66508(%rbp), %edx
+	movb	%al, 164(%rbp)
+	movl	66544(%rbp), %eax
+	imull	66540(%rbp), %eax
+	movl	66556(%rbp), %edx
 	subl	%eax, %edx
-	movl	%edx, 66140(%rbp)
-	movl	66520(%rbp), %eax
-	movl	%eax, 66136(%rbp)
-	movl	66524(%rbp), %eax
-	movl	%eax, 66132(%rbp)
-	movl	66496(%rbp), %eax
-	imull	66488(%rbp), %eax
-	movl	66504(%rbp), %edx
+	movl	%edx, %eax
+	movl	%eax, 66172(%rbp)
+	movl	66568(%rbp), %eax
+	movl	%eax, 66168(%rbp)
+	movl	66572(%rbp), %eax
+	movl	%eax, 66164(%rbp)
+	movl	66544(%rbp), %eax
+	imull	66536(%rbp), %eax
+	movl	66552(%rbp), %edx
 	subl	%eax, %edx
-	movl	%edx, 66128(%rbp)
-	movl	$0, 66124(%rbp)
-	movl	128(%rbp), %eax
-	cmpl	%eax, 66140(%rbp)
-	jl	.L220
-	movl	132(%rbp), %eax
-	cmpl	%eax, 66128(%rbp)
-	jl	.L220
-	movl	128(%rbp), %eax
-	cmpl	%eax, 66132(%rbp)
-	jg	.L220
-	movl	132(%rbp), %eax
-	cmpl	%eax, 66136(%rbp)
-	jle	.L221
-.L220:
-	movl	$1, %eax
-	jmp	.L222
-.L221:
-	movl	$0, %eax
-.L222:
-	movl	%eax, 66124(%rbp)
-	movl	128(%rbp), %eax
-	cmpl	%eax, 66140(%rbp)
-	jge	.L223
-	movl	66132(%rbp), %eax
-	movl	%eax, 128(%rbp)
-	addl	$1, 66616(%rbp)
-.L223:
-	movl	132(%rbp), %eax
-	cmpl	%eax, 66136(%rbp)
+	movl	%edx, %eax
+	movl	%eax, 66160(%rbp)
+	movl	$0, 66156(%rbp)
+	movl	144(%rbp), %eax
+	cmpl	%eax, 66172(%rbp)
+	jl	.L223
+	movl	148(%rbp), %eax
+	cmpl	%eax, 66160(%rbp)
+	jl	.L223
+	movl	144(%rbp), %eax
+	cmpl	%eax, 66164(%rbp)
+	jg	.L223
+	movl	148(%rbp), %eax
+	cmpl	%eax, 66168(%rbp)
 	jle	.L224
-	movl	66128(%rbp), %eax
-	movl	%eax, 132(%rbp)
-	pxor	%xmm3, %xmm3
-	cvtsi2sdl	66288(%rbp), %xmm3
-	movq	%xmm3, %rax
-	movq	%rax, %xmm0
-	call	sqrt
-	cvttsd2sil	%xmm0, %eax
-	subl	%eax, 66616(%rbp)
+.L223:
+	movl	$1, %eax
+	jmp	.L225
 .L224:
-	movl	128(%rbp), %eax
-	cmpl	%eax, 66132(%rbp)
-	jle	.L225
-	movl	66140(%rbp), %eax
-	movl	%eax, 128(%rbp)
-	subl	$1, 66616(%rbp)
+	movl	$0, %eax
 .L225:
-	movl	132(%rbp), %eax
-	cmpl	%eax, 66128(%rbp)
+	movl	%eax, 66156(%rbp)
+	movl	144(%rbp), %eax
+	cmpl	%eax, 66172(%rbp)
 	jge	.L226
-	movl	66136(%rbp), %eax
-	movl	%eax, 132(%rbp)
-	pxor	%xmm4, %xmm4
-	cvtsi2sdl	66288(%rbp), %xmm4
-	movq	%xmm4, %rax
-	movq	%rax, %xmm0
-	call	sqrt
-	cvttsd2sil	%xmm0, %eax
-	addl	%eax, 66616(%rbp)
+	movl	66164(%rbp), %eax
+	movl	%eax, 144(%rbp)
+	addl	$1, 66664(%rbp)
 .L226:
-	cmpl	$0, 66124(%rbp)
-	je	.L227
-	movl	66288(%rbp), %eax
-	addl	%eax, 66616(%rbp)
-	movl	66616(%rbp), %eax
+	movl	148(%rbp), %eax
+	cmpl	%eax, 66168(%rbp)
+	jle	.L227
+	movl	66160(%rbp), %eax
+	movl	%eax, 148(%rbp)
+	cvtsi2sd	66328(%rbp), %xmm0
+	call	sqrt
+	cvttsd2si	%xmm0, %eax
+	subl	%eax, 66664(%rbp)
+.L227:
+	movl	144(%rbp), %eax
+	cmpl	%eax, 66164(%rbp)
+	jle	.L228
+	movl	66172(%rbp), %eax
+	movl	%eax, 144(%rbp)
+	subl	$1, 66664(%rbp)
+.L228:
+	movl	148(%rbp), %eax
+	cmpl	%eax, 66160(%rbp)
+	jge	.L229
+	movl	66168(%rbp), %eax
+	movl	%eax, 148(%rbp)
+	cvtsi2sd	66328(%rbp), %xmm0
+	call	sqrt
+	cvttsd2si	%xmm0, %eax
+	addl	%eax, 66664(%rbp)
+.L229:
+	cmpl	$0, 66156(%rbp)
+	je	.L231
+	movl	66328(%rbp), %eax
+	addl	%eax, 66664(%rbp)
+	movl	66664(%rbp), %eax
 	cltd
-	idivl	66288(%rbp)
-	movl	%edx, 66616(%rbp)
-	leaq	192(%rbp), %rax
-	movl	66616(%rbp), %ecx
+	idivl	66328(%rbp)
+	movl	%edx, 66664(%rbp)
+	leaq	208(%rbp), %rax
+	movl	66664(%rbp), %ecx
 	movq	%rax, %rdx
 	call	level_get_name
-	movl	66616(%rbp), %eax
+	movl	66664(%rbp), %eax
 	leal	31(%rax), %edx
 	testl	%eax, %eax
 	cmovs	%edx, %eax
 	sarl	$5, %eax
-	movl	%eax, %r8d
-	movslq	%r8d, %rax
-	movl	160(%rbp,%rax,4), %edx
-	movl	66616(%rbp), %eax
-	andl	$31, %eax
-	movl	$1, %r9d
+	movl	%eax, %r9d
+	movslq	%r9d, %rax
+	movl	176(%rbp,%rax,4), %r8d
+	movl	66664(%rbp), %edx
+	movl	%edx, %eax
+	sarl	$31, %eax
+	shrl	$27, %eax
+	addl	%eax, %edx
+	andl	$31, %edx
+	subl	%eax, %edx
+	movl	%edx, %eax
+	movl	$1, %edx
 	movl	%eax, %ecx
-	sall	%cl, %r9d
-	movl	%r9d, %eax
+	sall	%cl, %edx
+	movl	%edx, %eax
+	movl	%r8d, %edx
 	orl	%eax, %edx
-	movslq	%r8d, %rax
-	movl	%edx, 160(%rbp,%rax,4)
-	jmp	.L227
-.L219:
-	movb	$0, 145(%rbp)
-	movb	$0, 148(%rbp)
-.L227:
+	movslq	%r9d, %rax
+	movl	%edx, 176(%rbp,%rax,4)
+	jmp	.L231
+.L222:
+	movb	$0, 161(%rbp)
+	movb	$0, 164(%rbp)
+.L231:
 	movl	glob_vk_space(%rip), %edx
 	movl	glob_vk_enter(%rip), %eax
 	orl	%edx, %eax
 	testl	%eax, %eax
-	je	.L228
-	movl	$0, 66608(%rbp)
-.L228:
-	movl	128(%rbp), %eax
-	movl	%eax, 136(%rbp)
-	movl	132(%rbp), %eax
-	movl	%eax, 140(%rbp)
-	movl	$0, 66600(%rbp)
-	jmp	.L229
-.L233:
-	movq	waterParticles(%rip), %rdx
-	movl	66600(%rbp), %eax
+	je	.L232
+	movl	$0, 66656(%rbp)
+.L232:
+	movl	144(%rbp), %eax
+	movl	%eax, 152(%rbp)
+	movl	148(%rbp), %eax
+	movl	%eax, 156(%rbp)
+	movl	$0, 66648(%rbp)
+	jmp	.L233
+.L237:
+	leaq	waterParticles(%rip), %rax
+	movq	(%rax), %rdx
+	movl	66648(%rbp), %eax
 	cltq
 	salq	$4, %rax
 	addq	%rdx, %rax
 	movl	12(%rax), %eax
 	testl	%eax, %eax
-	je	.L230
-	movq	waterParticles(%rip), %rdx
-	movl	66600(%rbp), %eax
+	je	.L234
+	leaq	waterParticles(%rip), %rax
+	movq	(%rax), %rdx
+	movl	66648(%rbp), %eax
 	cltq
 	salq	$4, %rax
 	addq	%rdx, %rax
 	movss	4(%rax), %xmm1
-	movq	waterParticles(%rip), %rdx
-	movl	66600(%rbp), %eax
+	leaq	waterParticles(%rip), %rax
+	movq	(%rax), %rdx
+	movl	66648(%rbp), %eax
 	cltq
 	salq	$4, %rax
 	addq	%rdx, %rax
 	movss	8(%rax), %xmm0
-	movq	waterParticles(%rip), %rdx
-	movl	66600(%rbp), %eax
+	leaq	waterParticles(%rip), %rax
+	movq	(%rax), %rdx
+	movl	66648(%rbp), %eax
 	cltq
 	salq	$4, %rax
 	addq	%rdx, %rax
 	addss	%xmm1, %xmm0
 	movss	%xmm0, 4(%rax)
-	movq	waterParticles(%rip), %rdx
-	movl	66600(%rbp), %eax
+	leaq	waterParticles(%rip), %rax
+	movq	(%rax), %rdx
+	movl	66648(%rbp), %eax
 	cltq
 	salq	$4, %rax
 	addq	%rdx, %rax
 	movss	4(%rax), %xmm0
-	pxor	%xmm1, %xmm1
-	cvtsi2ssl	66528(%rbp), %xmm1
+	cvtsi2ss	66576(%rbp), %xmm1
 	comiss	%xmm1, %xmm0
-	jbe	.L230
+	jbe	.L234
 	call	rand
-	movl	%eax, %edx
-	movslq	%edx, %rax
-	imulq	$1374389535, %rax, %rax
-	shrq	$32, %rax
-	sarl	$5, %eax
-	movl	%edx, %ecx
-	sarl	$31, %ecx
-	subl	%ecx, %eax
-	imull	$100, %eax, %ecx
+	movl	%eax, %ecx
+	movl	$1374389535, %edx
+	movl	%ecx, %eax
+	imull	%edx
+	sarl	$5, %edx
+	movl	%ecx, %eax
+	sarl	$31, %eax
+	subl	%eax, %edx
 	movl	%edx, %eax
-	subl	%ecx, %eax
+	imull	$100, %eax, %eax
+	subl	%eax, %ecx
+	movl	%ecx, %eax
 	cmpl	$4, %eax
-	jg	.L232
-	movq	waterParticles(%rip), %rdx
-	movl	66600(%rbp), %eax
+	jg	.L236
+	leaq	waterParticles(%rip), %rax
+	movq	(%rax), %rdx
+	movl	66648(%rbp), %eax
 	cltq
 	salq	$4, %rax
 	addq	%rdx, %rax
 	movl	$0, 12(%rax)
-	jmp	.L230
-.L232:
-	movl	66528(%rbp), %ecx
-	movl	66532(%rbp), %edx
-	movl	66600(%rbp), %eax
+	jmp	.L234
+.L236:
+	movl	66576(%rbp), %ecx
+	movl	66580(%rbp), %edx
+	movl	66648(%rbp), %eax
 	movl	%ecx, %r8d
 	movl	%eax, %ecx
 	call	createWaterParticle
-.L230:
-	addl	$1, 66600(%rbp)
-.L229:
+.L234:
+	addl	$1, 66648(%rbp)
+.L233:
 	movl	$100, %eax
-	cmpl	%eax, 66600(%rbp)
-	jl	.L233
-	movl	66332(%rbp), %eax
-	addl	%eax, 66620(%rbp)
-	movl	66620(%rbp), %eax
-	cmpl	66336(%rbp), %eax
+	cmpl	%eax, 66648(%rbp)
+	jl	.L237
+	movl	66372(%rbp), %eax
+	addl	%eax, 66668(%rbp)
+	movl	66668(%rbp), %eax
+	cmpl	66376(%rbp), %eax
 	setge	%al
 	movzbl	%al, %eax
-	addl	%eax, 66624(%rbp)
-	movl	66624(%rbp), %eax
+	addl	%eax, 66672(%rbp)
+	movl	66672(%rbp), %eax
 	cltd
-	idivl	66340(%rbp)
-	movl	%edx, 66624(%rbp)
-	movl	66620(%rbp), %eax
+	idivl	66380(%rbp)
+	movl	%edx, 66672(%rbp)
+	movl	66668(%rbp), %eax
 	cltd
-	idivl	66336(%rbp)
-	movl	%edx, 66620(%rbp)
-	leaq	155(%rbp), %rdx
-	leaq	58(%rbp), %rax
+	idivl	66376(%rbp)
+	movl	%edx, 66668(%rbp)
+	leaq	171(%rbp), %rdx
+	leaq	68(%rbp), %rax
 	movq	%rax, %rcx
 	call	strcpy
-	cmpl	$0, 66256(%rbp)
-	js	.L234
+	cmpl	$0, 66296(%rbp)
+	js	.L238
 	movl	$43, %eax
-	jmp	.L235
-.L234:
+	jmp	.L239
+.L238:
 	movl	$45, %eax
-.L235:
-	movb	%al, 58(%rbp)
-	movl	66256(%rbp), %eax
-	movslq	%eax, %rdx
-	imulq	$1717986919, %rdx, %rdx
-	shrq	$32, %rdx
+.L239:
+	movb	%al, 68(%rbp)
+	movl	66296(%rbp), %ecx
+	movl	$1717986919, %edx
+	movl	%ecx, %eax
+	imull	%edx
 	sarl	$2, %edx
+	movl	%ecx, %eax
 	sarl	$31, %eax
 	subl	%eax, %edx
 	movl	%edx, %eax
 	addl	$48, %eax
-	movb	%al, 59(%rbp)
-	movl	66256(%rbp), %ecx
-	movslq	%ecx, %rax
-	imulq	$1717986919, %rax, %rax
-	shrq	$32, %rax
-	movl	%eax, %edx
+	movb	%al, 69(%rbp)
+	movl	66296(%rbp), %ecx
+	movl	$1717986919, %edx
+	movl	%ecx, %eax
+	imull	%edx
 	sarl	$2, %edx
 	movl	%ecx, %eax
 	sarl	$31, %eax
@@ -3392,107 +3480,177 @@ SDL_main:
 	movl	%ecx, %edx
 	movl	%edx, %eax
 	addl	$48, %eax
-	movb	%al, 60(%rbp)
+	movb	%al, 70(%rbp)
 	movl	$42, %eax
-	movb	%al, 61(%rbp)
-	cmpl	$0, 66260(%rbp)
-	jne	.L236
+	movb	%al, 71(%rbp)
+	cmpl	$0, 66300(%rbp)
+	jne	.L240
 	movl	$67, %eax
-	jmp	.L237
-.L236:
+	jmp	.L241
+.L240:
 	movl	$70, %eax
-.L237:
-	movb	%al, 62(%rbp)
+.L241:
+	movb	%al, 72(%rbp)
 	movl	$0, %edx
-	movq	66464(%rbp), %rax
+	movq	66512(%rbp), %rax
 	movq	%rax, %rcx
 	call	draw_clear
 	movl	$16777215, %edx
-	movq	66464(%rbp), %rax
+	movq	66512(%rbp), %rax
 	movq	%rax, %rcx
 	call	draw_set_color
 	movl	$33023, %edx
-	movl	66524(%rbp), %ecx
-	movq	66464(%rbp), %rax
+	movl	66572(%rbp), %ecx
+	movq	66512(%rbp), %rax
 	movl	%edx, 40(%rsp)
-	movl	66528(%rbp), %edx
+	movl	66576(%rbp), %edx
 	movl	%edx, 32(%rsp)
 	movl	%ecx, %r9d
 	movl	$0, %r8d
 	movl	$0, %edx
 	movq	%rax, %rcx
 	call	draw_rectangle_color
-	movl	$8388863, %ecx
-	movl	66532(%rbp), %eax
-	subl	66524(%rbp), %eax
-	movl	%eax, %r8d
-	movl	66524(%rbp), %edx
-	movq	66464(%rbp), %rax
-	movl	%ecx, 40(%rsp)
-	movl	66528(%rbp), %ecx
-	movl	%ecx, 32(%rsp)
-	movl	%r8d, %r9d
+	movl	66572(%rbp), %ecx
+	movq	66512(%rbp), %rax
+	movq	66416(%rbp), %rdx
+	movq	%rdx, 40(%rsp)
+	movl	66576(%rbp), %edx
+	movl	%edx, 32(%rsp)
+	movl	%ecx, %r9d
+	movl	$0, %r8d
+	movl	$0, %edx
+	movq	%rax, %rcx
+	call	draw_image
+	movl	$8388863, %r8d
+	movl	66580(%rbp), %eax
+	subl	66572(%rbp), %eax
+	movl	%eax, %ecx
+	movl	66572(%rbp), %edx
+	movq	66512(%rbp), %rax
+	movl	%r8d, 40(%rsp)
+	movl	66576(%rbp), %r8d
+	movl	%r8d, 32(%rsp)
+	movl	%ecx, %r9d
 	movl	$0, %r8d
 	movq	%rax, %rcx
 	call	draw_rectangle_color
 	movl	$33023, %edx
-	movl	66532(%rbp), %eax
-	subl	66524(%rbp), %eax
-	movl	66532(%rbp), %r8d
-	movq	66464(%rbp), %rcx
+	movl	66580(%rbp), %eax
+	subl	66572(%rbp), %eax
+	movl	66580(%rbp), %r8d
+	movq	66512(%rbp), %rcx
 	movl	%edx, 40(%rsp)
-	movl	66528(%rbp), %edx
+	movl	66576(%rbp), %edx
 	movl	%edx, 32(%rsp)
 	movl	%r8d, %r9d
 	movl	$0, %r8d
 	movl	%eax, %edx
 	call	draw_rectangle_color
-	movl	66492(%rbp), %eax
-	movl	%eax, 66120(%rbp)
-	movl	$0, 66116(%rbp)
-	cmpl	$0, 66608(%rbp)
-	jne	.L238
-	movl	66352(%rbp), %eax
-	imull	66488(%rbp), %eax
-	movl	%eax, %ecx
-	movl	66356(%rbp), %eax
-	imull	66492(%rbp), %eax
-	movl	%eax, %r9d
-	movl	66116(%rbp), %r10d
-	movl	66120(%rbp), %edx
-	movq	66464(%rbp), %rax
-	movl	66352(%rbp), %r8d
-	movl	%r8d, 64(%rsp)
-	movl	66356(%rbp), %r8d
-	movl	%r8d, 56(%rsp)
-	leaq	.LC52(%rip), %r8
-	movq	%r8, 48(%rsp)
-	movq	66360(%rbp), %r8
-	movq	%r8, 40(%rsp)
-	movl	%ecx, 32(%rsp)
+	movl	66580(%rbp), %eax
+	subl	66572(%rbp), %eax
+	movl	66580(%rbp), %r8d
+	movq	66512(%rbp), %rcx
+	movq	66416(%rbp), %rdx
+	movq	%rdx, 40(%rsp)
+	movl	66576(%rbp), %edx
+	movl	%edx, 32(%rsp)
+	movl	%r8d, %r9d
+	movl	$0, %r8d
+	movl	%eax, %edx
+	call	draw_image
+	movl	66540(%rbp), %eax
+	movl	%eax, 66152(%rbp)
+	movl	66536(%rbp), %eax
+	movl	%eax, 66148(%rbp)
+	cmpl	$0, 66656(%rbp)
+	jne	.L242
+	movl	66392(%rbp), %eax
+	imull	66536(%rbp), %eax
+	movl	66396(%rbp), %edx
+	imull	66540(%rbp), %edx
+	movl	%edx, %r8d
+	movl	66148(%rbp), %r10d
+	movl	66152(%rbp), %edx
+	movq	66512(%rbp), %rcx
+	movl	66392(%rbp), %r9d
+	movl	%r9d, 64(%rsp)
+	movl	66396(%rbp), %r9d
+	movl	%r9d, 56(%rsp)
+	leaq	.LC59(%rip), %r9
+	movq	%r9, 48(%rsp)
+	movq	66400(%rbp), %r9
+	movq	%r9, 40(%rsp)
+	movl	%eax, 32(%rsp)
+	movl	%r8d, %r9d
 	movl	%r10d, %r8d
-	movq	%rax, %rcx
 	call	draw_text
-.L238:
-	movl	66492(%rbp), %edx
-	movl	66508(%rbp), %eax
+	movl	66392(%rbp), %eax
+	imull	66536(%rbp), %eax
+	addl	%eax, 66148(%rbp)
+	cmpl	$0, 66656(%rbp)
+	jne	.L242
+	movl	$16777215, %edx
+	movq	66512(%rbp), %rax
+	movq	%rax, %rcx
+	call	draw_set_color
+	movl	$200, 66144(%rbp)
+	movl	$20, 66140(%rbp)
+	movl	health(%rip), %eax
+	imull	66144(%rbp), %eax
+	movl	maxHealth(%rip), %esi
+	cltd
+	idivl	%esi
+	movl	%eax, 66136(%rbp)
+	movl	$255, 66132(%rbp)
+	movl	$0, %r9d
+	movl	66148(%rbp), %edx
+	movl	66140(%rbp), %eax
+	addl	%eax, %edx
+	movl	66144(%rbp), %r8d
+	movl	66148(%rbp), %ecx
+	movq	66512(%rbp), %rax
+	movl	%r9d, 40(%rsp)
+	movl	%edx, 32(%rsp)
+	movl	%r8d, %r9d
+	movl	%ecx, %r8d
+	movl	$0, %edx
+	movq	%rax, %rcx
+	call	draw_rectangle_color
+	movl	66148(%rbp), %edx
+	movl	66140(%rbp), %eax
+	addl	%eax, %edx
+	movl	66136(%rbp), %r9d
+	movl	66148(%rbp), %r8d
+	movq	66512(%rbp), %rax
+	movl	66132(%rbp), %ecx
+	movl	%ecx, 40(%rsp)
+	movl	%edx, 32(%rsp)
+	movl	$0, %edx
+	movq	%rax, %rcx
+	call	draw_rectangle_color
+	movl	66140(%rbp), %eax
+	addl	%eax, 66148(%rbp)
+.L242:
+	movl	66540(%rbp), %edx
+	movl	66556(%rbp), %eax
 	addl	%edx, %eax
-	movl	%eax, 66120(%rbp)
-	movl	$0, 66116(%rbp)
-	cmpl	$0, 66608(%rbp)
-	jne	.L239
+	movl	%eax, 66152(%rbp)
+	movl	66536(%rbp), %eax
+	movl	%eax, 66148(%rbp)
+	cmpl	$0, 66656(%rbp)
+	jne	.L243
 	movq	%rsp, %rax
-	movq	%rax, %r13
-	leaq	.LC53(%rip), %rax
-	movq	%rax, 66104(%rbp)
-	movq	66104(%rbp), %rax
+	movq	%rax, %r15
+	leaq	.LC60(%rip), %rax
+	movq	%rax, 66120(%rbp)
+	movq	66120(%rbp), %rax
 	movq	%rax, %rcx
 	call	strlen
 	movq	%rax, %rdx
 	subq	$1, %rdx
-	movq	%rdx, 66096(%rbp)
-	movq	%rax, %r14
-	movl	$0, %r15d
+	movq	%rdx, 66112(%rbp)
+	movq	%rax, %r13
+	movl	$0, %r14d
 	movq	%rax, -48(%rbp)
 	movq	$0, -40(%rbp)
 	addq	$15, %rax
@@ -3502,22 +3660,31 @@ SDL_main:
 	subq	%rax, %rsp
 	leaq	80(%rsp), %rax
 	addq	$0, %rax
-	movq	%rax, 66088(%rbp)
-	movq	66104(%rbp), %rdx
-	movq	66088(%rbp), %rax
+	movq	%rax, 66104(%rbp)
+	movq	66104(%rbp), %rax
+	movq	66120(%rbp), %rdx
 	movq	%rax, %rcx
 	call	strcpy
-	movl	66616(%rbp), %eax
-	movb	%al, 66087(%rbp)
-	movzbl	66087(%rbp), %eax
-	movl	$41, %edx
-	mulb	%dl
+	movl	66664(%rbp), %eax
+	movb	%al, 66103(%rbp)
+	movzbl	66103(%rbp), %eax
+	movzbl	%al, %edx
+	movl	%edx, %eax
+	sall	$2, %eax
+	addl	%edx, %eax
+	sall	$3, %eax
+	addl	%edx, %eax
 	shrw	$8, %ax
 	movl	%eax, %ecx
 	shrb	$4, %cl
-	movl	$-51, %edx
+	movzbl	%cl, %edx
 	movl	%edx, %eax
-	mulb	%cl
+	sall	$2, %eax
+	addl	%edx, %eax
+	sall	$3, %eax
+	addl	%edx, %eax
+	leal	0(,%rax,4), %edx
+	addl	%edx, %eax
 	shrw	$8, %ax
 	movl	%eax, %edx
 	shrb	$3, %dl
@@ -3528,24 +3695,34 @@ SDL_main:
 	subl	%eax, %ecx
 	movl	%ecx, %edx
 	leal	48(%rdx), %ebx
-	movq	66088(%rbp), %rax
+	movq	66104(%rbp), %rax
 	movq	%rax, %rdx
-	leaq	.LC54(%rip), %rax
-	movq	%rax, %rcx
+	leaq	.LC61(%rip), %rcx
 	call	string_pos
 	movl	%ebx, %ecx
-	movq	66088(%rbp), %rdx
+	movq	66104(%rbp), %rdx
 	cltq
 	movb	%cl, (%rdx,%rax)
-	movzbl	66087(%rbp), %eax
-	movl	$-51, %edx
-	mulb	%dl
+	movzbl	66103(%rbp), %eax
+	movzbl	%al, %edx
+	movl	%edx, %eax
+	sall	$2, %eax
+	addl	%edx, %eax
+	sall	$3, %eax
+	addl	%edx, %eax
+	leal	0(,%rax,4), %edx
+	addl	%edx, %eax
 	shrw	$8, %ax
 	movl	%eax, %ecx
 	shrb	$3, %cl
-	movl	$-51, %edx
+	movzbl	%cl, %edx
 	movl	%edx, %eax
-	mulb	%cl
+	sall	$2, %eax
+	addl	%edx, %eax
+	sall	$3, %eax
+	addl	%edx, %eax
+	leal	0(,%rax,4), %edx
+	addl	%edx, %eax
 	shrw	$8, %ax
 	movl	%eax, %edx
 	shrb	$3, %dl
@@ -3556,19 +3733,23 @@ SDL_main:
 	subl	%eax, %ecx
 	movl	%ecx, %edx
 	leal	48(%rdx), %ebx
-	movq	66088(%rbp), %rax
+	movq	66104(%rbp), %rax
 	movq	%rax, %rdx
-	leaq	.LC55(%rip), %rax
-	movq	%rax, %rcx
+	leaq	.LC62(%rip), %rcx
 	call	string_pos
 	movl	%ebx, %ecx
-	movq	66088(%rbp), %rdx
+	movq	66104(%rbp), %rdx
 	cltq
 	movb	%cl, (%rdx,%rax)
-	movzbl	66087(%rbp), %ecx
-	movl	$-51, %edx
+	movzbl	66103(%rbp), %ecx
+	movzbl	%cl, %edx
 	movl	%edx, %eax
-	mulb	%cl
+	sall	$2, %eax
+	addl	%edx, %eax
+	sall	$3, %eax
+	addl	%edx, %eax
+	leal	0(,%rax,4), %edx
+	addl	%edx, %eax
 	shrw	$8, %ax
 	movl	%eax, %edx
 	shrb	$3, %dl
@@ -3579,128 +3760,121 @@ SDL_main:
 	subl	%eax, %ecx
 	movl	%ecx, %edx
 	leal	48(%rdx), %ebx
-	movq	66088(%rbp), %rax
+	movq	66104(%rbp), %rax
 	movq	%rax, %rdx
-	leaq	.LC56(%rip), %rax
-	movq	%rax, %rcx
+	leaq	.LC63(%rip), %rcx
 	call	string_pos
 	movl	%ebx, %ecx
-	movq	66088(%rbp), %rdx
+	movq	66104(%rbp), %rdx
 	cltq
 	movb	%cl, (%rdx,%rax)
-	movl	66352(%rbp), %eax
-	imull	66488(%rbp), %eax
-	movl	%eax, %ecx
-	movl	66356(%rbp), %eax
-	imull	66492(%rbp), %eax
-	movl	%eax, %r9d
-	movl	66116(%rbp), %r10d
-	movl	66120(%rbp), %edx
-	movq	66464(%rbp), %rax
-	movl	66352(%rbp), %r8d
-	movl	%r8d, 64(%rsp)
-	movl	66356(%rbp), %r8d
-	movl	%r8d, 56(%rsp)
-	movq	66088(%rbp), %r8
-	movq	%r8, 48(%rsp)
-	movq	66360(%rbp), %r8
-	movq	%r8, 40(%rsp)
-	movl	%ecx, 32(%rsp)
-	movl	%r10d, %r8d
-	movq	%rax, %rcx
+	movq	66104(%rbp), %r9
+	movl	66392(%rbp), %eax
+	imull	66536(%rbp), %eax
+	movl	66396(%rbp), %edx
+	imull	66540(%rbp), %edx
+	movl	%edx, %r8d
+	movl	66148(%rbp), %r11d
+	movl	66152(%rbp), %edx
+	movq	66512(%rbp), %rcx
+	movl	66392(%rbp), %r10d
+	movl	%r10d, 64(%rsp)
+	movl	66396(%rbp), %r10d
+	movl	%r10d, 56(%rsp)
+	movq	%r9, 48(%rsp)
+	movq	66400(%rbp), %r9
+	movq	%r9, 40(%rsp)
+	movl	%eax, 32(%rsp)
+	movl	%r8d, %r9d
+	movl	%r11d, %r8d
 	call	draw_text
-	movl	66352(%rbp), %eax
-	imull	66488(%rbp), %eax
-	movl	%eax, %ecx
-	movl	66356(%rbp), %eax
-	imull	66492(%rbp), %eax
-	movl	%eax, %r9d
-	movl	66352(%rbp), %eax
-	imull	66488(%rbp), %eax
-	movl	66116(%rbp), %edx
-	leal	(%rax,%rdx), %r10d
-	movl	66120(%rbp), %edx
-	movq	66464(%rbp), %rax
-	movl	66352(%rbp), %r8d
-	movl	%r8d, 64(%rsp)
-	movl	66356(%rbp), %r8d
-	movl	%r8d, 56(%rsp)
-	leaq	192(%rbp), %r8
-	movq	%r8, 48(%rsp)
-	movq	66360(%rbp), %r8
-	movq	%r8, 40(%rsp)
-	movl	%ecx, 32(%rsp)
-	movl	%r10d, %r8d
-	movq	%rax, %rcx
+	movl	66392(%rbp), %eax
+	imull	66536(%rbp), %eax
+	movl	66396(%rbp), %edx
+	imull	66540(%rbp), %edx
+	movl	%edx, %r8d
+	movl	66392(%rbp), %edx
+	imull	66536(%rbp), %edx
+	movl	66148(%rbp), %ecx
+	leal	(%rdx,%rcx), %r11d
+	movl	66152(%rbp), %r10d
+	movq	66512(%rbp), %rcx
+	movl	66392(%rbp), %edx
+	movl	%edx, 64(%rsp)
+	movl	66396(%rbp), %edx
+	movl	%edx, 56(%rsp)
+	leaq	208(%rbp), %rdx
+	movq	%rdx, 48(%rsp)
+	movq	66400(%rbp), %rdx
+	movq	%rdx, 40(%rsp)
+	movl	%eax, 32(%rsp)
+	movl	%r8d, %r9d
+	movl	%r11d, %r8d
+	movl	%r10d, %edx
 	call	draw_text
-	movl	66120(%rbp), %eax
-	movl	%eax, 66080(%rbp)
-	movl	66352(%rbp), %eax
-	imull	66488(%rbp), %eax
+	movl	66152(%rbp), %eax
+	movl	%eax, 66096(%rbp)
+	movl	66392(%rbp), %eax
+	imull	66536(%rbp), %eax
 	leal	(%rax,%rax), %edx
-	movl	66116(%rbp), %eax
+	movl	66148(%rbp), %eax
 	addl	%edx, %eax
-	movl	%eax, 66076(%rbp)
-	movl	66080(%rbp), %eax
+	movl	%eax, 66092(%rbp)
+	movl	66096(%rbp), %eax
 	addl	$256, %eax
-	movl	%eax, 66072(%rbp)
-	movl	66076(%rbp), %eax
+	movl	%eax, 66088(%rbp)
+	movl	66092(%rbp), %eax
 	addl	$256, %eax
-	movl	%eax, 66068(%rbp)
-	movl	66072(%rbp), %r9d
-	movl	66076(%rbp), %r8d
-	movl	66080(%rbp), %edx
-	movq	66464(%rbp), %rax
-	movq	66272(%rbp), %rcx
+	movl	%eax, 66084(%rbp)
+	movl	66088(%rbp), %r9d
+	movl	66092(%rbp), %r8d
+	movl	66096(%rbp), %edx
+	movq	66512(%rbp), %rax
+	movq	66312(%rbp), %rcx
 	movq	%rcx, 40(%rsp)
-	movl	66068(%rbp), %ecx
+	movl	66084(%rbp), %ecx
 	movl	%ecx, 32(%rsp)
 	movq	%rax, %rcx
 	call	draw_image
-	movl	$0, 66596(%rbp)
-	jmp	.L240
-.L242:
-	movl	66596(%rbp), %edx
+	movl	$0, 66644(%rbp)
+	jmp	.L244
+.L246:
+	movl	66644(%rbp), %edx
 	movl	%edx, %eax
 	sarl	$31, %eax
 	shrl	$27, %eax
 	addl	%eax, %edx
 	andl	$31, %edx
 	subl	%eax, %edx
-	movl	%edx, %ecx
-	movl	66596(%rbp), %eax
+	movl	%edx, %eax
+	movl	%eax, %ecx
+	movl	66644(%rbp), %eax
 	leal	31(%rax), %edx
 	testl	%eax, %eax
 	cmovs	%edx, %eax
 	sarl	$5, %eax
 	cltq
-	movl	160(%rbp,%rax,4), %eax
+	movl	176(%rbp,%rax,4), %eax
 	movl	%ecx, %edx
 	movl	%eax, %ecx
 	call	BG
 	testl	%eax, %eax
-	jne	.L241
-	movl	66596(%rbp), %eax
+	jne	.L245
+	movl	66644(%rbp), %eax
 	leal	15(%rax), %edx
 	testl	%eax, %eax
 	cmovs	%edx, %eax
 	sarl	$4, %eax
 	addl	$1, %eax
-	pxor	%xmm0, %xmm0
-	cvtsi2sdl	%eax, %xmm0
-	movsd	.LC57(%rip), %xmm1
+	cvtsi2sd	%eax, %xmm0
+	movsd	.LC64(%rip), %xmm1
 	movapd	%xmm0, %xmm2
 	divsd	%xmm1, %xmm2
-	pxor	%xmm0, %xmm0
-	cvtsi2sdl	66068(%rbp), %xmm0
-	pxor	%xmm5, %xmm5
-	cvtsi2sdl	66076(%rbp), %xmm5
-	movq	%xmm5, %rax
-	movapd	%xmm0, %xmm1
-	movq	%rax, %xmm0
+	cvtsi2sd	66084(%rbp), %xmm1
+	cvtsi2sd	66092(%rbp), %xmm0
 	call	lerp
-	cvttsd2sil	%xmm0, %ebx
-	movl	66596(%rbp), %edx
+	cvttsd2si	%xmm0, %ebx
+	movl	66644(%rbp), %edx
 	movl	%edx, %eax
 	sarl	$31, %eax
 	shrl	$28, %eax
@@ -3709,40 +3883,28 @@ SDL_main:
 	subl	%eax, %edx
 	movl	%edx, %eax
 	addl	$1, %eax
-	pxor	%xmm0, %xmm0
-	cvtsi2sdl	%eax, %xmm0
-	movsd	.LC57(%rip), %xmm1
+	cvtsi2sd	%eax, %xmm0
+	movsd	.LC64(%rip), %xmm1
 	movapd	%xmm0, %xmm2
 	divsd	%xmm1, %xmm2
-	pxor	%xmm0, %xmm0
-	cvtsi2sdl	66072(%rbp), %xmm0
-	pxor	%xmm3, %xmm3
-	cvtsi2sdl	66080(%rbp), %xmm3
-	movq	%xmm3, %rax
-	movapd	%xmm0, %xmm1
-	movq	%rax, %xmm0
+	cvtsi2sd	66088(%rbp), %xmm1
+	cvtsi2sd	66096(%rbp), %xmm0
 	call	lerp
-	cvttsd2sil	%xmm0, %edi
-	movl	66596(%rbp), %eax
+	cvttsd2si	%xmm0, %edi
+	movl	66644(%rbp), %eax
 	leal	15(%rax), %edx
 	testl	%eax, %eax
 	cmovs	%edx, %eax
 	sarl	$4, %eax
-	pxor	%xmm0, %xmm0
-	cvtsi2sdl	%eax, %xmm0
-	movsd	.LC57(%rip), %xmm1
+	cvtsi2sd	%eax, %xmm0
+	movsd	.LC64(%rip), %xmm1
 	movapd	%xmm0, %xmm2
 	divsd	%xmm1, %xmm2
-	pxor	%xmm0, %xmm0
-	cvtsi2sdl	66068(%rbp), %xmm0
-	pxor	%xmm4, %xmm4
-	cvtsi2sdl	66076(%rbp), %xmm4
-	movq	%xmm4, %rax
-	movapd	%xmm0, %xmm1
-	movq	%rax, %xmm0
+	cvtsi2sd	66084(%rbp), %xmm1
+	cvtsi2sd	66092(%rbp), %xmm0
 	call	lerp
-	cvttsd2sil	%xmm0, %esi
-	movl	66596(%rbp), %edx
+	cvttsd2si	%xmm0, %esi
+	movl	66644(%rbp), %edx
 	movl	%edx, %eax
 	sarl	$31, %eax
 	shrl	$28, %eax
@@ -3750,303 +3912,276 @@ SDL_main:
 	andl	$15, %edx
 	subl	%eax, %edx
 	movl	%edx, %eax
-	pxor	%xmm0, %xmm0
-	cvtsi2sdl	%eax, %xmm0
-	movsd	.LC57(%rip), %xmm1
+	cvtsi2sd	%eax, %xmm0
+	movsd	.LC64(%rip), %xmm1
 	movapd	%xmm0, %xmm2
 	divsd	%xmm1, %xmm2
-	pxor	%xmm0, %xmm0
-	cvtsi2sdl	66072(%rbp), %xmm0
-	pxor	%xmm5, %xmm5
-	cvtsi2sdl	66080(%rbp), %xmm5
-	movq	%xmm5, %rax
-	movapd	%xmm0, %xmm1
-	movq	%rax, %xmm0
+	cvtsi2sd	66088(%rbp), %xmm1
+	cvtsi2sd	66096(%rbp), %xmm0
 	call	lerp
-	cvttsd2sil	%xmm0, %eax
-	movq	66464(%rbp), %rcx
-	movq	66264(%rbp), %rdx
+	cvttsd2si	%xmm0, %eax
+	movq	66512(%rbp), %rcx
+	movq	66304(%rbp), %rdx
 	movq	%rdx, 40(%rsp)
 	movl	%ebx, 32(%rsp)
 	movl	%edi, %r9d
 	movl	%esi, %r8d
 	movl	%eax, %edx
 	call	draw_image
-.L241:
-	addl	$1, 66596(%rbp)
-.L240:
-	cmpl	$255, 66596(%rbp)
-	jle	.L242
-	movzbl	66087(%rbp), %eax
+.L245:
+	addl	$1, 66644(%rbp)
+.L244:
+	cmpl	$255, 66644(%rbp)
+	jle	.L246
+	movzbl	66103(%rbp), %eax
 	movl	$0, %r8d
 	movl	$4, %edx
 	movl	%eax, %ecx
 	call	BGG
-	pxor	%xmm0, %xmm0
-	cvtsi2sdl	%eax, %xmm0
-	movsd	.LC57(%rip), %xmm1
+	cvtsi2sd	%eax, %xmm0
+	movsd	.LC64(%rip), %xmm1
 	movapd	%xmm0, %xmm2
 	divsd	%xmm1, %xmm2
-	pxor	%xmm0, %xmm0
-	cvtsi2sdl	66072(%rbp), %xmm0
-	pxor	%xmm3, %xmm3
-	cvtsi2sdl	66080(%rbp), %xmm3
-	movq	%xmm3, %rax
-	movapd	%xmm0, %xmm1
-	movq	%rax, %xmm0
+	cvtsi2sd	66088(%rbp), %xmm1
+	cvtsi2sd	66096(%rbp), %xmm0
 	call	lerp
-	cvttsd2sil	%xmm0, %eax
-	movl	%eax, 66064(%rbp)
+	cvttsd2si	%xmm0, %eax
+	movl	%eax, 66080(%rbp)
 	movl	$255, %ecx
-	movl	66064(%rbp), %eax
+	movl	66080(%rbp), %eax
 	leal	1(%rax), %r9d
-	movl	66064(%rbp), %eax
+	movl	66080(%rbp), %eax
 	leal	-1(%rax), %edx
-	movl	66076(%rbp), %r8d
-	movq	66464(%rbp), %rax
+	movl	66092(%rbp), %r8d
+	movq	66512(%rbp), %rax
 	movl	%ecx, 40(%rsp)
-	movl	66068(%rbp), %ecx
+	movl	66084(%rbp), %ecx
 	movl	%ecx, 32(%rsp)
 	movq	%rax, %rcx
 	call	draw_rectangle_color
-	movzbl	66087(%rbp), %eax
+	movzbl	66103(%rbp), %eax
 	movl	$1, %r8d
 	movl	$4, %edx
 	movl	%eax, %ecx
 	call	BGG
-	pxor	%xmm0, %xmm0
-	cvtsi2sdl	%eax, %xmm0
-	movsd	.LC57(%rip), %xmm1
+	cvtsi2sd	%eax, %xmm0
+	movsd	.LC64(%rip), %xmm1
 	movapd	%xmm0, %xmm2
 	divsd	%xmm1, %xmm2
-	pxor	%xmm0, %xmm0
-	cvtsi2sdl	66068(%rbp), %xmm0
-	pxor	%xmm4, %xmm4
-	cvtsi2sdl	66076(%rbp), %xmm4
-	movq	%xmm4, %rax
-	movapd	%xmm0, %xmm1
-	movq	%rax, %xmm0
+	cvtsi2sd	66084(%rbp), %xmm1
+	cvtsi2sd	66092(%rbp), %xmm0
 	call	lerp
-	cvttsd2sil	%xmm0, %eax
-	movl	%eax, 66060(%rbp)
+	cvttsd2si	%xmm0, %eax
+	movl	%eax, 66076(%rbp)
 	movl	$255, %r10d
-	movl	66060(%rbp), %eax
+	movl	66076(%rbp), %eax
 	leal	1(%rax), %ecx
-	movl	66060(%rbp), %eax
+	movl	66076(%rbp), %eax
 	leal	-1(%rax), %r8d
-	movl	66072(%rbp), %r9d
-	movl	66080(%rbp), %edx
-	movq	66464(%rbp), %rax
+	movl	66088(%rbp), %r9d
+	movl	66096(%rbp), %edx
+	movq	66512(%rbp), %rax
 	movl	%r10d, 40(%rsp)
 	movl	%ecx, 32(%rsp)
 	movq	%rax, %rcx
 	call	draw_rectangle_color
 	movl	$255, %esi
-	movzbl	66087(%rbp), %eax
+	movzbl	66103(%rbp), %eax
 	movl	$1, %r8d
 	movl	$4, %edx
 	movl	%eax, %ecx
 	call	BGG
 	addl	$1, %eax
-	pxor	%xmm0, %xmm0
-	cvtsi2sdl	%eax, %xmm0
-	movsd	.LC57(%rip), %xmm1
+	cvtsi2sd	%eax, %xmm0
+	movsd	.LC64(%rip), %xmm1
 	movapd	%xmm0, %xmm2
 	divsd	%xmm1, %xmm2
-	pxor	%xmm0, %xmm0
-	cvtsi2sdl	66068(%rbp), %xmm0
-	pxor	%xmm5, %xmm5
-	cvtsi2sdl	66076(%rbp), %xmm5
-	movq	%xmm5, %rax
-	movapd	%xmm0, %xmm1
-	movq	%rax, %xmm0
+	cvtsi2sd	66084(%rbp), %xmm1
+	cvtsi2sd	66092(%rbp), %xmm0
 	call	lerp
-	cvttsd2sil	%xmm0, %ebx
-	movzbl	66087(%rbp), %eax
+	cvttsd2si	%xmm0, %ebx
+	movzbl	66103(%rbp), %eax
 	movl	$0, %r8d
 	movl	$4, %edx
 	movl	%eax, %ecx
 	call	BGG
 	addl	$1, %eax
-	pxor	%xmm0, %xmm0
-	cvtsi2sdl	%eax, %xmm0
-	movsd	.LC57(%rip), %xmm1
+	cvtsi2sd	%eax, %xmm0
+	movsd	.LC64(%rip), %xmm1
 	movapd	%xmm0, %xmm2
 	divsd	%xmm1, %xmm2
-	pxor	%xmm0, %xmm0
-	cvtsi2sdl	66072(%rbp), %xmm0
-	pxor	%xmm3, %xmm3
-	cvtsi2sdl	66080(%rbp), %xmm3
-	movq	%xmm3, %rax
-	movapd	%xmm0, %xmm1
-	movq	%rax, %xmm0
+	cvtsi2sd	66088(%rbp), %xmm1
+	cvtsi2sd	66096(%rbp), %xmm0
 	call	lerp
-	cvttsd2sil	%xmm0, %ecx
-	movl	66060(%rbp), %r8d
-	movl	66064(%rbp), %edx
-	movq	66464(%rbp), %rax
+	cvttsd2si	%xmm0, %ecx
+	movl	66076(%rbp), %r8d
+	movl	66080(%rbp), %edx
+	movq	66512(%rbp), %rax
 	movl	%esi, 40(%rsp)
 	movl	%ebx, 32(%rsp)
 	movl	%ecx, %r9d
 	movq	%rax, %rcx
 	call	draw_rectangle_color
-	movl	$0, 66592(%rbp)
-	movl	66488(%rbp), %eax
+	movl	$0, 66640(%rbp)
+	movl	66536(%rbp), %eax
 	sall	$5, %eax
 	movl	%eax, %edx
-	movl	66068(%rbp), %eax
+	movl	66084(%rbp), %eax
 	addl	%edx, %eax
-	movl	%eax, 66056(%rbp)
-	movl	$0, 66588(%rbp)
-	jmp	.L243
-.L246:
-	movl	66624(%rbp), %edx
-	movslq	%edx, %rax
-	imulq	$1717986919, %rax, %rax
-	shrq	$32, %rax
-	movl	%eax, %ecx
-	sarl	$2, %ecx
-	movl	%edx, %eax
-	sarl	$31, %eax
-	subl	%eax, %ecx
+	movl	%eax, 66072(%rbp)
+	movl	$0, 66636(%rbp)
+	jmp	.L247
+.L250:
+	movl	66672(%rbp), %ecx
+	movl	$1717986919, %edx
 	movl	%ecx, %eax
-	sall	$2, %eax
-	addl	%ecx, %eax
-	addl	%eax, %eax
-	movl	%edx, %ecx
-	subl	%eax, %ecx
-	movl	66624(%rbp), %eax
-	movslq	%eax, %rdx
-	imulq	$1717986919, %rdx, %rdx
-	shrq	$32, %rdx
+	imull	%edx
 	sarl	$2, %edx
+	movl	%ecx, %eax
 	sarl	$31, %eax
 	subl	%eax, %edx
 	movl	%edx, %r8d
-	movslq	%r8d, %rax
-	imulq	$715827883, %rax, %rax
-	shrq	$32, %rax
-	movq	%rax, %rdx
-	movl	%r8d, %eax
-	sarl	$31, %eax
-	subl	%eax, %edx
-	movl	%edx, %eax
-	addl	%eax, %eax
-	addl	%edx, %eax
-	addl	%eax, %eax
-	movl	%r8d, %edx
-	subl	%eax, %edx
-	movl	66624(%rbp), %eax
-	movslq	%eax, %r8
-	imulq	$-2004318071, %r8, %r8
-	shrq	$32, %r8
-	addl	%eax, %r8d
-	sarl	$5, %r8d
-	sarl	$31, %eax
-	movl	%r8d, %r9d
-	subl	%eax, %r9d
-	movslq	%r9d, %rax
-	imulq	$1717986919, %rax, %rax
-	shrq	$32, %rax
-	movl	%eax, %r8d
-	sarl	$2, %r8d
-	movl	%r9d, %eax
-	sarl	$31, %eax
-	subl	%eax, %r8d
 	movl	%r8d, %eax
 	sall	$2, %eax
 	addl	%r8d, %eax
 	addl	%eax, %eax
-	subl	%eax, %r9d
-	movl	%r9d, %r8d
-	movl	66624(%rbp), %eax
-	movslq	%eax, %r9
-	imulq	$458129845, %r9, %r9
-	shrq	$32, %r9
-	sarl	$6, %r9d
+	subl	%eax, %ecx
+	movl	%ecx, %r8d
+	movl	66672(%rbp), %ecx
+	movl	$1717986919, %edx
+	movl	%ecx, %eax
+	imull	%edx
+	sarl	$2, %edx
+	movl	%ecx, %eax
 	sarl	$31, %eax
+	subl	%eax, %edx
+	movl	%edx, %r9d
+	movl	$715827883, %edx
+	movl	%r9d, %eax
+	imull	%edx
+	movl	%r9d, %eax
+	sarl	$31, %eax
+	movl	%edx, %ecx
+	subl	%eax, %ecx
+	movl	%ecx, %eax
+	addl	%eax, %eax
+	addl	%ecx, %eax
+	addl	%eax, %eax
+	movl	%r9d, %ecx
+	subl	%eax, %ecx
+	movl	66672(%rbp), %r9d
+	movl	$-2004318071, %edx
+	movl	%r9d, %eax
+	imull	%edx
+	leal	(%rdx,%r9), %eax
+	sarl	$5, %eax
+	movl	%eax, %edx
+	movl	%r9d, %eax
+	sarl	$31, %eax
+	subl	%eax, %edx
+	movl	%edx, %r9d
+	movl	$1717986919, %edx
+	movl	%r9d, %eax
+	imull	%edx
+	sarl	$2, %edx
+	movl	%r9d, %eax
+	sarl	$31, %eax
+	subl	%eax, %edx
+	movl	%edx, %r10d
+	movl	%r10d, %eax
+	sall	$2, %eax
+	addl	%r10d, %eax
+	addl	%eax, %eax
 	movl	%r9d, %r10d
 	subl	%eax, %r10d
-	movl	66588(%rbp), %eax
-	movl	%ecx, 40(%rsp)
-	movl	%edx, 32(%rsp)
+	movl	66672(%rbp), %r9d
+	movl	$458129845, %edx
+	movl	%r9d, %eax
+	imull	%edx
+	sarl	$6, %edx
+	movl	%r9d, %eax
+	sarl	$31, %eax
+	subl	%eax, %edx
+	movl	66636(%rbp), %eax
+	movl	%r8d, 40(%rsp)
+	movl	%ecx, 32(%rsp)
 	movl	$737, %r9d
-	movl	%r10d, %edx
+	movl	%r10d, %r8d
 	movl	%eax, %ecx
 	call	mux_int
-	movl	%eax, 66040(%rbp)
-	cmpl	$2, 66588(%rbp)
-	je	.L244
-	movl	66040(%rbp), %eax
+	movl	%eax, 66068(%rbp)
+	cmpl	$2, 66636(%rbp)
+	je	.L248
+	movl	66068(%rbp), %eax
 	sall	$4, %eax
 	movl	%eax, %ecx
-	movl	66588(%rbp), %eax
+	movl	66636(%rbp), %eax
 	addl	$1, %eax
-	imull	66492(%rbp), %eax
+	imull	66540(%rbp), %eax
 	sall	$4, %eax
 	movl	%eax, %edx
-	movl	66120(%rbp), %eax
+	movl	66152(%rbp), %eax
 	addl	%eax, %edx
-	movl	66592(%rbp), %eax
+	movl	66640(%rbp), %eax
 	leal	(%rdx,%rax), %r9d
-	movl	66588(%rbp), %eax
-	imull	66492(%rbp), %eax
+	movl	66636(%rbp), %eax
+	imull	66540(%rbp), %eax
 	sall	$4, %eax
 	movl	%eax, %edx
-	movl	66120(%rbp), %eax
+	movl	66152(%rbp), %eax
 	addl	%eax, %edx
-	movl	66592(%rbp), %eax
+	movl	66640(%rbp), %eax
 	addl	%eax, %edx
-	movl	66068(%rbp), %r8d
-	movq	66464(%rbp), %rax
+	movl	66084(%rbp), %r8d
+	movq	66512(%rbp), %rax
 	movl	$32, 72(%rsp)
 	movl	$16, 64(%rsp)
 	movl	$0, 56(%rsp)
 	movl	%ecx, 48(%rsp)
-	movq	66344(%rbp), %rcx
+	movq	66384(%rbp), %rcx
 	movq	%rcx, 40(%rsp)
-	movl	66056(%rbp), %ecx
+	movl	66072(%rbp), %ecx
 	movl	%ecx, 32(%rsp)
 	movq	%rax, %rcx
 	call	draw_image_part
-	movl	66492(%rbp), %eax
-	addl	%eax, 66592(%rbp)
-	jmp	.L245
-.L244:
-	movl	66492(%rbp), %edx
+	movl	66540(%rbp), %eax
+	addl	%eax, 66640(%rbp)
+	jmp	.L249
+.L248:
+	movl	66540(%rbp), %edx
 	movl	%edx, %eax
 	addl	%eax, %eax
 	addl	%edx, %eax
 	sall	$4, %eax
 	movl	%eax, %edx
-	movl	66120(%rbp), %eax
+	movl	66152(%rbp), %eax
 	leal	(%rdx,%rax), %r9d
-	movl	66492(%rbp), %eax
+	movl	66540(%rbp), %eax
 	sall	$5, %eax
 	movl	%eax, %edx
-	movl	66120(%rbp), %eax
+	movl	66152(%rbp), %eax
 	addl	%eax, %edx
-	movl	66068(%rbp), %r8d
-	movq	66464(%rbp), %rax
-	movl	66352(%rbp), %ecx
+	movl	66084(%rbp), %r8d
+	movq	66512(%rbp), %rax
+	movl	66392(%rbp), %ecx
 	movl	%ecx, 64(%rsp)
-	movl	66356(%rbp), %ecx
+	movl	66396(%rbp), %ecx
 	movl	%ecx, 56(%rsp)
-	leaq	.LC58(%rip), %rcx
+	leaq	.LC65(%rip), %rcx
 	movq	%rcx, 48(%rsp)
-	movq	66360(%rbp), %rcx
+	movq	66400(%rbp), %rcx
 	movq	%rcx, 40(%rsp)
-	movl	66056(%rbp), %ecx
+	movl	66072(%rbp), %ecx
 	movl	%ecx, 32(%rsp)
 	movq	%rax, %rcx
 	call	draw_text
-.L245:
-	addl	$1, 66588(%rbp)
-.L243:
-	cmpl	$4, 66588(%rbp)
-	jle	.L246
-	movl	$0, 66052(%rbp)
-	movl	66624(%rbp), %eax
+.L249:
+	addl	$1, 66636(%rbp)
+.L247:
+	cmpl	$4, 66636(%rbp)
+	jle	.L250
+	movl	$0, 66632(%rbp)
+	movl	66672(%rbp), %eax
 	movl	$59, 32(%rsp)
 	movl	$5, %r9d
 	movl	$0, %r8d
@@ -4054,10 +4189,10 @@ SDL_main:
 	movl	%eax, %ecx
 	call	clock_is_between
 	testl	%eax, %eax
-	je	.L247
-	movl	$0, 66052(%rbp)
-.L247:
-	movl	66624(%rbp), %eax
+	je	.L251
+	movl	$0, 66632(%rbp)
+.L251:
+	movl	66672(%rbp), %eax
 	movl	$59, 32(%rsp)
 	movl	$11, %r9d
 	movl	$0, %r8d
@@ -4065,10 +4200,10 @@ SDL_main:
 	movl	%eax, %ecx
 	call	clock_is_between
 	testl	%eax, %eax
-	je	.L248
-	movl	$1, 66052(%rbp)
-.L248:
-	movl	66624(%rbp), %eax
+	je	.L252
+	movl	$1, 66632(%rbp)
+.L252:
+	movl	66672(%rbp), %eax
 	movl	$59, 32(%rsp)
 	movl	$17, %r9d
 	movl	$0, %r8d
@@ -4076,10 +4211,10 @@ SDL_main:
 	movl	%eax, %ecx
 	call	clock_is_between
 	testl	%eax, %eax
-	je	.L249
-	movl	$2, 66052(%rbp)
-.L249:
-	movl	66624(%rbp), %eax
+	je	.L253
+	movl	$2, 66632(%rbp)
+.L253:
+	movl	66672(%rbp), %eax
 	movl	$59, 32(%rsp)
 	movl	$23, %r9d
 	movl	$0, %r8d
@@ -4087,122 +4222,146 @@ SDL_main:
 	movl	%eax, %ecx
 	call	clock_is_between
 	testl	%eax, %eax
-	je	.L250
-	movl	$3, 66052(%rbp)
-.L250:
-	movl	66056(%rbp), %edx
-	movl	66488(%rbp), %eax
+	je	.L254
+	movl	$3, 66632(%rbp)
+.L254:
+	movq	66344(%rbp), %r9
+	movq	66352(%rbp), %r8
+	movq	66360(%rbp), %rdx
+	movl	66632(%rbp), %eax
+	movq	66336(%rbp), %rcx
+	movq	%rcx, 32(%rsp)
+	movl	%eax, %ecx
+	call	mux_str
+	movq	%rax, %r11
+	movl	66392(%rbp), %eax
+	imull	66536(%rbp), %eax
+	movl	66396(%rbp), %edx
+	imull	66540(%rbp), %edx
+	movl	%edx, %r8d
+	movl	66072(%rbp), %ecx
+	movl	66536(%rbp), %edx
+	leal	(%rcx,%rdx), %r10d
+	movl	66152(%rbp), %edx
+	movq	66512(%rbp), %rcx
+	movl	66392(%rbp), %r9d
+	movl	%r9d, 64(%rsp)
+	movl	66396(%rbp), %r9d
+	movl	%r9d, 56(%rsp)
+	movq	%r11, 48(%rsp)
+	movq	66400(%rbp), %r9
+	movq	%r9, 40(%rsp)
+	movl	%eax, 32(%rsp)
+	movl	%r8d, %r9d
+	movl	%r10d, %r8d
+	call	draw_text
+	movl	66072(%rbp), %edx
+	movl	66536(%rbp), %eax
 	addl	%eax, %edx
-	movl	66352(%rbp), %eax
-	imull	66488(%rbp), %eax
+	movl	66392(%rbp), %eax
+	imull	66536(%rbp), %eax
 	addl	%edx, %eax
-	movl	%eax, 66048(%rbp)
-	movl	66488(%rbp), %edx
+	movl	%eax, 66064(%rbp)
+	movl	66536(%rbp), %edx
 	movl	%edx, %eax
 	addl	%eax, %eax
 	addl	%edx, %eax
 	sall	$4, %eax
 	movl	%eax, %edx
-	movl	66048(%rbp), %eax
+	movl	66064(%rbp), %eax
 	addl	%edx, %eax
-	movl	%eax, 66044(%rbp)
-	movl	66492(%rbp), %eax
+	movl	%eax, 66060(%rbp)
+	movl	66540(%rbp), %eax
 	sall	$4, %eax
 	movl	%eax, %edx
-	movl	66120(%rbp), %eax
+	movl	66152(%rbp), %eax
 	leal	(%rdx,%rax), %r9d
-	movl	66048(%rbp), %r8d
-	movl	66120(%rbp), %edx
-	movq	66464(%rbp), %rax
-	movq	66248(%rbp), %rcx
+	movl	66064(%rbp), %r8d
+	movl	66152(%rbp), %edx
+	movq	66512(%rbp), %rax
+	movq	66288(%rbp), %rcx
 	movq	%rcx, 40(%rsp)
-	movl	66044(%rbp), %ecx
+	movl	66060(%rbp), %ecx
 	movl	%ecx, 32(%rsp)
 	movq	%rax, %rcx
 	call	draw_image
-	movl	66352(%rbp), %eax
-	imull	66488(%rbp), %eax
+	movl	66392(%rbp), %eax
+	imull	66536(%rbp), %eax
 	movl	%eax, %ebx
-	movl	66356(%rbp), %eax
-	imull	66492(%rbp), %eax
+	movl	66396(%rbp), %eax
+	imull	66540(%rbp), %eax
 	movl	%eax, %esi
-	pxor	%xmm0, %xmm0
-	cvtsi2sdl	66044(%rbp), %xmm0
-	pxor	%xmm4, %xmm4
-	cvtsi2sdl	66048(%rbp), %xmm4
-	movq	%xmm4, %rax
-	movsd	.LC59(%rip), %xmm1
-	movapd	%xmm1, %xmm2
-	movapd	%xmm0, %xmm1
-	movq	%rax, %xmm0
+	cvtsi2sd	66060(%rbp), %xmm1
+	cvtsi2sd	66064(%rbp), %xmm0
+	movsd	.LC66(%rip), %xmm2
 	call	lerp
-	cvttsd2sil	%xmm0, %r8d
-	movl	66120(%rbp), %eax
+	cvttsd2si	%xmm0, %r8d
+	movl	66152(%rbp), %eax
 	leal	48(%rax), %edx
-	movq	66464(%rbp), %rax
-	movl	66352(%rbp), %ecx
-	movl	%ecx, 64(%rsp)
-	movl	66356(%rbp), %ecx
-	movl	%ecx, 56(%rsp)
-	leaq	58(%rbp), %rcx
-	movq	%rcx, 48(%rsp)
-	movq	66360(%rbp), %rcx
-	movq	%rcx, 40(%rsp)
+	movq	66512(%rbp), %rcx
+	movl	66392(%rbp), %eax
+	movl	%eax, 64(%rsp)
+	movl	66396(%rbp), %eax
+	movl	%eax, 56(%rsp)
+	leaq	68(%rbp), %rax
+	movq	%rax, 48(%rsp)
+	movq	66400(%rbp), %rax
+	movq	%rax, 40(%rsp)
 	movl	%ebx, 32(%rsp)
 	movl	%esi, %r9d
-	movq	%rax, %rcx
 	call	draw_text
-	movq	%r13, %rsp
-.L239:
-	movl	66496(%rbp), %eax
+	movq	%r15, %rsp
+.L243:
+	movl	66544(%rbp), %eax
+	movl	%eax, 66056(%rbp)
+	movl	$0, 66628(%rbp)
+	jmp	.L255
+.L258:
+	movl	$0, 66624(%rbp)
+	jmp	.L256
+.L257:
+	movl	66628(%rbp), %eax
+	imull	66548(%rbp), %eax
+	movl	66624(%rbp), %edx
+	addl	%edx, %eax
+	movl	%eax, 66052(%rbp)
+	movl	66624(%rbp), %eax
+	imull	66540(%rbp), %eax
+	imull	66544(%rbp), %eax
+	movl	66572(%rbp), %edx
+	addl	%edx, %eax
+	movl	%eax, 66048(%rbp)
+	movl	66628(%rbp), %eax
+	imull	66536(%rbp), %eax
+	imull	66544(%rbp), %eax
+	movl	66568(%rbp), %edx
+	addl	%edx, %eax
+	movl	%eax, 66044(%rbp)
+	movl	66624(%rbp), %eax
+	addl	$1, %eax
+	imull	66540(%rbp), %eax
+	imull	66544(%rbp), %eax
+	movl	66572(%rbp), %edx
+	addl	%edx, %eax
+	movl	%eax, 66040(%rbp)
+	movl	66628(%rbp), %eax
+	addl	$1, %eax
+	imull	66536(%rbp), %eax
+	imull	66544(%rbp), %eax
+	movl	66568(%rbp), %edx
+	addl	%edx, %eax
 	movl	%eax, 66036(%rbp)
-	movl	$0, 66584(%rbp)
-	jmp	.L251
-.L254:
-	movl	$0, 66580(%rbp)
-	jmp	.L252
-.L253:
-	movl	66584(%rbp), %eax
-	imull	66500(%rbp), %eax
-	movl	66580(%rbp), %edx
-	addl	%edx, %eax
-	movl	%eax, 65980(%rbp)
-	movl	66580(%rbp), %eax
-	imull	66492(%rbp), %eax
-	imull	66496(%rbp), %eax
-	movl	66524(%rbp), %edx
-	addl	%edx, %eax
-	movl	%eax, 65976(%rbp)
-	movl	66584(%rbp), %eax
-	imull	66488(%rbp), %eax
-	imull	66496(%rbp), %eax
-	movl	66520(%rbp), %edx
-	addl	%edx, %eax
-	movl	%eax, 65972(%rbp)
-	movl	66580(%rbp), %eax
-	addl	$1, %eax
-	imull	66492(%rbp), %eax
-	imull	66496(%rbp), %eax
-	movl	66524(%rbp), %edx
-	addl	%edx, %eax
-	movl	%eax, 65968(%rbp)
-	movl	66584(%rbp), %eax
-	addl	$1, %eax
-	imull	66488(%rbp), %eax
-	imull	66496(%rbp), %eax
-	movl	66520(%rbp), %edx
-	addl	%edx, %eax
-	movl	%eax, 65964(%rbp)
 	movl	$16711680, %r9d
 	movl	$65280, %r8d
 	movl	$255, %r10d
-	movl	65980(%rbp), %ecx
-	movslq	%ecx, %rax
-	imulq	$1431655766, %rax, %rax
-	shrq	$32, %rax
-	movl	%ecx, %edx
-	sarl	$31, %edx
-	subl	%edx, %eax
+	movl	66052(%rbp), %ecx
+	movl	$1431655766, %edx
+	movl	%ecx, %eax
+	imull	%edx
+	movl	%ecx, %eax
+	sarl	$31, %eax
+	subl	%eax, %edx
+	movl	%edx, %eax
 	movl	%eax, %edx
 	addl	%edx, %edx
 	addl	%eax, %edx
@@ -4211,528 +4370,565 @@ SDL_main:
 	movl	%r10d, %edx
 	movl	%eax, %ecx
 	call	mux_int
-	movl	%eax, 65960(%rbp)
-	movl	65968(%rbp), %r9d
-	movl	65972(%rbp), %r8d
-	movl	65976(%rbp), %edx
-	movq	66464(%rbp), %rax
-	movl	65960(%rbp), %ecx
+	movl	%eax, 66032(%rbp)
+	movl	66040(%rbp), %r9d
+	movl	66044(%rbp), %r8d
+	movl	66048(%rbp), %edx
+	movq	66512(%rbp), %rax
+	movl	66032(%rbp), %ecx
 	movl	%ecx, 40(%rsp)
-	movl	65964(%rbp), %ecx
+	movl	66036(%rbp), %ecx
 	movl	%ecx, 32(%rsp)
 	movq	%rax, %rcx
 	call	draw_rectangle_color
-	movl	66292(%rbp), %eax
-	imull	66616(%rbp), %eax
-	movl	65980(%rbp), %edx
+	movl	66332(%rbp), %eax
+	imull	66664(%rbp), %eax
+	movl	66052(%rbp), %edx
 	addl	%edx, %eax
-	movl	%eax, 65956(%rbp)
-	movl	65956(%rbp), %eax
+	movl	%eax, 66028(%rbp)
+	movl	66028(%rbp), %eax
 	cltq
-	movzbl	208(%rbp,%rax), %eax
+	movzbl	224(%rbp,%rax), %eax
 	movzbl	%al, %eax
-	movl	%eax, 65952(%rbp)
-	movl	65952(%rbp), %eax
+	movl	%eax, 66024(%rbp)
+	movl	66024(%rbp), %eax
 	cltd
-	idivl	66500(%rbp)
-	imull	66036(%rbp), %eax
-	movl	%eax, %r8d
-	movl	65952(%rbp), %eax
-	cltd
-	idivl	66500(%rbp)
-	movl	%edx, %eax
-	imull	66036(%rbp), %eax
+	idivl	66548(%rbp)
+	imull	66056(%rbp), %eax
 	movl	%eax, %ecx
-	movl	65968(%rbp), %r11d
-	movl	65972(%rbp), %r10d
-	movl	65976(%rbp), %edx
-	movq	66464(%rbp), %rax
-	movl	66036(%rbp), %r9d
-	movl	%r9d, 72(%rsp)
-	movl	66036(%rbp), %r9d
-	movl	%r9d, 64(%rsp)
-	movl	%r8d, 56(%rsp)
-	movl	%ecx, 48(%rsp)
-	movq	66376(%rbp), %rcx
-	movq	%rcx, 40(%rsp)
-	movl	65964(%rbp), %ecx
-	movl	%ecx, 32(%rsp)
-	movl	%r11d, %r9d
-	movl	%r10d, %r8d
-	movq	%rax, %rcx
+	movl	66024(%rbp), %eax
+	cltd
+	idivl	66548(%rbp)
+	movl	%edx, %eax
+	imull	66056(%rbp), %eax
+	movl	66040(%rbp), %r9d
+	movl	66044(%rbp), %r11d
+	movl	66048(%rbp), %edx
+	movq	66512(%rbp), %r10
+	movl	66056(%rbp), %r8d
+	movl	%r8d, 72(%rsp)
+	movl	66056(%rbp), %r8d
+	movl	%r8d, 64(%rsp)
+	movl	%ecx, 56(%rsp)
+	movl	%eax, 48(%rsp)
+	movq	66424(%rbp), %rax
+	movq	%rax, 40(%rsp)
+	movl	66036(%rbp), %eax
+	movl	%eax, 32(%rsp)
+	movl	%r11d, %r8d
+	movq	%r10, %rcx
 	call	draw_image_part
-	addl	$1, 66580(%rbp)
-.L252:
-	movl	66580(%rbp), %eax
-	cmpl	66500(%rbp), %eax
-	jl	.L253
-	addl	$1, 66584(%rbp)
-.L251:
-	movl	66584(%rbp), %eax
-	cmpl	66500(%rbp), %eax
-	jl	.L254
-	movzbl	144(%rbp), %eax
+	addl	$1, 66624(%rbp)
+.L256:
+	movl	66624(%rbp), %eax
+	cmpl	66548(%rbp), %eax
+	jl	.L257
+	addl	$1, 66628(%rbp)
+.L255:
+	movl	66628(%rbp), %eax
+	cmpl	66548(%rbp), %eax
+	jl	.L258
+	movzbl	160(%rbp), %eax
 	movzbl	%al, %eax
-	imull	66036(%rbp), %eax
+	imull	66056(%rbp), %eax
 	movl	%eax, %edx
-	movzbl	149(%rbp), %eax
+	movzbl	165(%rbp), %eax
 	movzbl	%al, %eax
 	imull	%eax, %edx
-	movzbl	148(%rbp), %eax
+	movzbl	164(%rbp), %eax
 	movzbl	%al, %eax
-	imull	66036(%rbp), %eax
+	imull	66056(%rbp), %eax
 	leal	(%rdx,%rax), %r8d
-	movl	132(%rbp), %edx
-	movl	66036(%rbp), %eax
-	imull	66488(%rbp), %eax
+	movl	148(%rbp), %edx
+	movl	66056(%rbp), %eax
+	imull	66536(%rbp), %eax
 	leal	(%rdx,%rax), %ecx
-	movl	128(%rbp), %edx
-	movl	66036(%rbp), %eax
-	imull	66492(%rbp), %eax
+	movl	144(%rbp), %edx
+	movl	66056(%rbp), %eax
+	imull	66540(%rbp), %eax
 	leal	(%rdx,%rax), %r11d
-	movl	132(%rbp), %r10d
-	movl	128(%rbp), %edx
-	movq	66464(%rbp), %rax
-	movl	66036(%rbp), %r9d
+	movl	148(%rbp), %r10d
+	movl	144(%rbp), %edx
+	movq	66512(%rbp), %rax
+	movl	66056(%rbp), %r9d
 	movl	%r9d, 72(%rsp)
-	movl	66036(%rbp), %r9d
+	movl	66056(%rbp), %r9d
 	movl	%r9d, 64(%rsp)
 	movl	$0, 56(%rsp)
 	movl	%r8d, 48(%rsp)
-	movq	66368(%rbp), %r8
+	movq	66408(%rbp), %r8
 	movq	%r8, 40(%rsp)
 	movl	%ecx, 32(%rsp)
 	movl	%r11d, %r9d
 	movl	%r10d, %r8d
 	movq	%rax, %rcx
 	call	draw_image_part
-	cmpl	$0, 66632(%rbp)
-	jle	.L255
-	movl	128(%rbp), %eax
+	cmpl	$0, 66680(%rbp)
+	jle	.L259
+	movl	144(%rbp), %eax
 	addl	$60, %eax
-	movl	%eax, 65872(%rbp)
-	movl	132(%rbp), %eax
+	movl	%eax, 65888(%rbp)
+	movl	148(%rbp), %eax
 	subl	$120, %eax
-	movl	%eax, 65876(%rbp)
-	movq	66464(%rbp), %rax
+	movl	%eax, 65892(%rbp)
+	movq	66512(%rbp), %rax
 	movl	$255, 32(%rsp)
 	movl	$255, %r9d
 	movl	$255, %r8d
 	movl	$255, %edx
 	movq	%rax, %rcx
 	call	SDL_SetRenderDrawColor
-	movq	66440(%rbp), %rdx
-	movq	66464(%rbp), %rax
+	movq	66488(%rbp), %rdx
+	movq	66512(%rbp), %rax
 	movq	%rax, %rcx
 	call	SDL_RenderFillRect
-	movq	66464(%rbp), %rax
+	movq	66512(%rbp), %rax
 	movl	$255, 32(%rsp)
 	movl	$255, %r9d
 	movl	$255, %r8d
 	movl	$255, %edx
 	movq	%rax, %rcx
 	call	SDL_SetRenderDrawColor
-	movq	66440(%rbp), %rax
+	movq	66488(%rbp), %rax
 	movl	4(%rax), %ecx
-	movq	66440(%rbp), %rax
+	movq	66488(%rbp), %rax
 	movl	12(%rax), %eax
 	leal	3(%rax), %edx
 	testl	%eax, %eax
 	cmovs	%edx, %eax
 	sarl	$2, %eax
-	addl	%eax, %ecx
-	movq	66440(%rbp), %rax
+	leal	(%rcx,%rax), %r8d
+	movq	66488(%rbp), %rax
 	movl	(%rax), %eax
-	pxor	%xmm1, %xmm1
-	cvtsi2sdl	%eax, %xmm1
-	movq	66440(%rbp), %rax
+	cvtsi2sd	%eax, %xmm1
+	movq	66488(%rbp), %rax
 	movl	8(%rax), %eax
-	pxor	%xmm2, %xmm2
-	cvtsi2sdl	%eax, %xmm2
-	movsd	.LC60(%rip), %xmm0
+	cvtsi2sd	%eax, %xmm2
+	movsd	.LC67(%rip), %xmm0
 	mulsd	%xmm2, %xmm0
 	addsd	%xmm1, %xmm0
-	cvttsd2sil	%xmm0, %r8d
-	movl	132(%rbp), %eax
+	cvttsd2si	%xmm0, %ecx
+	movl	148(%rbp), %eax
 	leal	-15(%rax), %r10d
-	movl	128(%rbp), %eax
+	movl	144(%rbp), %eax
 	leal	45(%rax), %edx
-	movq	66464(%rbp), %rax
-	movl	%ecx, 32(%rsp)
-	movl	%r8d, %r9d
+	movq	66512(%rbp), %rax
+	movl	%r8d, 32(%rsp)
+	movl	%ecx, %r9d
 	movl	%r10d, %r8d
 	movq	%rax, %rcx
 	call	SDL_RenderDrawLine
-	movq	66440(%rbp), %rax
+	movq	66488(%rbp), %rax
 	movl	4(%rax), %edx
-	movq	66440(%rbp), %rax
+	movq	66488(%rbp), %rax
 	movl	12(%rax), %eax
-	leal	(%rdx,%rax), %ecx
-	movq	66440(%rbp), %rax
+	leal	(%rdx,%rax), %r8d
+	movq	66488(%rbp), %rax
 	movl	(%rax), %eax
-	pxor	%xmm1, %xmm1
-	cvtsi2sdl	%eax, %xmm1
-	movq	66440(%rbp), %rax
+	cvtsi2sd	%eax, %xmm1
+	movq	66488(%rbp), %rax
 	movl	8(%rax), %eax
-	pxor	%xmm2, %xmm2
-	cvtsi2sdl	%eax, %xmm2
-	movsd	.LC61(%rip), %xmm0
+	cvtsi2sd	%eax, %xmm2
+	movsd	.LC68(%rip), %xmm0
 	mulsd	%xmm2, %xmm0
 	addsd	%xmm1, %xmm0
-	cvttsd2sil	%xmm0, %r8d
-	movl	132(%rbp), %eax
+	cvttsd2si	%xmm0, %ecx
+	movl	148(%rbp), %eax
 	leal	-15(%rax), %r10d
-	movl	128(%rbp), %eax
+	movl	144(%rbp), %eax
 	leal	45(%rax), %edx
-	movq	66464(%rbp), %rax
-	movl	%ecx, 32(%rsp)
-	movl	%r8d, %r9d
+	movq	66512(%rbp), %rax
+	movl	%r8d, 32(%rsp)
+	movl	%ecx, %r9d
 	movl	%r10d, %r8d
 	movq	%rax, %rcx
 	call	SDL_RenderDrawLine
-	movl	$0, 12(%rbp)
-	movq	66440(%rbp), %rax
+	movl	$0, 28(%rbp)
+	movq	66488(%rbp), %rax
 	movl	8(%rax), %eax
 	subl	$10, %eax
-	movl	%eax, 66032(%rbp)
-	movl	66032(%rbp), %r8d
-	movl	12(%rbp), %ecx
-	movq	66448(%rbp), %rdx
-	movq	66432(%rbp), %rax
+	movl	%eax, 66020(%rbp)
+	movl	66020(%rbp), %r8d
+	movl	28(%rbp), %ecx
+	movq	66496(%rbp), %rdx
+	movq	66480(%rbp), %rax
 	movl	%r8d, %r9d
 	movl	%ecx, %r8d
 	movq	%rax, %rcx
 	call	TTF_RenderText_Blended_Wrapped
-	movq	%rax, 66568(%rbp)
-	cmpq	$0, 66568(%rbp)
-	jne	.L256
-	movl	12(%rbp), %edx
-	movq	66432(%rbp), %rax
+	movq	%rax, 66616(%rbp)
+	cmpq	$0, 66616(%rbp)
+	jne	.L260
+	movl	28(%rbp), %edx
+	movq	66480(%rbp), %rax
 	movl	%edx, %r8d
-	leaq	.LC62(%rip), %rdx
+	leaq	.LC69(%rip), %rdx
 	movq	%rax, %rcx
 	call	TTF_RenderText_Solid
-	movq	%rax, 66568(%rbp)
-.L256:
-	movq	66568(%rbp), %rax
+	movq	%rax, 66616(%rbp)
+.L260:
+	movq	66616(%rbp), %rax
 	movl	16(%rax), %eax
-	movl	%eax, 66028(%rbp)
-	movq	66568(%rbp), %rax
-	movl	20(%rax), %eax
-	movl	%eax, 66024(%rbp)
-	movq	66440(%rbp), %rax
-	movl	(%rax), %edx
-	movq	66440(%rbp), %rax
-	movl	8(%rax), %eax
-	subl	66028(%rbp), %eax
-	movl	%eax, %ecx
-	shrl	$31, %ecx
-	addl	%ecx, %eax
-	sarl	%eax
-	addl	%edx, %eax
-	movl	%eax, 66020(%rbp)
-	movq	66440(%rbp), %rax
-	movl	4(%rax), %edx
-	movq	66440(%rbp), %rax
-	movl	12(%rax), %eax
-	subl	66024(%rbp), %eax
-	movl	%eax, %ecx
-	shrl	$31, %ecx
-	addl	%ecx, %eax
-	sarl	%eax
-	addl	%edx, %eax
 	movl	%eax, 66016(%rbp)
-	movl	66020(%rbp), %eax
-	movl	%eax, -16(%rbp)
+	movq	66616(%rbp), %rax
+	movl	20(%rax), %eax
+	movl	%eax, 66012(%rbp)
+	movq	66488(%rbp), %rax
+	movl	(%rax), %edx
+	movq	66488(%rbp), %rax
+	movl	8(%rax), %eax
+	subl	66016(%rbp), %eax
+	movl	%eax, %ecx
+	shrl	$31, %ecx
+	addl	%ecx, %eax
+	sarl	%eax
+	addl	%edx, %eax
+	movl	%eax, 66008(%rbp)
+	movq	66488(%rbp), %rax
+	movl	4(%rax), %edx
+	movq	66488(%rbp), %rax
+	movl	12(%rax), %eax
+	subl	66012(%rbp), %eax
+	movl	%eax, %ecx
+	shrl	$31, %ecx
+	addl	%ecx, %eax
+	sarl	%eax
+	addl	%edx, %eax
+	movl	%eax, 66004(%rbp)
+	movl	66008(%rbp), %eax
+	movl	%eax, 0(%rbp)
+	movl	66004(%rbp), %eax
+	movl	%eax, 4(%rbp)
 	movl	66016(%rbp), %eax
-	movl	%eax, -12(%rbp)
-	movl	66028(%rbp), %eax
-	movl	%eax, -8(%rbp)
-	movl	66024(%rbp), %eax
-	movl	%eax, -4(%rbp)
-	movq	66568(%rbp), %rdx
-	movq	66464(%rbp), %rax
+	movl	%eax, 8(%rbp)
+	movl	66012(%rbp), %eax
+	movl	%eax, 12(%rbp)
+	movq	66616(%rbp), %rdx
+	movq	66512(%rbp), %rax
 	movq	%rax, %rcx
 	call	SDL_CreateTextureFromSurface
-	movq	%rax, 66008(%rbp)
-	leaq	-16(%rbp), %rcx
-	movq	66008(%rbp), %rdx
-	movq	66464(%rbp), %rax
+	movq	%rax, 65992(%rbp)
+	movq	%rbp, %rcx
+	movq	65992(%rbp), %rdx
+	movq	66512(%rbp), %rax
 	movq	%rcx, %r9
 	movl	$0, %r8d
 	movq	%rax, %rcx
 	call	SDL_RenderCopy
-	movq	66568(%rbp), %rax
+	movq	66616(%rbp), %rax
 	movq	%rax, %rcx
 	call	SDL_FreeSurface
-	movq	66008(%rbp), %rax
+	movq	65992(%rbp), %rax
 	movq	%rax, %rcx
 	call	SDL_DestroyTexture
-.L255:
-	movl	$0, 66564(%rbp)
-	jmp	.L257
 .L259:
-	movq	waterParticles(%rip), %rdx
-	movl	66564(%rbp), %eax
+	movl	$0, 66612(%rbp)
+	jmp	.L261
+.L263:
+	leaq	waterParticles(%rip), %rax
+	movq	(%rax), %rdx
+	movl	66612(%rbp), %eax
 	cltq
 	salq	$4, %rax
 	addq	%rdx, %rax
 	movl	12(%rax), %eax
 	testl	%eax, %eax
-	je	.L258
-	movq	waterParticles(%rip), %rdx
-	movl	66564(%rbp), %eax
+	je	.L262
+	leaq	waterParticles(%rip), %rax
+	movq	(%rax), %rdx
+	movl	66612(%rbp), %eax
 	cltq
 	salq	$4, %rax
 	addq	%rdx, %rax
 	movss	4(%rax), %xmm1
-	movss	.LC63(%rip), %xmm0
+	movss	.LC70(%rip), %xmm0
 	addss	%xmm1, %xmm0
-	cvttss2sil	%xmm0, %edx
-	movq	waterParticles(%rip), %rcx
-	movl	66564(%rbp), %eax
+	cvttss2si	%xmm0, %edx
+	leaq	waterParticles(%rip), %rax
+	movq	(%rax), %rcx
+	movl	66612(%rbp), %eax
 	cltq
 	salq	$4, %rax
 	addq	%rcx, %rax
 	movss	(%rax), %xmm1
-	movss	.LC64(%rip), %xmm0
+	movss	.LC71(%rip), %xmm0
 	addss	%xmm1, %xmm0
-	cvttss2sil	%xmm0, %r9d
-	movq	waterParticles(%rip), %rcx
-	movl	66564(%rbp), %eax
+	cvttss2si	%xmm0, %r9d
+	leaq	waterParticles(%rip), %rax
+	movq	(%rax), %rcx
+	movl	66612(%rbp), %eax
 	cltq
 	salq	$4, %rax
 	addq	%rcx, %rax
 	movss	4(%rax), %xmm0
-	cvttss2sil	%xmm0, %r10d
-	movq	waterParticles(%rip), %rcx
-	movl	66564(%rbp), %eax
+	cvttss2si	%xmm0, %r8d
+	leaq	waterParticles(%rip), %rax
+	movq	(%rax), %rcx
+	movl	66612(%rbp), %eax
 	cltq
 	salq	$4, %rax
 	addq	%rcx, %rax
 	movss	(%rax), %xmm0
-	cvttss2sil	%xmm0, %eax
-	movq	66464(%rbp), %rcx
-	movq	66392(%rbp), %r8
-	movq	%r8, 40(%rsp)
+	cvttss2si	%xmm0, %eax
+	movq	66512(%rbp), %rcx
+	movq	66440(%rbp), %r10
+	movq	%r10, 40(%rsp)
 	movl	%edx, 32(%rsp)
-	movl	%r10d, %r8d
 	movl	%eax, %edx
 	call	draw_image
-.L258:
-	addl	$1, 66564(%rbp)
-.L257:
+.L262:
+	addl	$1, 66612(%rbp)
+.L261:
 	movl	$100, %eax
-	cmpl	%eax, 66564(%rbp)
-	jl	.L259
-	cmpl	$0, 66608(%rbp)
-	jne	.L260
-	movq	66464(%rbp), %rax
+	cmpl	%eax, 66612(%rbp)
+	jl	.L263
+	cmpl	$0, 66656(%rbp)
+	je	.L264
+	movl	66556(%rbp), %r9d
+	movl	66568(%rbp), %r8d
+	movl	66572(%rbp), %edx
+	movq	66512(%rbp), %rax
+	movq	66256(%rbp), %rcx
+	movq	%rcx, 40(%rsp)
+	movl	66552(%rbp), %ecx
+	movl	%ecx, 32(%rsp)
+	movq	%rax, %rcx
+	call	draw_image
+	movl	66392(%rbp), %eax
+	imull	66536(%rbp), %eax
+	movl	66396(%rbp), %edx
+	imull	66540(%rbp), %edx
+	movl	%edx, %r8d
+	movl	66568(%rbp), %r10d
+	movl	66572(%rbp), %edx
+	movq	66512(%rbp), %rcx
+	movl	66392(%rbp), %r9d
+	movl	%r9d, 64(%rsp)
+	movl	66396(%rbp), %r9d
+	movl	%r9d, 56(%rsp)
+	movq	66248(%rbp), %r9
+	movq	%r9, 48(%rsp)
+	movq	66400(%rbp), %r9
+	movq	%r9, 40(%rsp)
+	movl	%eax, 32(%rsp)
+	movl	%r8d, %r9d
+	movl	%r10d, %r8d
+	call	draw_text
+.L264:
+	cmpl	$0, 66680(%rbp)
+	jle	.L265
+	movq	66512(%rbp), %rax
 	movl	$255, 32(%rsp)
 	movl	$255, %r9d
 	movl	$255, %r8d
 	movl	$255, %edx
 	movq	%rax, %rcx
 	call	SDL_SetRenderDrawColor
-	movl	$200, 66004(%rbp)
-	movl	health(%rip), %eax
-	imull	66004(%rbp), %eax
-	movl	maxHealth(%rip), %edi
-	cltd
-	idivl	%edi
-	movl	%eax, 66000(%rbp)
-	movq	66464(%rbp), %rax
-	movl	$255, 32(%rsp)
-	movl	$0, %r9d
-	movl	$0, %r8d
-	movl	$255, %edx
-	movq	%rax, %rcx
-	call	SDL_SetRenderDrawColor
-	movl	$0, -32(%rbp)
-	movl	$200, -28(%rbp)
-	movl	66000(%rbp), %eax
-	movl	%eax, -24(%rbp)
-	movl	$20, -20(%rbp)
-	leaq	-32(%rbp), %rax
-	movq	66464(%rbp), %rcx
+	leaq	65888(%rbp), %rax
+	movq	66512(%rbp), %rcx
 	movq	%rax, %rdx
 	call	SDL_RenderFillRect
-.L260:
-	cmpl	$0, 66608(%rbp)
-	je	.L261
-	movl	66508(%rbp), %r9d
-	movl	66520(%rbp), %r8d
-	movl	66524(%rbp), %edx
-	movq	66464(%rbp), %rax
-	movq	66216(%rbp), %rcx
-	movq	%rcx, 40(%rsp)
-	movl	66504(%rbp), %ecx
-	movl	%ecx, 32(%rsp)
+	movl	$0, -4(%rbp)
+	movb	$-1, -4(%rbp)
+	movl	-4(%rbp), %ecx
+	movq	66496(%rbp), %rdx
+	movq	66480(%rbp), %rax
+	movl	%ecx, %r8d
 	movq	%rax, %rcx
-	call	draw_image
-	movl	66352(%rbp), %eax
-	imull	66488(%rbp), %eax
+	call	TTF_RenderText_Solid
+	movq	%rax, 65984(%rbp)
+	movq	65984(%rbp), %rdx
+	movq	66512(%rbp), %rax
+	movq	%rax, %rcx
+	call	SDL_CreateTextureFromSurface
+	movq	%rax, 65976(%rbp)
+	movl	65888(%rbp), %edx
+	movl	65896(%rbp), %ecx
+	movq	65984(%rbp), %rax
+	movl	16(%rax), %eax
+	subl	%eax, %ecx
+	movl	%ecx, %eax
 	movl	%eax, %ecx
-	movl	66356(%rbp), %eax
-	imull	66492(%rbp), %eax
-	movl	%eax, %r9d
-	movl	66520(%rbp), %r10d
-	movl	66524(%rbp), %edx
-	movq	66464(%rbp), %rax
-	movl	66352(%rbp), %r8d
-	movl	%r8d, 64(%rsp)
-	movl	66356(%rbp), %r8d
-	movl	%r8d, 56(%rsp)
-	movq	66208(%rbp), %r8
-	movq	%r8, 48(%rsp)
-	movq	66360(%rbp), %r8
-	movq	%r8, 40(%rsp)
-	movl	%ecx, 32(%rsp)
-	movl	%r10d, %r8d
+	shrl	$31, %ecx
+	addl	%ecx, %eax
+	sarl	%eax
+	addl	%edx, %eax
+	movl	%eax, -32(%rbp)
+	movl	65892(%rbp), %edx
+	movl	65900(%rbp), %ecx
+	movq	65984(%rbp), %rax
+	movl	20(%rax), %eax
+	subl	%eax, %ecx
+	movl	%ecx, %eax
+	movl	%eax, %ecx
+	shrl	$31, %ecx
+	addl	%ecx, %eax
+	sarl	%eax
+	addl	%edx, %eax
+	movl	%eax, -28(%rbp)
+	movq	65984(%rbp), %rax
+	movl	16(%rax), %eax
+	movl	%eax, -24(%rbp)
+	movq	65984(%rbp), %rax
+	movl	20(%rax), %eax
+	movl	%eax, -20(%rbp)
+	leaq	-32(%rbp), %rcx
+	movq	65976(%rbp), %rdx
+	movq	66512(%rbp), %rax
+	movq	%rcx, %r9
+	movl	$0, %r8d
 	movq	%rax, %rcx
-	call	draw_text
-.L261:
-	movq	66464(%rbp), %rax
+	call	SDL_RenderCopy
+	movq	65984(%rbp), %rax
+	movq	%rax, %rcx
+	call	SDL_FreeSurface
+	movq	65976(%rbp), %rax
+	movq	%rax, %rcx
+	call	SDL_DestroyTexture
+.L265:
+	movq	66512(%rbp), %rax
 	movl	$255, 32(%rsp)
 	movl	$0, %r9d
 	movl	$0, %r8d
 	movl	$0, %edx
 	movq	%rax, %rcx
 	call	SDL_SetRenderDrawColor
-	movl	66628(%rbp), %edx
-	leaq	32(%rbp), %rax
+	movl	66684(%rbp), %edx
+	leaq	48(%rbp), %rax
 	movl	%edx, %r9d
-	leaq	.LC65(%rip), %r8
+	leaq	.LC72(%rip), %r8
 	movl	$20, %edx
 	movq	%rax, %rcx
 	call	snprintf
-	movl	65756(%rbp), %edx
-	leaq	32(%rbp), %rax
-	movq	66432(%rbp), %rcx
+	movl	65772(%rbp), %edx
+	leaq	48(%rbp), %rax
+	movq	66480(%rbp), %rcx
 	movl	%edx, %r8d
 	movq	%rax, %rdx
 	call	TTF_RenderText_Solid
-	movq	%rax, 65992(%rbp)
-	movq	65992(%rbp), %rdx
-	movq	66464(%rbp), %rax
+	movq	%rax, 65968(%rbp)
+	movq	65968(%rbp), %rdx
+	movq	66512(%rbp), %rax
 	movq	%rax, %rcx
 	call	SDL_CreateTextureFromSurface
-	movq	%rax, 65984(%rbp)
-	movl	$10, 16(%rbp)
-	movl	$720, 20(%rbp)
-	movq	65992(%rbp), %rax
+	movq	%rax, 65960(%rbp)
+	movl	$10, 32(%rbp)
+	movl	$720, 36(%rbp)
+	movq	65968(%rbp), %rax
 	movl	16(%rax), %eax
-	movl	%eax, 24(%rbp)
-	movq	65992(%rbp), %rax
+	movl	%eax, 40(%rbp)
+	movq	65968(%rbp), %rax
 	movl	20(%rax), %eax
-	movl	%eax, 28(%rbp)
-	leaq	16(%rbp), %rcx
-	movq	65984(%rbp), %rdx
-	movq	66464(%rbp), %rax
+	movl	%eax, 44(%rbp)
+	leaq	32(%rbp), %rcx
+	movq	65960(%rbp), %rdx
+	movq	66512(%rbp), %rax
 	movq	%rcx, %r9
 	movl	$0, %r8d
 	movq	%rax, %rcx
 	call	SDL_RenderCopy
-	movq	65992(%rbp), %rax
+	movq	65968(%rbp), %rax
 	movq	%rax, %rcx
 	call	SDL_FreeSurface
-	movq	65984(%rbp), %rax
+	movq	65960(%rbp), %rax
 	movq	%rax, %rcx
 	call	SDL_DestroyTexture
-	movq	66464(%rbp), %rax
+	movq	66512(%rbp), %rax
 	movq	%rax, %rcx
 	call	SDL_RenderPresent
 	movl	$16, %ecx
 	call	SDL_Delay
-.L151:
-	cmpl	$0, 66604(%rbp)
-	jne	.L152
-	leaq	.LC66(%rip), %rax
-	movq	%rax, %rcx
+.L159:
+	cmpl	$0, 66652(%rbp)
+	jne	.L160
+	leaq	.LC73(%rip), %rcx
 	call	puts
-	movq	waterParticles(%rip), %rax
+	leaq	waterParticles(%rip), %rax
+	movq	(%rax), %rax
 	movq	%rax, %rcx
 	call	free
-	movq	66432(%rbp), %rax
+	movq	66480(%rbp), %rax
 	movq	%rax, %rcx
 	call	TTF_CloseFont
+	movq	66456(%rbp), %rax
+	movq	%rax, %rcx
+	call	SDL_DestroyTexture
+	movq	66448(%rbp), %rax
+	movq	%rax, %rcx
+	call	SDL_DestroyTexture
+	movq	66440(%rbp), %rax
+	movq	%rax, %rcx
+	call	SDL_DestroyTexture
+	movq	66432(%rbp), %rax
+	movq	%rax, %rcx
+	call	SDL_DestroyTexture
+	movq	66424(%rbp), %rax
+	movq	%rax, %rcx
+	call	SDL_DestroyTexture
+	movq	66312(%rbp), %rax
+	movq	%rax, %rcx
+	call	SDL_DestroyTexture
+	movq	66304(%rbp), %rax
+	movq	%rax, %rcx
+	call	SDL_DestroyTexture
 	movq	66408(%rbp), %rax
+	movq	%rax, %rcx
+	call	SDL_DestroyTexture
+	movq	66256(%rbp), %rax
 	movq	%rax, %rcx
 	call	SDL_DestroyTexture
 	movq	66400(%rbp), %rax
 	movq	%rax, %rcx
 	call	SDL_DestroyTexture
-	movq	66392(%rbp), %rax
-	movq	%rax, %rcx
-	call	SDL_DestroyTexture
 	movq	66384(%rbp), %rax
 	movq	%rax, %rcx
 	call	SDL_DestroyTexture
-	movq	66376(%rbp), %rax
+	movq	66288(%rbp), %rax
 	movq	%rax, %rcx
 	call	SDL_DestroyTexture
-	movq	66272(%rbp), %rax
-	movq	%rax, %rcx
-	call	SDL_DestroyTexture
-	movq	66264(%rbp), %rax
-	movq	%rax, %rcx
-	call	SDL_DestroyTexture
-	movq	66368(%rbp), %rax
-	movq	%rax, %rcx
-	call	SDL_DestroyTexture
-	movq	66216(%rbp), %rax
-	movq	%rax, %rcx
-	call	SDL_DestroyTexture
-	movq	66360(%rbp), %rax
-	movq	%rax, %rcx
-	call	SDL_DestroyTexture
-	movq	66344(%rbp), %rax
-	movq	%rax, %rcx
-	call	SDL_DestroyTexture
-	movq	66248(%rbp), %rax
+	movq	66416(%rbp), %rax
 	movq	%rax, %rcx
 	call	SDL_DestroyTexture
 	call	IMG_Quit
-	movl	66228(%rbp), %eax
+	movl	66268(%rbp), %eax
 	movl	%eax, %ecx
 	call	SDL_CloseAudioDevice
-	movq	88(%rbp), %rax
+	movq	104(%rbp), %rax
 	movq	%rax, %rcx
 	call	SDL_FreeWAV
-	movq	66464(%rbp), %rax
+	movq	66512(%rbp), %rax
 	movq	%rax, %rcx
 	call	SDL_DestroyRenderer
-	movq	66472(%rbp), %rax
+	movq	66520(%rbp), %rax
 	movq	%rax, %rcx
 	call	SDL_DestroyWindow
 	call	SDL_Quit
 	movl	$500, %ecx
 	call	SDL_Delay
 	movl	$0, %eax
-	jmp	.L135
-.L140:
+	jmp	.L143
+.L148:
 	call	SDL_GetError
-	movq	%rax, %rbx
+	movq	%rax, %rsi
+	movq	66584(%rbp), %rbx
 	movl	$2, %ecx
 	movq	__imp___acrt_iob_func(%rip), %rax
 	call	*%rax
+	movq	%rsi, %r9
+	movq	%rbx, %r8
+	leaq	.LC74(%rip), %rdx
 	movq	%rax, %rcx
-	movq	66536(%rbp), %rax
-	movq	%rbx, %r9
-	movq	%rax, %r8
-	leaq	.LC67(%rip), %rax
-	movq	%rax, %rdx
 	call	fprintf
 	call	SDL_Quit
 	movl	$1, %ecx
 	call	exit
-.L135:
+.L143:
 	movq	%r12, %rsp
-	jmp	.L133
-.L149:
+	jmp	.L141
+.L157:
 	movq	%r12, %rsp
-.L133:
-	leaq	66648(%rbp), %rsp
+.L141:
+	leaq	66696(%rbp), %rsp
 	popq	%rbx
 	popq	%rsi
 	popq	%rdi
@@ -4747,58 +4943,72 @@ SDL_main:
 	.align 8
 .LC1:
 	.long	0
-	.long	1080459264
+	.long	1081081856
 	.align 8
 .LC2:
-	.long	1413754136
-	.long	1074340347
-	.align 8
-.LC3:
 	.long	0
 	.long	1081507840
 	.align 8
-.LC9:
+.LC4:
+	.long	0
+	.long	1078853632
+	.align 8
+.LC5:
+	.long	0
+	.long	1072693248
+	.align 8
+.LC6:
+	.long	0
+	.long	1080459264
+	.align 8
+.LC7:
+	.long	1413754136
+	.long	1074340347
+	.align 8
+.LC13:
 	.long	0
 	.long	1076101120
 	.align 4
-.LC12:
+.LC16:
 	.long	1092616192
 	.align 8
-.LC13:
+.LC17:
 	.long	-858993459
 	.long	1073532108
 	.align 8
-.LC14:
+.LC18:
 	.long	0
 	.long	1077936128
 	.align 8
-.LC57:
+.LC64:
 	.long	0
 	.long	1076887552
 	.align 8
-.LC59:
+.LC66:
 	.long	0
 	.long	1070596096
 	.align 8
-.LC60:
+.LC67:
 	.long	-1717986918
 	.long	1069128089
 	.align 8
-.LC61:
+.LC68:
 	.long	858993459
 	.long	1070805811
 	.align 4
-.LC63:
+.LC70:
 	.long	1097859072
 	.align 4
-.LC64:
+.LC71:
 	.long	1084227584
-	.ident	"GCC: (x86_64-posix-seh-rev2, Built by MinGW-W64 project) 12.2.0"
+	.ident	"GCC: (x86_64-posix-seh, Built by strawberryperl.com project) 8.3.0"
+	.def	__ms_vsnprintf;	.scl	2;	.type	32;	.endef
 	.def	SDL_FillRect;	.scl	2;	.type	32;	.endef
 	.def	SDL_GetError;	.scl	2;	.type	32;	.endef
 	.def	fprintf;	.scl	2;	.type	32;	.endef
 	.def	SDL_Quit;	.scl	2;	.type	32;	.endef
 	.def	exit;	.scl	2;	.type	32;	.endef
+	.def	floor;	.scl	2;	.type	32;	.endef
 	.def	SDL_SetRenderDrawColor;	.scl	2;	.type	32;	.endef
 	.def	SDL_RenderClear;	.scl	2;	.type	32;	.endef
 	.def	SDL_RenderFillRect;	.scl	2;	.type	32;	.endef
@@ -4817,12 +5027,14 @@ SDL_main:
 	.def	fgets;	.scl	2;	.type	32;	.endef
 	.def	rand;	.scl	2;	.type	32;	.endef
 	.def	SDL_memcpy;	.scl	2;	.type	32;	.endef
+	.def	SDL_GetVersion;	.scl	2;	.type	32;	.endef
+	.def	SDL_Log;	.scl	2;	.type	32;	.endef
 	.def	malloc;	.scl	2;	.type	32;	.endef
 	.def	fwrite;	.scl	2;	.type	32;	.endef
+	.def	time;	.scl	2;	.type	32;	.endef
 	.def	srand;	.scl	2;	.type	32;	.endef
 	.def	SDL_Init;	.scl	2;	.type	32;	.endef
 	.def	SDL_CreateWindow;	.scl	2;	.type	32;	.endef
-	.def	snprintf;	.scl	2;	.type	32;	.endef
 	.def	SDL_CreateRenderer;	.scl	2;	.type	32;	.endef
 	.def	SDL_GetWindowSurface;	.scl	2;	.type	32;	.endef
 	.def	TTF_Init;	.scl	2;	.type	32;	.endef
