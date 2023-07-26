@@ -1,15 +1,4 @@
-# Assignment 1
-
-## Name ideas
-- This
-- We couldn't decide on a name
-- Team name
-- Team team
-- Work
-- Mascot
-- Duneatin'
-- Scarf City
-- Andrew's Grandchildren
+# Duneatin' - Assignment 1
 
 ## Members
 ### Campbell Nicholas - Art Designer
@@ -113,14 +102,16 @@ In looking for other games with nutrition elements, survival games came to mind.
 Although a lot of games on the market utilise nutritional data, we have not been able to find any that do in the way that our game intends. Nutrition appears to be used as the sole focus of active education, or as a means of making it harder to survive in a game. We believe that by using nutritional data as stats for enemies (based on what food they are), players when eating, and the “theme” of the game is an innovative way to bring passive nutritional education whilst still feeling fun.
 
 ### Chibi Knight
-Chibi Knight is a free online that has a lot of similar elements. It is also a 2D RPG with random encounter combat and special boss fights, but lacks our trivia element and a connection to the real world as it is set in a purely fictional fantasy setting.
+Chibi Knight is a free online game that has a lot of similar elements. It is also a 2D RPG with random encounter combat and special boss fights, but lacks our educational trivia element and a connection to the real world as it is set in a purely fictional fantasy setting.
+
 ### Pokemon
-?
+Pokemon has a wide map but exploration is limited to an almost linear graph with few branches. Accessible areas are limited by progression, terrain and Pokemon blocking the path, and NPCs who will let the player pass after completing a side quest for them. There are also puzzles, such as rooms with boulders that can be pushed around in order to activate pressure plates or access areas.
+
 ### Legend of Zelda
 The games in the Zelda series more often than not puts the player on a quest to traverse an overworld as a means of gathering items found in dungeons in order to be able to fight bosses responsible for the chaos in the game world.
 The gameplay involves real-time combat, solving mysterious puzzles, and often sees the characters develop in the story.
 ## Evidence of customer interest
-?
+This game has been described to peers and other students not taking this paper, including students in the Master of Teaching and Learning course who will be teaching in secondary schools from next year. Each time, the game has been met with interest and excitement.
 
 ## Risk Analysis
 Risks include:
