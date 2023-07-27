@@ -100,6 +100,16 @@ In looking for other games with nutrition elements, survival games came to mind.
 
 Although a lot of games on the market utilise nutritional data, we have not been able to find any that do in the way that our game intends. Nutrition appears to be used as the sole focus of active education, or as a means of making it harder to survive in a game. We believe that by using nutritional data as stats for enemies (based on what food they are), players when eating, and the “theme” of the game is an innovative way to bring passive nutritional education whilst still being fun.
 
+### Games using Weather
+A weather system is very common in video games, however there seems to be a lot of variety in the way it is implemented and the effect it has on gameplay.
+
+Games in the Animal Crossing series have a system featuring time, seasons and weather. All three of these features change spawn rates of different species that you can find around the island. This is similar to what we intend to use our weather data for, where different weather events or seasons change what enemies appear. What is interesting about Animal Crossing’s use however is that the time aspect is in real time drawing from the console's clock and calendar, whilst the weather is random. For our main mode we intend to have structured weather, seasons and time, and for our arcade we intend to have realtime for all aspects.
+
+The weather system in The Legend of Zelda: Breath of the Wild is rather complex. Weather occurs in four minute cycles with a probability associated with them based primarily on location, and the associated altitude, temperature and time. We intend to implement our system in almost a different way. Weather will be day-length (10 minutes in game), and will be consistent throughout the whole map. It is not justifiable to have different weather in different locations as our map is relatively small (Dunedin) and we are using data obtained from just the Physics department at the University of Otago.
+
+In the Pokemon series, the weather will change everyday. This is like how we intend to implement weather into our game. The interesting part about Pokemons use of weather is how different weather conditions will change how battles play out. This means that stats and abilities can be affected based on what the weather conditions are. We intend to draw from this and have weather conditions affect stats of enemies or the player. However, unlike Pokemon we will be using set weather data from an official data set rather than random.
+
+
 ### Chibi Knight
 Chibi Knight is a free online game that has a lot of similar elements. It is also a 2D RPG with random encounter combat and special boss fights, but lacks our educational trivia element and a connection to the real world as it is set in a purely fictional fantasy setting.
 
