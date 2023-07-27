@@ -378,18 +378,19 @@ void game_level_load(int lvl,int lvlmax)
 }
 void dev_tiled_to_leveldata()
 {
-	//Extracts Tiles (done) and Objects (unfinished).
+	//Extracts Tiles (done) and Objects (unfinished (unnecessary if tiles and objects share tileset)).
 	printf("may take a while; please wait.\n");
 	glob_vk_f2=0;//fakes a keyboard press event (fails if held).
 	FILE *filin = fopen("tiled/cosc345-game.tmx","rb");
 	FILE *filout = fopen("level.dat","wb");
 	int layers=2;
 	int layersize=65536;
+	//layersize=512;//debug only
 	int maxsize = 65536*layers;//131072
 	byte array[131072];//tiles + objects.
 	for (long i=0; i<maxsize; i++) {array[i] = 0;}
 	//Discard input header.
-	fseek(filin,(long int)0x1F7-0,SEEK_SET);//hardcoded; may bug out in future.
+	fseek(filin,(long int)0x1F7-0,SEEK_SET);//hardcoded; may bug out in future, so avoid renaming or resizing in Tiled project file.
 	//Read Tiles and Objects.
 	byte comma=","[0];
 	int ch=0;
@@ -404,6 +405,8 @@ void dev_tiled_to_leveldata()
 		ch=fgetc(filin);
 		for (int j=0; j<3; j++) {entry[j]=48;}
 		while ((ch==0xD) || (ch==0xA)) {ch=fgetc(filin);}
+		entry[2]=ch;
+		ch=fgetc(filin);
 		if (ch!=comma)
 		{
 			entry[1]=entry[2];
@@ -414,11 +417,12 @@ void dev_tiled_to_leveldata()
 				entry[0]=entry[1];
 				entry[1]=entry[2];
 				entry[2]=ch;
+				fgetc(filin);//important.
 			}
 		}
 		val^=val;
 		for (int j=0; j<3; j++) {val+=(entry[j]-48)*(byte)pow((double)10,(double)(2-j));}
-		printf("i=%i/%i (v=%i)\n",i,layersize,val);
+		printf("i=%i/%i (v=%i)\n",i,layersize,val);//comment out to speed up.
 		val-=(val==0)?(-0xFF):(1)&0xFF;
 		array[(1<<(3<<(1<<1)))*(i>>(3<<(1<<1)))+(1<<(1<<3))*((i>>(1<<(1<<1)))&(3*(1<<(1<<1)|1)))+(1<<(1<<(1<<1)))*((i>>(1<<3))&(3*(1<<(1<<1)|1)))+(i&(3*(1<<(1<<1)|1)))]=val;//security through obscurity, or what?
 	}
@@ -784,6 +788,9 @@ int SDL_main(int argc, char *argv[])
 	Player.anim_cur = 0;//current sprite frame.
 	Player.anim_max = 2;//max sprite frame before rollover.
 	Player.move_spd = 3*4;
+	
+	//Nutrients.
+	SDL_Texture *spr_nutrients = IMG_LoadTexture(renderer,"img/spr_nutrients_strip4.png");
 	
 	//Music.
 	const char *wavfile="music.wav";
@@ -1158,25 +1165,32 @@ int SDL_main(int argc, char *argv[])
 			draw_text(renderer,uix,uiy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,"HEALTH:",font_ascii_w,font_ascii_h);
 			uiy += font_ascii_h*gh;
 			//health bar
-			if(!splashintro_bool)
+			//SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+			draw_set_color(renderer,c_white);
+			int maxWidth = 200; // Replace this with the maximum width of the health bar
+			int maxHeight = 20; //this too.
+			int currentWidth = (health * maxWidth) / maxHealth;
+			// Render the red health bar
+			/*
+			SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+			SDL_Rect healthBarRect = { 0, 200, currentWidth, 20 };
+			SDL_RenderFillRect(renderer, &healthBarRect);
+			/**/
+			//int col=make_color_hsv((int)lerp(120.0,0.0,(double)health/(double)maxHealth),255,255);
+			int col=c_red;
+			draw_rectangle_color(renderer,0,uiy,maxWidth,uiy+maxHeight,c_black);
+			draw_rectangle_color(renderer,0,uiy,currentWidth,uiy+maxHeight,col);
+			uiy += maxHeight;
+			
+			//Nutrients
+			int nx,nd;
+			nx=0;
+			nd=32;
+			for (int i=0; i<4; i++)
 			{
-				//SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-				draw_set_color(renderer,c_white);
-				int maxWidth = 200; // Replace this with the maximum width of the health bar
-				int maxHeight = 20; //this too.
-				int currentWidth = (health * maxWidth) / maxHealth;
-				// Render the red health bar
-				/*
-				SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-				SDL_Rect healthBarRect = { 0, 200, currentWidth, 20 };
-				SDL_RenderFillRect(renderer, &healthBarRect);
-				/**/
-				//int col=make_color_hsv((int)lerp(120.0,0.0,(double)health/(double)maxHealth),255,255);
-				int col=c_red;
-				draw_rectangle_color(renderer,0,uiy,maxWidth,uiy+maxHeight,c_black);
-				draw_rectangle_color(renderer,0,uiy,currentWidth,uiy+maxHeight,col);
-				uiy += maxHeight;
-				
+				draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
+				draw_text(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h);
+				nx += nd*gw;
 			}
 			// SDL_RenderPresent(renderer);
 		}
@@ -1421,6 +1435,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_DestroyTexture(spr_clock_digital);
 	SDL_DestroyTexture(spr_thermometer);
 	SDL_DestroyTexture(spr_hudshade);
+	SDL_DestroyTexture(spr_nutrients);
 	IMG_Quit();
 	
 	//SDL_FreeWAV(&audio_spec);

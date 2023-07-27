@@ -1,6 +1,6 @@
 To do:
 
-2023-07-27
+2023-07-28
 	audio sfx (play once)
 	animated tiles
 	keyboard functions (hold, press, release)
@@ -10,6 +10,13 @@ To do:
 
 ----------------
 Finished:
+
+2023-07-27
+	Thomas:
+		Added graphics for nutrients and draw them in the leftmost UI area along with descriptive text.
+		Added graphics to tileset.
+		Remapped tile pointers in Tiled map to account for new graphics.
+		Fixed a bug in the level data converter.
 
 2023-07-26
 	Thomas:
