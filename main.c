@@ -662,6 +662,72 @@ void attack(struct player* player) {
         }
     }
 }
+#define NUM_FRAMES 8
+#define ANGLE_INCREMENT 5.625
+// Function to render the weapon swing animation
+void renderWeaponSwing(SDL_Renderer* renderer, SDL_Texture* weaponTexture, struct player* player) {
+    // Calculate the angle increment per frame
+    float angleIncrementPerFrame = ANGLE_INCREMENT;
+
+    // Calculate the initial angle based on the player's facing direction
+    float initialAngle = 0.0;
+    if (player->facedir == 0) { // Right
+        initialAngle = 0.0; // Swing right (right of the player) when facing right
+    } else if (player->facedir == 1) { // Up
+        initialAngle = -90.0; // Swing up (above the player) when facing up
+    } else if (player->facedir == 2) { // Left
+        initialAngle = 180.0; // Swing left (left of the player) when facing left
+    } else if (player->facedir == 3) { // Down
+        initialAngle = 90.0; // Swing down (below the player) when facing down
+    }
+
+    // Calculate the center offset for the weapon texture
+    int weaponCenterX, weaponCenterY;
+    SDL_QueryTexture(weaponTexture, NULL, NULL, &weaponCenterX, &weaponCenterY);
+    weaponCenterX /= 2;
+    weaponCenterY /= 2;
+
+    // Define the scaling factor to make the weapon smaller
+    float scalingFactor = 0.2; // Adjust this value to control the size
+
+    // Define the offset distance from the player for the weapon to appear in front
+    int distanceFromPlayer = 20; // Adjust this value to control the distance
+
+    // Render the weapon swing animation
+    for (int i = 0; i < NUM_FRAMES; i++) {
+        // Calculate the angle for this frame
+        float currentAngle = initialAngle + (i * angleIncrementPerFrame);
+
+        // Calculate the position for the weapon's anchor point based on the current angle and facing direction
+        int anchorOffsetX = distanceFromPlayer * cosf(currentAngle * M_PI / 180.0);
+        int anchorOffsetY = distanceFromPlayer * sinf(currentAngle * M_PI / 180.0);
+
+        // Calculate the scaled size of the weapon texture
+        int scaledWidth = weaponCenterX * 2 * scalingFactor;
+        int scaledHeight = weaponCenterY * 2 * scalingFactor;
+
+        // Render the weapon texture at the current angle with the anchor offset and scaled size
+        SDL_Rect renderRect;
+        renderRect.w = scaledWidth;
+        renderRect.h = scaledHeight;
+        
+        // Position the weapon in front of the player (adjust the offsets as needed)
+        renderRect.x = player->x - weaponCenterX + anchorOffsetX+120;
+		if(player->facedir==0){
+			renderRect.x+=20;
+			renderRect.y+=5;
+		}
+        renderRect.y = player->y - weaponCenterY + anchorOffsetY +40;
+
+        SDL_RenderCopyEx(renderer, weaponTexture, NULL, &renderRect, currentAngle, NULL, SDL_FLIP_NONE);
+
+        // Update the screen
+        SDL_RenderPresent(renderer);
+
+        // Add a delay to control the animation speed (adjust as needed)
+        SDL_Delay(10);
+    }
+}
 //Pushable block.
 struct pushblock
 {
@@ -897,7 +963,7 @@ int SDL_main(int argc, char *argv[])
 	Player.move_spd = 3*4;
 	//damage stats
 	Player.attackRangeHeight=50;
-	Player.attackRangeWidth=50;
+	Player.attackRangeWidth=100;
 	Player.damage=50;
 
 	//test enemy
@@ -1036,7 +1102,8 @@ int SDL_main(int argc, char *argv[])
 		if(glob_vk_7)
 		{
 			glob_vk_7=0;
-			attack(&Player);
+			attack(&Player);//calls attack function
+			renderWeaponSwing(renderer, spr_water, &Player);//renders the swing
 		}
 		//Rain toggle.
 		if (glob_vk_0)
