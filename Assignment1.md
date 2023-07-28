@@ -1,8 +1,8 @@
 # Duneatin' - Assignment 1
 
 ## Members
-### Campbell Nicholas - Art Designer
-?
+### 3340483 Campbell Nicholas - Art Designer
+I have just completed my honours degree in genetics before moving over to computer science this year for a DipGrad. Through this I have demonstrated the capability to excel in a long project, with skills such as researching, commitment, writing and team work. I have just been part of a COSC202 ANDIE team last semester where we worked well as a team and produced a good product. I have also been part of numerous teams, especially in the music scene, lending me the skills to help the team excel despite a lot of my experience being from outside the field.
 ### 3391288, Thomas Pedersen - Programmer, Music
 I have a master's degree from Falmouth University in Game Development (Audio + Design) and have programmed games and composed music since 2010.
 My online presence is under the nickname 737BassTP.
