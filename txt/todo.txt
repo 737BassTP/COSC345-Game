@@ -1,6 +1,6 @@
 To do:
 
-2023-07-29
+2023-07-30
 	audio sfx (play once)
 	keyboard functions (hold, press, release)
 	compress leveldata
@@ -9,6 +9,15 @@ To do:
 
 ----------------
 Finished:
+
+2023-07-29
+	Sean:
+		Added attack ability to player.
+		Added an enemy struct in which the player can attack.
+			Press 7 to deal damage to an enemy.
+	Thomas:
+		Added graphics to Sean's enemy.
+		Removed two misplaced comments by Sean reading "//sean" next to functionality implemented by Thomas in previous builds.
 
 2023-07-28
 	Thomas:
