@@ -16,7 +16,7 @@ all:
 	@echo Build succeeded!
 	$(MAKE) run
 asm:
-	gcc $(PROGRAM).c -O0 -S -o $(PROGRAM).s $<
+	gcc $(PROGRAM).c -O0 -S -o $(PROGRAM).s -masm=intel $<
 	
 clean:
 	rm -rf *.exe *.s

@@ -1,8 +1,7 @@
 To do:
 
-2023-07-28
+2023-07-29
 	audio sfx (play once)
-	animated tiles
 	keyboard functions (hold, press, release)
 	compress leveldata
 	animated text
@@ -11,6 +10,18 @@ To do:
 ----------------
 Finished:
 
+2023-07-28
+	Thomas:
+		Added detailed graphics to the tileset.
+		Added animated tiles (water + lava), each with 16 frames.
+		Improved level.000 to show these aforementioned additions.
+		Added color blending support (requires white textures).
+		Heavily reworked the splash intro screen.
+			- Faux 3D effect.
+			- HSV hue cycle.
+			- Made the "press space to continue" text flashing.
+			- Added a basic copyright text.
+		Changed the assembly output of GCC to intel syntax in the Makefile.
 2023-07-27
 	Thomas:
 		Added graphics for nutrients and draw them in the leftmost UI area along with descriptive text.

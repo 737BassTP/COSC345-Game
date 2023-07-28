@@ -57,7 +57,7 @@ const int c_ = 0x;
 
 //Global variables.
 int glob_draw_alpha = 255;
-int glob_draw_colour = c_white;
+int glob_draw_color = c_white;
 int glob_vk_right 	= 0;
 int glob_vk_left 	= 0;
 int glob_vk_up 		= 0;
@@ -97,47 +97,55 @@ double lerp(double from,double to,double percentage)
 }
 int make_color_hsv(int h,int s,int v)
 {
-	//temporary faulty
-	//source: https://en.wikipedia.org/wiki/HSL_and_HSV
-	double c=(double)v*(double)s;
-	double h1=lerp(0.0,360.0,(double)h/256.0);
-	double h2=(h1/60.0);
-	double x=c*(1.0-(double)abs((int)h2%2-1));
-	double r1,g1,b1;
-	switch ((int)floor(h2))
-	{
-		case 0: {r1=c;g1=x;b1=0.0;} break;
-		case 1: {r1=x;g1=c;b1=0.0;} break;
-		case 2: {r1=0.0;g1=c;b1=x;} break;
-		case 3: {r1=0.0;g1=x;b1=c;} break;
-		case 4: {r1=x;g1=0.0;b1=c;} break;
-		case 5: {r1=c;g1=0.0;b1=x;} break;
-	}
-	double m=(double)v-c;
-	return make_color_rgb(((int)(r1+m))*255,((int)(g1+m))*255,((int)(b1+m))*255);
+	//source: https://stackoverflow.com/questions/3018313/algorithm-to-convert-rgb-to-hsv-and-hsv-to-rgb-in-range-0-255-for-both/14733008#14733008
+	byte region, remainder, p, q, t;
+    if (s == 0) {return make_color_rgb(v,v,v);}
+    region = h / 43;
+    remainder = (h - (region * 43)) * 6; 
+    p = (v * (255 - s)) >> 8;
+    q = (v * (255 - ((s * remainder) >> 8))) >> 8;
+    t = (v * (255 - ((s * (255 - remainder)) >> 8))) >> 8;
+	byte rr,gg,bb;//if buggy, change to int.
+    switch (region)
+    {
+        case 0:
+            rr = v; gg = t; bb = p;
+            break;
+        case 1:
+            rr = q; gg = v; bb = p;
+            break;
+        case 2:
+            rr = p; gg = v; bb = t;
+            break;
+        case 3:
+            rr = p; gg = q; bb = v;
+            break;
+        case 4:
+            rr = t; gg = p; bb = v;
+            break;
+        default:
+            rr = v; gg = p; bb = q;
+            break;
+    }
+    return make_color_rgb(rr,gg,bb);
 }
-
 int draw_get_alpha()
 {
 	return glob_draw_alpha;
 }
-int draw_get_colour()
+int draw_get_color()
 {
-	return glob_draw_colour;
+	return glob_draw_color;
 }
 void draw_set_color(SDL_Renderer* renderer,int bgr)
 {
-	glob_draw_colour = bgr&0xFFFFFF;
+	glob_draw_color = bgr&0xFFFFFF;
 	SDL_SetRenderDrawColor(renderer,bgr&0xFF,(bgr>>8)&0xFF,(bgr>>16)&0xFF,draw_get_alpha());
-}
-int draw_get_color(renderer)
-{
-	return glob_draw_colour;
 }
 void draw_set_alpha(SDL_Renderer* renderer,int alpha)
 {
 	glob_draw_alpha = alpha&0xFF;
-	int bgr = draw_get_colour();
+	int bgr = draw_get_color();
 	SDL_SetRenderDrawColor(renderer,bgr&0xFF,(bgr>>8)&0xFF,(bgr>>16)&0xFF,alpha);
 }
 void draw_clear(SDL_Renderer* renderer,int bgr)
@@ -175,6 +183,8 @@ void draw_image(SDL_Renderer *renderer,int x1,int y1,int x2,int y2,SDL_Texture *
 	r.y = y1;
 	r.w = x2-x1;//convert x2,y2 to w,h
 	r.h = y2-y1;
+	int col=glob_draw_color;
+	SDL_SetTextureColorMod(texture,col&0xFF,(col>>8)&0xFF,(col>>16)&0xFF);
 	SDL_RenderCopy(renderer,texture,NULL,&r);//texture fill whole renderer.
 }
 void draw_image_part(SDL_Renderer *renderer,int x1,int y1,int x2,int y2,SDL_Texture *texture,int left,int top,int width,int height)
@@ -189,6 +199,8 @@ void draw_image_part(SDL_Renderer *renderer,int x1,int y1,int x2,int y2,SDL_Text
 	s.y = top;
 	s.w = width;
 	s.h = height;
+	int col=glob_draw_color;
+	SDL_SetTextureColorMod(texture,col&0xFF,(col>>8)&0xFF,(col>>16)&0xFF);
 	SDL_RenderCopy(renderer,texture,&s,&r);
 }
 void draw_text(SDL_Renderer *renderer,int x,int y,int w,int h,SDL_Texture *font,char* str,int fontw,int fonth)
@@ -218,6 +230,13 @@ void draw_text(SDL_Renderer *renderer,int x,int y,int w,int h,SDL_Texture *font,
 			ch*fontw,0,fontw,fonth);
 		xo += w;
 	}
+}
+void draw_text_color(SDL_Renderer *renderer,int x,int y,int w,int h,SDL_Texture *font,char* str,int fontw,int fonth,int color)
+{
+	int dgc=draw_get_color();
+	draw_set_color(renderer,color);
+	draw_text(renderer,x,y,w,h,font,str,fontw,fonth);
+	draw_set_color(renderer,dgc);
 }
 int keyboard_check(int key)
 {
@@ -259,7 +278,6 @@ char* mux_str(int nth,...)
 	va_end(args);
 	return ret;
 }
-
 SDL_Texture* mux_sdltex(int nth,...)
 {
 	//Multiplexer for SDL_Texture pointers.
@@ -274,7 +292,6 @@ SDL_Texture* mux_sdltex(int nth,...)
 	va_end(args);
 	return ret;
 }
-
 int pos_int(int num,int val,...)
 {
 	//A demultiplexer variant for ints.
@@ -299,7 +316,6 @@ int pos_int(int num,int val,...)
 	va_end(args);
 	return -1;
 }
-
 int BG(int val,int nth)
 {
 	return (val>>nth)&1;
@@ -319,6 +335,14 @@ double degtorad(double deg)
 double radtodeg(double rad)
 {
 	return (rad/PI)*180;
+}
+double dcos(double deg)
+{
+	return cos(degtorad(deg));
+}
+double dsin(double deg)
+{
+	return sin(degtorad(deg));
 }
 Uint64 get_timer()
 {
@@ -722,10 +746,11 @@ int SDL_main(int argc, char *argv[])
 	//SDL_Texture *spr_grass = IMG_LoadTexture(renderer,"image-test.png");
 	SDL_Texture *spr_grass = IMG_LoadTexture(renderer,"img/spr_grass.png");
 	SDL_Texture *spr_sand  = IMG_LoadTexture(renderer,"img/spr_sand.png");
-	SDL_Texture *spr_water = IMG_LoadTexture(renderer,"img/spr_water.png");
-	SDL_Texture *spr_lava  = IMG_LoadTexture(renderer,"img/spr_lava.png");
+	SDL_Texture *spr_water = IMG_LoadTexture(renderer,"img/spr_water_strip16.png");
+	SDL_Texture *spr_lava  = IMG_LoadTexture(renderer,"img/spr_lava_strip16.png");
 	SDL_Texture *spr_tileset = IMG_LoadTexture(renderer,"tiled/tileset.png");
 	SDL_Texture *spr_hudshade = IMG_LoadTexture(renderer,"img/hudshade.png");
+	
 	//Player.
 	SDL_Texture *sprstrip_player = IMG_LoadTexture(renderer,"img/player_strip8.png");
 	//Text.
@@ -818,11 +843,17 @@ int SDL_main(int argc, char *argv[])
     }
 	SDL_QueueAudio(deviceid,wavbuffer,wavlength);
 	SDL_PauseAudioDevice(deviceid,0);//0 is unpause
+	//SDL_MixAudioFormat(wavbuffer,wavbuffer,AUDIO_S16,wavlength,32);
 	
 	//Splash intro screen.
 	int splashintro_bool=1;
-	SDL_Texture *splashintro_img  = IMG_LoadTexture(renderer,"img/img_lands.png");
+	SDL_Texture *splashintro_img1 = IMG_LoadTexture(renderer,"img/logo1a.png");
+	SDL_Texture *splashintro_img2 = IMG_LoadTexture(renderer,"img/logo1b.png");
+	SDL_Texture *splashintro_img3 = IMG_LoadTexture(renderer,"img/logo1c.png");
 	char* splashintro_string = "Press SPACE to continue.";
+	char* splashintro_string_copyright = "(C) 2023 - Thomas, Sean, Matthew, Nicholas - COSC345";
+	int splashintro_slen1=strlen(splashintro_string);
+	int splashintro_slen2=strlen(splashintro_string_copyright);
 	
 	//Mainloop here.
 	int running=1;
@@ -1157,16 +1188,17 @@ int SDL_main(int argc, char *argv[])
 		
 		//UI.
 		int uix,uiy;
+		int tc=c_black;
 		//UI Left (player).
 		uix = gw; 
 		uiy = gh;
 		if (!splashintro_bool)
 		{
-			draw_text(renderer,uix,uiy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,"HEALTH:",font_ascii_w,font_ascii_h);
+			draw_text_color(renderer,uix,uiy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,"HEALTH:",font_ascii_w,font_ascii_h,tc);
 			uiy += font_ascii_h*gh;
 			//health bar
 			//SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-			draw_set_color(renderer,c_white);
+			//draw_set_color(renderer,c_white);
 			int maxWidth = 200; // Replace this with the maximum width of the health bar
 			int maxHeight = 20; //this too.
 			int currentWidth = (health * maxWidth) / maxHealth;
@@ -1189,7 +1221,7 @@ int SDL_main(int argc, char *argv[])
 			for (int i=0; i<4; i++)
 			{
 				draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
-				draw_text(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h);
+				draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
 				nx += nd*gw;
 			}
 			// SDL_RenderPresent(renderer);
@@ -1210,8 +1242,8 @@ int SDL_main(int argc, char *argv[])
 			lvlstrnew[string_pos("Z",lvlstrnew)] = ((lc/1  )%10) + 48;//
 			//sprintf(lvlstr,"Level:#",level_cur);
 			
-			draw_text(renderer,uix,uiy                ,font_ascii_w*gw,font_ascii_h*gh,font_ascii,lvlstrnew,font_ascii_w,font_ascii_h);
-			draw_text(renderer,uix,uiy+font_ascii_h*gh,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mapstr_location,font_ascii_w,font_ascii_h);
+			draw_text_color(renderer,uix,uiy                ,font_ascii_w*gw,font_ascii_h*gh,font_ascii,lvlstrnew,font_ascii_w,font_ascii_h,tc);
+			draw_text_color(renderer,uix,uiy+font_ascii_h*gh,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mapstr_location,font_ascii_w,font_ascii_h,tc);
 			
 			
 			//Map.
@@ -1248,6 +1280,7 @@ int SDL_main(int argc, char *argv[])
 			//Digital clock.
 			int coff=0;
 			int clocky2 = mapy2+32*gh;
+			draw_set_color(renderer,tc);
 			for (int i=0; i<5; i++)
 			{
 				int clo = mux_int(i,(time_clock/600),(time_clock/60)%10,737,(time_clock/10)%6,time_clock%10);
@@ -1263,9 +1296,10 @@ int SDL_main(int argc, char *argv[])
 				}
 				else
 				{
-					draw_text(renderer,uix+2*16*gw,mapy2,uix+3*16*gw,clocky2,font_ascii,":",font_ascii_w,font_ascii_h);
+					draw_text_color(renderer,uix+2*16*gw,mapy2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,":",font_ascii_w,font_ascii_h,tc);
 				}
 			}
+			draw_set_color(renderer,c_white);
 			//char ct[10];
 			//const char time_clock_str="Daytime";
 			//strcpy(ct,time_clock_str);
@@ -1274,11 +1308,11 @@ int SDL_main(int argc, char *argv[])
 			if (clock_is_between(time_clock, 6,0,11,59)) {ct=1;}
 			if (clock_is_between(time_clock,12,0,17,59)) {ct=2;}
 			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
-			draw_text(renderer,
+			draw_text_color(renderer,
 				uix,clocky2+gh,
 				font_ascii_w*gw,font_ascii_h*gh,
 				font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
-				font_ascii_w,font_ascii_h);
+				font_ascii_w,font_ascii_h,tc);
 			
 			//Temperature.
 			int tempy1,tempy2;
@@ -1288,7 +1322,7 @@ int SDL_main(int argc, char *argv[])
 			//draw_set_color(renderer,c_blue);
 			draw_image(renderer,uix,tempy1,uix+16*gw,tempy2,spr_thermometer);
 			//draw_set_color(renderer,dgc);
-			draw_text(renderer,uix+48,(int)lerp((double)tempy1,(double)tempy2,0.25),font_ascii_w*gw,font_ascii_h*gh,font_ascii,newtempstr,font_ascii_w,font_ascii_h);
+			draw_text_color(renderer,uix+48,(int)lerp((double)tempy1,(double)tempy2,0.25),font_ascii_w*gw,font_ascii_h*gh,font_ascii,newtempstr,font_ascii_w,font_ascii_h,tc);
 			
 			//
 			
@@ -1311,7 +1345,21 @@ int SDL_main(int argc, char *argv[])
 				draw_rectangle_color(renderer,x1,y1,x2,y2,col);//will show if image drawing below fails.
 				int off = ij + level_size*level_cur;
 				int tex = level_data[off];
-				draw_image_part(renderer,x1,y1,x2,y2,spr_tileset,d*(tex%win_game_tile_num),d*(tex/win_game_tile_num),d,d);
+				if ((tex>=0x90) && (tex <=0x9F))
+				{//animated
+					int fr=16;
+					int di=(tex==0x90)?(60):(120);
+					int at=(int)get_timer();
+					SDL_Texture *spr;
+					     if (tex==0x90) {spr=spr_water;}
+					else if (tex==0x94) {spr=spr_lava;}
+					else {spr=spr_water;}
+					draw_image_part(renderer,x1,y1,x2,y2,spr,d*((at/di)%fr),0,d,d);
+				}
+				else
+				{//static
+					draw_image_part(renderer,x1,y1,x2,y2,spr_tileset,d*(tex%win_game_tile_num),d*(tex/win_game_tile_num),d,d);
+				}
 			}
 		}
 		//Player.
@@ -1381,8 +1429,56 @@ int SDL_main(int argc, char *argv[])
 		//Splash intro screen.
 		if (splashintro_bool)
 		{
-			draw_image(renderer,win_game_x,win_game_y,win_game_x2,win_game_y2,splashintro_img);
-			draw_text(renderer,win_game_x,win_game_y,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashintro_string,font_ascii_w,font_ascii_h);
+			int off=64*gw;
+			draw_rectangle_color(renderer,0,0,screen_w,screen_h,0);
+			draw_image(renderer,win_game_x-off,win_game_y,win_game_x2+off,win_game_y2,splashintro_img1);
+			//Visual effect.
+			int imax=16;
+			int xo,yo,cc;
+			int dgc=draw_get_color();
+			int timer=(int)get_timer();
+			int ttx,tty,ttc;
+			ttx=timer/10%360;
+			tty=90+75*dcos(timer/10%360);
+			ttc=timer/10%256;
+			for (int i=0; i<imax; i++)
+			{
+				xo=-imax*gw*dcos(ttx)+i*gw*dcos(ttx);
+				yo=-imax*gh*dsin(tty)+i*gh*dsin(tty);
+				//cc=(int)lerp(0.0,255.0,(double)((double)i/(double)(imax-1)));
+				//draw_set_color(renderer,make_color_rgb(cc,cc,cc));
+				draw_set_color(renderer,make_color_hsv(ttc,32,(int)lerp(0.0,255.0,(double)i/(double)(imax-1))));
+				draw_image(renderer,
+					win_game_x-off+xo,win_game_y+yo,
+					win_game_x2+off+xo,win_game_y2+yo,
+					splashintro_img2);
+			}
+			//Logo.
+			draw_image(renderer,win_game_x-off,win_game_y,win_game_x2+off,win_game_y2,splashintro_img3);
+			draw_set_color(renderer,dgc);
+			//Press space to continue.
+			int xx,yy;
+			xx=384;
+			yy=32;
+			if (timer/60%8>=4)
+			{
+				draw_text_color(renderer,xx,yy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashintro_string,font_ascii_w,font_ascii_h,c_yellow);
+			}
+			//Copyright.
+			xx=64;
+			yy=8;
+			draw_text_color(renderer,xx,win_game_y+win_game_h-yy-font_ascii_h*gh,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashintro_string_copyright,font_ascii_w,font_ascii_h,c_white);
+			/*
+			int yoff;
+			imax=splashintro_slen2;
+			char ch[2];
+			for (int i=0; i<imax; i++)
+			{
+				yoff=i;
+				strncpy(ch,splashintro_string_copyright,1);
+				draw_text_color(renderer,xx,win_game_y+win_game_h-yy+yoff-font_ascii_h*gh,font_ascii_w*gw,font_ascii_h*gh,font_ascii,ch,font_ascii_w,font_ascii_h,c_white);
+			}
+			/**/
 		}
 		
 		//test pop up chat box (button)
@@ -1430,7 +1526,9 @@ int SDL_main(int argc, char *argv[])
 	SDL_DestroyTexture(spr_map);
 	SDL_DestroyTexture(spr_mapicon_unknown);
 	SDL_DestroyTexture(sprstrip_player);
-	SDL_DestroyTexture(splashintro_img);
+	SDL_DestroyTexture(splashintro_img1);
+	SDL_DestroyTexture(splashintro_img2);
+	SDL_DestroyTexture(splashintro_img3);
 	SDL_DestroyTexture(font_ascii);
 	SDL_DestroyTexture(spr_clock_digital);
 	SDL_DestroyTexture(spr_thermometer);
