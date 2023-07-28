@@ -603,7 +603,16 @@ void initEnemy(struct Enemy* enemy, int x, int y, int width, int height, int hea
     enemy->health = health;
     enemy->dmg = dmg;
 }
-
+// Function to reset an enemy to its default state
+void resetEnemy(struct Enemy* enemy) {
+    enemy->x = 0;
+    enemy->y = 0;
+    enemy->width = 0;
+    enemy->height = 0;
+    enemy->health = 0;
+    enemy->dmg = 0;
+    // Add other attributes reset if needed
+}
 // Function to check for collision between two rectangles
 // Returns true (non-zero) if the rectangles collide, false (0) otherwise
 int checkCollision(SDL_Rect rect1, SDL_Rect rect2) {
@@ -633,20 +642,24 @@ void calculateAttackHitbox(struct player* player, SDL_Rect* attackHitbox) {
     attackHitbox->w = player->attackRangeWidth;
     attackHitbox->h = player->attackRangeHeight;
 }
+struct Enemy* globalEnemy = NULL; // Initialize the global pointer to NULL initially
 // Function to perform the player's attack
-void attack(struct player* player, struct Enemy* enemy) {
-    // Create a rectangle representing the attack hitbox
-    SDL_Rect attackHitbox;
-    calculateAttackHitbox(player, &attackHitbox);
+void attack(struct player* player) {
+    // Check if globalEnemy is not NULL (i.e., points to a valid enemy)
+    if (globalEnemy != NULL) {
+        // Create a rectangle representing the attack hitbox
+        SDL_Rect attackHitbox;
+        calculateAttackHitbox(player, &attackHitbox);
 
-    // Create a rectangle representing the enemy hitbox
-    SDL_Rect enemyHitbox = { enemy->x, enemy->y, enemy->width, enemy->height };
+        // Create a rectangle representing the enemy hitbox
+        SDL_Rect enemyHitbox = { globalEnemy->x, globalEnemy->y, globalEnemy->width, globalEnemy->height };
 
-    // Check for collision with the enemy
-    if (checkCollision(attackHitbox, enemyHitbox)) {
-        // If the attack hitbox collides with the enemy, apply damage to the enemy
-        printf("Hit enemy!\n");
-        enemy->health -= player->damage;
+        // Check for collision with the enemy
+        if (checkCollision(attackHitbox, enemyHitbox)) {
+            // If the attack hitbox collides with the enemy, apply damage to the enemy
+            printf("Hit enemy!\n");
+            globalEnemy->health -= player->damage;
+        }
     }
 }
 //Pushable block.
@@ -889,7 +902,8 @@ int SDL_main(int argc, char *argv[])
 	//test enemy
 	struct Enemy enemy1;
 	initEnemy(&enemy1, 500, 500, 100, 100, 100, 10);
-
+	//global enemy
+	globalEnemy = &enemy1;
 	//Nutrients.
 	SDL_Texture *spr_nutrients = IMG_LoadTexture(renderer,"img/spr_nutrients_strip4.png");
 	
@@ -1019,9 +1033,7 @@ int SDL_main(int argc, char *argv[])
 			printf("F2 finished!\n");	
 		}
 		if(glob_vk_7){
-			//change enemy1 to global pointer to current enemy on screen.
-			attack(&Player, &enemy1);
-
+			attack(&Player);
 		}
 		//Rain toggle.
 		if (glob_vk_0)
@@ -1504,11 +1516,16 @@ int SDL_main(int argc, char *argv[])
                 draw_image(renderer, waterParticles[i].x, waterParticles[i].y, waterParticles[i].x + 5, waterParticles[i].y + 15, spr_water);
             }
         }
-		// Create an Enemy instance and initialize it as a rectangle (test)
-		if (enemy1.health > 0) {
+		// Rendering the enemy
+		if (globalEnemy != NULL && globalEnemy->health > 0) {
     		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Set the render color to red
-    		SDL_Rect enemyRect = { enemy1.x, enemy1.y, enemy1.width, enemy1.height };
+    		SDL_Rect enemyRect = { globalEnemy->x, globalEnemy->y, globalEnemy->width, globalEnemy->height };
     		SDL_RenderFillRect(renderer, &enemyRect);
+		}
+
+		// Resetting the enemy
+		if (globalEnemy != NULL && globalEnemy->health <= 0) {
+    		resetEnemy(globalEnemy);
 		}
 		/*
 		Overlay Drawing.
