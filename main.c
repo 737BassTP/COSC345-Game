@@ -579,8 +579,76 @@ struct player
 	byte anim_max;//max sprite frame before rollover.
 	byte move_spd;//moving speed of player.
 	byte can_move;//bit-flag to be set while displaying map, questions, etc..., to prevent the player from moving.
+	// Attack attributes
+	int damage;
+    int attackRangeWidth;
+    int attackRangeHeight;
 };
+//enemy struct
+struct Enemy {
+    int x;//position x
+    int y;//position y
+    int width;//hit box stats
+    int height;
+    int health;
+	int dmg;//damage it deals
+    // Add more enemy-related attributes as needed
+};
+// Function to initialize an enemy with position and size
+void initEnemy(struct Enemy* enemy, int x, int y, int width, int height, int health, int dmg) {
+    enemy->x = x;
+    enemy->y = y;
+    enemy->width = width;
+    enemy->height = height;
+    enemy->health = health;
+    enemy->dmg = dmg;
+}
 
+// Function to check for collision between two rectangles
+// Returns true (non-zero) if the rectangles collide, false (0) otherwise
+int checkCollision(SDL_Rect rect1, SDL_Rect rect2) {
+    return (rect1.x < rect2.x + rect2.w &&
+            rect1.x + rect1.w > rect2.x &&
+            rect1.y < rect2.y + rect2.h &&
+            rect1.y + rect1.h > rect2.y);
+}
+void calculateAttackHitbox(struct player* player, SDL_Rect* attackHitbox) {
+    // Calculate the position of the attack hitbox based on player direction
+    int attackX = player->x;
+    int attackY = player->y;
+    // Adjust the position of the attack hitbox based on the player's direction
+    if (player->facedir == 0) { // Up
+        attackY -= player->attackRangeHeight;
+    } else if (player->facedir == 1) { // Right
+        attackX += player->attackRangeWidth;
+    } else if (player->facedir == 2) { // Down
+        attackY += player->attackRangeHeight;
+    } else if (player->facedir == 3) { // Left
+        attackX -= player->attackRangeWidth;
+    }
+
+    // Set the attack hitbox's position and size
+    attackHitbox->x = attackX;
+    attackHitbox->y = attackY;
+    attackHitbox->w = player->attackRangeWidth;
+    attackHitbox->h = player->attackRangeHeight;
+}
+// Function to perform the player's attack
+void attack(struct player* player, struct Enemy* enemy) {
+    // Create a rectangle representing the attack hitbox
+    SDL_Rect attackHitbox;
+    calculateAttackHitbox(player, &attackHitbox);
+
+    // Create a rectangle representing the enemy hitbox
+    SDL_Rect enemyHitbox = { enemy->x, enemy->y, enemy->width, enemy->height };
+
+    // Check for collision with the enemy
+    if (checkCollision(attackHitbox, enemyHitbox)) {
+        // If the attack hitbox collides with the enemy, apply damage to the enemy
+        printf("Hit enemy!\n");
+        enemy->health -= player->damage;
+    }
+}
 //Pushable block.
 struct pushblock
 {
@@ -813,7 +881,15 @@ int SDL_main(int argc, char *argv[])
 	Player.anim_cur = 0;//current sprite frame.
 	Player.anim_max = 2;//max sprite frame before rollover.
 	Player.move_spd = 3*4;
-	
+	//damage stats
+	Player.attackRangeHeight=50;
+	Player.attackRangeWidth=50;
+	Player.damage=50;
+
+	//test enemy
+	struct Enemy enemy1;
+	initEnemy(&enemy1, 500, 500, 100, 100, 100, 10);
+
 	//Nutrients.
 	SDL_Texture *spr_nutrients = IMG_LoadTexture(renderer,"img/spr_nutrients_strip4.png");
 	
@@ -942,7 +1018,11 @@ int SDL_main(int argc, char *argv[])
 			dev_tiled_to_leveldata();
 			printf("F2 finished!\n");	
 		}
-		
+		if(glob_vk_7){
+			//change enemy1 to global pointer to current enemy on screen.
+			attack(&Player, &enemy1);
+
+		}
 		//Rain toggle.
 		if (glob_vk_0)
 		{
@@ -1220,6 +1300,7 @@ int SDL_main(int argc, char *argv[])
 			nd=32;
 			for (int i=0; i<4; i++)
 			{
+				//sean
 				draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
 				draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
 				nx += nd*gw;
@@ -1308,6 +1389,7 @@ int SDL_main(int argc, char *argv[])
 			if (clock_is_between(time_clock, 6,0,11,59)) {ct=1;}
 			if (clock_is_between(time_clock,12,0,17,59)) {ct=2;}
 			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
+			//sean
 			draw_text_color(renderer,
 				uix,clocky2+gh,
 				font_ascii_w*gw,font_ascii_h*gh,
@@ -1422,7 +1504,12 @@ int SDL_main(int argc, char *argv[])
                 draw_image(renderer, waterParticles[i].x, waterParticles[i].y, waterParticles[i].x + 5, waterParticles[i].y + 15, spr_water);
             }
         }
-		
+		// Create an Enemy instance and initialize it as a rectangle (test)
+		if (enemy1.health > 0) {
+    		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Set the render color to red
+    		SDL_Rect enemyRect = { enemy1.x, enemy1.y, enemy1.width, enemy1.height };
+    		SDL_RenderFillRect(renderer, &enemyRect);
+		}
 		/*
 		Overlay Drawing.
 		*/
