@@ -12,8 +12,7 @@ During summer school I took COSC360 (Video game design) and worked as Head of De
 I was team lead for the COSC 202 ANDIE project and under my management our team produced an excellent product well ahead of the deadline with numerous additional features.<br>My experience as a dungeon master for D&D has honed my creative storytelling abilities.<br>I have taken papers in data science and statistics, which will aid my ability to process, manipulate, and make use of big data that has over 100,000 rows.<br>With my blend of leadership, story-telling, and data-driven approach, I believe I am well suited to fill multiple roles in this project.
 
 ## The Project
-We will be building a 2D game with puzzles and RPG mechanics using the C programming language and SDL2 libraries.
-We intend for the game to have educational mechanics while being a fun experience.
+We will be building a 2D game with puzzles and RPG mechanics using the C programming language and SDL2 libraries.<br>We intend for the game to have educational mechanics while being a fun experience.
 
 ### Story
 Dr Trotman has brought all the food in Duneatin' to life, which now roams around the city attacking civilians.<br>The player has rescued an albatross egg and must endure adverse weather and evil food to return it to the peninsula.
@@ -47,8 +46,7 @@ We are using weather data sourced from the Energy Studies Weather Station of the
 ### Transport Data (Bus Timetable)
 [Bus Timetable](https://www.orc.govt.nz/public-transport/dunedin-buses/check-your-timetables)
 
-Our game has a time mechanic, and in-game fast-travel can happen by travelling with buses according to the timetable.
-This requires the player to be at the bus stop by the time the bus leaves, and the fast-travel destination is wherever the bus drives according to its timetable.
+Our game has a time mechanic, and in-game fast-travel can happen by travelling with buses according to the timetable.<br>This requires the player to be at the bus stop by the time the bus leaves, and the fast-travel destination is wherever the bus drives according to its timetable.
 
 ### Conservation Data
 Conservation data will be used inside quizzes with the player earning score for each question answered successfully.<br>The player may need to pass a test in order to progress to the next section.
@@ -64,8 +62,7 @@ The datasets go together because each of them influence different aspects of gam
 - The conversation data forms the backbone of the educational trivia aspect of the game.
 
 ## Organization
-Communcation is being maintained daily through a Facebook Messenger group chat.
-We are using a Trello board to organise the tasks that need to be done and to keep track of deadlines.
+Communcation is being maintained daily through a Facebook Messenger group chat.<br>We are using a Trello board to organise the tasks that need to be done and to keep track of deadlines.
 
 There are lists for:
 - To Do
@@ -93,7 +90,7 @@ There is a great wealth of educational games about nutrition made by government 
 
 <!-- A quick search for nutrition games comes up with lots of educational games from government organisations or museums such as the Smithsonian with a focus on teaching nutrition.<br>These, although suggesting aimed at students, appeared to be for younger children.<br>The main component of these games were to organise food into food groups or to balance a diet with the correct food groups.<br>Although very educational, these games felt more like a classroom exercise than a game.<br>We feel that our game should still be educational in the sense of passive learning - ie knowing this food is good to eat as it boosts this stat - but contain the charm of RPGs that feel fun to play.<br>-->
 
-Survival games often have nutrition as a mechanic.<br>Most survival games (e.g.<br>Minecraft, Rust) have hunger as a single numeric variable that fills up when eating and does not consider the nutritional needs of the player beyond caloric intake.<br>SCUM however has a very detailed food system, where each food has values for protein, carbohydrate, fat, sodium, and vitamin composition.<br>Players must maintain all of these to surive.<br>We found that this system is a touch too gritty and prioritises realism over educating.<br>A Minecraft mod called Nutritional Balance appears to strike a balanced stance between simplicity and depth.<br>Food has vegetable, fruit, carbohydrate, protein, and sugar values and players are penalised if any of these levels are in excess or deficit.
+Survival games often have nutrition as a mechanic.<br>Most survival games (e.g. Minecraft, Rust) have hunger as a single numeric variable that fills up when eating and does not consider the nutritional needs of the player beyond caloric intake.<br>SCUM however has a very detailed food system, where each food has values for protein, carbohydrate, fat, sodium, and vitamin composition.<br>Players must maintain all of these to surive.<br>We found that this system is a touch too gritty and prioritises realism over educating.<br>A Minecraft mod called Nutritional Balance appears to strike a balanced stance between simplicity and depth.<br>Food has vegetable, fruit, carbohydrate, protein, and sugar values and players are penalised if any of these levels are in excess or deficit.
 
 <!-- In looking for other games with nutrition elements, survival games came to mind.<br>Whilst most survival games such as Minecraft or Rust require you to eat to maintain your hunger, with foods having a calorie or healing statistic, it seems hard to find many which utilise nutritional needs.<br>One game that does utilise this is SCUM, where each food has target nutrition statistics such as protein, carbs, fats, sodium etc, as well as a vitamin composition.<br>In this game players must maintain all their levels to survive.<br>Although this game uses nutritional data that we may use in our game, this seems quite overboard and detailed.<br>It also appears to be utilising this for realism's sake (along with many other meters) in order to make it hard to survive rather than for a more educational viewpoint.<br>A closer alternative to what might be good to utilise into our game is the Minecraft mod Nutritional Balance.<br>This mod gives vegetable, fruit, carb, protein, and sugar values to the food, where players are benefited for being in target range of the nutrients and penalised for having too much/too little of others.<br>This seems more in line with our game, but is still intended for a survival setting.<br>-->
 
@@ -105,7 +102,7 @@ A weather system is very common in video games, however there seems to be a lot 
 Games in the Animal Crossing series have a system featuring time, seasons and weather, all of which change spawn rates of different species that you can find around the island.<br>This is similar to what we intend to use our weather data for, where different weather events or seasons change what enemies appear.<br>Animal Crossing uses real-time drawn from the console clock/calendar with randomly generated weather, whilst Duneatin' will have both time and weather based on real world data.
 <!-- What is interesting about Animal Crossing’s use however is that the time aspect is in real time drawing from the console's clock and calendar, whilst the weather is random.<br>For our main mode we intend to have structured weather, seasons and time, and for our arcade we intend to have realtime for all aspects.<br>-->
 
-The weather system in The Legend of Zelda: Breath of the Wild is rather complex.<br>Weather occurs in four minute cycles with a probability associated with them based primarily on location, altitude, temperature and time.<br>We intend to implement our system differently.<br>Weather will be day-length (10 minutes in game), and will be consistent throughout the whole map.<br>Since our map is small and the weather data was obtained from a singular point location, all areas of DUneatin' will have the same weather.
+The weather system in The Legend of Zelda: Breath of the Wild is rather complex.<br>Weather occurs in four minute cycles with a probability associated with them based primarily on location, altitude, temperature and time.<br>We intend to implement our system differently.<br>Weather will be day-length (10 minutes in game), and will be consistent throughout the whole map.<br>Since our map is small and the weather data was obtained from a singular point location, all areas of Duneatin' will have the same weather.
 <!-- It is not justifiable to have different weather in different locations as our map is relatively small (Dunedin) and we are using data obtained from just the Physics department at the University of Otago.<br>-->
 
 In the Pokemon series, weather changes everyday and affects weather dependent Pokemon stats and abilities.<br>We intend to draw from this and have weather conditions affect stats of enemies or the player.<br>However, unlike Pokemon we will be using set weather data from an official data set rather than random.
@@ -126,13 +123,9 @@ Websites like [CoolMathGames](https://www.coolmathgames.com/) have been around f
 
 ## Risk Analysis
 Risks include:
-Team member dropping out due to unforseen circumstances.
-Technical challenges such as learning SDL2 and advanced C languages while completing the project.
-Creating a polished and fun experience within the 12 week time frame.
-Scope creep.
+Team member dropping out due to unforseen circumstances.<br>Technical challenges such as learning SDL2 and advanced C languages while completing the project.<br>Creating a polished and fun experience within the 12 week time frame.<br>Scope creep.
 
-We will mitigate these risks by working inside a realistic scope, communicating clearly with each other and sticking to our core vision with extras being added afterwards.
-Feedback will be acquired during the testing phases with as many bugs as possible removed before final release.
+We will mitigate these risks by working inside a realistic scope, communicating clearly with each other and sticking to our core vision with extras being added afterwards.<br>Feedback will be acquired during the testing phases with as many bugs as possible removed before final release.
 
 ## Attribution
 ### ChatGPT
