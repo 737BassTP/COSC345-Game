@@ -831,6 +831,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *spr_lava  = IMG_LoadTexture(renderer,"img/spr_lava_strip16.png");
 	SDL_Texture *spr_tileset = IMG_LoadTexture(renderer,"tiled/tileset.png");
 	SDL_Texture *spr_hudshade = IMG_LoadTexture(renderer,"img/hudshade.png");
+	SDL_Texture *spr_enemy1 = IMG_LoadTexture(renderer,"img/spr_enemy1.png");
 	
 	//Player.
 	SDL_Texture *sprstrip_player = IMG_LoadTexture(renderer,"img/player_strip8.png");
@@ -1032,7 +1033,9 @@ int SDL_main(int argc, char *argv[])
 			dev_tiled_to_leveldata();
 			printf("F2 finished!\n");	
 		}
-		if(glob_vk_7){
+		if(glob_vk_7)
+		{
+			glob_vk_7=0;
 			attack(&Player);
 		}
 		//Rain toggle.
@@ -1312,7 +1315,6 @@ int SDL_main(int argc, char *argv[])
 			nd=32;
 			for (int i=0; i<4; i++)
 			{
-				//sean
 				draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
 				draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
 				nx += nd*gw;
@@ -1401,7 +1403,6 @@ int SDL_main(int argc, char *argv[])
 			if (clock_is_between(time_clock, 6,0,11,59)) {ct=1;}
 			if (clock_is_between(time_clock,12,0,17,59)) {ct=2;}
 			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
-			//sean
 			draw_text_color(renderer,
 				uix,clocky2+gh,
 				font_ascii_w*gw,font_ascii_h*gh,
@@ -1517,10 +1518,12 @@ int SDL_main(int argc, char *argv[])
             }
         }
 		// Rendering the enemy
-		if (globalEnemy != NULL && globalEnemy->health > 0) {
+		if (globalEnemy != NULL && globalEnemy->health > 0)
+		{
     		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Set the render color to red
     		SDL_Rect enemyRect = { globalEnemy->x, globalEnemy->y, globalEnemy->width, globalEnemy->height };
     		SDL_RenderFillRect(renderer, &enemyRect);
+			draw_image(renderer,globalEnemy->x,globalEnemy->y,globalEnemy->x+globalEnemy->width,globalEnemy->y+globalEnemy->height,spr_enemy1);
 		}
 
 		// Resetting the enemy
@@ -1638,6 +1641,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_DestroyTexture(spr_thermometer);
 	SDL_DestroyTexture(spr_hudshade);
 	SDL_DestroyTexture(spr_nutrients);
+	SDL_DestroyTexture(spr_enemy1);
 	IMG_Quit();
 	
 	//SDL_FreeWAV(&audio_spec);
