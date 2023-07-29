@@ -1655,20 +1655,7 @@ int SDL_main(int argc, char *argv[])
 			/**/
 		}
 		
-		//test pop up chat box (button)
-		if (buttonVis>=1) 
-		{
-            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-            SDL_RenderFillRect(renderer, &buttonRect);
-            // Render text on the button
-            SDL_Color textColor = { 255, 0, 0 }; // Red text color
-            SDL_Surface* textSurface = TTF_RenderText_Solid(font, buttonText, textColor);
-            SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-            SDL_Rect textRect = { buttonRect.x + (buttonRect.w - textSurface->w) / 2, buttonRect.y + (buttonRect.h - textSurface->h) / 2, textSurface->w, textSurface->h };
-            SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
-            SDL_FreeSurface(textSurface);
-            SDL_DestroyTexture(textTexture);
-        }
+
 		// Clear the renderer
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		// Render the score at the bottom left
