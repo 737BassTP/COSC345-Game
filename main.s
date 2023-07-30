@@ -2841,48 +2841,56 @@ quiz1Num:
 .LC73:
 	.ascii "HEALTH:\0"
 .LC74:
-	.ascii "LVL: XYZ/255\0"
+	.ascii "Protein\0"
 .LC75:
-	.ascii "X\0"
+	.ascii "Carbs\0"
 .LC76:
-	.ascii "Y\0"
+	.ascii "Fat\0"
 .LC77:
-	.ascii "Z\0"
+	.ascii "Vitamin\0"
+.LC78:
+	.ascii "LVL: XYZ/255\0"
 .LC79:
-	.ascii ":\0"
+	.ascii "X\0"
+.LC80:
+	.ascii "Y\0"
+.LC81:
+	.ascii "Z\0"
 .LC83:
+	.ascii ":\0"
+.LC87:
 	.ascii "Error: Text Rendering Failed\0"
 	.align 8
-.LC84:
+.LC88:
 	.ascii "That is correct\12What is Seans name?\0"
-.LC85:
+.LC89:
 	.ascii "Bradley\0"
-.LC86:
+.LC90:
 	.ascii "Sean\0"
-.LC87:
+.LC91:
 	.ascii "John\0"
 	.align 8
-.LC88:
+.LC92:
 	.ascii "That is false\12 next question\12What is Seans name?\0"
 	.align 8
-.LC89:
+.LC93:
 	.ascii "That is false\12Thank you for playing\0"
-.LC90:
+.LC94:
 	.ascii "\0"
 	.align 8
-.LC91:
+.LC95:
 	.ascii "That is correct\12Thank you for playing\0"
-.LC92:
+.LC96:
 	.ascii "Thank you for playing\0"
-.LC93:
+.LC97:
 	.ascii "press 1 2 or 3 to exit\0"
-.LC94:
+.LC98:
 	.ascii "%s\12%s\12%s\12%s\0"
-.LC102:
+.LC106:
 	.ascii "Score: %d\0"
-.LC103:
+.LC107:
 	.ascii "...exited main loop.\0"
-.LC104:
+.LC108:
 	.ascii "%s Error returned: %s\12\0"
 	.text
 	.globl	SDL_main
@@ -2905,32 +2913,32 @@ SDL_main:
 	.seh_pushreg	rsi
 	push	rbx
 	.seh_pushreg	rbx
-	mov	eax, 67432
+	mov	eax, 67416
 	call	___chkstk_ms
 	sub	rsp, rax
-	.seh_stackalloc	67432
+	.seh_stackalloc	67416
 	lea	rbp, 128[rsp]
 	.seh_setframe	rbp, 128
-	movaps	XMMWORD PTR 67264[rbp], xmm6
-	.seh_savexmm	xmm6, 67392
-	movaps	XMMWORD PTR 67280[rbp], xmm7
-	.seh_savexmm	xmm7, 67408
+	movaps	XMMWORD PTR 67248[rbp], xmm6
+	.seh_savexmm	xmm6, 67376
+	movaps	XMMWORD PTR 67264[rbp], xmm7
+	.seh_savexmm	xmm7, 67392
 	.seh_endprologue
-	mov	DWORD PTR 67376[rbp], ecx
-	mov	QWORD PTR 67384[rbp], rdx
+	mov	DWORD PTR 67360[rbp], ecx
+	mov	QWORD PTR 67368[rbp], rdx
 	mov	rax, rsp
 	mov	r12, rax
-	mov	QWORD PTR 67160[rbp], 256
-	mov	rax, QWORD PTR 67160[rbp]
+	mov	QWORD PTR 67136[rbp], 256
+	mov	rax, QWORD PTR 67136[rbp]
 	sub	rax, 1
-	mov	QWORD PTR 67152[rbp], rax
-	mov	rax, QWORD PTR 67160[rbp]
+	mov	QWORD PTR 67128[rbp], rax
+	mov	rax, QWORD PTR 67136[rbp]
 	mov	r10, rax
 	mov	r11d, 0
-	mov	rax, QWORD PTR 67160[rbp]
+	mov	rax, QWORD PTR 67136[rbp]
 	mov	r8, rax
 	mov	r9d, 0
-	mov	rax, QWORD PTR 67160[rbp]
+	mov	rax, QWORD PTR 67136[rbp]
 	add	rax, 15
 	shr	rax, 4
 	sal	rax, 4
@@ -2938,69 +2946,69 @@ SDL_main:
 	sub	rsp, rax
 	lea	rax, 80[rsp]
 	add	rax, 0
-	mov	QWORD PTR 67144[rbp], rax
-	mov	BYTE PTR 413[rbp], 2
-	mov	BYTE PTR 414[rbp], 28
-	mov	BYTE PTR 415[rbp], 1
-	lea	rax, 410[rbp]
+	mov	QWORD PTR 67120[rbp], rax
+	mov	BYTE PTR 397[rbp], 2
+	mov	BYTE PTR 398[rbp], 28
+	mov	BYTE PTR 399[rbp], 1
+	lea	rax, 394[rbp]
 	mov	rcx, rax
 	call	SDL_GetVersion
-	movzx	eax, BYTE PTR 415[rbp]
+	movzx	eax, BYTE PTR 399[rbp]
 	movzx	ecx, al
-	movzx	eax, BYTE PTR 414[rbp]
+	movzx	eax, BYTE PTR 398[rbp]
 	movzx	edx, al
-	movzx	eax, BYTE PTR 413[rbp]
+	movzx	eax, BYTE PTR 397[rbp]
 	movzx	eax, al
 	mov	r9d, ecx
 	mov	r8d, edx
 	mov	edx, eax
 	lea	rcx, .LC26[rip]
 	call	SDL_Log
-	movzx	eax, BYTE PTR 412[rbp]
+	movzx	eax, BYTE PTR 396[rbp]
 	movzx	ecx, al
-	movzx	eax, BYTE PTR 411[rbp]
+	movzx	eax, BYTE PTR 395[rbp]
 	movzx	edx, al
-	movzx	eax, BYTE PTR 410[rbp]
+	movzx	eax, BYTE PTR 394[rbp]
 	movzx	eax, al
 	mov	r9d, ecx
 	mov	r8d, edx
 	mov	edx, eax
 	lea	rcx, .LC27[rip]
 	call	SDL_Log
-	mov	DWORD PTR 67140[rbp], 1366
-	mov	DWORD PTR 67136[rbp], 768
-	mov	eax, DWORD PTR 67140[rbp]
-	sub	eax, DWORD PTR 67136[rbp]
+	mov	DWORD PTR 67116[rbp], 1366
+	mov	DWORD PTR 67112[rbp], 768
+	mov	eax, DWORD PTR 67116[rbp]
+	sub	eax, DWORD PTR 67112[rbp]
 	mov	edx, eax
 	shr	edx, 31
 	add	eax, edx
 	sar	eax
-	mov	DWORD PTR 67132[rbp], eax
-	mov	DWORD PTR 67128[rbp], 0
-	mov	eax, DWORD PTR 67136[rbp]
-	mov	DWORD PTR 67124[rbp], eax
-	mov	eax, DWORD PTR 67136[rbp]
-	mov	DWORD PTR 67120[rbp], eax
-	mov	edx, DWORD PTR 67132[rbp]
-	mov	eax, DWORD PTR 67124[rbp]
+	mov	DWORD PTR 67108[rbp], eax
+	mov	DWORD PTR 67104[rbp], 0
+	mov	eax, DWORD PTR 67112[rbp]
+	mov	DWORD PTR 67100[rbp], eax
+	mov	eax, DWORD PTR 67112[rbp]
+	mov	DWORD PTR 67096[rbp], eax
+	mov	edx, DWORD PTR 67108[rbp]
+	mov	eax, DWORD PTR 67100[rbp]
 	add	eax, edx
-	mov	DWORD PTR 67116[rbp], eax
-	mov	edx, DWORD PTR 67128[rbp]
-	mov	eax, DWORD PTR 67120[rbp]
+	mov	DWORD PTR 67092[rbp], eax
+	mov	edx, DWORD PTR 67104[rbp]
+	mov	eax, DWORD PTR 67096[rbp]
 	add	eax, edx
-	mov	DWORD PTR 67112[rbp], eax
-	mov	DWORD PTR 67108[rbp], 16
-	mov	DWORD PTR 67104[rbp], 16
-	mov	eax, DWORD PTR 67108[rbp]
+	mov	DWORD PTR 67088[rbp], eax
+	mov	DWORD PTR 67084[rbp], 16
+	mov	DWORD PTR 67080[rbp], 16
+	mov	eax, DWORD PTR 67084[rbp]
 	mov	ecx, eax
 	call	sqr
 	mov	edi, eax
-	mov	eax, DWORD PTR 67136[rbp]
+	mov	eax, DWORD PTR 67112[rbp]
 	cdq
 	idiv	edi
-	mov	DWORD PTR 67100[rbp], eax
-	mov	eax, DWORD PTR 67100[rbp]
-	mov	DWORD PTR 67096[rbp], eax
+	mov	DWORD PTR 67076[rbp], eax
+	mov	eax, DWORD PTR 67076[rbp]
+	mov	DWORD PTR 67072[rbp], eax
 	mov	eax, 100
 	cdqe
 	sal	rax, 4
@@ -3028,22 +3036,22 @@ SDL_main:
 	call	time
 	mov	ecx, eax
 	call	srand
-	mov	DWORD PTR 67244[rbp], 0
+	mov	DWORD PTR 67236[rbp], 0
 	jmp	.L171
 .L172:
-	mov	ecx, DWORD PTR 67136[rbp]
-	mov	edx, DWORD PTR 67140[rbp]
-	mov	eax, DWORD PTR 67244[rbp]
+	mov	ecx, DWORD PTR 67112[rbp]
+	mov	edx, DWORD PTR 67116[rbp]
+	mov	eax, DWORD PTR 67236[rbp]
 	mov	r8d, ecx
 	mov	ecx, eax
 	call	createWaterParticle
-	add	DWORD PTR 67244[rbp], 1
+	add	DWORD PTR 67236[rbp], 1
 .L171:
 	mov	eax, 100
-	cmp	DWORD PTR 67244[rbp], eax
+	cmp	DWORD PTR 67236[rbp], eax
 	jl	.L172
-	mov	DWORD PTR 67092[rbp], 62001
-	mov	eax, DWORD PTR 67092[rbp]
+	mov	DWORD PTR 67068[rbp], 62001
+	mov	eax, DWORD PTR 67068[rbp]
 	mov	ecx, eax
 	call	SDL_Init
 	test	eax, eax
@@ -3055,62 +3063,62 @@ SDL_main:
 	mov	eax, -1
 	jmp	.L170
 .L173:
-	mov	edx, DWORD PTR 67140[rbp]
+	mov	edx, DWORD PTR 67116[rbp]
 	mov	DWORD PTR 40[rsp], 0
-	mov	eax, DWORD PTR 67136[rbp]
+	mov	eax, DWORD PTR 67112[rbp]
 	mov	DWORD PTR 32[rsp], eax
 	mov	r9d, edx
 	mov	r8d, 536805376
 	mov	edx, 536805376
 	lea	rcx, .LC30[rip]
 	call	SDL_CreateWindow
-	mov	QWORD PTR 67080[rbp], rax
-	cmp	QWORD PTR 67080[rbp], 0
+	mov	QWORD PTR 67056[rbp], rax
+	cmp	QWORD PTR 67056[rbp], 0
 	jne	.L174
-	mov	rax, QWORD PTR 67144[rbp]
-	mov	rdx, QWORD PTR 67160[rbp]
+	mov	rax, QWORD PTR 67120[rbp]
+	mov	rdx, QWORD PTR 67136[rbp]
 	lea	r8, .LC31[rip]
 	mov	rcx, rax
 	call	snprintf
 	jmp	.L175
 .L174:
-	mov	rax, QWORD PTR 67080[rbp]
+	mov	rax, QWORD PTR 67056[rbp]
 	mov	r8d, 4
 	mov	edx, -1
 	mov	rcx, rax
 	call	SDL_CreateRenderer
-	mov	QWORD PTR 67072[rbp], rax
-	cmp	QWORD PTR 67072[rbp], 0
+	mov	QWORD PTR 67048[rbp], rax
+	cmp	QWORD PTR 67048[rbp], 0
 	jne	.L176
-	mov	rax, QWORD PTR 67144[rbp]
-	mov	rdx, QWORD PTR 67160[rbp]
+	mov	rax, QWORD PTR 67120[rbp]
+	mov	rdx, QWORD PTR 67136[rbp]
 	lea	r8, .LC32[rip]
 	mov	rcx, rax
 	call	snprintf
 	jmp	.L175
 .L176:
-	mov	rax, QWORD PTR 67080[rbp]
+	mov	rax, QWORD PTR 67056[rbp]
 	mov	rcx, rax
 	call	SDL_GetWindowSurface
-	mov	QWORD PTR 67064[rbp], rax
-	cmp	QWORD PTR 67064[rbp], 0
+	mov	QWORD PTR 67040[rbp], rax
+	cmp	QWORD PTR 67040[rbp], 0
 	jne	.L177
-	mov	rax, QWORD PTR 67144[rbp]
-	mov	rdx, QWORD PTR 67160[rbp]
+	mov	rax, QWORD PTR 67120[rbp]
+	mov	rdx, QWORD PTR 67136[rbp]
 	lea	r8, .LC33[rip]
 	mov	rcx, rax
 	call	snprintf
 	jmp	.L175
 .L177:
-	mov	DWORD PTR 66272[rbp], 800
-	mov	DWORD PTR 66276[rbp], 100
-	mov	DWORD PTR 66280[rbp], 100
-	mov	DWORD PTR 66284[rbp], 100
+	mov	DWORD PTR 66256[rbp], 800
+	mov	DWORD PTR 66260[rbp], 100
+	mov	DWORD PTR 66264[rbp], 100
+	mov	DWORD PTR 66268[rbp], 100
 	movabs	rax, 2338613357913204068
-	mov	QWORD PTR 66160[rbp], rax
+	mov	QWORD PTR 66144[rbp], rax
 	movabs	rax, 28542640894207341
-	mov	QWORD PTR 66168[rbp], rax
-	lea	rdx, 66176[rbp]
+	mov	QWORD PTR 66152[rbp], rax
+	lea	rdx, 66160[rbp]
 	mov	eax, 0
 	mov	ecx, 10
 	mov	rdi, rdx
@@ -3118,12 +3126,12 @@ SDL_main:
 	mov	rdx, rdi
 	mov	DWORD PTR [rdx], eax
 	add	rdx, 4
-	lea	rax, 66160[rbp]
-	mov	QWORD PTR 67056[rbp], rax
-	lea	rax, 66272[rbp]
-	mov	QWORD PTR 67048[rbp], rax
+	lea	rax, 66144[rbp]
+	mov	QWORD PTR 67032[rbp], rax
+	lea	rax, 66256[rbp]
+	mov	QWORD PTR 67024[rbp], rax
 	mov	DWORD PTR 67240[rbp], 0
-	mov	DWORD PTR 67044[rbp], 0
+	mov	DWORD PTR 67020[rbp], 0
 	call	TTF_Init
 	cmp	eax, -1
 	jne	.L178
@@ -3137,8 +3145,8 @@ SDL_main:
 	mov	edx, 12
 	lea	rcx, .LC35[rip]
 	call	TTF_OpenFont
-	mov	QWORD PTR 67032[rbp], rax
-	cmp	QWORD PTR 67032[rbp], 0
+	mov	QWORD PTR 67008[rbp], rax
+	cmp	QWORD PTR 67008[rbp], 0
 	jne	.L179
 	call	SDL_GetError
 	mov	rdx, rax
@@ -3147,19 +3155,19 @@ SDL_main:
 	mov	eax, 1
 	jmp	.L170
 .L179:
-	mov	DWORD PTR 67028[rbp], 0
-	mov	DWORD PTR 67248[rbp], 0
-	mov	BYTE PTR 66156[rbp], 0
-	mov	BYTE PTR 66157[rbp], 0
-	mov	BYTE PTR 66158[rbp], 0
-	mov	BYTE PTR 66159[rbp], -1
-	mov	rax, QWORD PTR 67080[rbp]
+	mov	DWORD PTR 67004[rbp], 0
+	mov	DWORD PTR 67244[rbp], 0
+	mov	BYTE PTR 66140[rbp], 0
+	mov	BYTE PTR 66141[rbp], 0
+	mov	BYTE PTR 66142[rbp], 0
+	mov	BYTE PTR 66143[rbp], -1
+	mov	rax, QWORD PTR 67056[rbp]
 	mov	r8d, 2
 	mov	edx, -1
 	mov	rcx, rax
 	call	SDL_CreateRenderer
-	mov	QWORD PTR 67016[rbp], rax
-	cmp	QWORD PTR 67072[rbp], 0
+	mov	QWORD PTR 66992[rbp], rax
+	cmp	QWORD PTR 67048[rbp], 0
 	jne	.L180
 	call	SDL_GetError
 	mov	rdx, rax
@@ -3168,118 +3176,118 @@ SDL_main:
 .L180:
 	mov	ecx, 2
 	call	IMG_Init
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	lea	rdx, .LC38[rip]
 	mov	rcx, rax
 	call	IMG_LoadTexture
-	mov	QWORD PTR 67008[rbp], rax
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	QWORD PTR 66984[rbp], rax
+	mov	rax, QWORD PTR 67048[rbp]
 	lea	rdx, .LC39[rip]
 	mov	rcx, rax
 	call	IMG_LoadTexture
-	mov	QWORD PTR 67000[rbp], rax
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	QWORD PTR 66976[rbp], rax
+	mov	rax, QWORD PTR 67048[rbp]
 	lea	rdx, .LC40[rip]
 	mov	rcx, rax
 	call	IMG_LoadTexture
-	mov	QWORD PTR 66992[rbp], rax
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	QWORD PTR 66968[rbp], rax
+	mov	rax, QWORD PTR 67048[rbp]
 	lea	rdx, .LC41[rip]
 	mov	rcx, rax
 	call	IMG_LoadTexture
-	mov	QWORD PTR 66984[rbp], rax
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	QWORD PTR 66960[rbp], rax
+	mov	rax, QWORD PTR 67048[rbp]
 	lea	rdx, .LC42[rip]
 	mov	rcx, rax
 	call	IMG_LoadTexture
-	mov	QWORD PTR 66976[rbp], rax
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	QWORD PTR 66952[rbp], rax
+	mov	rax, QWORD PTR 67048[rbp]
 	lea	rdx, .LC43[rip]
 	mov	rcx, rax
 	call	IMG_LoadTexture
-	mov	QWORD PTR 66968[rbp], rax
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	QWORD PTR 66944[rbp], rax
+	mov	rax, QWORD PTR 67048[rbp]
 	lea	rdx, .LC44[rip]
 	mov	rcx, rax
 	call	IMG_LoadTexture
-	mov	QWORD PTR 66960[rbp], rax
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	QWORD PTR 66936[rbp], rax
+	mov	rax, QWORD PTR 67048[rbp]
 	lea	rdx, .LC45[rip]
 	mov	rcx, rax
 	call	IMG_LoadTexture
-	mov	QWORD PTR 66952[rbp], rax
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	QWORD PTR 66928[rbp], rax
+	mov	rax, QWORD PTR 67048[rbp]
 	lea	rdx, .LC46[rip]
 	mov	rcx, rax
 	call	IMG_LoadTexture
-	mov	QWORD PTR 66944[rbp], rax
-	mov	DWORD PTR 66940[rbp], 8
-	mov	DWORD PTR 66936[rbp], 24
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	QWORD PTR 66920[rbp], rax
+	mov	DWORD PTR 66916[rbp], 8
+	mov	DWORD PTR 66912[rbp], 24
+	mov	rax, QWORD PTR 67048[rbp]
 	lea	rdx, .LC47[rip]
 	mov	rcx, rax
 	call	IMG_LoadTexture
-	mov	QWORD PTR 66928[rbp], rax
-	mov	DWORD PTR 66924[rbp], 1440
-	mov	DWORD PTR 67252[rbp], 0
-	mov	DWORD PTR 67256[rbp], 0
-	mov	DWORD PTR 66920[rbp], 57
-	mov	DWORD PTR 66916[rbp], 60
-	lea	rax, .LC48[rip]
 	mov	QWORD PTR 66904[rbp], rax
-	lea	rax, .LC49[rip]
-	mov	QWORD PTR 66896[rbp], rax
-	lea	rax, .LC50[rip]
-	mov	QWORD PTR 66888[rbp], rax
-	lea	rax, .LC51[rip]
+	mov	DWORD PTR 66900[rbp], 1440
+	mov	DWORD PTR 67232[rbp], 0
+	mov	DWORD PTR 67228[rbp], 0
+	mov	DWORD PTR 66896[rbp], 57
+	mov	DWORD PTR 66892[rbp], 60
+	lea	rax, .LC48[rip]
 	mov	QWORD PTR 66880[rbp], rax
-	mov	eax, DWORD PTR 67108[rbp]
+	lea	rax, .LC49[rip]
+	mov	QWORD PTR 66872[rbp], rax
+	lea	rax, .LC50[rip]
+	mov	QWORD PTR 66864[rbp], rax
+	lea	rax, .LC51[rip]
+	mov	QWORD PTR 66856[rbp], rax
+	mov	eax, DWORD PTR 67084[rbp]
 	mov	ecx, eax
 	call	sqr
-	mov	DWORD PTR 66876[rbp], eax
-	mov	DWORD PTR 66872[rbp], 256
-	mov	DWORD PTR 67260[rbp], 0
+	mov	DWORD PTR 66852[rbp], eax
+	mov	DWORD PTR 66848[rbp], 256
+	mov	DWORD PTR 67224[rbp], 0
 	lea	rdx, .LC5[rip]
 	lea	rcx, .LC8[rip]
 	call	fopen
-	mov	QWORD PTR 66864[rbp], rax
-	mov	DWORD PTR 67236[rbp], 0
+	mov	QWORD PTR 66840[rbp], rax
+	mov	DWORD PTR 67220[rbp], 0
 	jmp	.L181
 .L182:
-	mov	eax, DWORD PTR 67236[rbp]
+	mov	eax, DWORD PTR 67220[rbp]
 	cdqe
-	mov	BYTE PTR 608[rbp+rax], 0
-	add	DWORD PTR 67236[rbp], 1
+	mov	BYTE PTR 592[rbp+rax], 0
+	add	DWORD PTR 67220[rbp], 1
 .L181:
-	mov	eax, DWORD PTR 66876[rbp]
-	imul	eax, DWORD PTR 66872[rbp]
-	cmp	DWORD PTR 67236[rbp], eax
+	mov	eax, DWORD PTR 66852[rbp]
+	imul	eax, DWORD PTR 66848[rbp]
+	cmp	DWORD PTR 67220[rbp], eax
 	jl	.L182
-	mov	rdx, QWORD PTR 66864[rbp]
-	lea	rax, 608[rbp]
+	mov	rdx, QWORD PTR 66840[rbp]
+	lea	rax, 592[rbp]
 	mov	r9, rdx
 	mov	r8d, 1
 	mov	edx, 65536
 	mov	rcx, rax
 	call	fread
-	mov	rax, QWORD PTR 66864[rbp]
+	mov	rax, QWORD PTR 66840[rbp]
 	mov	rcx, rax
 	call	fclose
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	lea	rdx, .LC52[rip]
 	mov	rcx, rax
 	call	IMG_LoadTexture
-	mov	QWORD PTR 66856[rbp], rax
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	QWORD PTR 66832[rbp], rax
+	mov	rax, QWORD PTR 67048[rbp]
 	lea	rdx, .LC53[rip]
 	mov	rcx, rax
 	call	IMG_LoadTexture
-	mov	QWORD PTR 66848[rbp], rax
-	lea	rax, 592[rbp]
-	mov	ecx, DWORD PTR 67260[rbp]
+	mov	QWORD PTR 66824[rbp], rax
+	lea	rax, 576[rbp]
+	mov	ecx, DWORD PTR 67224[rbp]
 	mov	rdx, rax
 	call	level_get_name
-	mov	edx, DWORD PTR 67260[rbp]
+	mov	edx, DWORD PTR 67224[rbp]
 	mov	eax, edx
 	sar	eax, 31
 	shr	eax, 27
@@ -3291,47 +3299,47 @@ SDL_main:
 	mov	ecx, eax
 	sal	edx, cl
 	mov	ecx, edx
-	mov	eax, DWORD PTR 67260[rbp]
+	mov	eax, DWORD PTR 67224[rbp]
 	lea	edx, 31[rax]
 	test	eax, eax
 	cmovs	eax, edx
 	sar	eax, 5
 	mov	edx, ecx
 	cdqe
-	mov	DWORD PTR 560[rbp+rax*4], edx
-	mov	DWORD PTR 66844[rbp], 0
-	mov	DWORD PTR 66840[rbp], 10
+	mov	DWORD PTR 544[rbp+rax*4], edx
+	mov	DWORD PTR 66820[rbp], 0
+	mov	DWORD PTR 66816[rbp], 10
 	mov	eax, 42
-	mov	BYTE PTR 558[rbp], al
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	BYTE PTR 542[rbp], al
+	mov	rax, QWORD PTR 67048[rbp]
 	lea	rdx, .LC54[rip]
 	mov	rcx, rax
 	call	IMG_LoadTexture
-	mov	QWORD PTR 66832[rbp], rax
-	mov	BYTE PTR 66831[rbp], -128
-	mov	eax, DWORD PTR 67100[rbp]
-	imul	eax, DWORD PTR 67104[rbp]
+	mov	QWORD PTR 66808[rbp], rax
+	mov	BYTE PTR 66807[rbp], -128
+	mov	eax, DWORD PTR 67076[rbp]
+	imul	eax, DWORD PTR 67080[rbp]
 	lea	edx, 0[0+rax*8]
-	mov	eax, DWORD PTR 67132[rbp]
+	mov	eax, DWORD PTR 67108[rbp]
 	add	eax, edx
-	mov	DWORD PTR 512[rbp], eax
-	mov	eax, DWORD PTR 67096[rbp]
-	imul	eax, DWORD PTR 67104[rbp]
+	mov	DWORD PTR 496[rbp], eax
+	mov	eax, DWORD PTR 67072[rbp]
+	imul	eax, DWORD PTR 67080[rbp]
 	lea	edx, 0[0+rax*8]
-	mov	eax, DWORD PTR 67128[rbp]
+	mov	eax, DWORD PTR 67104[rbp]
 	add	eax, edx
-	mov	DWORD PTR 516[rbp], eax
-	mov	BYTE PTR 528[rbp], 0
-	mov	BYTE PTR 529[rbp], 0
-	mov	BYTE PTR 530[rbp], 1
-	mov	BYTE PTR 531[rbp], 12
-	mov	BYTE PTR 532[rbp], 0
-	mov	BYTE PTR 533[rbp], 2
-	mov	BYTE PTR 534[rbp], 12
-	mov	DWORD PTR 544[rbp], 50
-	mov	DWORD PTR 540[rbp], 100
-	mov	DWORD PTR 536[rbp], 50
-	lea	rax, 480[rbp]
+	mov	DWORD PTR 500[rbp], eax
+	mov	BYTE PTR 512[rbp], 0
+	mov	BYTE PTR 513[rbp], 0
+	mov	BYTE PTR 514[rbp], 1
+	mov	BYTE PTR 515[rbp], 12
+	mov	BYTE PTR 516[rbp], 0
+	mov	BYTE PTR 517[rbp], 2
+	mov	BYTE PTR 518[rbp], 12
+	mov	DWORD PTR 528[rbp], 50
+	mov	DWORD PTR 524[rbp], 100
+	mov	DWORD PTR 520[rbp], 50
+	lea	rax, 464[rbp]
 	mov	DWORD PTR 48[rsp], 10
 	mov	DWORD PTR 40[rsp], 100
 	mov	DWORD PTR 32[rsp], 100
@@ -3340,23 +3348,23 @@ SDL_main:
 	mov	edx, 500
 	mov	rcx, rax
 	call	initEnemy
-	lea	rax, 480[rbp]
+	lea	rax, 464[rbp]
 	mov	QWORD PTR globalEnemy[rip], rax
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	lea	rdx, .LC55[rip]
 	mov	rcx, rax
 	call	IMG_LoadTexture
-	mov	QWORD PTR 66816[rbp], rax
+	mov	QWORD PTR 66792[rbp], rax
 	lea	rax, .LC56[rip]
-	mov	QWORD PTR 66808[rbp], rax
-	mov	rax, QWORD PTR 66808[rbp]
+	mov	QWORD PTR 66784[rbp], rax
+	mov	rax, QWORD PTR 66784[rbp]
 	lea	rdx, .LC5[rip]
 	mov	rcx, rax
 	call	SDL_RWFromFile
 	mov	r10, rax
-	lea	rcx, 440[rbp]
-	lea	rdx, 448[rbp]
-	lea	rax, 436[rbp]
+	lea	rcx, 424[rbp]
+	lea	rdx, 432[rbp]
+	lea	rax, 420[rbp]
 	mov	QWORD PTR 32[rsp], rax
 	mov	r9, rcx
 	mov	r8, rdx
@@ -3371,89 +3379,89 @@ SDL_main:
 	call	printf
 	jmp	.L184
 .L183:
-	mov	rax, QWORD PTR 440[rbp]
-	mov	QWORD PTR 416[rbp], rax
-	mov	eax, DWORD PTR 436[rbp]
-	mov	DWORD PTR 424[rbp], eax
-	mov	DWORD PTR 428[rbp], 0
+	mov	rax, QWORD PTR 424[rbp]
+	mov	QWORD PTR 400[rbp], rax
+	mov	eax, DWORD PTR 420[rbp]
+	mov	DWORD PTR 408[rbp], eax
+	mov	DWORD PTR 412[rbp], 0
 	lea	rax, audioCallback[rip]
-	mov	QWORD PTR 464[rbp], rax
-	lea	rax, 416[rbp]
-	mov	QWORD PTR 472[rbp], rax
-	lea	rax, 448[rbp]
+	mov	QWORD PTR 448[rbp], rax
+	lea	rax, 400[rbp]
+	mov	QWORD PTR 456[rbp], rax
+	lea	rax, 432[rbp]
 	mov	DWORD PTR 32[rsp], 0
 	mov	r9d, 0
 	mov	r8, rax
 	mov	edx, 0
 	mov	ecx, 0
 	call	SDL_OpenAudioDevice
-	mov	DWORD PTR 66804[rbp], eax
-	cmp	DWORD PTR 66804[rbp], 0
+	mov	DWORD PTR 66780[rbp], eax
+	cmp	DWORD PTR 66780[rbp], 0
 	jne	.L185
 	call	SDL_GetError
 	mov	rdx, rax
 	lea	rcx, .LC58[rip]
 	call	printf
-	mov	rax, QWORD PTR 440[rbp]
+	mov	rax, QWORD PTR 424[rbp]
 	mov	rcx, rax
 	call	SDL_FreeWAV
 	jmp	.L184
 .L185:
-	mov	ecx, DWORD PTR 436[rbp]
-	mov	rdx, QWORD PTR 440[rbp]
-	mov	eax, DWORD PTR 66804[rbp]
+	mov	ecx, DWORD PTR 420[rbp]
+	mov	rdx, QWORD PTR 424[rbp]
+	mov	eax, DWORD PTR 66780[rbp]
 	mov	r8d, ecx
 	mov	ecx, eax
 	call	SDL_QueueAudio
-	mov	eax, DWORD PTR 66804[rbp]
+	mov	eax, DWORD PTR 66780[rbp]
 	mov	edx, 0
 	mov	ecx, eax
 	call	SDL_PauseAudioDevice
-	mov	DWORD PTR 67232[rbp], 1
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	DWORD PTR 67216[rbp], 1
+	mov	rax, QWORD PTR 67048[rbp]
 	lea	rdx, .LC59[rip]
 	mov	rcx, rax
 	call	IMG_LoadTexture
-	mov	QWORD PTR 66792[rbp], rax
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	QWORD PTR 66768[rbp], rax
+	mov	rax, QWORD PTR 67048[rbp]
 	lea	rdx, .LC60[rip]
 	mov	rcx, rax
 	call	IMG_LoadTexture
-	mov	QWORD PTR 66784[rbp], rax
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	QWORD PTR 66760[rbp], rax
+	mov	rax, QWORD PTR 67048[rbp]
 	lea	rdx, .LC61[rip]
 	mov	rcx, rax
 	call	IMG_LoadTexture
-	mov	QWORD PTR 66776[rbp], rax
+	mov	QWORD PTR 66752[rbp], rax
 	lea	rax, .LC62[rip]
-	mov	QWORD PTR 66768[rbp], rax
+	mov	QWORD PTR 66744[rbp], rax
 	lea	rax, .LC63[rip]
-	mov	QWORD PTR 66760[rbp], rax
-	mov	rax, QWORD PTR 66768[rbp]
+	mov	QWORD PTR 66736[rbp], rax
+	mov	rax, QWORD PTR 66744[rbp]
 	mov	rcx, rax
 	call	strlen
-	mov	DWORD PTR 66756[rbp], eax
-	mov	rax, QWORD PTR 66760[rbp]
+	mov	DWORD PTR 66732[rbp], eax
+	mov	rax, QWORD PTR 66736[rbp]
 	mov	rcx, rax
 	call	strlen
-	mov	DWORD PTR 66752[rbp], eax
-	mov	DWORD PTR 67228[rbp], 1
+	mov	DWORD PTR 66728[rbp], eax
+	mov	DWORD PTR 67212[rbp], 1
 	lea	rcx, .LC64[rip]
 	call	puts
 	jmp	.L186
 .L233:
-	mov	eax, DWORD PTR 66288[rbp]
+	mov	eax, DWORD PTR 66272[rbp]
 	cmp	eax, 768
 	je	.L188
 	cmp	eax, 769
 	je	.L189
 	cmp	eax, 256
 	jne	.L187
-	mov	DWORD PTR 67228[rbp], 0
+	mov	DWORD PTR 67212[rbp], 0
 	jmp	.L187
 .L188:
-	mov	DWORD PTR 66748[rbp], 1
-	mov	eax, DWORD PTR 66308[rbp]
+	mov	DWORD PTR 66724[rbp], 1
+	mov	eax, DWORD PTR 66292[rbp]
 	cmp	eax, 54
 	je	.L190
 	cmp	eax, 54
@@ -3504,81 +3512,81 @@ SDL_main:
 	je	.L211
 	jmp	.L187
 .L196:
-	mov	DWORD PTR 67228[rbp], 0
+	mov	DWORD PTR 67212[rbp], 0
 	jmp	.L197
 .L202:
-	mov	eax, DWORD PTR 66748[rbp]
+	mov	eax, DWORD PTR 66724[rbp]
 	mov	DWORD PTR glob_vk_right[rip], eax
 	jmp	.L197
 .L209:
-	mov	eax, DWORD PTR 66748[rbp]
+	mov	eax, DWORD PTR 66724[rbp]
 	mov	DWORD PTR glob_vk_left[rip], eax
 	jmp	.L197
 .L210:
-	mov	eax, DWORD PTR 66748[rbp]
+	mov	eax, DWORD PTR 66724[rbp]
 	mov	DWORD PTR glob_vk_up[rip], eax
 	jmp	.L197
 .L208:
-	mov	eax, DWORD PTR 66748[rbp]
+	mov	eax, DWORD PTR 66724[rbp]
 	mov	DWORD PTR glob_vk_down[rip], eax
 	jmp	.L197
 .L194:
-	mov	eax, DWORD PTR 66748[rbp]
+	mov	eax, DWORD PTR 66724[rbp]
 	mov	DWORD PTR glob_vk_space[rip], eax
 	jmp	.L197
 .L211:
-	mov	eax, DWORD PTR 66748[rbp]
+	mov	eax, DWORD PTR 66724[rbp]
 	mov	DWORD PTR glob_vk_enter[rip], eax
 	jmp	.L197
 .L207:
-	mov	eax, DWORD PTR 66748[rbp]
+	mov	eax, DWORD PTR 66724[rbp]
 	mov	DWORD PTR glob_vk_f2[rip], eax
 	jmp	.L197
 .L195:
-	mov	eax, DWORD PTR 66748[rbp]
+	mov	eax, DWORD PTR 66724[rbp]
 	mov	DWORD PTR glob_vk_0[rip], eax
 	jmp	.L197
 .L192:
-	mov	eax, DWORD PTR 66748[rbp]
+	mov	eax, DWORD PTR 66724[rbp]
 	mov	DWORD PTR glob_vk_1[rip], eax
 	jmp	.L197
 .L199:
-	mov	eax, DWORD PTR 66748[rbp]
+	mov	eax, DWORD PTR 66724[rbp]
 	mov	DWORD PTR glob_vk_2[rip], eax
 	jmp	.L197
 .L198:
-	mov	eax, DWORD PTR 66748[rbp]
+	mov	eax, DWORD PTR 66724[rbp]
 	mov	DWORD PTR glob_vk_3[rip], eax
 	jmp	.L197
 .L200:
-	mov	eax, DWORD PTR 66748[rbp]
+	mov	eax, DWORD PTR 66724[rbp]
 	mov	DWORD PTR glob_vk_4[rip], eax
 	jmp	.L197
 .L201:
-	mov	eax, DWORD PTR 66748[rbp]
+	mov	eax, DWORD PTR 66724[rbp]
 	mov	DWORD PTR glob_vk_5[rip], eax
 	jmp	.L197
 .L190:
-	mov	eax, DWORD PTR 66748[rbp]
+	mov	eax, DWORD PTR 66724[rbp]
 	mov	DWORD PTR glob_vk_6[rip], eax
 	jmp	.L197
 .L205:
-	mov	eax, DWORD PTR 66748[rbp]
+	mov	eax, DWORD PTR 66724[rbp]
 	mov	DWORD PTR glob_vk_7[rip], eax
 	jmp	.L197
 .L204:
-	mov	eax, DWORD PTR 66748[rbp]
+	mov	eax, DWORD PTR 66724[rbp]
 	mov	DWORD PTR glob_vk_8[rip], eax
 	jmp	.L197
 .L206:
-	mov	eax, DWORD PTR 66748[rbp]
+	mov	eax, DWORD PTR 66724[rbp]
 	mov	DWORD PTR glob_vk_9[rip], eax
 	nop
 .L197:
 	jmp	.L187
 .L189:
-	mov	DWORD PTR 66744[rbp], 0
-	mov	eax, DWORD PTR 66308[rbp]
+	mov	DWORD PTR 66720[rbp], 0
+	mov	eax, DWORD PTR 66292[rbp]
 	cmp	eax, 55
 	je	.L212
 	cmp	eax, 55
@@ -3593,7 +3601,7 @@ SDL_main:
 	jg	.L217
 	cmp	eax, 32
 	je	.L218
-	jmp	.L331
+	jmp	.L330
 .L215:
 	cmp	eax, 52
 	je	.L220
@@ -3603,7 +3611,7 @@ SDL_main:
 	je	.L222
 	cmp	eax, 54
 	je	.L223
-	jmp	.L331
+	jmp	.L330
 .L213:
 	cmp	eax, 1073741903
 	je	.L224
@@ -3615,7 +3623,7 @@ SDL_main:
 	jl	.L227
 	cmp	eax, 1073741883
 	je	.L228
-	jmp	.L331
+	jmp	.L330
 .L225:
 	cmp	eax, 1073741905
 	je	.L229
@@ -3625,80 +3633,80 @@ SDL_main:
 	je	.L231
 	cmp	eax, 1073741912
 	je	.L232
-	jmp	.L331
+	jmp	.L330
 .L224:
-	mov	eax, DWORD PTR 66744[rbp]
+	mov	eax, DWORD PTR 66720[rbp]
 	mov	DWORD PTR glob_vk_right[rip], eax
 	jmp	.L219
 .L230:
-	mov	eax, DWORD PTR 66744[rbp]
+	mov	eax, DWORD PTR 66720[rbp]
 	mov	DWORD PTR glob_vk_left[rip], eax
 	jmp	.L219
 .L231:
-	mov	eax, DWORD PTR 66744[rbp]
+	mov	eax, DWORD PTR 66720[rbp]
 	mov	DWORD PTR glob_vk_up[rip], eax
 	jmp	.L219
 .L229:
-	mov	eax, DWORD PTR 66744[rbp]
+	mov	eax, DWORD PTR 66720[rbp]
 	mov	DWORD PTR glob_vk_down[rip], eax
 	jmp	.L219
 .L218:
-	mov	eax, DWORD PTR 66744[rbp]
+	mov	eax, DWORD PTR 66720[rbp]
 	mov	DWORD PTR glob_vk_space[rip], eax
 	jmp	.L219
 .L232:
-	mov	eax, DWORD PTR 66744[rbp]
+	mov	eax, DWORD PTR 66720[rbp]
 	mov	DWORD PTR glob_vk_enter[rip], eax
 	jmp	.L219
 .L228:
-	mov	eax, DWORD PTR 66744[rbp]
+	mov	eax, DWORD PTR 66720[rbp]
 	mov	DWORD PTR glob_vk_f2[rip], eax
 	jmp	.L219
 .L216:
-	mov	eax, DWORD PTR 66744[rbp]
+	mov	eax, DWORD PTR 66720[rbp]
 	mov	DWORD PTR glob_vk_0[rip], eax
 	jmp	.L219
 .L217:
-	mov	eax, DWORD PTR 66744[rbp]
+	mov	eax, DWORD PTR 66720[rbp]
 	mov	DWORD PTR glob_vk_1[rip], eax
 	jmp	.L219
 .L214:
-	mov	eax, DWORD PTR 66744[rbp]
+	mov	eax, DWORD PTR 66720[rbp]
 	mov	DWORD PTR glob_vk_2[rip], eax
 	jmp	.L219
 .L221:
-	mov	eax, DWORD PTR 66744[rbp]
+	mov	eax, DWORD PTR 66720[rbp]
 	mov	DWORD PTR glob_vk_3[rip], eax
 	jmp	.L219
 .L220:
-	mov	eax, DWORD PTR 66744[rbp]
+	mov	eax, DWORD PTR 66720[rbp]
 	mov	DWORD PTR glob_vk_4[rip], eax
 	jmp	.L219
 .L222:
-	mov	eax, DWORD PTR 66744[rbp]
+	mov	eax, DWORD PTR 66720[rbp]
 	mov	DWORD PTR glob_vk_5[rip], eax
 	jmp	.L219
 .L223:
-	mov	eax, DWORD PTR 66744[rbp]
+	mov	eax, DWORD PTR 66720[rbp]
 	mov	DWORD PTR glob_vk_6[rip], eax
 	jmp	.L219
 .L212:
-	mov	eax, DWORD PTR 66744[rbp]
+	mov	eax, DWORD PTR 66720[rbp]
 	mov	DWORD PTR glob_vk_7[rip], eax
 	jmp	.L219
 .L227:
-	mov	eax, DWORD PTR 66744[rbp]
+	mov	eax, DWORD PTR 66720[rbp]
 	mov	DWORD PTR glob_vk_8[rip], eax
 	jmp	.L219
 .L226:
-	mov	eax, DWORD PTR 66744[rbp]
+	mov	eax, DWORD PTR 66720[rbp]
 	mov	DWORD PTR glob_vk_9[rip], eax
 	nop
 .L219:
-.L331:
+.L330:
 	nop
 .L187:
-	lea	rax, 66288[rbp]
+	lea	rax, 66272[rbp]
 	mov	rcx, rax
 	call	SDL_PollEvent
 	test	eax, eax
@@ -3716,12 +3724,12 @@ SDL_main:
 	test	eax, eax
 	je	.L235
 	mov	DWORD PTR glob_vk_7[rip], 0
-	lea	rax, 512[rbp]
+	lea	rax, 496[rbp]
 	mov	rcx, rax
 	call	attack
-	lea	rcx, 512[rbp]
-	mov	rdx, QWORD PTR 66992[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
+	lea	rcx, 496[rbp]
+	mov	rdx, QWORD PTR 66968[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	r8, rcx
 	mov	rcx, rax
 	call	renderWeaponSwing
@@ -3764,7 +3772,7 @@ SDL_main:
 	cmp	DWORD PTR 67240[rbp], 0
 	jne	.L241
 	mov	DWORD PTR 67240[rbp], 1
-	lea	rax, 66160[rbp]
+	lea	rax, 66144[rbp]
 	movabs	rdi, 3184362091757007472
 	mov	QWORD PTR [rax], rdi
 	mov	DWORD PTR 8[rax], 741551154
@@ -3780,19 +3788,19 @@ SDL_main:
 	cmp	DWORD PTR 67240[rbp], 1
 	jne	.L243
 	lea	rax, .LC68[rip]
-	mov	QWORD PTR 66736[rbp], rax
-	mov	QWORD PTR 66728[rbp], 99
-	mov	rcx, QWORD PTR 66728[rbp]
-	mov	rdx, QWORD PTR 66736[rbp]
-	lea	rax, 66160[rbp]
+	mov	QWORD PTR 66712[rbp], rax
+	mov	QWORD PTR 66704[rbp], 99
+	mov	rcx, QWORD PTR 66704[rbp]
+	mov	rdx, QWORD PTR 66712[rbp]
+	lea	rax, 66144[rbp]
 	mov	r8, rcx
 	mov	rcx, rax
 	call	strncpy
-	lea	rax, 66160[rbp]
-	mov	rdx, QWORD PTR 66728[rbp]
+	lea	rax, 66144[rbp]
+	mov	rdx, QWORD PTR 66704[rbp]
 	add	rax, rdx
 	mov	BYTE PTR [rax], 0
-	add	DWORD PTR 67248[rbp], 50
+	add	DWORD PTR 67244[rbp], 50
 	jmp	.L242
 .L243:
 	mov	eax, DWORD PTR quizOn1[rip]
@@ -3811,19 +3819,19 @@ SDL_main:
 	cmp	DWORD PTR 67240[rbp], 1
 	jne	.L245
 	lea	rax, .LC70[rip]
-	mov	QWORD PTR 66720[rbp], rax
-	mov	QWORD PTR 66712[rbp], 99
-	mov	rcx, QWORD PTR 66712[rbp]
-	mov	rdx, QWORD PTR 66720[rbp]
-	lea	rax, 66160[rbp]
+	mov	QWORD PTR 66696[rbp], rax
+	mov	QWORD PTR 66688[rbp], 99
+	mov	rcx, QWORD PTR 66688[rbp]
+	mov	rdx, QWORD PTR 66696[rbp]
+	lea	rax, 66144[rbp]
 	mov	r8, rcx
 	mov	rcx, rax
 	call	strncpy
-	lea	rax, 66160[rbp]
-	mov	rdx, QWORD PTR 66712[rbp]
+	lea	rax, 66144[rbp]
+	mov	rdx, QWORD PTR 66688[rbp]
 	add	rax, rdx
 	mov	BYTE PTR [rax], 0
-	add	DWORD PTR 67248[rbp], 50
+	add	DWORD PTR 67244[rbp], 50
 	jmp	.L244
 .L245:
 	mov	eax, DWORD PTR quizOn1[rip]
@@ -3838,19 +3846,19 @@ SDL_main:
 	cmp	DWORD PTR 67240[rbp], 1
 	jne	.L247
 	lea	rax, .LC71[rip]
-	mov	QWORD PTR 66704[rbp], rax
-	mov	QWORD PTR 66696[rbp], 99
-	mov	rcx, QWORD PTR 66696[rbp]
-	mov	rdx, QWORD PTR 66704[rbp]
-	lea	rax, 66160[rbp]
+	mov	QWORD PTR 66680[rbp], rax
+	mov	QWORD PTR 66672[rbp], 99
+	mov	rcx, QWORD PTR 66672[rbp]
+	mov	rdx, QWORD PTR 66680[rbp]
+	lea	rax, 66144[rbp]
 	mov	r8, rcx
 	mov	rcx, rax
 	call	strncpy
-	lea	rax, 66160[rbp]
-	mov	rdx, QWORD PTR 66696[rbp]
+	lea	rax, 66144[rbp]
+	mov	rdx, QWORD PTR 66672[rbp]
 	add	rax, rdx
 	mov	BYTE PTR [rax], 0
-	add	DWORD PTR 67248[rbp], 50
+	add	DWORD PTR 67244[rbp], 50
 	jmp	.L246
 .L247:
 	mov	eax, DWORD PTR quizOn1[rip]
@@ -3865,19 +3873,19 @@ SDL_main:
 	cmp	DWORD PTR 67240[rbp], 1
 	jne	.L248
 	lea	rax, .LC72[rip]
-	mov	QWORD PTR 66688[rbp], rax
-	mov	QWORD PTR 66680[rbp], 99
-	mov	rcx, QWORD PTR 66680[rbp]
-	mov	rdx, QWORD PTR 66688[rbp]
-	lea	rax, 66160[rbp]
+	mov	QWORD PTR 66664[rbp], rax
+	mov	QWORD PTR 66656[rbp], 99
+	mov	rcx, QWORD PTR 66656[rbp]
+	mov	rdx, QWORD PTR 66664[rbp]
+	lea	rax, 66144[rbp]
 	mov	r8, rcx
 	mov	rcx, rax
 	call	strncpy
-	lea	rax, 66160[rbp]
-	mov	rdx, QWORD PTR 66680[rbp]
+	lea	rax, 66144[rbp]
+	mov	rdx, QWORD PTR 66656[rbp]
 	add	rax, rdx
 	mov	BYTE PTR [rax], 0
-	add	DWORD PTR 67248[rbp], 50
+	add	DWORD PTR 67244[rbp], 50
 .L248:
 	mov	eax, DWORD PTR glob_vk_5[rip]
 	test	eax, eax
@@ -3896,44 +3904,44 @@ SDL_main:
 	mov	eax, DWORD PTR glob_vk_right[rip]
 	test	eax, eax
 	je	.L251
-	mov	BYTE PTR 528[rbp], 0
-	mov	edx, DWORD PTR 512[rbp]
-	movzx	eax, BYTE PTR 534[rbp]
+	mov	BYTE PTR 512[rbp], 0
+	mov	edx, DWORD PTR 496[rbp]
+	movzx	eax, BYTE PTR 518[rbp]
 	movzx	eax, al
 	add	eax, edx
-	mov	DWORD PTR 512[rbp], eax
+	mov	DWORD PTR 496[rbp], eax
 .L251:
 	mov	eax, DWORD PTR glob_vk_up[rip]
 	test	eax, eax
 	je	.L252
-	mov	BYTE PTR 528[rbp], 1
-	mov	edx, DWORD PTR 516[rbp]
-	movzx	eax, BYTE PTR 534[rbp]
+	mov	BYTE PTR 512[rbp], 1
+	mov	edx, DWORD PTR 500[rbp]
+	movzx	eax, BYTE PTR 518[rbp]
 	movzx	eax, al
 	sub	edx, eax
 	mov	eax, edx
-	mov	DWORD PTR 516[rbp], eax
+	mov	DWORD PTR 500[rbp], eax
 .L252:
 	mov	eax, DWORD PTR glob_vk_left[rip]
 	test	eax, eax
 	je	.L253
-	mov	BYTE PTR 528[rbp], 2
-	mov	edx, DWORD PTR 512[rbp]
-	movzx	eax, BYTE PTR 534[rbp]
+	mov	BYTE PTR 512[rbp], 2
+	mov	edx, DWORD PTR 496[rbp]
+	movzx	eax, BYTE PTR 518[rbp]
 	movzx	eax, al
 	sub	edx, eax
 	mov	eax, edx
-	mov	DWORD PTR 512[rbp], eax
+	mov	DWORD PTR 496[rbp], eax
 .L253:
 	mov	eax, DWORD PTR glob_vk_down[rip]
 	test	eax, eax
 	je	.L254
-	mov	BYTE PTR 528[rbp], 3
-	mov	edx, DWORD PTR 516[rbp]
-	movzx	eax, BYTE PTR 534[rbp]
+	mov	BYTE PTR 512[rbp], 3
+	mov	edx, DWORD PTR 500[rbp]
+	movzx	eax, BYTE PTR 518[rbp]
 	movzx	eax, al
 	add	eax, edx
-	mov	DWORD PTR 516[rbp], eax
+	mov	DWORD PTR 500[rbp], eax
 .L254:
 	mov	edx, DWORD PTR glob_vk_right[rip]
 	mov	eax, DWORD PTR glob_vk_left[rip]
@@ -3944,57 +3952,57 @@ SDL_main:
 	or	eax, edx
 	test	eax, eax
 	je	.L255
-	movzx	edx, BYTE PTR 529[rbp]
-	movzx	eax, BYTE PTR 530[rbp]
+	movzx	edx, BYTE PTR 513[rbp]
+	movzx	eax, BYTE PTR 514[rbp]
 	add	eax, edx
-	mov	BYTE PTR 529[rbp], al
-	movzx	eax, BYTE PTR 532[rbp]
-	movzx	ecx, BYTE PTR 529[rbp]
-	movzx	edx, BYTE PTR 531[rbp]
+	mov	BYTE PTR 513[rbp], al
+	movzx	eax, BYTE PTR 516[rbp]
+	movzx	ecx, BYTE PTR 513[rbp]
+	movzx	edx, BYTE PTR 515[rbp]
 	cmp	cl, dl
 	setnb	dl
 	add	eax, edx
-	mov	BYTE PTR 532[rbp], al
-	movzx	eax, BYTE PTR 529[rbp]
-	movzx	edx, BYTE PTR 531[rbp]
+	mov	BYTE PTR 516[rbp], al
+	movzx	eax, BYTE PTR 513[rbp]
+	movzx	edx, BYTE PTR 515[rbp]
 	movzx	eax, al
 	div	dl
 	movzx	eax, ah
-	mov	BYTE PTR 529[rbp], al
-	movzx	eax, BYTE PTR 532[rbp]
-	movzx	edx, BYTE PTR 533[rbp]
+	mov	BYTE PTR 513[rbp], al
+	movzx	eax, BYTE PTR 516[rbp]
+	movzx	edx, BYTE PTR 517[rbp]
 	movzx	eax, al
 	div	dl
 	movzx	eax, ah
-	mov	BYTE PTR 532[rbp], al
-	mov	eax, DWORD PTR 67104[rbp]
-	imul	eax, DWORD PTR 67100[rbp]
-	mov	edx, DWORD PTR 67116[rbp]
+	mov	BYTE PTR 516[rbp], al
+	mov	eax, DWORD PTR 67080[rbp]
+	imul	eax, DWORD PTR 67076[rbp]
+	mov	edx, DWORD PTR 67092[rbp]
 	sub	edx, eax
 	mov	eax, edx
-	mov	DWORD PTR 66676[rbp], eax
-	mov	eax, DWORD PTR 67128[rbp]
-	mov	DWORD PTR 66672[rbp], eax
-	mov	eax, DWORD PTR 67132[rbp]
-	mov	DWORD PTR 66668[rbp], eax
+	mov	DWORD PTR 66652[rbp], eax
 	mov	eax, DWORD PTR 67104[rbp]
-	imul	eax, DWORD PTR 67096[rbp]
-	mov	edx, DWORD PTR 67112[rbp]
+	mov	DWORD PTR 66648[rbp], eax
+	mov	eax, DWORD PTR 67108[rbp]
+	mov	DWORD PTR 66644[rbp], eax
+	mov	eax, DWORD PTR 67080[rbp]
+	imul	eax, DWORD PTR 67072[rbp]
+	mov	edx, DWORD PTR 67088[rbp]
 	sub	edx, eax
 	mov	eax, edx
-	mov	DWORD PTR 66664[rbp], eax
-	mov	DWORD PTR 66660[rbp], 0
-	mov	eax, DWORD PTR 512[rbp]
-	cmp	DWORD PTR 66676[rbp], eax
+	mov	DWORD PTR 66640[rbp], eax
+	mov	DWORD PTR 66636[rbp], 0
+	mov	eax, DWORD PTR 496[rbp]
+	cmp	DWORD PTR 66652[rbp], eax
 	jl	.L256
-	mov	eax, DWORD PTR 516[rbp]
-	cmp	DWORD PTR 66664[rbp], eax
+	mov	eax, DWORD PTR 500[rbp]
+	cmp	DWORD PTR 66640[rbp], eax
 	jl	.L256
-	mov	eax, DWORD PTR 512[rbp]
-	cmp	DWORD PTR 66668[rbp], eax
+	mov	eax, DWORD PTR 496[rbp]
+	cmp	DWORD PTR 66644[rbp], eax
 	jg	.L256
-	mov	eax, DWORD PTR 516[rbp]
-	cmp	DWORD PTR 66672[rbp], eax
+	mov	eax, DWORD PTR 500[rbp]
+	cmp	DWORD PTR 66648[rbp], eax
 	jle	.L257
 .L256:
 	mov	eax, 1
@@ -4002,62 +4010,62 @@ SDL_main:
 .L257:
 	mov	eax, 0
 .L258:
-	mov	DWORD PTR 66660[rbp], eax
-	mov	eax, DWORD PTR 512[rbp]
-	cmp	DWORD PTR 66676[rbp], eax
+	mov	DWORD PTR 66636[rbp], eax
+	mov	eax, DWORD PTR 496[rbp]
+	cmp	DWORD PTR 66652[rbp], eax
 	jge	.L259
-	mov	eax, DWORD PTR 66668[rbp]
-	mov	DWORD PTR 512[rbp], eax
-	add	DWORD PTR 67260[rbp], 1
+	mov	eax, DWORD PTR 66644[rbp]
+	mov	DWORD PTR 496[rbp], eax
+	add	DWORD PTR 67224[rbp], 1
 .L259:
-	mov	eax, DWORD PTR 516[rbp]
-	cmp	DWORD PTR 66672[rbp], eax
+	mov	eax, DWORD PTR 500[rbp]
+	cmp	DWORD PTR 66648[rbp], eax
 	jle	.L260
-	mov	eax, DWORD PTR 66664[rbp]
-	mov	DWORD PTR 516[rbp], eax
-	cvtsi2sd	xmm0, DWORD PTR 66872[rbp]
+	mov	eax, DWORD PTR 66640[rbp]
+	mov	DWORD PTR 500[rbp], eax
+	cvtsi2sd	xmm0, DWORD PTR 66848[rbp]
 	call	sqrt
 	cvttsd2si	eax, xmm0
-	sub	DWORD PTR 67260[rbp], eax
+	sub	DWORD PTR 67224[rbp], eax
 .L260:
-	mov	eax, DWORD PTR 512[rbp]
-	cmp	DWORD PTR 66668[rbp], eax
+	mov	eax, DWORD PTR 496[rbp]
+	cmp	DWORD PTR 66644[rbp], eax
 	jle	.L261
-	mov	eax, DWORD PTR 66676[rbp]
-	mov	DWORD PTR 512[rbp], eax
-	sub	DWORD PTR 67260[rbp], 1
+	mov	eax, DWORD PTR 66652[rbp]
+	mov	DWORD PTR 496[rbp], eax
+	sub	DWORD PTR 67224[rbp], 1
 .L261:
-	mov	eax, DWORD PTR 516[rbp]
-	cmp	DWORD PTR 66664[rbp], eax
+	mov	eax, DWORD PTR 500[rbp]
+	cmp	DWORD PTR 66640[rbp], eax
 	jge	.L262
-	mov	eax, DWORD PTR 66672[rbp]
-	mov	DWORD PTR 516[rbp], eax
-	cvtsi2sd	xmm0, DWORD PTR 66872[rbp]
+	mov	eax, DWORD PTR 66648[rbp]
+	mov	DWORD PTR 500[rbp], eax
+	cvtsi2sd	xmm0, DWORD PTR 66848[rbp]
 	call	sqrt
 	cvttsd2si	eax, xmm0
-	add	DWORD PTR 67260[rbp], eax
+	add	DWORD PTR 67224[rbp], eax
 .L262:
-	cmp	DWORD PTR 66660[rbp], 0
+	cmp	DWORD PTR 66636[rbp], 0
 	je	.L264
-	mov	eax, DWORD PTR 66872[rbp]
-	add	DWORD PTR 67260[rbp], eax
-	mov	eax, DWORD PTR 67260[rbp]
+	mov	eax, DWORD PTR 66848[rbp]
+	add	DWORD PTR 67224[rbp], eax
+	mov	eax, DWORD PTR 67224[rbp]
 	cdq
-	idiv	DWORD PTR 66872[rbp]
-	mov	DWORD PTR 67260[rbp], edx
-	lea	rax, 592[rbp]
-	mov	ecx, DWORD PTR 67260[rbp]
+	idiv	DWORD PTR 66848[rbp]
+	mov	DWORD PTR 67224[rbp], edx
+	lea	rax, 576[rbp]
+	mov	ecx, DWORD PTR 67224[rbp]
 	mov	rdx, rax
 	call	level_get_name
-	mov	eax, DWORD PTR 67260[rbp]
+	mov	eax, DWORD PTR 67224[rbp]
 	lea	edx, 31[rax]
 	test	eax, eax
 	cmovs	eax, edx
 	sar	eax, 5
 	mov	r9d, eax
 	movsx	rax, r9d
-	mov	r8d, DWORD PTR 560[rbp+rax*4]
-	mov	edx, DWORD PTR 67260[rbp]
+	mov	r8d, DWORD PTR 544[rbp+rax*4]
+	mov	edx, DWORD PTR 67224[rbp]
 	mov	eax, edx
 	sar	eax, 31
 	shr	eax, 27
@@ -4072,29 +4080,29 @@ SDL_main:
 	mov	edx, r8d
 	or	edx, eax
 	movsx	rax, r9d
-	mov	DWORD PTR 560[rbp+rax*4], edx
+	mov	DWORD PTR 544[rbp+rax*4], edx
 	jmp	.L264
 .L255:
-	mov	BYTE PTR 529[rbp], 0
-	mov	BYTE PTR 532[rbp], 0
+	mov	BYTE PTR 513[rbp], 0
+	mov	BYTE PTR 516[rbp], 0
 .L264:
 	mov	edx, DWORD PTR glob_vk_space[rip]
 	mov	eax, DWORD PTR glob_vk_enter[rip]
 	or	eax, edx
 	test	eax, eax
 	je	.L265
-	mov	DWORD PTR 67232[rbp], 0
+	mov	DWORD PTR 67216[rbp], 0
 .L265:
-	mov	eax, DWORD PTR 512[rbp]
-	mov	DWORD PTR 520[rbp], eax
-	mov	eax, DWORD PTR 516[rbp]
-	mov	DWORD PTR 524[rbp], eax
-	mov	DWORD PTR 67224[rbp], 0
+	mov	eax, DWORD PTR 496[rbp]
+	mov	DWORD PTR 504[rbp], eax
+	mov	eax, DWORD PTR 500[rbp]
+	mov	DWORD PTR 508[rbp], eax
+	mov	DWORD PTR 67208[rbp], 0
 	jmp	.L266
 .L270:
 	lea	rax, waterParticles[rip]
 	mov	rdx, QWORD PTR [rax]
-	mov	eax, DWORD PTR 67224[rbp]
+	mov	eax, DWORD PTR 67208[rbp]
 	cdqe
 	sal	rax, 4
 	add	rax, rdx
@@ -4103,21 +4111,21 @@ SDL_main:
 	je	.L267
 	lea	rax, waterParticles[rip]
 	mov	rdx, QWORD PTR [rax]
-	mov	eax, DWORD PTR 67224[rbp]
+	mov	eax, DWORD PTR 67208[rbp]
 	cdqe
 	sal	rax, 4
 	add	rax, rdx
 	movss	xmm1, DWORD PTR 4[rax]
 	lea	rax, waterParticles[rip]
 	mov	rdx, QWORD PTR [rax]
-	mov	eax, DWORD PTR 67224[rbp]
+	mov	eax, DWORD PTR 67208[rbp]
 	cdqe
 	sal	rax, 4
 	add	rax, rdx
 	movss	xmm0, DWORD PTR 8[rax]
 	lea	rax, waterParticles[rip]
 	mov	rdx, QWORD PTR [rax]
-	mov	eax, DWORD PTR 67224[rbp]
+	mov	eax, DWORD PTR 67208[rbp]
 	cdqe
 	sal	rax, 4
 	add	rax, rdx
@@ -4125,12 +4133,12 @@ SDL_main:
 	movss	DWORD PTR 4[rax], xmm0
 	lea	rax, waterParticles[rip]
 	mov	rdx, QWORD PTR [rax]
-	mov	eax, DWORD PTR 67224[rbp]
+	mov	eax, DWORD PTR 67208[rbp]
 	cdqe
 	sal	rax, 4
 	add	rax, rdx
 	movss	xmm0, DWORD PTR 4[rax]
-	cvtsi2ss	xmm1, DWORD PTR 67136[rbp]
+	cvtsi2ss	xmm1, DWORD PTR 67112[rbp]
 	comiss	xmm0, xmm1
 	jbe	.L267
 	call	rand
@@ -4150,53 +4158,53 @@ SDL_main:
 	jg	.L269
 	lea	rax, waterParticles[rip]
 	mov	rdx, QWORD PTR [rax]
-	mov	eax, DWORD PTR 67224[rbp]
+	mov	eax, DWORD PTR 67208[rbp]
 	cdqe
 	sal	rax, 4
 	add	rax, rdx
 	mov	DWORD PTR 12[rax], 0
 	jmp	.L267
 .L269:
-	mov	ecx, DWORD PTR 67136[rbp]
-	mov	edx, DWORD PTR 67140[rbp]
-	mov	eax, DWORD PTR 67224[rbp]
+	mov	ecx, DWORD PTR 67112[rbp]
+	mov	edx, DWORD PTR 67116[rbp]
+	mov	eax, DWORD PTR 67208[rbp]
 	mov	r8d, ecx
 	mov	ecx, eax
 	call	createWaterParticle
 .L267:
-	add	DWORD PTR 67224[rbp], 1
+	add	DWORD PTR 67208[rbp], 1
 .L266:
 	mov	eax, 100
-	cmp	DWORD PTR 67224[rbp], eax
+	cmp	DWORD PTR 67208[rbp], eax
 	jl	.L270
-	mov	eax, DWORD PTR 66916[rbp]
-	add	DWORD PTR 67256[rbp], eax
-	mov	eax, DWORD PTR 67256[rbp]
-	cmp	eax, DWORD PTR 66920[rbp]
+	mov	eax, DWORD PTR 66892[rbp]
+	add	DWORD PTR 67228[rbp], eax
+	mov	eax, DWORD PTR 67228[rbp]
+	cmp	eax, DWORD PTR 66896[rbp]
 	setge	al
 	movzx	eax, al
-	add	DWORD PTR 67252[rbp], eax
-	mov	eax, DWORD PTR 67252[rbp]
+	add	DWORD PTR 67232[rbp], eax
+	mov	eax, DWORD PTR 67232[rbp]
 	cdq
-	idiv	DWORD PTR 66924[rbp]
-	mov	DWORD PTR 67252[rbp], edx
-	mov	eax, DWORD PTR 67256[rbp]
+	idiv	DWORD PTR 66900[rbp]
+	mov	DWORD PTR 67232[rbp], edx
+	mov	eax, DWORD PTR 67228[rbp]
 	cdq
-	idiv	DWORD PTR 66920[rbp]
-	mov	DWORD PTR 67256[rbp], edx
-	lea	rdx, 555[rbp]
-	lea	rax, 404[rbp]
+	idiv	DWORD PTR 66896[rbp]
+	mov	DWORD PTR 67228[rbp], edx
+	lea	rdx, 539[rbp]
+	lea	rax, 388[rbp]
 	mov	rcx, rax
 	call	strcpy
-	cmp	DWORD PTR 66840[rbp], 0
+	cmp	DWORD PTR 66816[rbp], 0
 	js	.L271
 	mov	eax, 43
 	jmp	.L272
 .L271:
 	mov	eax, 45
 .L272:
-	mov	BYTE PTR 404[rbp], al
-	mov	ecx, DWORD PTR 66840[rbp]
+	mov	BYTE PTR 388[rbp], al
+	mov	ecx, DWORD PTR 66816[rbp]
 	mov	edx, 1717986919
 	mov	eax, ecx
 	imul	edx
@@ -4206,8 +4214,8 @@ SDL_main:
 	sub	edx, eax
 	mov	eax, edx
 	add	eax, 48
-	mov	BYTE PTR 405[rbp], al
-	mov	ecx, DWORD PTR 66840[rbp]
+	mov	BYTE PTR 389[rbp], al
+	mov	ecx, DWORD PTR 66816[rbp]
 	mov	edx, 1717986919
 	mov	eax, ecx
 	imul	edx
@@ -4223,41 +4231,41 @@ SDL_main:
 	mov	edx, ecx
 	mov	eax, edx
 	add	eax, 48
-	mov	BYTE PTR 406[rbp], al
+	mov	BYTE PTR 390[rbp], al
 	mov	eax, 42
-	mov	BYTE PTR 407[rbp], al
-	cmp	DWORD PTR 66844[rbp], 0
+	mov	BYTE PTR 391[rbp], al
+	cmp	DWORD PTR 66820[rbp], 0
 	jne	.L273
 	mov	eax, 67
 	jmp	.L274
 .L273:
 	mov	eax, 70
 .L274:
-	mov	BYTE PTR 408[rbp], al
+	mov	BYTE PTR 392[rbp], al
 	mov	edx, 0
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	rcx, rax
 	call	draw_clear
 	mov	edx, 16777215
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	rcx, rax
 	call	draw_set_color
 	mov	edx, 33023
-	mov	ecx, DWORD PTR 67132[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	ecx, DWORD PTR 67108[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	DWORD PTR 40[rsp], edx
-	mov	edx, DWORD PTR 67136[rbp]
+	mov	edx, DWORD PTR 67112[rbp]
 	mov	DWORD PTR 32[rsp], edx
 	mov	r9d, ecx
 	mov	r8d, 0
 	mov	edx, 0
 	mov	rcx, rax
 	call	draw_rectangle_color
-	mov	ecx, DWORD PTR 67132[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
-	mov	rdx, QWORD PTR 66968[rbp]
+	mov	ecx, DWORD PTR 67108[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
+	mov	rdx, QWORD PTR 66944[rbp]
 	mov	QWORD PTR 40[rsp], rdx
-	mov	edx, DWORD PTR 67136[rbp]
+	mov	edx, DWORD PTR 67112[rbp]
 	mov	DWORD PTR 32[rsp], edx
 	mov	r9d, ecx
 	mov	r8d, 0
@@ -4265,90 +4273,90 @@ SDL_main:
 	mov	rcx, rax
 	call	draw_image
 	mov	r8d, 8388863
-	mov	eax, DWORD PTR 67140[rbp]
-	sub	eax, DWORD PTR 67132[rbp]
+	mov	eax, DWORD PTR 67116[rbp]
+	sub	eax, DWORD PTR 67108[rbp]
 	mov	ecx, eax
-	mov	edx, DWORD PTR 67132[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	edx, DWORD PTR 67108[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	DWORD PTR 40[rsp], r8d
-	mov	r8d, DWORD PTR 67136[rbp]
+	mov	r8d, DWORD PTR 67112[rbp]
 	mov	DWORD PTR 32[rsp], r8d
 	mov	r9d, ecx
 	mov	r8d, 0
 	mov	rcx, rax
 	call	draw_rectangle_color
 	mov	edx, 33023
-	mov	eax, DWORD PTR 67140[rbp]
-	sub	eax, DWORD PTR 67132[rbp]
-	mov	r8d, DWORD PTR 67140[rbp]
-	mov	rcx, QWORD PTR 67072[rbp]
+	mov	eax, DWORD PTR 67116[rbp]
+	sub	eax, DWORD PTR 67108[rbp]
+	mov	r8d, DWORD PTR 67116[rbp]
+	mov	rcx, QWORD PTR 67048[rbp]
 	mov	DWORD PTR 40[rsp], edx
-	mov	edx, DWORD PTR 67136[rbp]
+	mov	edx, DWORD PTR 67112[rbp]
 	mov	DWORD PTR 32[rsp], edx
 	mov	r9d, r8d
 	mov	r8d, 0
 	mov	edx, eax
 	call	draw_rectangle_color
-	mov	eax, DWORD PTR 67140[rbp]
-	sub	eax, DWORD PTR 67132[rbp]
-	mov	r8d, DWORD PTR 67140[rbp]
-	mov	rcx, QWORD PTR 67072[rbp]
-	mov	rdx, QWORD PTR 66968[rbp]
+	mov	eax, DWORD PTR 67116[rbp]
+	sub	eax, DWORD PTR 67108[rbp]
+	mov	r8d, DWORD PTR 67116[rbp]
+	mov	rcx, QWORD PTR 67048[rbp]
+	mov	rdx, QWORD PTR 66944[rbp]
 	mov	QWORD PTR 40[rsp], rdx
-	mov	edx, DWORD PTR 67136[rbp]
+	mov	edx, DWORD PTR 67112[rbp]
 	mov	DWORD PTR 32[rsp], edx
 	mov	r9d, r8d
 	mov	r8d, 0
 	mov	edx, eax
 	call	draw_image
-	mov	DWORD PTR 66656[rbp], 0
-	mov	eax, DWORD PTR 67100[rbp]
-	mov	DWORD PTR 66652[rbp], eax
-	mov	eax, DWORD PTR 67096[rbp]
-	mov	DWORD PTR 66648[rbp], eax
-	cmp	DWORD PTR 67232[rbp], 0
+	mov	DWORD PTR 66632[rbp], 0
+	mov	eax, DWORD PTR 67076[rbp]
+	mov	DWORD PTR 66628[rbp], eax
+	mov	eax, DWORD PTR 67072[rbp]
+	mov	DWORD PTR 66624[rbp], eax
+	cmp	DWORD PTR 67216[rbp], 0
 	jne	.L275
-	mov	eax, DWORD PTR 66936[rbp]
-	imul	eax, DWORD PTR 67096[rbp]
-	mov	edx, DWORD PTR 66940[rbp]
-	imul	edx, DWORD PTR 67100[rbp]
+	mov	eax, DWORD PTR 66912[rbp]
+	imul	eax, DWORD PTR 67072[rbp]
+	mov	edx, DWORD PTR 66916[rbp]
+	imul	edx, DWORD PTR 67076[rbp]
 	mov	r8d, edx
-	mov	r10d, DWORD PTR 66648[rbp]
-	mov	edx, DWORD PTR 66652[rbp]
-	mov	rcx, QWORD PTR 67072[rbp]
-	mov	r9d, DWORD PTR 66656[rbp]
+	mov	r10d, DWORD PTR 66624[rbp]
+	mov	edx, DWORD PTR 66628[rbp]
+	mov	rcx, QWORD PTR 67048[rbp]
+	mov	r9d, DWORD PTR 66632[rbp]
 	mov	DWORD PTR 72[rsp], r9d
-	mov	r9d, DWORD PTR 66936[rbp]
+	mov	r9d, DWORD PTR 66912[rbp]
 	mov	DWORD PTR 64[rsp], r9d
-	mov	r9d, DWORD PTR 66940[rbp]
+	mov	r9d, DWORD PTR 66916[rbp]
 	mov	DWORD PTR 56[rsp], r9d
 	lea	r9, .LC73[rip]
 	mov	QWORD PTR 48[rsp], r9
-	mov	r9, QWORD PTR 66944[rbp]
+	mov	r9, QWORD PTR 66920[rbp]
 	mov	QWORD PTR 40[rsp], r9
 	mov	DWORD PTR 32[rsp], eax
 	mov	r9d, r8d
 	mov	r8d, r10d
 	call	draw_text_color
-	mov	eax, DWORD PTR 66936[rbp]
-	imul	eax, DWORD PTR 67096[rbp]
-	add	DWORD PTR 66648[rbp], eax
-	mov	DWORD PTR 66644[rbp], 200
-	mov	DWORD PTR 66640[rbp], 20
+	mov	eax, DWORD PTR 66912[rbp]
+	imul	eax, DWORD PTR 67072[rbp]
+	add	DWORD PTR 66624[rbp], eax
+	mov	DWORD PTR 66620[rbp], 200
+	mov	DWORD PTR 66616[rbp], 20
 	mov	eax, DWORD PTR health[rip]
-	imul	eax, DWORD PTR 66644[rbp]
+	imul	eax, DWORD PTR 66620[rbp]
 	mov	esi, DWORD PTR maxHealth[rip]
 	cdq
 	idiv	esi
-	mov	DWORD PTR 66636[rbp], eax
-	mov	DWORD PTR 66632[rbp], 255
+	mov	DWORD PTR 66612[rbp], eax
+	mov	DWORD PTR 66608[rbp], 255
 	mov	r9d, 0
-	mov	edx, DWORD PTR 66648[rbp]
-	mov	eax, DWORD PTR 66640[rbp]
+	mov	edx, DWORD PTR 66624[rbp]
+	mov	eax, DWORD PTR 66616[rbp]
 	add	edx, eax
-	mov	r8d, DWORD PTR 66644[rbp]
-	mov	ecx, DWORD PTR 66648[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	r8d, DWORD PTR 66620[rbp]
+	mov	ecx, DWORD PTR 66624[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	DWORD PTR 40[rsp], r9d
 	mov	DWORD PTR 32[rsp], edx
 	mov	r9d, r8d
@@ -4356,48 +4364,124 @@ SDL_main:
 	mov	edx, 0
 	mov	rcx, rax
 	call	draw_rectangle_color
-	mov	edx, DWORD PTR 66648[rbp]
-	mov	eax, DWORD PTR 66640[rbp]
+	mov	edx, DWORD PTR 66624[rbp]
+	mov	eax, DWORD PTR 66616[rbp]
 	add	edx, eax
-	mov	r9d, DWORD PTR 66636[rbp]
-	mov	r8d, DWORD PTR 66648[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
-	mov	ecx, DWORD PTR 66632[rbp]
+	mov	r9d, DWORD PTR 66612[rbp]
+	mov	r8d, DWORD PTR 66624[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
+	mov	ecx, DWORD PTR 66608[rbp]
 	mov	DWORD PTR 40[rsp], ecx
 	mov	DWORD PTR 32[rsp], edx
 	mov	edx, 0
 	mov	rcx, rax
 	call	draw_rectangle_color
-	mov	eax, DWORD PTR 66640[rbp]
-	add	DWORD PTR 66648[rbp], eax
-	mov	DWORD PTR 66628[rbp], 0
-	mov	DWORD PTR 66624[rbp], 32
-	mov	DWORD PTR 67220[rbp], 0
+	mov	eax, DWORD PTR 66616[rbp]
+	add	DWORD PTR 66624[rbp], eax
+	mov	DWORD PTR 67204[rbp], 0
+	mov	DWORD PTR 66604[rbp], 32
+	mov	DWORD PTR 67200[rbp], 0
 	jmp	.L276
 .L277:
-	add	DWORD PTR 67220[rbp], 1
+	mov	eax, DWORD PTR 67200[rbp]
+	imul	eax, DWORD PTR 66604[rbp]
+	mov	ecx, DWORD PTR 66624[rbp]
+	mov	edx, DWORD PTR 67204[rbp]
+	add	ecx, edx
+	mov	edx, DWORD PTR 66604[rbp]
+	imul	edx, DWORD PTR 67072[rbp]
+	lea	r8d, [rcx+rdx]
+	mov	edx, DWORD PTR 66604[rbp]
+	imul	edx, DWORD PTR 67076[rbp]
+	mov	ecx, DWORD PTR 66628[rbp]
+	lea	r11d, [rdx+rcx]
+	mov	ecx, DWORD PTR 66624[rbp]
+	mov	edx, DWORD PTR 67204[rbp]
+	lea	r10d, [rcx+rdx]
+	mov	edx, DWORD PTR 66628[rbp]
+	mov	rcx, QWORD PTR 67048[rbp]
+	mov	r9d, DWORD PTR 66604[rbp]
+	mov	DWORD PTR 72[rsp], r9d
+	mov	r9d, DWORD PTR 66604[rbp]
+	mov	DWORD PTR 64[rsp], r9d
+	mov	DWORD PTR 56[rsp], 0
+	mov	DWORD PTR 48[rsp], eax
+	mov	rax, QWORD PTR 66792[rbp]
+	mov	QWORD PTR 40[rsp], rax
+	mov	DWORD PTR 32[rsp], r8d
+	mov	r9d, r11d
+	mov	r8d, r10d
+	call	draw_image_part
+	mov	eax, DWORD PTR 67200[rbp]
+	lea	rdx, .LC77[rip]
+	mov	QWORD PTR 32[rsp], rdx
+	lea	r9, .LC74[rip]
+	lea	r8, .LC75[rip]
+	lea	rdx, .LC76[rip]
+	mov	ecx, eax
+	call	mux_str
+	mov	r11, rax
+	mov	eax, DWORD PTR 66912[rbp]
+	imul	eax, DWORD PTR 67072[rbp]
+	mov	edx, eax
+	mov	eax, DWORD PTR 66916[rbp]
+	imul	eax, DWORD PTR 67076[rbp]
+	mov	r8d, eax
+	mov	ecx, DWORD PTR 66624[rbp]
+	mov	eax, DWORD PTR 67204[rbp]
+	add	ecx, eax
+	mov	eax, DWORD PTR 66604[rbp]
+	mov	r9d, eax
+	shr	r9d, 31
+	add	eax, r9d
+	sar	eax
+	lea	r10d, [rcx+rax]
+	mov	eax, DWORD PTR 66604[rbp]
+	imul	eax, DWORD PTR 67076[rbp]
+	mov	ecx, DWORD PTR 66628[rbp]
+	add	ecx, eax
+	mov	rax, QWORD PTR 67048[rbp]
+	mov	r9d, DWORD PTR 66632[rbp]
+	mov	DWORD PTR 72[rsp], r9d
+	mov	r9d, DWORD PTR 66912[rbp]
+	mov	DWORD PTR 64[rsp], r9d
+	mov	r9d, DWORD PTR 66916[rbp]
+	mov	DWORD PTR 56[rsp], r9d
+	mov	QWORD PTR 48[rsp], r11
+	mov	r9, QWORD PTR 66920[rbp]
+	mov	QWORD PTR 40[rsp], r9
+	mov	DWORD PTR 32[rsp], edx
+	mov	r9d, r8d
+	mov	r8d, r10d
+	mov	edx, ecx
+	mov	rcx, rax
+	call	draw_text_color
+	mov	eax, DWORD PTR 66604[rbp]
+	imul	eax, DWORD PTR 67076[rbp]
+	add	DWORD PTR 67204[rbp], eax
+	add	DWORD PTR 67200[rbp], 1
 .L276:
-	cmp	DWORD PTR 67220[rbp], 3
+	cmp	DWORD PTR 67200[rbp], 3
 	jle	.L277
 .L275:
-	mov	edx, DWORD PTR 67100[rbp]
-	mov	eax, DWORD PTR 67116[rbp]
+	mov	edx, DWORD PTR 67076[rbp]
+	mov	eax, DWORD PTR 67092[rbp]
 	add	eax, edx
-	mov	DWORD PTR 66652[rbp], eax
-	mov	eax, DWORD PTR 67096[rbp]
-	mov	DWORD PTR 66648[rbp], eax
-	cmp	DWORD PTR 67232[rbp], 0
+	mov	DWORD PTR 66628[rbp], eax
+	mov	eax, DWORD PTR 67072[rbp]
+	mov	DWORD PTR 66624[rbp], eax
+	cmp	DWORD PTR 67216[rbp], 0
 	jne	.L278
 	mov	rax, rsp
 	mov	r15, rax
-	lea	rax, .LC74[rip]
-	mov	QWORD PTR 66616[rbp], rax
-	mov	rax, QWORD PTR 66616[rbp]
+	lea	rax, .LC78[rip]
+	mov	QWORD PTR 66592[rbp], rax
+	mov	rax, QWORD PTR 66592[rbp]
 	mov	rcx, rax
 	call	strlen
 	mov	rdx, rax
 	sub	rdx, 1
-	mov	QWORD PTR 66608[rbp], rdx
+	mov	QWORD PTR 66584[rbp], rdx
 	mov	r13, rax
 	mov	r14d, 0
 	mov	QWORD PTR -48[rbp], rax
@@ -4409,14 +4493,14 @@ SDL_main:
 	sub	rsp, rax
 	lea	rax, 80[rsp]
 	add	rax, 0
-	mov	QWORD PTR 66600[rbp], rax
-	mov	rax, QWORD PTR 66600[rbp]
-	mov	rdx, QWORD PTR 66616[rbp]
+	mov	QWORD PTR 66576[rbp], rax
+	mov	rax, QWORD PTR 66576[rbp]
+	mov	rdx, QWORD PTR 66592[rbp]
 	mov	rcx, rax
 	call	strcpy
-	mov	eax, DWORD PTR 67260[rbp]
-	mov	BYTE PTR 66599[rbp], al
-	movzx	eax, BYTE PTR 66599[rbp]
+	mov	eax, DWORD PTR 67224[rbp]
+	mov	BYTE PTR 66575[rbp], al
+	movzx	eax, BYTE PTR 66575[rbp]
 	movzx	edx, al
 	mov	eax, edx
 	sal	eax, 2
@@ -4444,15 +4528,15 @@ SDL_main:
 	sub	ecx, eax
 	mov	edx, ecx
 	lea	ebx, 48[rdx]
-	mov	rax, QWORD PTR 66600[rbp]
+	mov	rax, QWORD PTR 66576[rbp]
 	mov	rdx, rax
-	lea	rcx, .LC75[rip]
+	lea	rcx, .LC79[rip]
 	call	string_pos
 	mov	ecx, ebx
-	mov	rdx, QWORD PTR 66600[rbp]
+	mov	rdx, QWORD PTR 66576[rbp]
 	cdqe
 	mov	BYTE PTR [rdx+rax], cl
-	movzx	eax, BYTE PTR 66599[rbp]
+	movzx	eax, BYTE PTR 66575[rbp]
 	movzx	edx, al
 	mov	eax, edx
 	sal	eax, 2
@@ -4482,15 +4566,15 @@ SDL_main:
 	sub	ecx, eax
 	mov	edx, ecx
 	lea	ebx, 48[rdx]
-	mov	rax, QWORD PTR 66600[rbp]
+	mov	rax, QWORD PTR 66576[rbp]
 	mov	rdx, rax
-	lea	rcx, .LC76[rip]
+	lea	rcx, .LC80[rip]
 	call	string_pos
 	mov	ecx, ebx
-	mov	rdx, QWORD PTR 66600[rbp]
+	mov	rdx, QWORD PTR 66576[rbp]
 	cdqe
 	mov	BYTE PTR [rdx+rax], cl
-	movzx	ecx, BYTE PTR 66599[rbp]
+	movzx	ecx, BYTE PTR 66575[rbp]
 	movzx	edx, cl
 	mov	eax, edx
 	sal	eax, 2
@@ -4509,90 +4593,90 @@ SDL_main:
 	sub	ecx, eax
 	mov	edx, ecx
 	lea	ebx, 48[rdx]
-	mov	rax, QWORD PTR 66600[rbp]
+	mov	rax, QWORD PTR 66576[rbp]
 	mov	rdx, rax
-	lea	rcx, .LC77[rip]
+	lea	rcx, .LC81[rip]
 	call	string_pos
 	mov	ecx, ebx
-	mov	rdx, QWORD PTR 66600[rbp]
+	mov	rdx, QWORD PTR 66576[rbp]
 	cdqe
 	mov	BYTE PTR [rdx+rax], cl
-	mov	r9, QWORD PTR 66600[rbp]
-	mov	eax, DWORD PTR 66936[rbp]
-	imul	eax, DWORD PTR 67096[rbp]
-	mov	edx, DWORD PTR 66940[rbp]
-	imul	edx, DWORD PTR 67100[rbp]
+	mov	r9, QWORD PTR 66576[rbp]
+	mov	eax, DWORD PTR 66912[rbp]
+	imul	eax, DWORD PTR 67072[rbp]
+	mov	edx, DWORD PTR 66916[rbp]
+	imul	edx, DWORD PTR 67076[rbp]
 	mov	r8d, edx
-	mov	r11d, DWORD PTR 66648[rbp]
-	mov	edx, DWORD PTR 66652[rbp]
-	mov	rcx, QWORD PTR 67072[rbp]
-	mov	r10d, DWORD PTR 66656[rbp]
+	mov	r11d, DWORD PTR 66624[rbp]
+	mov	edx, DWORD PTR 66628[rbp]
+	mov	rcx, QWORD PTR 67048[rbp]
+	mov	r10d, DWORD PTR 66632[rbp]
 	mov	DWORD PTR 72[rsp], r10d
-	mov	r10d, DWORD PTR 66936[rbp]
+	mov	r10d, DWORD PTR 66912[rbp]
 	mov	DWORD PTR 64[rsp], r10d
-	mov	r10d, DWORD PTR 66940[rbp]
+	mov	r10d, DWORD PTR 66916[rbp]
 	mov	DWORD PTR 56[rsp], r10d
 	mov	QWORD PTR 48[rsp], r9
-	mov	r9, QWORD PTR 66944[rbp]
+	mov	r9, QWORD PTR 66920[rbp]
 	mov	QWORD PTR 40[rsp], r9
 	mov	DWORD PTR 32[rsp], eax
 	mov	r9d, r8d
 	mov	r8d, r11d
 	call	draw_text_color
-	mov	eax, DWORD PTR 66936[rbp]
-	imul	eax, DWORD PTR 67096[rbp]
-	mov	edx, DWORD PTR 66940[rbp]
-	imul	edx, DWORD PTR 67100[rbp]
+	mov	eax, DWORD PTR 66912[rbp]
+	imul	eax, DWORD PTR 67072[rbp]
+	mov	edx, DWORD PTR 66916[rbp]
+	imul	edx, DWORD PTR 67076[rbp]
 	mov	r8d, edx
-	mov	edx, DWORD PTR 66936[rbp]
-	imul	edx, DWORD PTR 67096[rbp]
-	mov	ecx, DWORD PTR 66648[rbp]
+	mov	edx, DWORD PTR 66912[rbp]
+	imul	edx, DWORD PTR 67072[rbp]
+	mov	ecx, DWORD PTR 66624[rbp]
 	lea	r11d, [rdx+rcx]
-	mov	r10d, DWORD PTR 66652[rbp]
-	mov	rcx, QWORD PTR 67072[rbp]
-	mov	edx, DWORD PTR 66656[rbp]
+	mov	r10d, DWORD PTR 66628[rbp]
+	mov	rcx, QWORD PTR 67048[rbp]
+	mov	edx, DWORD PTR 66632[rbp]
 	mov	DWORD PTR 72[rsp], edx
-	mov	edx, DWORD PTR 66936[rbp]
+	mov	edx, DWORD PTR 66912[rbp]
 	mov	DWORD PTR 64[rsp], edx
-	mov	edx, DWORD PTR 66940[rbp]
+	mov	edx, DWORD PTR 66916[rbp]
 	mov	DWORD PTR 56[rsp], edx
-	lea	rdx, 592[rbp]
+	lea	rdx, 576[rbp]
 	mov	QWORD PTR 48[rsp], rdx
-	mov	rdx, QWORD PTR 66944[rbp]
+	mov	rdx, QWORD PTR 66920[rbp]
 	mov	QWORD PTR 40[rsp], rdx
 	mov	DWORD PTR 32[rsp], eax
 	mov	r9d, r8d
 	mov	r8d, r11d
 	mov	edx, r10d
 	call	draw_text_color
-	mov	eax, DWORD PTR 66652[rbp]
-	mov	DWORD PTR 66592[rbp], eax
-	mov	eax, DWORD PTR 66936[rbp]
-	imul	eax, DWORD PTR 67096[rbp]
+	mov	eax, DWORD PTR 66628[rbp]
+	mov	DWORD PTR 66568[rbp], eax
+	mov	eax, DWORD PTR 66912[rbp]
+	imul	eax, DWORD PTR 67072[rbp]
 	lea	edx, [rax+rax]
-	mov	eax, DWORD PTR 66648[rbp]
+	mov	eax, DWORD PTR 66624[rbp]
 	add	eax, edx
-	mov	DWORD PTR 66588[rbp], eax
-	mov	eax, DWORD PTR 66592[rbp]
+	mov	DWORD PTR 66564[rbp], eax
+	mov	eax, DWORD PTR 66568[rbp]
 	add	eax, 256
-	mov	DWORD PTR 66584[rbp], eax
-	mov	eax, DWORD PTR 66588[rbp]
+	mov	DWORD PTR 66560[rbp], eax
+	mov	eax, DWORD PTR 66564[rbp]
 	add	eax, 256
-	mov	DWORD PTR 66580[rbp], eax
-	mov	r9d, DWORD PTR 66584[rbp]
-	mov	r8d, DWORD PTR 66588[rbp]
-	mov	edx, DWORD PTR 66592[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
-	mov	rcx, QWORD PTR 66856[rbp]
+	mov	DWORD PTR 66556[rbp], eax
+	mov	r9d, DWORD PTR 66560[rbp]
+	mov	r8d, DWORD PTR 66564[rbp]
+	mov	edx, DWORD PTR 66568[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
+	mov	rcx, QWORD PTR 66832[rbp]
 	mov	QWORD PTR 40[rsp], rcx
-	mov	ecx, DWORD PTR 66580[rbp]
+	mov	ecx, DWORD PTR 66556[rbp]
 	mov	DWORD PTR 32[rsp], ecx
 	mov	rcx, rax
 	call	draw_image
-	mov	DWORD PTR 67216[rbp], 0
+	mov	DWORD PTR 67196[rbp], 0
 	jmp	.L279
 .L281:
-	mov	edx, DWORD PTR 67216[rbp]
+	mov	edx, DWORD PTR 67196[rbp]
 	mov	eax, edx
 	sar	eax, 31
 	shr	eax, 27
@@ -4601,33 +4685,33 @@ SDL_main:
 	sub	edx, eax
 	mov	eax, edx
 	mov	ecx, eax
-	mov	eax, DWORD PTR 67216[rbp]
+	mov	eax, DWORD PTR 67196[rbp]
 	lea	edx, 31[rax]
 	test	eax, eax
 	cmovs	eax, edx
 	sar	eax, 5
 	cdqe
-	mov	eax, DWORD PTR 560[rbp+rax*4]
+	mov	eax, DWORD PTR 544[rbp+rax*4]
 	mov	edx, ecx
 	mov	ecx, eax
 	call	BG
 	test	eax, eax
 	jne	.L280
-	mov	eax, DWORD PTR 67216[rbp]
+	mov	eax, DWORD PTR 67196[rbp]
 	lea	edx, 15[rax]
 	test	eax, eax
 	cmovs	eax, edx
 	sar	eax, 4
 	add	eax, 1
 	cvtsi2sd	xmm0, eax
-	movsd	xmm1, QWORD PTR .LC78[rip]
+	movsd	xmm1, QWORD PTR .LC82[rip]
 	movapd	xmm2, xmm0
 	divsd	xmm2, xmm1
-	cvtsi2sd	xmm1, DWORD PTR 66580[rbp]
-	cvtsi2sd	xmm0, DWORD PTR 66588[rbp]
+	cvtsi2sd	xmm1, DWORD PTR 66556[rbp]
+	cvtsi2sd	xmm0, DWORD PTR 66564[rbp]
 	call	lerp
 	cvttsd2si	ebx, xmm0
-	mov	edx, DWORD PTR 67216[rbp]
+	mov	edx, DWORD PTR 67196[rbp]
 	mov	eax, edx
 	sar	eax, 31
 	shr	eax, 28
@@ -4637,27 +4721,27 @@ SDL_main:
 	mov	eax, edx
 	add	eax, 1
 	cvtsi2sd	xmm0, eax
-	movsd	xmm1, QWORD PTR .LC78[rip]
+	movsd	xmm1, QWORD PTR .LC82[rip]
 	movapd	xmm2, xmm0
 	divsd	xmm2, xmm1
-	cvtsi2sd	xmm1, DWORD PTR 66584[rbp]
-	cvtsi2sd	xmm0, DWORD PTR 66592[rbp]
+	cvtsi2sd	xmm1, DWORD PTR 66560[rbp]
+	cvtsi2sd	xmm0, DWORD PTR 66568[rbp]
 	call	lerp
 	cvttsd2si	edi, xmm0
-	mov	eax, DWORD PTR 67216[rbp]
+	mov	eax, DWORD PTR 67196[rbp]
 	lea	edx, 15[rax]
 	test	eax, eax
 	cmovs	eax, edx
 	sar	eax, 4
 	cvtsi2sd	xmm0, eax
-	movsd	xmm1, QWORD PTR .LC78[rip]
+	movsd	xmm1, QWORD PTR .LC82[rip]
 	movapd	xmm2, xmm0
 	divsd	xmm2, xmm1
-	cvtsi2sd	xmm1, DWORD PTR 66580[rbp]
-	cvtsi2sd	xmm0, DWORD PTR 66588[rbp]
+	cvtsi2sd	xmm1, DWORD PTR 66556[rbp]
+	cvtsi2sd	xmm0, DWORD PTR 66564[rbp]
 	call	lerp
 	cvttsd2si	esi, xmm0
-	mov	edx, DWORD PTR 67216[rbp]
+	mov	edx, DWORD PTR 67196[rbp]
 	mov	eax, edx
 	sar	eax, 31
 	shr	eax, 28
@@ -4666,15 +4750,15 @@ SDL_main:
 	sub	edx, eax
 	mov	eax, edx
 	cvtsi2sd	xmm0, eax
-	movsd	xmm1, QWORD PTR .LC78[rip]
+	movsd	xmm1, QWORD PTR .LC82[rip]
 	movapd	xmm2, xmm0
 	divsd	xmm2, xmm1
-	cvtsi2sd	xmm1, DWORD PTR 66584[rbp]
-	cvtsi2sd	xmm0, DWORD PTR 66592[rbp]
+	cvtsi2sd	xmm1, DWORD PTR 66560[rbp]
+	cvtsi2sd	xmm0, DWORD PTR 66568[rbp]
 	call	lerp
 	cvttsd2si	eax, xmm0
-	mov	rcx, QWORD PTR 67072[rbp]
-	mov	rdx, QWORD PTR 66848[rbp]
+	mov	rcx, QWORD PTR 67048[rbp]
+	mov	rdx, QWORD PTR 66824[rbp]
 	mov	QWORD PTR 40[rsp], rdx
 	mov	DWORD PTR 32[rsp], ebx
 	mov	r9d, edi
@@ -4682,114 +4766,114 @@ SDL_main:
 	mov	edx, eax
 	call	draw_image
 .L280:
-	add	DWORD PTR 67216[rbp], 1
+	add	DWORD PTR 67196[rbp], 1
 .L279:
-	cmp	DWORD PTR 67216[rbp], 255
+	cmp	DWORD PTR 67196[rbp], 255
 	jle	.L281
-	movzx	eax, BYTE PTR 66599[rbp]
+	movzx	eax, BYTE PTR 66575[rbp]
 	mov	r8d, 0
 	mov	edx, 4
 	mov	ecx, eax
 	call	BGG
 	cvtsi2sd	xmm0, eax
-	movsd	xmm1, QWORD PTR .LC78[rip]
+	movsd	xmm1, QWORD PTR .LC82[rip]
 	movapd	xmm2, xmm0
 	divsd	xmm2, xmm1
-	cvtsi2sd	xmm1, DWORD PTR 66584[rbp]
-	cvtsi2sd	xmm0, DWORD PTR 66592[rbp]
+	cvtsi2sd	xmm1, DWORD PTR 66560[rbp]
+	cvtsi2sd	xmm0, DWORD PTR 66568[rbp]
 	call	lerp
 	cvttsd2si	eax, xmm0
-	mov	DWORD PTR 66576[rbp], eax
+	mov	DWORD PTR 66552[rbp], eax
 	mov	ecx, 255
-	mov	eax, DWORD PTR 66576[rbp]
+	mov	eax, DWORD PTR 66552[rbp]
 	lea	r9d, 1[rax]
-	mov	eax, DWORD PTR 66576[rbp]
+	mov	eax, DWORD PTR 66552[rbp]
 	lea	edx, -1[rax]
-	mov	r8d, DWORD PTR 66588[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	r8d, DWORD PTR 66564[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	DWORD PTR 40[rsp], ecx
-	mov	ecx, DWORD PTR 66580[rbp]
+	mov	ecx, DWORD PTR 66556[rbp]
 	mov	DWORD PTR 32[rsp], ecx
 	mov	rcx, rax
 	call	draw_rectangle_color
-	movzx	eax, BYTE PTR 66599[rbp]
+	movzx	eax, BYTE PTR 66575[rbp]
 	mov	r8d, 1
 	mov	edx, 4
 	mov	ecx, eax
 	call	BGG
 	cvtsi2sd	xmm0, eax
-	movsd	xmm1, QWORD PTR .LC78[rip]
+	movsd	xmm1, QWORD PTR .LC82[rip]
 	movapd	xmm2, xmm0
 	divsd	xmm2, xmm1
-	cvtsi2sd	xmm1, DWORD PTR 66580[rbp]
-	cvtsi2sd	xmm0, DWORD PTR 66588[rbp]
+	cvtsi2sd	xmm1, DWORD PTR 66556[rbp]
+	cvtsi2sd	xmm0, DWORD PTR 66564[rbp]
 	call	lerp
 	cvttsd2si	eax, xmm0
-	mov	DWORD PTR 66572[rbp], eax
+	mov	DWORD PTR 66548[rbp], eax
 	mov	r10d, 255
-	mov	eax, DWORD PTR 66572[rbp]
+	mov	eax, DWORD PTR 66548[rbp]
 	lea	ecx, 1[rax]
-	mov	eax, DWORD PTR 66572[rbp]
+	mov	eax, DWORD PTR 66548[rbp]
 	lea	r8d, -1[rax]
-	mov	r9d, DWORD PTR 66584[rbp]
-	mov	edx, DWORD PTR 66592[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	r9d, DWORD PTR 66560[rbp]
+	mov	edx, DWORD PTR 66568[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	DWORD PTR 40[rsp], r10d
 	mov	DWORD PTR 32[rsp], ecx
 	mov	rcx, rax
 	call	draw_rectangle_color
 	mov	esi, 255
-	movzx	eax, BYTE PTR 66599[rbp]
+	movzx	eax, BYTE PTR 66575[rbp]
 	mov	r8d, 1
 	mov	edx, 4
 	mov	ecx, eax
 	call	BGG
 	add	eax, 1
 	cvtsi2sd	xmm0, eax
-	movsd	xmm1, QWORD PTR .LC78[rip]
+	movsd	xmm1, QWORD PTR .LC82[rip]
 	movapd	xmm2, xmm0
 	divsd	xmm2, xmm1
-	cvtsi2sd	xmm1, DWORD PTR 66580[rbp]
-	cvtsi2sd	xmm0, DWORD PTR 66588[rbp]
+	cvtsi2sd	xmm1, DWORD PTR 66556[rbp]
+	cvtsi2sd	xmm0, DWORD PTR 66564[rbp]
 	call	lerp
 	cvttsd2si	ebx, xmm0
-	movzx	eax, BYTE PTR 66599[rbp]
+	movzx	eax, BYTE PTR 66575[rbp]
 	mov	r8d, 0
 	mov	edx, 4
 	mov	ecx, eax
 	call	BGG
 	add	eax, 1
 	cvtsi2sd	xmm0, eax
-	movsd	xmm1, QWORD PTR .LC78[rip]
+	movsd	xmm1, QWORD PTR .LC82[rip]
 	movapd	xmm2, xmm0
 	divsd	xmm2, xmm1
-	cvtsi2sd	xmm1, DWORD PTR 66584[rbp]
-	cvtsi2sd	xmm0, DWORD PTR 66592[rbp]
+	cvtsi2sd	xmm1, DWORD PTR 66560[rbp]
+	cvtsi2sd	xmm0, DWORD PTR 66568[rbp]
 	call	lerp
 	cvttsd2si	ecx, xmm0
-	mov	r8d, DWORD PTR 66572[rbp]
-	mov	edx, DWORD PTR 66576[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	r8d, DWORD PTR 66548[rbp]
+	mov	edx, DWORD PTR 66552[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	DWORD PTR 40[rsp], esi
 	mov	DWORD PTR 32[rsp], ebx
 	mov	r9d, ecx
 	mov	rcx, rax
 	call	draw_rectangle_color
-	mov	DWORD PTR 67212[rbp], 0
-	mov	eax, DWORD PTR 67096[rbp]
+	mov	DWORD PTR 67192[rbp], 0
+	mov	eax, DWORD PTR 67072[rbp]
 	sal	eax, 5
 	mov	edx, eax
-	mov	eax, DWORD PTR 66580[rbp]
+	mov	eax, DWORD PTR 66556[rbp]
 	add	eax, edx
-	mov	DWORD PTR 66568[rbp], eax
-	mov	edx, DWORD PTR 66656[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	DWORD PTR 66544[rbp], eax
+	mov	edx, DWORD PTR 66632[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	rcx, rax
 	call	draw_set_color
-	mov	DWORD PTR 67208[rbp], 0
+	mov	DWORD PTR 67188[rbp], 0
 	jmp	.L282
 .L285:
-	mov	ecx, DWORD PTR 67252[rbp]
+	mov	ecx, DWORD PTR 67232[rbp]
 	mov	edx, 1717986919
 	mov	eax, ecx
 	imul	edx
@@ -4804,7 +4888,7 @@ SDL_main:
 	add	eax, eax
 	sub	ecx, eax
 	mov	r8d, ecx
-	mov	ecx, DWORD PTR 67252[rbp]
+	mov	ecx, DWORD PTR 67232[rbp]
 	mov	edx, 1717986919
 	mov	eax, ecx
 	imul	edx
@@ -4826,7 +4910,7 @@ SDL_main:
 	add	eax, eax
 	mov	ecx, r9d
 	sub	ecx, eax
-	mov	r9d, DWORD PTR 67252[rbp]
+	mov	r9d, DWORD PTR 67232[rbp]
 	mov	edx, -2004318071
 	mov	eax, r9d
 	imul	edx
@@ -4851,7 +4935,7 @@ SDL_main:
 	add	eax, eax
 	mov	r10d, r9d
 	sub	r10d, eax
-	mov	r9d, DWORD PTR 67252[rbp]
+	mov	r9d, DWORD PTR 67232[rbp]
 	mov	edx, 458129845
 	mov	eax, r9d
 	imul	edx
@@ -4859,89 +4943,89 @@ SDL_main:
 	mov	eax, r9d
 	sar	eax, 31
 	sub	edx, eax
-	mov	eax, DWORD PTR 67208[rbp]
+	mov	eax, DWORD PTR 67188[rbp]
 	mov	DWORD PTR 40[rsp], r8d
 	mov	DWORD PTR 32[rsp], ecx
 	mov	r9d, 737
 	mov	r8d, r10d
 	mov	ecx, eax
 	call	mux_int
-	mov	DWORD PTR 66564[rbp], eax
-	cmp	DWORD PTR 67208[rbp], 2
+	mov	DWORD PTR 66540[rbp], eax
+	cmp	DWORD PTR 67188[rbp], 2
 	je	.L283
-	mov	eax, DWORD PTR 66564[rbp]
+	mov	eax, DWORD PTR 66540[rbp]
 	sal	eax, 4
 	mov	ecx, eax
-	mov	eax, DWORD PTR 67208[rbp]
+	mov	eax, DWORD PTR 67188[rbp]
 	add	eax, 1
-	imul	eax, DWORD PTR 67100[rbp]
+	imul	eax, DWORD PTR 67076[rbp]
 	sal	eax, 4
 	mov	edx, eax
-	mov	eax, DWORD PTR 66652[rbp]
+	mov	eax, DWORD PTR 66628[rbp]
 	add	edx, eax
-	mov	eax, DWORD PTR 67212[rbp]
+	mov	eax, DWORD PTR 67192[rbp]
 	lea	r9d, [rdx+rax]
-	mov	eax, DWORD PTR 67208[rbp]
-	imul	eax, DWORD PTR 67100[rbp]
+	mov	eax, DWORD PTR 67188[rbp]
+	imul	eax, DWORD PTR 67076[rbp]
 	sal	eax, 4
 	mov	edx, eax
-	mov	eax, DWORD PTR 66652[rbp]
+	mov	eax, DWORD PTR 66628[rbp]
 	add	edx, eax
-	mov	eax, DWORD PTR 67212[rbp]
+	mov	eax, DWORD PTR 67192[rbp]
 	add	edx, eax
-	mov	r8d, DWORD PTR 66580[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	r8d, DWORD PTR 66556[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	DWORD PTR 72[rsp], 32
 	mov	DWORD PTR 64[rsp], 16
 	mov	DWORD PTR 56[rsp], 0
 	mov	DWORD PTR 48[rsp], ecx
-	mov	rcx, QWORD PTR 66928[rbp]
+	mov	rcx, QWORD PTR 66904[rbp]
 	mov	QWORD PTR 40[rsp], rcx
-	mov	ecx, DWORD PTR 66568[rbp]
+	mov	ecx, DWORD PTR 66544[rbp]
 	mov	DWORD PTR 32[rsp], ecx
 	mov	rcx, rax
 	call	draw_image_part
-	mov	eax, DWORD PTR 67100[rbp]
-	add	DWORD PTR 67212[rbp], eax
+	mov	eax, DWORD PTR 67076[rbp]
+	add	DWORD PTR 67192[rbp], eax
 	jmp	.L284
 .L283:
-	mov	eax, DWORD PTR 66936[rbp]
-	imul	eax, DWORD PTR 67096[rbp]
-	mov	edx, DWORD PTR 66940[rbp]
-	imul	edx, DWORD PTR 67100[rbp]
+	mov	eax, DWORD PTR 66912[rbp]
+	imul	eax, DWORD PTR 67072[rbp]
+	mov	edx, DWORD PTR 66916[rbp]
+	imul	edx, DWORD PTR 67076[rbp]
 	mov	r8d, edx
-	mov	edx, DWORD PTR 67100[rbp]
+	mov	edx, DWORD PTR 67076[rbp]
 	mov	ecx, edx
 	sal	ecx, 5
-	mov	edx, DWORD PTR 66652[rbp]
+	mov	edx, DWORD PTR 66628[rbp]
 	add	edx, ecx
-	mov	r10d, DWORD PTR 66580[rbp]
-	mov	rcx, QWORD PTR 67072[rbp]
-	mov	r9d, DWORD PTR 66656[rbp]
+	mov	r10d, DWORD PTR 66556[rbp]
+	mov	rcx, QWORD PTR 67048[rbp]
+	mov	r9d, DWORD PTR 66632[rbp]
 	mov	DWORD PTR 72[rsp], r9d
-	mov	r9d, DWORD PTR 66936[rbp]
+	mov	r9d, DWORD PTR 66912[rbp]
 	mov	DWORD PTR 64[rsp], r9d
-	mov	r9d, DWORD PTR 66940[rbp]
+	mov	r9d, DWORD PTR 66916[rbp]
 	mov	DWORD PTR 56[rsp], r9d
-	lea	r9, .LC79[rip]
+	lea	r9, .LC83[rip]
 	mov	QWORD PTR 48[rsp], r9
-	mov	r9, QWORD PTR 66944[rbp]
+	mov	r9, QWORD PTR 66920[rbp]
 	mov	QWORD PTR 40[rsp], r9
 	mov	DWORD PTR 32[rsp], eax
 	mov	r9d, r8d
 	mov	r8d, r10d
 	call	draw_text_color
 .L284:
-	add	DWORD PTR 67208[rbp], 1
+	add	DWORD PTR 67188[rbp], 1
 .L282:
-	cmp	DWORD PTR 67208[rbp], 4
+	cmp	DWORD PTR 67188[rbp], 4
 	jle	.L285
 	mov	edx, 16777215
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	rcx, rax
 	call	draw_set_color
-	mov	DWORD PTR 66560[rbp], 0
-	mov	eax, DWORD PTR 67252[rbp]
+	mov	DWORD PTR 67184[rbp], 0
+	mov	eax, DWORD PTR 67232[rbp]
 	mov	DWORD PTR 32[rsp], 59
 	mov	r9d, 5
 	mov	r8d, 0
@@ -4950,9 +5034,9 @@ SDL_main:
 	call	clock_is_between
 	test	eax, eax
 	je	.L286
-	mov	DWORD PTR 66560[rbp], 0
+	mov	DWORD PTR 67184[rbp], 0
 .L286:
-	mov	eax, DWORD PTR 67252[rbp]
+	mov	eax, DWORD PTR 67232[rbp]
 	mov	DWORD PTR 32[rsp], 59
 	mov	r9d, 11
 	mov	r8d, 0
@@ -4961,9 +5045,9 @@ SDL_main:
 	call	clock_is_between
 	test	eax, eax
 	je	.L287
-	mov	DWORD PTR 66560[rbp], 1
+	mov	DWORD PTR 67184[rbp], 1
 .L287:
-	mov	eax, DWORD PTR 67252[rbp]
+	mov	eax, DWORD PTR 67232[rbp]
 	mov	DWORD PTR 32[rsp], 59
 	mov	r9d, 17
 	mov	r8d, 0
@@ -4972,9 +5056,9 @@ SDL_main:
 	call	clock_is_between
 	test	eax, eax
 	je	.L288
-	mov	DWORD PTR 66560[rbp], 2
+	mov	DWORD PTR 67184[rbp], 2
 .L288:
-	mov	eax, DWORD PTR 67252[rbp]
+	mov	eax, DWORD PTR 67232[rbp]
 	mov	DWORD PTR 32[rsp], 59
 	mov	r9d, 23
 	mov	r8d, 0
@@ -4983,110 +5067,142 @@ SDL_main:
 	call	clock_is_between
 	test	eax, eax
 	je	.L289
-	mov	DWORD PTR 66560[rbp], 3
+	mov	DWORD PTR 67184[rbp], 3
 .L289:
-	mov	edx, DWORD PTR 66568[rbp]
-	mov	eax, DWORD PTR 67096[rbp]
+	mov	r9, QWORD PTR 66864[rbp]
+	mov	r8, QWORD PTR 66872[rbp]
+	mov	rdx, QWORD PTR 66880[rbp]
+	mov	eax, DWORD PTR 67184[rbp]
+	mov	rcx, QWORD PTR 66856[rbp]
+	mov	QWORD PTR 32[rsp], rcx
+	mov	ecx, eax
+	call	mux_str
+	mov	r11, rax
+	mov	eax, DWORD PTR 66912[rbp]
+	imul	eax, DWORD PTR 67072[rbp]
+	mov	edx, DWORD PTR 66916[rbp]
+	imul	edx, DWORD PTR 67076[rbp]
+	mov	r8d, edx
+	mov	ecx, DWORD PTR 66544[rbp]
+	mov	edx, DWORD PTR 67072[rbp]
+	lea	r10d, [rcx+rdx]
+	mov	edx, DWORD PTR 66628[rbp]
+	mov	rcx, QWORD PTR 67048[rbp]
+	mov	r9d, DWORD PTR 66632[rbp]
+	mov	DWORD PTR 72[rsp], r9d
+	mov	r9d, DWORD PTR 66912[rbp]
+	mov	DWORD PTR 64[rsp], r9d
+	mov	r9d, DWORD PTR 66916[rbp]
+	mov	DWORD PTR 56[rsp], r9d
+	mov	QWORD PTR 48[rsp], r11
+	mov	r9, QWORD PTR 66920[rbp]
+	mov	QWORD PTR 40[rsp], r9
+	mov	DWORD PTR 32[rsp], eax
+	mov	r9d, r8d
+	mov	r8d, r10d
+	call	draw_text_color
+	mov	edx, DWORD PTR 66544[rbp]
+	mov	eax, DWORD PTR 67072[rbp]
 	add	edx, eax
-	mov	eax, DWORD PTR 66936[rbp]
-	imul	eax, DWORD PTR 67096[rbp]
+	mov	eax, DWORD PTR 66912[rbp]
+	imul	eax, DWORD PTR 67072[rbp]
 	add	eax, edx
-	mov	DWORD PTR 66556[rbp], eax
-	mov	edx, DWORD PTR 67096[rbp]
+	mov	DWORD PTR 66536[rbp], eax
+	mov	edx, DWORD PTR 67072[rbp]
 	mov	eax, edx
 	add	eax, eax
 	add	eax, edx
 	sal	eax, 4
 	mov	edx, eax
-	mov	eax, DWORD PTR 66556[rbp]
+	mov	eax, DWORD PTR 66536[rbp]
 	add	eax, edx
-	mov	DWORD PTR 66552[rbp], eax
-	mov	eax, DWORD PTR 67100[rbp]
+	mov	DWORD PTR 66532[rbp], eax
+	mov	eax, DWORD PTR 67076[rbp]
 	sal	eax, 4
 	mov	edx, eax
-	mov	eax, DWORD PTR 66652[rbp]
+	mov	eax, DWORD PTR 66628[rbp]
 	lea	r9d, [rdx+rax]
-	mov	r8d, DWORD PTR 66556[rbp]
-	mov	edx, DWORD PTR 66652[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
-	mov	rcx, QWORD PTR 66832[rbp]
+	mov	r8d, DWORD PTR 66536[rbp]
+	mov	edx, DWORD PTR 66628[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
+	mov	rcx, QWORD PTR 66808[rbp]
 	mov	QWORD PTR 40[rsp], rcx
-	mov	ecx, DWORD PTR 66552[rbp]
+	mov	ecx, DWORD PTR 66532[rbp]
 	mov	DWORD PTR 32[rsp], ecx
 	mov	rcx, rax
 	call	draw_image
-	mov	eax, DWORD PTR 66936[rbp]
-	imul	eax, DWORD PTR 67096[rbp]
+	mov	eax, DWORD PTR 66912[rbp]
+	imul	eax, DWORD PTR 67072[rbp]
 	mov	ebx, eax
-	mov	eax, DWORD PTR 66940[rbp]
-	imul	eax, DWORD PTR 67100[rbp]
+	mov	eax, DWORD PTR 66916[rbp]
+	imul	eax, DWORD PTR 67076[rbp]
 	mov	esi, eax
-	cvtsi2sd	xmm1, DWORD PTR 66552[rbp]
-	cvtsi2sd	xmm0, DWORD PTR 66556[rbp]
-	movsd	xmm2, QWORD PTR .LC80[rip]
+	cvtsi2sd	xmm1, DWORD PTR 66532[rbp]
+	cvtsi2sd	xmm0, DWORD PTR 66536[rbp]
+	movsd	xmm2, QWORD PTR .LC84[rip]
 	call	lerp
 	cvttsd2si	r8d, xmm0
-	mov	eax, DWORD PTR 66652[rbp]
+	mov	eax, DWORD PTR 66628[rbp]
 	lea	edx, 48[rax]
-	mov	rcx, QWORD PTR 67072[rbp]
-	mov	eax, DWORD PTR 66656[rbp]
+	mov	rcx, QWORD PTR 67048[rbp]
+	mov	eax, DWORD PTR 66632[rbp]
 	mov	DWORD PTR 72[rsp], eax
-	mov	eax, DWORD PTR 66936[rbp]
+	mov	eax, DWORD PTR 66912[rbp]
 	mov	DWORD PTR 64[rsp], eax
-	mov	eax, DWORD PTR 66940[rbp]
+	mov	eax, DWORD PTR 66916[rbp]
 	mov	DWORD PTR 56[rsp], eax
-	lea	rax, 404[rbp]
+	lea	rax, 388[rbp]
 	mov	QWORD PTR 48[rsp], rax
-	mov	rax, QWORD PTR 66944[rbp]
+	mov	rax, QWORD PTR 66920[rbp]
 	mov	QWORD PTR 40[rsp], rax
 	mov	DWORD PTR 32[rsp], ebx
 	mov	r9d, esi
 	call	draw_text_color
 	mov	rsp, r15
 .L278:
-	mov	eax, DWORD PTR 67104[rbp]
-	mov	DWORD PTR 66548[rbp], eax
-	mov	DWORD PTR 67204[rbp], 0
+	mov	eax, DWORD PTR 67080[rbp]
+	mov	DWORD PTR 66528[rbp], eax
+	mov	DWORD PTR 67180[rbp], 0
 	jmp	.L290
 .L300:
-	mov	DWORD PTR 67200[rbp], 0
+	mov	DWORD PTR 67176[rbp], 0
 	jmp	.L291
 .L299:
-	mov	eax, DWORD PTR 67204[rbp]
-	imul	eax, DWORD PTR 67108[rbp]
-	mov	edx, DWORD PTR 67200[rbp]
+	mov	eax, DWORD PTR 67180[rbp]
+	imul	eax, DWORD PTR 67084[rbp]
+	mov	edx, DWORD PTR 67176[rbp]
 	add	eax, edx
-	mov	DWORD PTR 66544[rbp], eax
-	mov	eax, DWORD PTR 67200[rbp]
-	imul	eax, DWORD PTR 67100[rbp]
-	imul	eax, DWORD PTR 67104[rbp]
-	mov	edx, DWORD PTR 67132[rbp]
+	mov	DWORD PTR 66524[rbp], eax
+	mov	eax, DWORD PTR 67176[rbp]
+	imul	eax, DWORD PTR 67076[rbp]
+	imul	eax, DWORD PTR 67080[rbp]
+	mov	edx, DWORD PTR 67108[rbp]
 	add	eax, edx
-	mov	DWORD PTR 66540[rbp], eax
-	mov	eax, DWORD PTR 67204[rbp]
-	imul	eax, DWORD PTR 67096[rbp]
-	imul	eax, DWORD PTR 67104[rbp]
-	mov	edx, DWORD PTR 67128[rbp]
+	mov	DWORD PTR 66520[rbp], eax
+	mov	eax, DWORD PTR 67180[rbp]
+	imul	eax, DWORD PTR 67072[rbp]
+	imul	eax, DWORD PTR 67080[rbp]
+	mov	edx, DWORD PTR 67104[rbp]
 	add	eax, edx
-	mov	DWORD PTR 66536[rbp], eax
-	mov	eax, DWORD PTR 67200[rbp]
+	mov	DWORD PTR 66516[rbp], eax
+	mov	eax, DWORD PTR 67176[rbp]
 	add	eax, 1
-	imul	eax, DWORD PTR 67100[rbp]
-	imul	eax, DWORD PTR 67104[rbp]
-	mov	edx, DWORD PTR 67132[rbp]
+	imul	eax, DWORD PTR 67076[rbp]
+	imul	eax, DWORD PTR 67080[rbp]
+	mov	edx, DWORD PTR 67108[rbp]
 	add	eax, edx
-	mov	DWORD PTR 66532[rbp], eax
-	mov	eax, DWORD PTR 67204[rbp]
+	mov	DWORD PTR 66512[rbp], eax
+	mov	eax, DWORD PTR 67180[rbp]
 	add	eax, 1
-	imul	eax, DWORD PTR 67096[rbp]
-	imul	eax, DWORD PTR 67104[rbp]
-	mov	edx, DWORD PTR 67128[rbp]
+	imul	eax, DWORD PTR 67072[rbp]
+	imul	eax, DWORD PTR 67080[rbp]
+	mov	edx, DWORD PTR 67104[rbp]
 	add	eax, edx
-	mov	DWORD PTR 66528[rbp], eax
+	mov	DWORD PTR 66508[rbp], eax
 	mov	r9d, 16711680
 	mov	r8d, 65280
 	mov	r10d, 255
-	mov	ecx, DWORD PTR 66544[rbp]
+	mov	ecx, DWORD PTR 66524[rbp]
 	mov	edx, 1431655766
 	mov	eax, ecx
 	imul	edx
@@ -5102,149 +5218,149 @@ SDL_main:
 	mov	edx, r10d
 	mov	ecx, eax
 	call	mux_int
-	mov	DWORD PTR 66524[rbp], eax
-	mov	r9d, DWORD PTR 66532[rbp]
-	mov	r8d, DWORD PTR 66536[rbp]
-	mov	edx, DWORD PTR 66540[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
-	mov	ecx, DWORD PTR 66524[rbp]
+	mov	DWORD PTR 66504[rbp], eax
+	mov	r9d, DWORD PTR 66512[rbp]
+	mov	r8d, DWORD PTR 66516[rbp]
+	mov	edx, DWORD PTR 66520[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
+	mov	ecx, DWORD PTR 66504[rbp]
 	mov	DWORD PTR 40[rsp], ecx
-	mov	ecx, DWORD PTR 66528[rbp]
+	mov	ecx, DWORD PTR 66508[rbp]
 	mov	DWORD PTR 32[rsp], ecx
 	mov	rcx, rax
 	call	draw_rectangle_color
-	mov	eax, DWORD PTR 66876[rbp]
-	imul	eax, DWORD PTR 67260[rbp]
-	mov	edx, DWORD PTR 66544[rbp]
+	mov	eax, DWORD PTR 66852[rbp]
+	imul	eax, DWORD PTR 67224[rbp]
+	mov	edx, DWORD PTR 66524[rbp]
 	add	eax, edx
-	mov	DWORD PTR 66520[rbp], eax
-	mov	eax, DWORD PTR 66520[rbp]
+	mov	DWORD PTR 66500[rbp], eax
+	mov	eax, DWORD PTR 66500[rbp]
 	cdqe
-	movzx	eax, BYTE PTR 608[rbp+rax]
+	movzx	eax, BYTE PTR 592[rbp+rax]
 	movzx	eax, al
-	mov	DWORD PTR 66516[rbp], eax
-	cmp	DWORD PTR 66516[rbp], 143
+	mov	DWORD PTR 66496[rbp], eax
+	cmp	DWORD PTR 66496[rbp], 143
 	jle	.L292
-	cmp	DWORD PTR 66516[rbp], 159
+	cmp	DWORD PTR 66496[rbp], 159
 	jg	.L292
-	mov	DWORD PTR 66512[rbp], 16
-	cmp	DWORD PTR 66516[rbp], 144
+	mov	DWORD PTR 66492[rbp], 16
+	cmp	DWORD PTR 66496[rbp], 144
 	jne	.L293
 	mov	eax, 60
 	jmp	.L294
 .L293:
 	mov	eax, 120
 .L294:
-	mov	DWORD PTR 66508[rbp], eax
+	mov	DWORD PTR 66488[rbp], eax
 	call	get_timer
-	mov	DWORD PTR 66504[rbp], eax
-	cmp	DWORD PTR 66516[rbp], 144
+	mov	DWORD PTR 66484[rbp], eax
+	cmp	DWORD PTR 66496[rbp], 144
 	jne	.L295
-	mov	rax, QWORD PTR 66992[rbp]
-	mov	QWORD PTR 67192[rbp], rax
+	mov	rax, QWORD PTR 66968[rbp]
+	mov	QWORD PTR 67168[rbp], rax
 	jmp	.L296
 .L295:
-	cmp	DWORD PTR 66516[rbp], 148
+	cmp	DWORD PTR 66496[rbp], 148
 	jne	.L297
-	mov	rax, QWORD PTR 66984[rbp]
-	mov	QWORD PTR 67192[rbp], rax
+	mov	rax, QWORD PTR 66960[rbp]
+	mov	QWORD PTR 67168[rbp], rax
 	jmp	.L296
 .L297:
-	mov	rax, QWORD PTR 66992[rbp]
-	mov	QWORD PTR 67192[rbp], rax
+	mov	rax, QWORD PTR 66968[rbp]
+	mov	QWORD PTR 67168[rbp], rax
 .L296:
-	mov	eax, DWORD PTR 66504[rbp]
+	mov	eax, DWORD PTR 66484[rbp]
 	cdq
-	idiv	DWORD PTR 66508[rbp]
+	idiv	DWORD PTR 66488[rbp]
 	cdq
-	idiv	DWORD PTR 66512[rbp]
+	idiv	DWORD PTR 66492[rbp]
 	mov	eax, edx
-	imul	eax, DWORD PTR 66548[rbp]
-	mov	r9d, DWORD PTR 66532[rbp]
-	mov	r10d, DWORD PTR 66536[rbp]
-	mov	edx, DWORD PTR 66540[rbp]
-	mov	rcx, QWORD PTR 67072[rbp]
-	mov	r8d, DWORD PTR 66548[rbp]
+	imul	eax, DWORD PTR 66528[rbp]
+	mov	r9d, DWORD PTR 66512[rbp]
+	mov	r10d, DWORD PTR 66516[rbp]
+	mov	edx, DWORD PTR 66520[rbp]
+	mov	rcx, QWORD PTR 67048[rbp]
+	mov	r8d, DWORD PTR 66528[rbp]
 	mov	DWORD PTR 72[rsp], r8d
-	mov	r8d, DWORD PTR 66548[rbp]
+	mov	r8d, DWORD PTR 66528[rbp]
 	mov	DWORD PTR 64[rsp], r8d
 	mov	DWORD PTR 56[rsp], 0
 	mov	DWORD PTR 48[rsp], eax
-	mov	rax, QWORD PTR 67192[rbp]
+	mov	rax, QWORD PTR 67168[rbp]
 	mov	QWORD PTR 40[rsp], rax
-	mov	eax, DWORD PTR 66528[rbp]
+	mov	eax, DWORD PTR 66508[rbp]
 	mov	DWORD PTR 32[rsp], eax
 	mov	r8d, r10d
 	call	draw_image_part
 	jmp	.L298
 .L292:
-	mov	eax, DWORD PTR 66516[rbp]
+	mov	eax, DWORD PTR 66496[rbp]
 	cdq
-	idiv	DWORD PTR 67108[rbp]
-	imul	eax, DWORD PTR 66548[rbp]
+	idiv	DWORD PTR 67084[rbp]
+	imul	eax, DWORD PTR 66528[rbp]
 	mov	ecx, eax
-	mov	eax, DWORD PTR 66516[rbp]
+	mov	eax, DWORD PTR 66496[rbp]
 	cdq
-	idiv	DWORD PTR 67108[rbp]
+	idiv	DWORD PTR 67084[rbp]
 	mov	eax, edx
-	imul	eax, DWORD PTR 66548[rbp]
-	mov	r9d, DWORD PTR 66532[rbp]
-	mov	r11d, DWORD PTR 66536[rbp]
-	mov	edx, DWORD PTR 66540[rbp]
-	mov	r10, QWORD PTR 67072[rbp]
-	mov	r8d, DWORD PTR 66548[rbp]
+	imul	eax, DWORD PTR 66528[rbp]
+	mov	r9d, DWORD PTR 66512[rbp]
+	mov	r11d, DWORD PTR 66516[rbp]
+	mov	edx, DWORD PTR 66520[rbp]
+	mov	r10, QWORD PTR 67048[rbp]
+	mov	r8d, DWORD PTR 66528[rbp]
 	mov	DWORD PTR 72[rsp], r8d
-	mov	r8d, DWORD PTR 66548[rbp]
+	mov	r8d, DWORD PTR 66528[rbp]
 	mov	DWORD PTR 64[rsp], r8d
 	mov	DWORD PTR 56[rsp], ecx
 	mov	DWORD PTR 48[rsp], eax
-	mov	rax, QWORD PTR 66976[rbp]
+	mov	rax, QWORD PTR 66952[rbp]
 	mov	QWORD PTR 40[rsp], rax
-	mov	eax, DWORD PTR 66528[rbp]
+	mov	eax, DWORD PTR 66508[rbp]
 	mov	DWORD PTR 32[rsp], eax
 	mov	r8d, r11d
 	mov	rcx, r10
 	call	draw_image_part
 .L298:
-	add	DWORD PTR 67200[rbp], 1
+	add	DWORD PTR 67176[rbp], 1
 .L291:
-	mov	eax, DWORD PTR 67200[rbp]
-	cmp	eax, DWORD PTR 67108[rbp]
+	mov	eax, DWORD PTR 67176[rbp]
+	cmp	eax, DWORD PTR 67084[rbp]
 	jl	.L299
-	add	DWORD PTR 67204[rbp], 1
+	add	DWORD PTR 67180[rbp], 1
 .L290:
-	mov	eax, DWORD PTR 67204[rbp]
-	cmp	eax, DWORD PTR 67108[rbp]
+	mov	eax, DWORD PTR 67180[rbp]
+	cmp	eax, DWORD PTR 67084[rbp]
 	jl	.L300
-	movzx	eax, BYTE PTR 528[rbp]
+	movzx	eax, BYTE PTR 512[rbp]
 	movzx	eax, al
-	imul	eax, DWORD PTR 66548[rbp]
+	imul	eax, DWORD PTR 66528[rbp]
 	mov	edx, eax
-	movzx	eax, BYTE PTR 533[rbp]
+	movzx	eax, BYTE PTR 517[rbp]
 	movzx	eax, al
 	imul	edx, eax
-	movzx	eax, BYTE PTR 532[rbp]
+	movzx	eax, BYTE PTR 516[rbp]
 	movzx	eax, al
-	imul	eax, DWORD PTR 66548[rbp]
+	imul	eax, DWORD PTR 66528[rbp]
 	lea	r8d, [rdx+rax]
-	mov	edx, DWORD PTR 516[rbp]
-	mov	eax, DWORD PTR 66548[rbp]
-	imul	eax, DWORD PTR 67096[rbp]
+	mov	edx, DWORD PTR 500[rbp]
+	mov	eax, DWORD PTR 66528[rbp]
+	imul	eax, DWORD PTR 67072[rbp]
 	lea	ecx, [rdx+rax]
-	mov	edx, DWORD PTR 512[rbp]
-	mov	eax, DWORD PTR 66548[rbp]
-	imul	eax, DWORD PTR 67100[rbp]
+	mov	edx, DWORD PTR 496[rbp]
+	mov	eax, DWORD PTR 66528[rbp]
+	imul	eax, DWORD PTR 67076[rbp]
 	lea	r11d, [rdx+rax]
-	mov	r10d, DWORD PTR 516[rbp]
-	mov	edx, DWORD PTR 512[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
-	mov	r9d, DWORD PTR 66548[rbp]
+	mov	r10d, DWORD PTR 500[rbp]
+	mov	edx, DWORD PTR 496[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
+	mov	r9d, DWORD PTR 66528[rbp]
 	mov	DWORD PTR 72[rsp], r9d
-	mov	r9d, DWORD PTR 66548[rbp]
+	mov	r9d, DWORD PTR 66528[rbp]
 	mov	DWORD PTR 64[rsp], r9d
 	mov	DWORD PTR 56[rsp], 0
 	mov	DWORD PTR 48[rsp], r8d
-	mov	r8, QWORD PTR 66952[rbp]
+	mov	r8, QWORD PTR 66928[rbp]
 	mov	QWORD PTR 40[rsp], r8
 	mov	DWORD PTR 32[rsp], ecx
 	mov	r9d, r11d
@@ -5253,160 +5369,160 @@ SDL_main:
 	call	draw_image_part
 	cmp	DWORD PTR 67240[rbp], 0
 	jle	.L301
-	mov	eax, DWORD PTR 512[rbp]
+	mov	eax, DWORD PTR 496[rbp]
 	add	eax, 60
-	mov	DWORD PTR 66272[rbp], eax
-	mov	eax, DWORD PTR 516[rbp]
+	mov	DWORD PTR 66256[rbp], eax
+	mov	eax, DWORD PTR 500[rbp]
 	sub	eax, 120
-	mov	DWORD PTR 66276[rbp], eax
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	DWORD PTR 66260[rbp], eax
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	DWORD PTR 32[rsp], 255
 	mov	r9d, 255
 	mov	r8d, 255
 	mov	edx, 255
 	mov	rcx, rax
 	call	SDL_SetRenderDrawColor
-	mov	rdx, QWORD PTR 67048[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	rdx, QWORD PTR 67024[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	rcx, rax
 	call	SDL_RenderFillRect
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	DWORD PTR 32[rsp], 255
 	mov	r9d, 255
 	mov	r8d, 255
 	mov	edx, 255
 	mov	rcx, rax
 	call	SDL_SetRenderDrawColor
-	mov	rax, QWORD PTR 67048[rbp]
+	mov	rax, QWORD PTR 67024[rbp]
 	mov	ecx, DWORD PTR 4[rax]
-	mov	rax, QWORD PTR 67048[rbp]
+	mov	rax, QWORD PTR 67024[rbp]
 	mov	eax, DWORD PTR 12[rax]
 	lea	edx, 3[rax]
 	test	eax, eax
 	cmovs	eax, edx
 	sar	eax, 2
 	lea	r8d, [rcx+rax]
-	mov	rax, QWORD PTR 67048[rbp]
+	mov	rax, QWORD PTR 67024[rbp]
 	mov	eax, DWORD PTR [rax]
 	cvtsi2sd	xmm1, eax
-	mov	rax, QWORD PTR 67048[rbp]
+	mov	rax, QWORD PTR 67024[rbp]
 	mov	eax, DWORD PTR 8[rax]
 	cvtsi2sd	xmm2, eax
-	movsd	xmm0, QWORD PTR .LC81[rip]
+	movsd	xmm0, QWORD PTR .LC85[rip]
 	mulsd	xmm0, xmm2
 	addsd	xmm0, xmm1
 	cvttsd2si	ecx, xmm0
-	mov	eax, DWORD PTR 516[rbp]
+	mov	eax, DWORD PTR 500[rbp]
 	lea	r10d, -15[rax]
-	mov	eax, DWORD PTR 512[rbp]
+	mov	eax, DWORD PTR 496[rbp]
 	lea	edx, 45[rax]
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	DWORD PTR 32[rsp], r8d
 	mov	r9d, ecx
 	mov	r8d, r10d
 	mov	rcx, rax
 	call	SDL_RenderDrawLine
-	mov	rax, QWORD PTR 67048[rbp]
+	mov	rax, QWORD PTR 67024[rbp]
 	mov	edx, DWORD PTR 4[rax]
-	mov	rax, QWORD PTR 67048[rbp]
+	mov	rax, QWORD PTR 67024[rbp]
 	mov	eax, DWORD PTR 12[rax]
 	lea	r8d, [rdx+rax]
-	mov	rax, QWORD PTR 67048[rbp]
+	mov	rax, QWORD PTR 67024[rbp]
 	mov	eax, DWORD PTR [rax]
 	cvtsi2sd	xmm1, eax
-	mov	rax, QWORD PTR 67048[rbp]
+	mov	rax, QWORD PTR 67024[rbp]
 	mov	eax, DWORD PTR 8[rax]
 	cvtsi2sd	xmm2, eax
-	movsd	xmm0, QWORD PTR .LC82[rip]
+	movsd	xmm0, QWORD PTR .LC86[rip]
 	mulsd	xmm0, xmm2
 	addsd	xmm0, xmm1
 	cvttsd2si	ecx, xmm0
-	mov	eax, DWORD PTR 516[rbp]
+	mov	eax, DWORD PTR 500[rbp]
 	lea	r10d, -15[rax]
-	mov	eax, DWORD PTR 512[rbp]
+	mov	eax, DWORD PTR 496[rbp]
 	lea	edx, 45[rax]
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	DWORD PTR 32[rsp], r8d
 	mov	r9d, ecx
 	mov	r8d, r10d
 	mov	rcx, rax
 	call	SDL_RenderDrawLine
-	mov	DWORD PTR 364[rbp], 0
-	mov	rax, QWORD PTR 67048[rbp]
+	mov	DWORD PTR 348[rbp], 0
+	mov	rax, QWORD PTR 67024[rbp]
 	mov	eax, DWORD PTR 8[rax]
 	sub	eax, 10
-	mov	DWORD PTR 66500[rbp], eax
-	mov	r8d, DWORD PTR 66500[rbp]
-	mov	ecx, DWORD PTR 364[rbp]
-	mov	rdx, QWORD PTR 67056[rbp]
-	mov	rax, QWORD PTR 67032[rbp]
+	mov	DWORD PTR 66480[rbp], eax
+	mov	r8d, DWORD PTR 66480[rbp]
+	mov	ecx, DWORD PTR 348[rbp]
+	mov	rdx, QWORD PTR 67032[rbp]
+	mov	rax, QWORD PTR 67008[rbp]
 	mov	r9d, r8d
 	mov	r8d, ecx
 	mov	rcx, rax
 	call	TTF_RenderText_Blended_Wrapped
-	mov	QWORD PTR 67184[rbp], rax
-	cmp	QWORD PTR 67184[rbp], 0
+	mov	QWORD PTR 67160[rbp], rax
+	cmp	QWORD PTR 67160[rbp], 0
 	jne	.L302
-	mov	edx, DWORD PTR 364[rbp]
-	mov	rax, QWORD PTR 67032[rbp]
+	mov	edx, DWORD PTR 348[rbp]
+	mov	rax, QWORD PTR 67008[rbp]
 	mov	r8d, edx
-	lea	rdx, .LC83[rip]
+	lea	rdx, .LC87[rip]
 	mov	rcx, rax
 	call	TTF_RenderText_Solid
-	mov	QWORD PTR 67184[rbp], rax
+	mov	QWORD PTR 67160[rbp], rax
 .L302:
-	mov	rax, QWORD PTR 67184[rbp]
+	mov	rax, QWORD PTR 67160[rbp]
 	mov	eax, DWORD PTR 16[rax]
-	mov	DWORD PTR 66496[rbp], eax
-	mov	rax, QWORD PTR 67184[rbp]
+	mov	DWORD PTR 66476[rbp], eax
+	mov	rax, QWORD PTR 67160[rbp]
 	mov	eax, DWORD PTR 20[rax]
-	mov	DWORD PTR 66492[rbp], eax
-	mov	rax, QWORD PTR 67048[rbp]
+	mov	DWORD PTR 66472[rbp], eax
+	mov	rax, QWORD PTR 67024[rbp]
 	mov	edx, DWORD PTR [rax]
-	mov	rax, QWORD PTR 67048[rbp]
+	mov	rax, QWORD PTR 67024[rbp]
 	mov	eax, DWORD PTR 8[rax]
-	sub	eax, DWORD PTR 66496[rbp]
+	sub	eax, DWORD PTR 66476[rbp]
 	mov	ecx, eax
 	shr	ecx, 31
 	add	eax, ecx
 	sar	eax
 	add	eax, edx
-	mov	DWORD PTR 66488[rbp], eax
-	mov	rax, QWORD PTR 67048[rbp]
+	mov	DWORD PTR 66468[rbp], eax
+	mov	rax, QWORD PTR 67024[rbp]
 	mov	edx, DWORD PTR 4[rax]
-	mov	rax, QWORD PTR 67048[rbp]
+	mov	rax, QWORD PTR 67024[rbp]
 	mov	eax, DWORD PTR 12[rax]
-	sub	eax, DWORD PTR 66492[rbp]
+	sub	eax, DWORD PTR 66472[rbp]
 	mov	ecx, eax
 	shr	ecx, 31
 	add	eax, ecx
 	sar	eax
 	add	eax, edx
-	mov	DWORD PTR 66484[rbp], eax
-	mov	eax, DWORD PTR 66488[rbp]
-	mov	DWORD PTR 336[rbp], eax
-	mov	eax, DWORD PTR 66484[rbp]
-	mov	DWORD PTR 340[rbp], eax
-	mov	eax, DWORD PTR 66496[rbp]
-	mov	DWORD PTR 344[rbp], eax
-	mov	eax, DWORD PTR 66492[rbp]
-	mov	DWORD PTR 348[rbp], eax
-	mov	rdx, QWORD PTR 67184[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	DWORD PTR 66464[rbp], eax
+	mov	eax, DWORD PTR 66468[rbp]
+	mov	DWORD PTR 320[rbp], eax
+	mov	eax, DWORD PTR 66464[rbp]
+	mov	DWORD PTR 324[rbp], eax
+	mov	eax, DWORD PTR 66476[rbp]
+	mov	DWORD PTR 328[rbp], eax
+	mov	eax, DWORD PTR 66472[rbp]
+	mov	DWORD PTR 332[rbp], eax
+	mov	rdx, QWORD PTR 67160[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	rcx, rax
 	call	SDL_CreateTextureFromSurface
-	mov	QWORD PTR 66472[rbp], rax
-	lea	rcx, 336[rbp]
-	mov	rdx, QWORD PTR 66472[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	QWORD PTR 66456[rbp], rax
+	lea	rcx, 320[rbp]
+	mov	rdx, QWORD PTR 66456[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	r9, rcx
 	mov	r8d, 0
 	mov	rcx, rax
 	call	SDL_RenderCopy
-	mov	rax, QWORD PTR 67184[rbp]
+	mov	rax, QWORD PTR 67160[rbp]
 	mov	rcx, rax
 	call	SDL_FreeSurface
-	mov	rax, QWORD PTR 66472[rbp]
+	mov	rax, QWORD PTR 66456[rbp]
 	mov	rcx, rax
 	call	SDL_DestroyTexture
 .L301:
@@ -5419,16 +5535,16 @@ SDL_main:
 	mov	eax, DWORD PTR userAnswer[rip]
 	cmp	eax, 1
 	jne	.L305
-	lea	rax, .LC84[rip]
+	lea	rax, .LC88[rip]
 	mov	QWORD PTR quizQuestion[rip], rax
-	lea	rax, .LC85[rip]
+	lea	rax, .LC89[rip]
 	mov	QWORD PTR answerA[rip], rax
-	lea	rax, .LC86[rip]
+	lea	rax, .LC90[rip]
 	mov	QWORD PTR answerB[rip], rax
-	lea	rax, .LC87[rip]
+	lea	rax, .LC91[rip]
 	mov	QWORD PTR answerC[rip], rax
 	mov	DWORD PTR userAnswer[rip], 0
-	add	DWORD PTR 67248[rbp], 500
+	add	DWORD PTR 67244[rbp], 500
 	mov	eax, DWORD PTR quiz1Num[rip]
 	add	eax, 1
 	mov	DWORD PTR quiz1Num[rip], eax
@@ -5436,13 +5552,13 @@ SDL_main:
 	mov	eax, DWORD PTR userAnswer[rip]
 	cmp	eax, 2
 	jne	.L306
-	lea	rax, .LC88[rip]
+	lea	rax, .LC92[rip]
 	mov	QWORD PTR quizQuestion[rip], rax
-	lea	rax, .LC85[rip]
+	lea	rax, .LC89[rip]
 	mov	QWORD PTR answerA[rip], rax
-	lea	rax, .LC86[rip]
+	lea	rax, .LC90[rip]
 	mov	QWORD PTR answerB[rip], rax
-	lea	rax, .LC87[rip]
+	lea	rax, .LC91[rip]
 	mov	QWORD PTR answerC[rip], rax
 	mov	DWORD PTR userAnswer[rip], 0
 	mov	eax, DWORD PTR quiz1Num[rip]
@@ -5452,13 +5568,13 @@ SDL_main:
 	mov	eax, DWORD PTR userAnswer[rip]
 	cmp	eax, 3
 	jne	.L303
-	lea	rax, .LC88[rip]
+	lea	rax, .LC92[rip]
 	mov	QWORD PTR quizQuestion[rip], rax
-	lea	rax, .LC85[rip]
+	lea	rax, .LC89[rip]
 	mov	QWORD PTR answerA[rip], rax
-	lea	rax, .LC86[rip]
+	lea	rax, .LC90[rip]
 	mov	QWORD PTR answerB[rip], rax
-	lea	rax, .LC87[rip]
+	lea	rax, .LC91[rip]
 	mov	QWORD PTR answerC[rip], rax
 	mov	DWORD PTR userAnswer[rip], 0
 	mov	eax, DWORD PTR quiz1Num[rip]
@@ -5472,13 +5588,13 @@ SDL_main:
 	mov	eax, DWORD PTR userAnswer[rip]
 	cmp	eax, 1
 	jne	.L309
-	lea	rax, .LC89[rip]
+	lea	rax, .LC93[rip]
 	mov	QWORD PTR quizQuestion[rip], rax
-	lea	rax, .LC90[rip]
+	lea	rax, .LC94[rip]
 	mov	QWORD PTR answerA[rip], rax
-	lea	rax, .LC90[rip]
+	lea	rax, .LC94[rip]
 	mov	QWORD PTR answerB[rip], rax
-	lea	rax, .LC90[rip]
+	lea	rax, .LC94[rip]
 	mov	QWORD PTR answerC[rip], rax
 	mov	DWORD PTR userAnswer[rip], 0
 	mov	eax, DWORD PTR quiz1Num[rip]
@@ -5488,16 +5604,16 @@ SDL_main:
 	mov	eax, DWORD PTR userAnswer[rip]
 	cmp	eax, 2
 	jne	.L310
-	lea	rax, .LC91[rip]
+	lea	rax, .LC95[rip]
 	mov	QWORD PTR quizQuestion[rip], rax
-	lea	rax, .LC90[rip]
+	lea	rax, .LC94[rip]
 	mov	QWORD PTR answerA[rip], rax
-	lea	rax, .LC90[rip]
+	lea	rax, .LC94[rip]
 	mov	QWORD PTR answerB[rip], rax
-	lea	rax, .LC90[rip]
+	lea	rax, .LC94[rip]
 	mov	QWORD PTR answerC[rip], rax
 	mov	DWORD PTR userAnswer[rip], 0
-	add	DWORD PTR 67248[rbp], 500
+	add	DWORD PTR 67244[rbp], 500
 	mov	eax, DWORD PTR quiz1Num[rip]
 	add	eax, 1
 	mov	DWORD PTR quiz1Num[rip], eax
@@ -5505,13 +5621,13 @@ SDL_main:
 	mov	eax, DWORD PTR userAnswer[rip]
 	cmp	eax, 3
 	jne	.L303
-	lea	rax, .LC89[rip]
+	lea	rax, .LC93[rip]
 	mov	QWORD PTR quizQuestion[rip], rax
-	lea	rax, .LC90[rip]
+	lea	rax, .LC94[rip]
 	mov	QWORD PTR answerA[rip], rax
-	lea	rax, .LC90[rip]
+	lea	rax, .LC94[rip]
 	mov	QWORD PTR answerB[rip], rax
-	lea	rax, .LC90[rip]
+	lea	rax, .LC94[rip]
 	mov	QWORD PTR answerC[rip], rax
 	mov	DWORD PTR userAnswer[rip], 0
 	mov	eax, DWORD PTR quiz1Num[rip]
@@ -5520,13 +5636,13 @@ SDL_main:
 	jmp	.L303
 .L308:
 	mov	DWORD PTR quiz1Num[rip], 3
-	lea	rax, .LC92[rip]
+	lea	rax, .LC96[rip]
 	mov	QWORD PTR quizQuestion[rip], rax
-	lea	rax, .LC93[rip]
+	lea	rax, .LC97[rip]
 	mov	QWORD PTR answerA[rip], rax
-	lea	rax, .LC90[rip]
+	lea	rax, .LC94[rip]
 	mov	QWORD PTR answerB[rip], rax
-	lea	rax, .LC90[rip]
+	lea	rax, .LC94[rip]
 	mov	QWORD PTR answerC[rip], rax
 	mov	eax, DWORD PTR userAnswer[rip]
 	cmp	eax, 1
@@ -5549,55 +5665,55 @@ SDL_main:
 	movzx	eax, BYTE PTR quizOn[rip]
 	test	al, al
 	je	.L314
-	mov	DWORD PTR 332[rbp], 0
-	mov	BYTE PTR 332[rbp], -56
-	mov	BYTE PTR 333[rbp], -56
-	mov	BYTE PTR 334[rbp], -56
-	movzx	eax, BYTE PTR 334[rbp]
+	mov	DWORD PTR 316[rbp], 0
+	mov	BYTE PTR 316[rbp], -56
+	mov	BYTE PTR 317[rbp], -56
+	mov	BYTE PTR 318[rbp], -56
+	movzx	eax, BYTE PTR 318[rbp]
 	movzx	r8d, al
-	movzx	eax, BYTE PTR 333[rbp]
+	movzx	eax, BYTE PTR 317[rbp]
 	movzx	edx, al
-	movzx	eax, BYTE PTR 332[rbp]
+	movzx	eax, BYTE PTR 316[rbp]
 	movzx	eax, al
-	mov	rcx, QWORD PTR 67072[rbp]
+	mov	rcx, QWORD PTR 67048[rbp]
 	mov	DWORD PTR 32[rsp], 255
 	mov	r9d, r8d
 	mov	r8d, edx
 	mov	edx, eax
 	call	SDL_SetRenderDrawColor
-	mov	DWORD PTR 66468[rbp], 400
-	mov	DWORD PTR 66464[rbp], 200
+	mov	DWORD PTR 66452[rbp], 400
+	mov	DWORD PTR 66448[rbp], 200
 	mov	eax, 800
-	sub	eax, DWORD PTR 66468[rbp]
+	sub	eax, DWORD PTR 66452[rbp]
 	mov	edx, eax
 	shr	edx, 31
 	add	eax, edx
 	sar	eax
 	add	eax, 300
-	mov	DWORD PTR 66460[rbp], eax
+	mov	DWORD PTR 66444[rbp], eax
 	mov	eax, 600
-	sub	eax, DWORD PTR 66464[rbp]
+	sub	eax, DWORD PTR 66448[rbp]
 	mov	edx, eax
 	shr	edx, 31
 	add	eax, edx
 	sar	eax
-	mov	DWORD PTR 66456[rbp], eax
-	mov	eax, DWORD PTR 66460[rbp]
-	mov	DWORD PTR 304[rbp], eax
-	mov	eax, DWORD PTR 66456[rbp]
-	mov	DWORD PTR 308[rbp], eax
-	mov	eax, DWORD PTR 66468[rbp]
-	mov	DWORD PTR 312[rbp], eax
-	mov	eax, DWORD PTR 66464[rbp]
-	mov	DWORD PTR 316[rbp], eax
-	lea	rax, 304[rbp]
-	mov	rcx, QWORD PTR 67072[rbp]
+	mov	DWORD PTR 66440[rbp], eax
+	mov	eax, DWORD PTR 66444[rbp]
+	mov	DWORD PTR 288[rbp], eax
+	mov	eax, DWORD PTR 66440[rbp]
+	mov	DWORD PTR 292[rbp], eax
+	mov	eax, DWORD PTR 66452[rbp]
+	mov	DWORD PTR 296[rbp], eax
+	mov	eax, DWORD PTR 66448[rbp]
+	mov	DWORD PTR 300[rbp], eax
+	lea	rax, 288[rbp]
+	mov	rcx, QWORD PTR 67048[rbp]
 	mov	rdx, rax
 	call	SDL_RenderFillRect
-	mov	DWORD PTR 300[rbp], 0
-	mov	eax, DWORD PTR 66468[rbp]
+	mov	DWORD PTR 284[rbp], 0
+	mov	eax, DWORD PTR 66452[rbp]
 	sub	eax, 20
-	mov	DWORD PTR 66452[rbp], eax
+	mov	DWORD PTR 66436[rbp], eax
 	mov	r8, QWORD PTR answerC[rip]
 	mov	rcx, QWORD PTR answerB[rip]
 	mov	rdx, QWORD PTR answerA[rip]
@@ -5606,78 +5722,78 @@ SDL_main:
 	mov	QWORD PTR 48[rsp], r8
 	mov	QWORD PTR 40[rsp], rcx
 	mov	QWORD PTR 32[rsp], rdx
-	lea	r8, .LC94[rip]
+	lea	r8, .LC98[rip]
 	mov	edx, 256
 	mov	rcx, rax
 	call	snprintf
-	mov	r8d, DWORD PTR 66452[rbp]
-	mov	edx, DWORD PTR 300[rbp]
+	mov	r8d, DWORD PTR 66436[rbp]
+	mov	edx, DWORD PTR 284[rbp]
 	lea	rax, -32[rbp]
-	mov	rcx, QWORD PTR 67032[rbp]
+	mov	rcx, QWORD PTR 67008[rbp]
 	mov	r9d, r8d
 	mov	r8d, edx
 	mov	rdx, rax
 	call	TTF_RenderText_Blended_Wrapped
-	mov	QWORD PTR 66440[rbp], rax
-	mov	rdx, QWORD PTR 66440[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	QWORD PTR 66424[rbp], rax
+	mov	rdx, QWORD PTR 66424[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	rcx, rax
 	call	SDL_CreateTextureFromSurface
-	mov	QWORD PTR 66432[rbp], rax
-	mov	rax, QWORD PTR 66440[rbp]
+	mov	QWORD PTR 66416[rbp], rax
+	mov	rax, QWORD PTR 66424[rbp]
 	mov	eax, DWORD PTR 16[rax]
-	mov	DWORD PTR 66428[rbp], eax
-	mov	rax, QWORD PTR 66440[rbp]
+	mov	DWORD PTR 66412[rbp], eax
+	mov	rax, QWORD PTR 66424[rbp]
 	mov	eax, DWORD PTR 20[rax]
-	mov	DWORD PTR 66424[rbp], eax
-	mov	eax, DWORD PTR 66468[rbp]
-	sub	eax, DWORD PTR 66428[rbp]
+	mov	DWORD PTR 66408[rbp], eax
+	mov	eax, DWORD PTR 66452[rbp]
+	sub	eax, DWORD PTR 66412[rbp]
 	mov	edx, eax
 	shr	edx, 31
 	add	eax, edx
 	sar	eax
 	mov	edx, eax
-	mov	eax, DWORD PTR 66460[rbp]
+	mov	eax, DWORD PTR 66444[rbp]
 	add	eax, edx
-	mov	DWORD PTR 66420[rbp], eax
-	mov	eax, DWORD PTR 66464[rbp]
-	sub	eax, DWORD PTR 66424[rbp]
+	mov	DWORD PTR 66404[rbp], eax
+	mov	eax, DWORD PTR 66448[rbp]
+	sub	eax, DWORD PTR 66408[rbp]
 	mov	edx, eax
 	shr	edx, 31
 	add	eax, edx
 	sar	eax
 	mov	edx, eax
-	mov	eax, DWORD PTR 66456[rbp]
+	mov	eax, DWORD PTR 66440[rbp]
 	add	eax, edx
-	mov	DWORD PTR 66416[rbp], eax
-	mov	eax, DWORD PTR 66420[rbp]
-	mov	DWORD PTR 272[rbp], eax
-	mov	eax, DWORD PTR 66416[rbp]
-	mov	DWORD PTR 276[rbp], eax
-	mov	eax, DWORD PTR 66428[rbp]
-	mov	DWORD PTR 280[rbp], eax
-	mov	eax, DWORD PTR 66424[rbp]
-	mov	DWORD PTR 284[rbp], eax
-	lea	rcx, 272[rbp]
-	mov	rdx, QWORD PTR 66432[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	DWORD PTR 66400[rbp], eax
+	mov	eax, DWORD PTR 66404[rbp]
+	mov	DWORD PTR 256[rbp], eax
+	mov	eax, DWORD PTR 66400[rbp]
+	mov	DWORD PTR 260[rbp], eax
+	mov	eax, DWORD PTR 66412[rbp]
+	mov	DWORD PTR 264[rbp], eax
+	mov	eax, DWORD PTR 66408[rbp]
+	mov	DWORD PTR 268[rbp], eax
+	lea	rcx, 256[rbp]
+	mov	rdx, QWORD PTR 66416[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	r9, rcx
 	mov	r8d, 0
 	mov	rcx, rax
 	call	SDL_RenderCopy
-	mov	rax, QWORD PTR 66440[rbp]
+	mov	rax, QWORD PTR 66424[rbp]
 	mov	rcx, rax
 	call	SDL_FreeSurface
-	mov	rax, QWORD PTR 66432[rbp]
+	mov	rax, QWORD PTR 66416[rbp]
 	mov	rcx, rax
 	call	SDL_DestroyTexture
 .L314:
-	mov	DWORD PTR 67180[rbp], 0
+	mov	DWORD PTR 67156[rbp], 0
 	jmp	.L315
 .L317:
 	lea	rax, waterParticles[rip]
 	mov	rdx, QWORD PTR [rax]
-	mov	eax, DWORD PTR 67180[rbp]
+	mov	eax, DWORD PTR 67156[rbp]
 	cdqe
 	sal	rax, 4
 	add	rax, rdx
@@ -5686,27 +5802,27 @@ SDL_main:
 	je	.L316
 	lea	rax, waterParticles[rip]
 	mov	rdx, QWORD PTR [rax]
-	mov	eax, DWORD PTR 67180[rbp]
+	mov	eax, DWORD PTR 67156[rbp]
 	cdqe
 	sal	rax, 4
 	add	rax, rdx
 	movss	xmm1, DWORD PTR 4[rax]
-	movss	xmm0, DWORD PTR .LC95[rip]
+	movss	xmm0, DWORD PTR .LC99[rip]
 	addss	xmm0, xmm1
 	cvttss2si	edx, xmm0
 	lea	rax, waterParticles[rip]
 	mov	rcx, QWORD PTR [rax]
-	mov	eax, DWORD PTR 67180[rbp]
+	mov	eax, DWORD PTR 67156[rbp]
 	cdqe
 	sal	rax, 4
 	add	rax, rcx
 	movss	xmm1, DWORD PTR [rax]
-	movss	xmm0, DWORD PTR .LC96[rip]
+	movss	xmm0, DWORD PTR .LC100[rip]
 	addss	xmm0, xmm1
 	cvttss2si	r9d, xmm0
 	lea	rax, waterParticles[rip]
 	mov	rcx, QWORD PTR [rax]
-	mov	eax, DWORD PTR 67180[rbp]
+	mov	eax, DWORD PTR 67156[rbp]
 	cdqe
 	sal	rax, 4
 	add	rax, rcx
@@ -5714,23 +5830,23 @@ SDL_main:
 	cvttss2si	r8d, xmm0
 	lea	rax, waterParticles[rip]
 	mov	rcx, QWORD PTR [rax]
-	mov	eax, DWORD PTR 67180[rbp]
+	mov	eax, DWORD PTR 67156[rbp]
 	cdqe
 	sal	rax, 4
 	add	rax, rcx
 	movss	xmm0, DWORD PTR [rax]
 	cvttss2si	eax, xmm0
-	mov	rcx, QWORD PTR 67072[rbp]
-	mov	r10, QWORD PTR 66992[rbp]
+	mov	rcx, QWORD PTR 67048[rbp]
+	mov	r10, QWORD PTR 66968[rbp]
 	mov	QWORD PTR 40[rsp], r10
 	mov	DWORD PTR 32[rsp], edx
 	mov	edx, eax
 	call	draw_image
 .L316:
-	add	DWORD PTR 67180[rbp], 1
+	add	DWORD PTR 67156[rbp], 1
 .L315:
 	mov	eax, 100
-	cmp	DWORD PTR 67180[rbp], eax
+	cmp	DWORD PTR 67156[rbp], eax
 	jl	.L317
 	mov	rax, QWORD PTR globalEnemy[rip]
 	test	rax, rax
@@ -5739,7 +5855,7 @@ SDL_main:
 	mov	eax, DWORD PTR 16[rax]
 	test	eax, eax
 	jle	.L318
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	DWORD PTR 32[rsp], 255
 	mov	r9d, 0
 	mov	r8d, 0
@@ -5748,18 +5864,18 @@ SDL_main:
 	call	SDL_SetRenderDrawColor
 	mov	rax, QWORD PTR globalEnemy[rip]
 	mov	eax, DWORD PTR [rax]
-	mov	DWORD PTR 256[rbp], eax
+	mov	DWORD PTR 240[rbp], eax
 	mov	rax, QWORD PTR globalEnemy[rip]
 	mov	eax, DWORD PTR 4[rax]
-	mov	DWORD PTR 260[rbp], eax
+	mov	DWORD PTR 244[rbp], eax
 	mov	rax, QWORD PTR globalEnemy[rip]
 	mov	eax, DWORD PTR 8[rax]
-	mov	DWORD PTR 264[rbp], eax
+	mov	DWORD PTR 248[rbp], eax
 	mov	rax, QWORD PTR globalEnemy[rip]
 	mov	eax, DWORD PTR 12[rax]
-	mov	DWORD PTR 268[rbp], eax
-	lea	rax, 256[rbp]
-	mov	rcx, QWORD PTR 67072[rbp]
+	mov	DWORD PTR 252[rbp], eax
+	lea	rax, 240[rbp]
+	mov	rcx, QWORD PTR 67048[rbp]
 	mov	rdx, rax
 	call	SDL_RenderFillRect
 	mov	rax, QWORD PTR globalEnemy[rip]
@@ -5776,8 +5892,8 @@ SDL_main:
 	mov	r10d, DWORD PTR 4[rax]
 	mov	rax, QWORD PTR globalEnemy[rip]
 	mov	edx, DWORD PTR [rax]
-	mov	rax, QWORD PTR 67072[rbp]
-	mov	r8, QWORD PTR 66960[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
+	mov	r8, QWORD PTR 66936[rbp]
 	mov	QWORD PTR 40[rsp], r8
 	mov	DWORD PTR 32[rsp], ecx
 	mov	r8d, r10d
@@ -5795,40 +5911,40 @@ SDL_main:
 	mov	rcx, rax
 	call	resetEnemy
 .L319:
-	cmp	DWORD PTR 67232[rbp], 0
-	je	.L330
-	mov	eax, DWORD PTR 67100[rbp]
+	cmp	DWORD PTR 67216[rbp], 0
+	je	.L320
+	mov	eax, DWORD PTR 67076[rbp]
 	sal	eax, 6
-	mov	DWORD PTR 66412[rbp], eax
-	mov	ecx, DWORD PTR 67140[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	DWORD PTR 66396[rbp], eax
+	mov	ecx, DWORD PTR 67116[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	DWORD PTR 40[rsp], 0
-	mov	edx, DWORD PTR 67136[rbp]
+	mov	edx, DWORD PTR 67112[rbp]
 	mov	DWORD PTR 32[rsp], edx
 	mov	r9d, ecx
 	mov	r8d, 0
 	mov	edx, 0
 	mov	rcx, rax
 	call	draw_rectangle_color
-	mov	edx, DWORD PTR 67116[rbp]
-	mov	eax, DWORD PTR 66412[rbp]
+	mov	edx, DWORD PTR 67092[rbp]
+	mov	eax, DWORD PTR 66396[rbp]
 	lea	r9d, [rdx+rax]
-	mov	eax, DWORD PTR 67132[rbp]
-	sub	eax, DWORD PTR 66412[rbp]
-	mov	r8d, DWORD PTR 67128[rbp]
-	mov	rcx, QWORD PTR 67072[rbp]
-	mov	rdx, QWORD PTR 66792[rbp]
+	mov	eax, DWORD PTR 67108[rbp]
+	sub	eax, DWORD PTR 66396[rbp]
+	mov	r8d, DWORD PTR 67104[rbp]
+	mov	rcx, QWORD PTR 67048[rbp]
+	mov	rdx, QWORD PTR 66768[rbp]
 	mov	QWORD PTR 40[rsp], rdx
-	mov	edx, DWORD PTR 67112[rbp]
+	mov	edx, DWORD PTR 67088[rbp]
 	mov	DWORD PTR 32[rsp], edx
 	mov	edx, eax
 	call	draw_image
-	mov	DWORD PTR 66408[rbp], 16
+	mov	DWORD PTR 66392[rbp], 16
 	call	draw_get_color
-	mov	DWORD PTR 66404[rbp], eax
+	mov	DWORD PTR 66388[rbp], eax
 	call	get_timer
-	mov	DWORD PTR 66400[rbp], eax
-	mov	ecx, DWORD PTR 66400[rbp]
+	mov	DWORD PTR 66384[rbp], eax
+	mov	ecx, DWORD PTR 66384[rbp]
 	mov	edx, 1717986919
 	mov	eax, ecx
 	imul	edx
@@ -5846,12 +5962,12 @@ SDL_main:
 	cdq
 	sub	ecx, edx
 	mov	edx, ecx
-	mov	DWORD PTR 66396[rbp], edx
-	mov	edx, DWORD PTR 66396[rbp]
+	mov	DWORD PTR 66380[rbp], edx
+	mov	edx, DWORD PTR 66380[rbp]
 	imul	edx, edx, 360
 	sub	eax, edx
-	mov	DWORD PTR 66396[rbp], eax
-	mov	ecx, DWORD PTR 66400[rbp]
+	mov	DWORD PTR 66380[rbp], eax
+	mov	ecx, DWORD PTR 66384[rbp]
 	mov	edx, 1717986919
 	mov	eax, ecx
 	imul	edx
@@ -5875,13 +5991,13 @@ SDL_main:
 	cvtsi2sd	xmm0, edx
 	call	dcos
 	movapd	xmm1, xmm0
-	movsd	xmm0, QWORD PTR .LC97[rip]
+	movsd	xmm0, QWORD PTR .LC101[rip]
 	mulsd	xmm1, xmm0
-	movsd	xmm0, QWORD PTR .LC98[rip]
+	movsd	xmm0, QWORD PTR .LC102[rip]
 	addsd	xmm0, xmm1
 	cvttsd2si	eax, xmm0
-	mov	DWORD PTR 66392[rbp], eax
-	mov	ecx, DWORD PTR 66400[rbp]
+	mov	DWORD PTR 66376[rbp], eax
+	mov	ecx, DWORD PTR 66384[rbp]
 	mov	edx, 1717986919
 	mov	eax, ecx
 	imul	edx
@@ -5896,110 +6012,110 @@ SDL_main:
 	movzx	edx, dl
 	sub	edx, eax
 	mov	eax, edx
-	mov	DWORD PTR 66388[rbp], eax
-	mov	DWORD PTR 67176[rbp], 0
+	mov	DWORD PTR 66372[rbp], eax
+	mov	DWORD PTR 67152[rbp], 0
 	jmp	.L321
 .L322:
-	mov	eax, DWORD PTR 66408[rbp]
+	mov	eax, DWORD PTR 66392[rbp]
 	neg	eax
-	imul	eax, DWORD PTR 67100[rbp]
+	imul	eax, DWORD PTR 67076[rbp]
 	cvtsi2sd	xmm6, eax
-	cvtsi2sd	xmm0, DWORD PTR 66396[rbp]
+	cvtsi2sd	xmm0, DWORD PTR 66380[rbp]
 	call	dcos
 	mulsd	xmm6, xmm0
-	mov	eax, DWORD PTR 67176[rbp]
-	imul	eax, DWORD PTR 67100[rbp]
+	mov	eax, DWORD PTR 67152[rbp]
+	imul	eax, DWORD PTR 67076[rbp]
 	cvtsi2sd	xmm7, eax
-	cvtsi2sd	xmm0, DWORD PTR 66396[rbp]
+	cvtsi2sd	xmm0, DWORD PTR 66380[rbp]
 	call	dcos
 	mulsd	xmm0, xmm7
 	addsd	xmm0, xmm6
 	cvttsd2si	eax, xmm0
-	mov	DWORD PTR 66384[rbp], eax
-	mov	eax, DWORD PTR 66408[rbp]
+	mov	DWORD PTR 66368[rbp], eax
+	mov	eax, DWORD PTR 66392[rbp]
 	neg	eax
-	imul	eax, DWORD PTR 67096[rbp]
+	imul	eax, DWORD PTR 67072[rbp]
 	cvtsi2sd	xmm6, eax
-	cvtsi2sd	xmm0, DWORD PTR 66392[rbp]
+	cvtsi2sd	xmm0, DWORD PTR 66376[rbp]
 	call	dsin
 	mulsd	xmm6, xmm0
-	mov	eax, DWORD PTR 67176[rbp]
-	imul	eax, DWORD PTR 67096[rbp]
+	mov	eax, DWORD PTR 67152[rbp]
+	imul	eax, DWORD PTR 67072[rbp]
 	cvtsi2sd	xmm7, eax
-	cvtsi2sd	xmm0, DWORD PTR 66392[rbp]
+	cvtsi2sd	xmm0, DWORD PTR 66376[rbp]
 	call	dsin
 	mulsd	xmm0, xmm7
 	addsd	xmm0, xmm6
 	cvttsd2si	eax, xmm0
-	mov	DWORD PTR 66380[rbp], eax
-	cvtsi2sd	xmm0, DWORD PTR 67176[rbp]
-	mov	eax, DWORD PTR 66408[rbp]
+	mov	DWORD PTR 66364[rbp], eax
+	cvtsi2sd	xmm0, DWORD PTR 67152[rbp]
+	mov	eax, DWORD PTR 66392[rbp]
 	sub	eax, 1
 	cvtsi2sd	xmm1, eax
 	divsd	xmm0, xmm1
 	movapd	xmm1, xmm0
-	movsd	xmm0, QWORD PTR .LC99[rip]
+	movsd	xmm0, QWORD PTR .LC103[rip]
 	movapd	xmm2, xmm1
 	movapd	xmm1, xmm0
 	pxor	xmm0, xmm0
 	call	lerp
 	cvttsd2si	edx, xmm0
-	mov	eax, DWORD PTR 66388[rbp]
+	mov	eax, DWORD PTR 66372[rbp]
 	mov	r8d, edx
 	mov	edx, 32
 	mov	ecx, eax
 	call	make_color_hsv
 	mov	edx, eax
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	rcx, rax
 	call	draw_set_color
-	mov	edx, DWORD PTR 67112[rbp]
-	mov	eax, DWORD PTR 66380[rbp]
+	mov	edx, DWORD PTR 67088[rbp]
+	mov	eax, DWORD PTR 66364[rbp]
 	lea	ecx, [rdx+rax]
-	mov	edx, DWORD PTR 67116[rbp]
-	mov	eax, DWORD PTR 66412[rbp]
+	mov	edx, DWORD PTR 67092[rbp]
+	mov	eax, DWORD PTR 66396[rbp]
 	add	edx, eax
-	mov	eax, DWORD PTR 66384[rbp]
+	mov	eax, DWORD PTR 66368[rbp]
 	lea	r9d, [rdx+rax]
-	mov	edx, DWORD PTR 67128[rbp]
-	mov	eax, DWORD PTR 66380[rbp]
+	mov	edx, DWORD PTR 67104[rbp]
+	mov	eax, DWORD PTR 66364[rbp]
 	lea	r10d, [rdx+rax]
-	mov	eax, DWORD PTR 67132[rbp]
-	sub	eax, DWORD PTR 66412[rbp]
-	mov	edx, DWORD PTR 66384[rbp]
+	mov	eax, DWORD PTR 67108[rbp]
+	sub	eax, DWORD PTR 66396[rbp]
+	mov	edx, DWORD PTR 66368[rbp]
 	add	edx, eax
-	mov	rax, QWORD PTR 67072[rbp]
-	mov	r8, QWORD PTR 66784[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
+	mov	r8, QWORD PTR 66760[rbp]
 	mov	QWORD PTR 40[rsp], r8
 	mov	DWORD PTR 32[rsp], ecx
 	mov	r8d, r10d
 	mov	rcx, rax
 	call	draw_image
-	add	DWORD PTR 67176[rbp], 1
+	add	DWORD PTR 67152[rbp], 1
 .L321:
-	mov	eax, DWORD PTR 67176[rbp]
-	cmp	eax, DWORD PTR 66408[rbp]
+	mov	eax, DWORD PTR 67152[rbp]
+	cmp	eax, DWORD PTR 66392[rbp]
 	jl	.L322
-	mov	edx, DWORD PTR 67116[rbp]
-	mov	eax, DWORD PTR 66412[rbp]
+	mov	edx, DWORD PTR 67092[rbp]
+	mov	eax, DWORD PTR 66396[rbp]
 	lea	r9d, [rdx+rax]
-	mov	eax, DWORD PTR 67132[rbp]
-	sub	eax, DWORD PTR 66412[rbp]
-	mov	r8d, DWORD PTR 67128[rbp]
-	mov	rcx, QWORD PTR 67072[rbp]
-	mov	rdx, QWORD PTR 66776[rbp]
+	mov	eax, DWORD PTR 67108[rbp]
+	sub	eax, DWORD PTR 66396[rbp]
+	mov	r8d, DWORD PTR 67104[rbp]
+	mov	rcx, QWORD PTR 67048[rbp]
+	mov	rdx, QWORD PTR 66752[rbp]
 	mov	QWORD PTR 40[rsp], rdx
-	mov	edx, DWORD PTR 67112[rbp]
+	mov	edx, DWORD PTR 67088[rbp]
 	mov	DWORD PTR 32[rsp], edx
 	mov	edx, eax
 	call	draw_image
-	mov	edx, DWORD PTR 66404[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	edx, DWORD PTR 66388[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	rcx, rax
 	call	draw_set_color
-	mov	DWORD PTR 66376[rbp], 384
-	mov	DWORD PTR 66372[rbp], 32
-	mov	ecx, DWORD PTR 66400[rbp]
+	mov	DWORD PTR 66360[rbp], 384
+	mov	DWORD PTR 66356[rbp], 32
+	mov	ecx, DWORD PTR 66384[rbp]
 	mov	edx, -2004318071
 	mov	eax, ecx
 	imul	edx
@@ -6019,39 +6135,39 @@ SDL_main:
 	cmp	eax, 3
 	jle	.L323
 	mov	r9d, 65535
-	mov	eax, DWORD PTR 66936[rbp]
-	imul	eax, DWORD PTR 67096[rbp]
-	mov	edx, DWORD PTR 66940[rbp]
-	imul	edx, DWORD PTR 67100[rbp]
+	mov	eax, DWORD PTR 66912[rbp]
+	imul	eax, DWORD PTR 67072[rbp]
+	mov	edx, DWORD PTR 66916[rbp]
+	imul	edx, DWORD PTR 67076[rbp]
 	mov	r8d, edx
-	mov	r10d, DWORD PTR 66372[rbp]
-	mov	edx, DWORD PTR 66376[rbp]
-	mov	rcx, QWORD PTR 67072[rbp]
+	mov	r10d, DWORD PTR 66356[rbp]
+	mov	edx, DWORD PTR 66360[rbp]
+	mov	rcx, QWORD PTR 67048[rbp]
 	mov	DWORD PTR 72[rsp], r9d
-	mov	r9d, DWORD PTR 66936[rbp]
+	mov	r9d, DWORD PTR 66912[rbp]
 	mov	DWORD PTR 64[rsp], r9d
-	mov	r9d, DWORD PTR 66940[rbp]
+	mov	r9d, DWORD PTR 66916[rbp]
 	mov	DWORD PTR 56[rsp], r9d
-	mov	r9, QWORD PTR 66768[rbp]
+	mov	r9, QWORD PTR 66744[rbp]
 	mov	QWORD PTR 48[rsp], r9
-	mov	r9, QWORD PTR 66944[rbp]
+	mov	r9, QWORD PTR 66920[rbp]
 	mov	QWORD PTR 40[rsp], r9
 	mov	DWORD PTR 32[rsp], eax
 	mov	r9d, r8d
 	mov	r8d, r10d
 	call	draw_text_color
 .L323:
-	mov	DWORD PTR 66376[rbp], 64
-	mov	DWORD PTR 66372[rbp], 8
-	mov	eax, DWORD PTR 66752[rbp]
-	mov	DWORD PTR 66408[rbp], eax
-	mov	DWORD PTR 67172[rbp], 0
+	mov	DWORD PTR 66360[rbp], 64
+	mov	DWORD PTR 66356[rbp], 8
+	mov	eax, DWORD PTR 66728[rbp]
+	mov	DWORD PTR 66392[rbp], eax
+	mov	DWORD PTR 67148[rbp], 0
 	jmp	.L324
 .L325:
-	mov	eax, DWORD PTR 67096[rbp]
+	mov	eax, DWORD PTR 67072[rbp]
 	sal	eax, 3
 	cvtsi2sd	xmm6, eax
-	mov	ecx, DWORD PTR 66400[rbp]
+	mov	ecx, DWORD PTR 66384[rbp]
 	mov	edx, 1717986919
 	mov	eax, ecx
 	imul	edx
@@ -6073,13 +6189,13 @@ SDL_main:
 	sub	eax, edx
 	mov	edx, eax
 	cvtsi2sd	xmm7, edx
-	cvtsi2sd	xmm0, DWORD PTR 67172[rbp]
-	mov	eax, DWORD PTR 66408[rbp]
+	cvtsi2sd	xmm0, DWORD PTR 67148[rbp]
+	mov	eax, DWORD PTR 66392[rbp]
 	sub	eax, 1
 	cvtsi2sd	xmm1, eax
 	divsd	xmm0, xmm1
 	movapd	xmm1, xmm0
-	movsd	xmm0, QWORD PTR .LC101[rip]
+	movsd	xmm0, QWORD PTR .LC105[rip]
 	movapd	xmm2, xmm1
 	movapd	xmm1, xmm0
 	pxor	xmm0, xmm0
@@ -6088,181 +6204,181 @@ SDL_main:
 	call	dcos
 	mulsd	xmm0, xmm6
 	cvttsd2si	eax, xmm0
-	mov	DWORD PTR 66368[rbp], eax
-	mov	eax, DWORD PTR 67172[rbp]
+	mov	DWORD PTR 66352[rbp], eax
+	mov	eax, DWORD PTR 67148[rbp]
 	cdqe
-	mov	rdx, QWORD PTR 66760[rbp]
+	mov	rdx, QWORD PTR 66736[rbp]
 	add	rax, rdx
 	movzx	eax, BYTE PTR [rax]
-	mov	BYTE PTR 254[rbp], al
+	mov	BYTE PTR 238[rbp], al
 	mov	r9d, 16777215
-	mov	eax, DWORD PTR 66936[rbp]
-	imul	eax, DWORD PTR 67096[rbp]
-	mov	edx, DWORD PTR 66940[rbp]
-	imul	edx, DWORD PTR 67100[rbp]
+	mov	eax, DWORD PTR 66912[rbp]
+	imul	eax, DWORD PTR 67072[rbp]
+	mov	edx, DWORD PTR 66916[rbp]
+	imul	edx, DWORD PTR 67076[rbp]
 	mov	r8d, edx
-	mov	ecx, DWORD PTR 67128[rbp]
-	mov	edx, DWORD PTR 67120[rbp]
+	mov	ecx, DWORD PTR 67104[rbp]
+	mov	edx, DWORD PTR 67096[rbp]
 	add	edx, ecx
-	sub	edx, DWORD PTR 66372[rbp]
-	mov	ecx, DWORD PTR 66368[rbp]
+	sub	edx, DWORD PTR 66356[rbp]
+	mov	ecx, DWORD PTR 66352[rbp]
 	add	ecx, edx
-	mov	edx, DWORD PTR 66936[rbp]
-	imul	edx, DWORD PTR 67096[rbp]
+	mov	edx, DWORD PTR 66912[rbp]
+	imul	edx, DWORD PTR 67072[rbp]
 	sub	ecx, edx
 	mov	r11d, ecx
-	mov	edx, DWORD PTR 66940[rbp]
-	imul	edx, DWORD PTR 67100[rbp]
-	imul	edx, DWORD PTR 67172[rbp]
-	mov	ecx, DWORD PTR 66376[rbp]
+	mov	edx, DWORD PTR 66916[rbp]
+	imul	edx, DWORD PTR 67076[rbp]
+	imul	edx, DWORD PTR 67148[rbp]
+	mov	ecx, DWORD PTR 66360[rbp]
 	lea	r10d, [rdx+rcx]
-	mov	rcx, QWORD PTR 67072[rbp]
+	mov	rcx, QWORD PTR 67048[rbp]
 	mov	DWORD PTR 72[rsp], r9d
-	mov	edx, DWORD PTR 66936[rbp]
+	mov	edx, DWORD PTR 66912[rbp]
 	mov	DWORD PTR 64[rsp], edx
-	mov	edx, DWORD PTR 66940[rbp]
+	mov	edx, DWORD PTR 66916[rbp]
 	mov	DWORD PTR 56[rsp], edx
-	lea	rdx, 254[rbp]
+	lea	rdx, 238[rbp]
 	mov	QWORD PTR 48[rsp], rdx
-	mov	rdx, QWORD PTR 66944[rbp]
+	mov	rdx, QWORD PTR 66920[rbp]
 	mov	QWORD PTR 40[rsp], rdx
 	mov	DWORD PTR 32[rsp], eax
 	mov	r9d, r8d
 	mov	r8d, r11d
 	mov	edx, r10d
 	call	draw_text_color
-	add	DWORD PTR 67172[rbp], 1
+	add	DWORD PTR 67148[rbp], 1
 .L324:
-	mov	eax, DWORD PTR 67172[rbp]
-	cmp	eax, DWORD PTR 66408[rbp]
+	mov	eax, DWORD PTR 67148[rbp]
+	cmp	eax, DWORD PTR 66392[rbp]
 	jl	.L325
-.L330:
-	mov	rax, QWORD PTR 67072[rbp]
+.L320:
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	DWORD PTR 32[rsp], 255
 	mov	r9d, 0
 	mov	r8d, 0
 	mov	edx, 0
 	mov	rcx, rax
 	call	SDL_SetRenderDrawColor
-	mov	edx, DWORD PTR 67248[rbp]
-	lea	rax, 384[rbp]
+	mov	edx, DWORD PTR 67244[rbp]
+	lea	rax, 368[rbp]
 	mov	r9d, edx
-	lea	r8, .LC102[rip]
+	lea	r8, .LC106[rip]
 	mov	edx, 20
 	mov	rcx, rax
 	call	snprintf
-	mov	edx, DWORD PTR 66156[rbp]
-	lea	rax, 384[rbp]
-	mov	rcx, QWORD PTR 67032[rbp]
+	mov	edx, DWORD PTR 66140[rbp]
+	lea	rax, 368[rbp]
+	mov	rcx, QWORD PTR 67008[rbp]
 	mov	r8d, edx
 	mov	rdx, rax
 	call	TTF_RenderText_Solid
-	mov	QWORD PTR 66360[rbp], rax
-	mov	rdx, QWORD PTR 66360[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	QWORD PTR 66344[rbp], rax
+	mov	rdx, QWORD PTR 66344[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	rcx, rax
 	call	SDL_CreateTextureFromSurface
-	mov	QWORD PTR 66352[rbp], rax
-	mov	DWORD PTR 368[rbp], 10
-	mov	DWORD PTR 372[rbp], 720
-	mov	rax, QWORD PTR 66360[rbp]
+	mov	QWORD PTR 66336[rbp], rax
+	mov	DWORD PTR 352[rbp], 10
+	mov	DWORD PTR 356[rbp], 720
+	mov	rax, QWORD PTR 66344[rbp]
 	mov	eax, DWORD PTR 16[rax]
-	mov	DWORD PTR 376[rbp], eax
-	mov	rax, QWORD PTR 66360[rbp]
+	mov	DWORD PTR 360[rbp], eax
+	mov	rax, QWORD PTR 66344[rbp]
 	mov	eax, DWORD PTR 20[rax]
-	mov	DWORD PTR 380[rbp], eax
-	lea	rcx, 368[rbp]
-	mov	rdx, QWORD PTR 66352[rbp]
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	DWORD PTR 364[rbp], eax
+	lea	rcx, 352[rbp]
+	mov	rdx, QWORD PTR 66336[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	r9, rcx
 	mov	r8d, 0
 	mov	rcx, rax
 	call	SDL_RenderCopy
-	mov	rax, QWORD PTR 66360[rbp]
+	mov	rax, QWORD PTR 66344[rbp]
 	mov	rcx, rax
 	call	SDL_FreeSurface
-	mov	rax, QWORD PTR 66352[rbp]
+	mov	rax, QWORD PTR 66336[rbp]
 	mov	rcx, rax
 	call	SDL_DestroyTexture
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	rcx, rax
 	call	SDL_RenderPresent
 	mov	ecx, 16
 	call	SDL_Delay
 .L186:
-	cmp	DWORD PTR 67228[rbp], 0
+	cmp	DWORD PTR 67212[rbp], 0
 	jne	.L187
-	lea	rcx, .LC103[rip]
+	lea	rcx, .LC107[rip]
 	call	puts
 	lea	rax, waterParticles[rip]
 	mov	rax, QWORD PTR [rax]
 	mov	rcx, rax
 	call	free
-	mov	rax, QWORD PTR 67032[rbp]
-	mov	rcx, rax
-	call	TTF_CloseFont
 	mov	rax, QWORD PTR 67008[rbp]
 	mov	rcx, rax
-	call	SDL_DestroyTexture
-	mov	rax, QWORD PTR 67000[rbp]
-	mov	rcx, rax
-	call	SDL_DestroyTexture
-	mov	rax, QWORD PTR 66992[rbp]
-	mov	rcx, rax
-	call	SDL_DestroyTexture
+	call	TTF_CloseFont
 	mov	rax, QWORD PTR 66984[rbp]
 	mov	rcx, rax
 	call	SDL_DestroyTexture
 	mov	rax, QWORD PTR 66976[rbp]
 	mov	rcx, rax
 	call	SDL_DestroyTexture
-	mov	rax, QWORD PTR 66856[rbp]
-	mov	rcx, rax
-	call	SDL_DestroyTexture
-	mov	rax, QWORD PTR 66848[rbp]
-	mov	rcx, rax
-	call	SDL_DestroyTexture
-	mov	rax, QWORD PTR 66952[rbp]
-	mov	rcx, rax
-	call	SDL_DestroyTexture
-	mov	rax, QWORD PTR 66792[rbp]
-	mov	rcx, rax
-	call	SDL_DestroyTexture
-	mov	rax, QWORD PTR 66784[rbp]
-	mov	rcx, rax
-	call	SDL_DestroyTexture
-	mov	rax, QWORD PTR 66776[rbp]
-	mov	rcx, rax
-	call	SDL_DestroyTexture
-	mov	rax, QWORD PTR 66944[rbp]
-	mov	rcx, rax
-	call	SDL_DestroyTexture
-	mov	rax, QWORD PTR 66928[rbp]
-	mov	rcx, rax
-	call	SDL_DestroyTexture
-	mov	rax, QWORD PTR 66832[rbp]
-	mov	rcx, rax
-	call	SDL_DestroyTexture
 	mov	rax, QWORD PTR 66968[rbp]
-	mov	rcx, rax
-	call	SDL_DestroyTexture
-	mov	rax, QWORD PTR 66816[rbp]
 	mov	rcx, rax
 	call	SDL_DestroyTexture
 	mov	rax, QWORD PTR 66960[rbp]
 	mov	rcx, rax
 	call	SDL_DestroyTexture
+	mov	rax, QWORD PTR 66952[rbp]
+	mov	rcx, rax
+	call	SDL_DestroyTexture
+	mov	rax, QWORD PTR 66832[rbp]
+	mov	rcx, rax
+	call	SDL_DestroyTexture
+	mov	rax, QWORD PTR 66824[rbp]
+	mov	rcx, rax
+	call	SDL_DestroyTexture
+	mov	rax, QWORD PTR 66928[rbp]
+	mov	rcx, rax
+	call	SDL_DestroyTexture
+	mov	rax, QWORD PTR 66768[rbp]
+	mov	rcx, rax
+	call	SDL_DestroyTexture
+	mov	rax, QWORD PTR 66760[rbp]
+	mov	rcx, rax
+	call	SDL_DestroyTexture
+	mov	rax, QWORD PTR 66752[rbp]
+	mov	rcx, rax
+	call	SDL_DestroyTexture
+	mov	rax, QWORD PTR 66920[rbp]
+	mov	rcx, rax
+	call	SDL_DestroyTexture
+	mov	rax, QWORD PTR 66904[rbp]
+	mov	rcx, rax
+	call	SDL_DestroyTexture
+	mov	rax, QWORD PTR 66808[rbp]
+	mov	rcx, rax
+	call	SDL_DestroyTexture
+	mov	rax, QWORD PTR 66944[rbp]
+	mov	rcx, rax
+	call	SDL_DestroyTexture
+	mov	rax, QWORD PTR 66792[rbp]
+	mov	rcx, rax
+	call	SDL_DestroyTexture
+	mov	rax, QWORD PTR 66936[rbp]
+	mov	rcx, rax
+	call	SDL_DestroyTexture
 	call	IMG_Quit
-	mov	eax, DWORD PTR 66804[rbp]
+	mov	eax, DWORD PTR 66780[rbp]
 	mov	ecx, eax
 	call	SDL_CloseAudioDevice
-	mov	rax, QWORD PTR 440[rbp]
+	mov	rax, QWORD PTR 424[rbp]
 	mov	rcx, rax
 	call	SDL_FreeWAV
-	mov	rax, QWORD PTR 67072[rbp]
+	mov	rax, QWORD PTR 67048[rbp]
 	mov	rcx, rax
 	call	SDL_DestroyRenderer
-	mov	rax, QWORD PTR 67080[rbp]
+	mov	rax, QWORD PTR 67056[rbp]
 	mov	rcx, rax
 	call	SDL_DestroyWindow
 	call	SDL_Quit
@@ -6273,13 +6389,13 @@ SDL_main:
 .L175:
 	call	SDL_GetError
 	mov	rsi, rax
-	mov	rbx, QWORD PTR 67144[rbp]
+	mov	rbx, QWORD PTR 67120[rbp]
 	mov	ecx, 2
 	mov	rax, QWORD PTR __imp___acrt_iob_func[rip]
 	call	rax
 	mov	r9, rsi
 	mov	r8, rbx
-	lea	rdx, .LC104[rip]
+	lea	rdx, .LC108[rip]
 	mov	rcx, rax
 	call	fprintf
 	call	SDL_Quit
@@ -6291,9 +6407,9 @@ SDL_main:
 .L184:
 	mov	rsp, r12
 .L168:
-	movaps	xmm6, XMMWORD PTR 67264[rbp]
-	movaps	xmm7, XMMWORD PTR 67280[rbp]
-	lea	rsp, 67304[rbp]
+	movaps	xmm6, XMMWORD PTR 67248[rbp]
+	movaps	xmm7, XMMWORD PTR 67264[rbp]
+	lea	rsp, 67288[rbp]
 	pop	rbx
 	pop	rsi
 	pop	rdi
@@ -6348,41 +6464,41 @@ SDL_main:
 	.long	0
 	.long	1077936128
 	.align 8
-.LC78:
+.LC82:
 	.long	0
 	.long	1076887552
 	.align 8
-.LC80:
+.LC84:
 	.long	0
 	.long	1070596096
 	.align 8
-.LC81:
+.LC85:
 	.long	-1717986918
 	.long	1069128089
 	.align 8
-.LC82:
+.LC86:
 	.long	858993459
 	.long	1070805811
 	.align 4
-.LC95:
+.LC99:
 	.long	1097859072
 	.align 4
-.LC96:
+.LC100:
 	.long	1084227584
 	.align 8
-.LC97:
+.LC101:
 	.long	0
 	.long	1079164928
 	.align 8
-.LC98:
+.LC102:
 	.long	0
 	.long	1079410688
 	.align 8
-.LC99:
+.LC103:
 	.long	0
 	.long	1081073664
 	.align 8
-.LC101:
+.LC105:
 	.long	0
 	.long	1082556416
 	.ident	"GCC: (x86_64-posix-seh, Built by strawberryperl.com project) 8.3.0"
