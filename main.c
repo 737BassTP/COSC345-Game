@@ -13,6 +13,7 @@ https://wiki.libsdl.org/SDL2/APIByCategory
 */
 
 //Includes.
+#include <stdbool.h>
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h> // for rand() and srand()
@@ -769,6 +770,17 @@ int clock_is_between(int time,int h1,int m1,int h2,int m2)
 //Temperature.
 double temp_ctof(int c) {return (double)c * 1.8 + 32.0;}//Celsius to Fahrenheit.
 
+//quiz
+// Define the quiz question and answers
+const char* quizQuestion = "What is the capital of France?";
+const char* answerA = "A) Paris";
+const char* answerB = "B) London";
+const char* answerC = "C) Berlin";
+// Variable to store the user's answer (0 means no answer, 1 for A, and 2 for B)
+int userAnswer = 0;
+int quizOn1 = 0;
+bool quizOn = false;
+int quiz1Num = 1;
 /*
 Entry point.
 */
@@ -866,6 +878,9 @@ int SDL_main(int argc, char *argv[])
 	SDL_Rect* buttonRectPtr = &buttonRect; // Declare and initialize buttonRectPtr to point to buttonRect
 	
 	int buttonVis = 0;//0 for no window and 1 for visible window
+	int buttonVis2 = 0;//for second person chatting
+	
+
     // Load a TTF font (adjust the file path and size as needed)
 	    // Initialize SDL_ttf
     if (TTF_Init() == -1) {
@@ -1105,6 +1120,20 @@ int SDL_main(int argc, char *argv[])
 			attack(&Player);//calls attack function
 			renderWeaponSwing(renderer, spr_water, &Player);//renders the swing
 		}
+		if(glob_vk_8)
+		{
+			glob_vk_8=0;
+			if(quizOn==false){
+			quizOn=true;
+			quizOn1=1;
+			printf("quiz on");
+			}
+			else{
+				quizOn=false;
+				quizOn1=0;
+			}
+
+		}
 		//Rain toggle.
 		if (glob_vk_0)
 		{
@@ -1149,6 +1178,10 @@ int SDL_main(int argc, char *argv[])
 				buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
 				score += 50;
 			}
+			else if(quizOn1){
+				userAnswer=1;
+				printf("The value of the userAnswer is: %d\n", userAnswer);
+			}
 		}
 		if (glob_vk_2)
 		{
@@ -1161,6 +1194,9 @@ int SDL_main(int argc, char *argv[])
 				buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
 				score += 50;
 			}
+			else if(quizOn1){
+				userAnswer=2;
+			}
 		}
 		if (glob_vk_3)
 		{
@@ -1172,6 +1208,9 @@ int SDL_main(int argc, char *argv[])
 				strncpy(buttonTexts, newButtonText, maxButtonLen);//pressing 1 changes text inside test box.
 				buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
 				score += 50;
+			}
+			else if(quizOn1){
+				userAnswer=3;
 			}
 		}
 		if (glob_vk_4)
@@ -1382,9 +1421,10 @@ int SDL_main(int argc, char *argv[])
 			nd=32;
 			for (int i=0; i<4; i++)
 			{
-				draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
-				draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
-				nx += nd*gw;
+				//sean
+				// draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
+				// draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
+				// nx += nd*gw;
 			}
 			// SDL_RenderPresent(renderer);
 		}
@@ -1470,11 +1510,12 @@ int SDL_main(int argc, char *argv[])
 			if (clock_is_between(time_clock, 6,0,11,59)) {ct=1;}
 			if (clock_is_between(time_clock,12,0,17,59)) {ct=2;}
 			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
-			draw_text_color(renderer,
-				uix,clocky2+gh,
-				font_ascii_w*gw,font_ascii_h*gh,
-				font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
-				font_ascii_w,font_ascii_h,tc);
+			//sean
+			// draw_text_color(renderer,
+			// 	uix,clocky2+gh,
+			// 	font_ascii_w*gw,font_ascii_h*gh,
+			// 	font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
+			// 	font_ascii_w,font_ascii_h,tc);
 			
 			//Temperature.
 			int tempy1,tempy2;
@@ -1556,8 +1597,7 @@ int SDL_main(int argc, char *argv[])
 			if (!textSurface) 
 			{
 				// Handle error: Unable to render text
-				// (you can set a default or fallback behavior in case of an error)
-				// For example, create a placeholder surface with the error message
+
 				textSurface = TTF_RenderText_Solid(font, "Error: Text Rendering Failed", textColor);
 			}
 			// Calculate the actual text dimensions
@@ -1576,6 +1616,121 @@ int SDL_main(int argc, char *argv[])
 			SDL_FreeSurface(textSurface);
 			SDL_DestroyTexture(textTexture);
 		}
+
+		//first quiz. Rename variables for alpha.
+		if(quizOn1==1){
+			if(quiz1Num==1){
+			if(userAnswer==0){
+				//keeps it from looping infinite
+			}
+			if(userAnswer==1){
+				quizQuestion="That is correct\nWhat is Seans name?";
+				answerA="Bradley";
+				answerB="Sean";
+				answerC="John";
+				userAnswer=0;
+				score+=500;
+				quiz1Num++;
+			}
+			if(userAnswer==2){
+				quizQuestion="That is false\n next question\nWhat is Seans name?";
+				answerA="Bradley";
+				answerB="Sean";
+				answerC="John";
+				userAnswer=0;
+				score+=0;
+				quiz1Num++;
+			}
+			if(userAnswer==3){
+				quizQuestion="That is false\n next question\nWhat is Seans name?";
+				answerA="Bradley";
+				answerB="Sean";
+				answerC="John";
+				userAnswer=0;
+				score+=0;
+				quiz1Num++;
+			}
+			}else if(quiz1Num==2){
+			if(userAnswer==0){
+				//keeps it from looping infinite
+			}
+			if(userAnswer==1){
+				quizQuestion="That is false\nThank you for playing";
+				answerA="";
+				answerB="";
+				answerC="";
+				userAnswer=0;
+				score+=0;
+				quiz1Num++;
+			}
+			if(userAnswer==2){
+				quizQuestion="That is correct\nThank you for playing";
+				answerA="";
+				answerB="";
+				answerC="";
+				userAnswer=0;
+				score+=500;
+				quiz1Num++;
+			}
+			if(userAnswer==3){
+				quizQuestion="That is false\nThank you for playing";
+				answerA="";
+				answerB="";
+				answerC="";
+				userAnswer=0;
+				score+=0;
+				quiz1Num++;
+			}			
+			}
+			else if(quiz1Num=3){
+			quizQuestion="Thank you for playing";
+				answerA="press 1 2 or 3 to exit";
+				answerB="";
+				answerC="";
+			if(userAnswer==1){
+			quizOn1=0;
+			quizOn=false;
+			}
+			if(userAnswer==2){
+			quizOn1=0;
+			quizOn=false;
+			}
+			if(userAnswer==3){
+			quizOn1=0;
+			quizOn=false;
+			}
+			}
+		}
+		//render the quiz popup
+			if (quizOn) {
+    			// Render the quiz popup with a beige square background
+    			SDL_Color bgColor = { 200, 200, 200 }; // Beige color
+    			SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, 255);
+    			int popupWidth = 400; // Adjust this value to change the width of the popup
+    			int popupHeight = 200; // Adjust this value to change the height of the popup
+    			int popupX = (800 - popupWidth) / 2 + 300; // Center the popup horizontally and move it right by 300 pixels
+    			int popupY = (600 - popupHeight) / 2;
+    			SDL_Rect popupRect = { popupX, popupY, popupWidth, popupHeight };
+    			SDL_RenderFillRect(renderer, &popupRect);
+    			// Render the quiz text inside the beige square background
+    			SDL_Color textColor = { 0, 0, 0 }; // black text color
+    			int maxTextWidth = popupWidth - 20; // Adjust this value based on your desired maximum text width
+    			char quizText[256];
+    			snprintf(quizText, sizeof(quizText), "%s\n%s\n%s\n%s", quizQuestion, answerA, answerB, answerC);
+    			SDL_Surface* textSurface = TTF_RenderText_Blended_Wrapped(font, quizText, textColor, maxTextWidth);
+    			SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    			// Calculate the position to center the text inside the beige square background
+    			int textWidth = textSurface->w;
+    			int textHeight = textSurface->h;
+    			int textX = popupX + (popupWidth - textWidth) / 2;
+    			int textY = popupY + (popupHeight - textHeight) / 2;
+    			// Render the text
+    			SDL_Rect textRect = { textX, textY, textWidth, textHeight };
+    			SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+    			// Cleanup
+    			SDL_FreeSurface(textSurface);
+    			SDL_DestroyTexture(textTexture);
+			}
 		// Draw water particles
         for (int i = 0; i < MAX_WATER_PARTICLES; i++) 
 		{
