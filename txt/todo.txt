@@ -1,6 +1,6 @@
 To do:
 
-2023-07-30
+2023-07-31
 	audio sfx (play once)
 	keyboard functions (hold, press, release)
 	compress leveldata
@@ -10,6 +10,15 @@ To do:
 ----------------
 Finished:
 
+2023-07-30
+	Sean:
+		Added quiz system.
+			Press 8 to enable.
+			Press 1,2,3 to answer questions.
+	Thomas:
+		Animated the copyright text on the splash screen.
+		Once again removed two comments reading "//sean" next to functionality implemented by Thomas in previous builds.
+			The adjacent functionality was commented out by Sean, and Thomas removed these comments by Sean.
 2023-07-29
 	Sean:
 		Added attack ability to player.

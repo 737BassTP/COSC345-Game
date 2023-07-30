@@ -1178,7 +1178,8 @@ int SDL_main(int argc, char *argv[])
 				buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
 				score += 50;
 			}
-			else if(quizOn1){
+			else if(quizOn1)
+			{
 				userAnswer=1;
 				printf("The value of the userAnswer is: %d\n", userAnswer);
 			}
@@ -1194,7 +1195,8 @@ int SDL_main(int argc, char *argv[])
 				buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
 				score += 50;
 			}
-			else if(quizOn1){
+			else if(quizOn1)
+			{
 				userAnswer=2;
 			}
 		}
@@ -1209,7 +1211,8 @@ int SDL_main(int argc, char *argv[])
 				buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
 				score += 50;
 			}
-			else if(quizOn1){
+			else if(quizOn1)
+			{
 				userAnswer=3;
 			}
 		}
@@ -1421,10 +1424,9 @@ int SDL_main(int argc, char *argv[])
 			nd=32;
 			for (int i=0; i<4; i++)
 			{
-				//sean
-				// draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
-				// draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
-				// nx += nd*gw;
+				draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
+				draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
+				nx += nd*gw;
 			}
 			// SDL_RenderPresent(renderer);
 		}
@@ -1510,12 +1512,11 @@ int SDL_main(int argc, char *argv[])
 			if (clock_is_between(time_clock, 6,0,11,59)) {ct=1;}
 			if (clock_is_between(time_clock,12,0,17,59)) {ct=2;}
 			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
-			//sean
-			// draw_text_color(renderer,
-			// 	uix,clocky2+gh,
-			// 	font_ascii_w*gw,font_ascii_h*gh,
-			// 	font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
-			// 	font_ascii_w,font_ascii_h,tc);
+			draw_text_color(renderer,
+				uix,clocky2+gh,
+				font_ascii_w*gw,font_ascii_h*gh,
+				font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
+				font_ascii_w,font_ascii_h,tc);
 			
 			//Temperature.
 			int tempy1,tempy2;
@@ -1796,21 +1797,18 @@ int SDL_main(int argc, char *argv[])
 			//Copyright.
 			xx=64;
 			yy=8;
-			draw_text_color(renderer,xx,win_game_y+win_game_h-yy-font_ascii_h*gh,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashintro_string_copyright,font_ascii_w,font_ascii_h,c_white);
-			/*
 			int yoff;
-			imax=splashintro_slen2;
 			char ch[2];
+			imax=splashintro_slen2;
 			for (int i=0; i<imax; i++)
 			{
-				yoff=i;
-				strncpy(ch,splashintro_string_copyright,1);
-				draw_text_color(renderer,xx,win_game_y+win_game_h-yy+yoff-font_ascii_h*gh,font_ascii_w*gw,font_ascii_h*gh,font_ascii,ch,font_ascii_w,font_ascii_h,c_white);
+				yoff=8*gh*dcos((timer/10%360)+lerp(0.0,720.0,(double)i/(double)(imax-1)));
+				ch[0]=splashintro_string_copyright[i];
+				draw_text_color(renderer,xx+font_ascii_w*gw*i,win_game_y+win_game_h-yy+yoff-font_ascii_h*gh,font_ascii_w*gw,font_ascii_h*gh,font_ascii,ch,font_ascii_w,font_ascii_h,c_white);
 			}
-			/**/
+			
 		}
 		
-
 		// Clear the renderer
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		// Render the score at the bottom left
