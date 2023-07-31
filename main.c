@@ -778,9 +778,13 @@ const char* answerB = "B) London";
 const char* answerC = "C) Berlin";
 // Variable to store the user's answer (0 means no answer, 1 for A, and 2 for B)
 int userAnswer = 0;
-int quizOn1 = 0;
-bool quizOn = false;
-int quiz1Num = 1;
+bool quizOn = false;//if a quiz is active
+int quizOn1 = 0;//turn on the test quiz
+int quiz1QNum = 1;//what question of the quiz we are on
+
+int quizOn2 = 0;
+int quiz2QNum = 1;
+bool quiz2Called = false;
 /*
 Entry point.
 */
@@ -1178,10 +1182,9 @@ int SDL_main(int argc, char *argv[])
 				buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
 				score += 50;
 			}
-			else if(quizOn1)
+			else if(quizOn)
 			{
 				userAnswer=1;
-				printf("The value of the userAnswer is: %d\n", userAnswer);
 			}
 		}
 		if (glob_vk_2)
@@ -1195,7 +1198,7 @@ int SDL_main(int argc, char *argv[])
 				buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
 				score += 50;
 			}
-			else if(quizOn1)
+			else if(quizOn)
 			{
 				userAnswer=2;
 			}
@@ -1211,7 +1214,7 @@ int SDL_main(int argc, char *argv[])
 				buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
 				score += 50;
 			}
-			else if(quizOn1)
+			else if(quizOn)
 			{
 				userAnswer=3;
 			}
@@ -1424,6 +1427,7 @@ int SDL_main(int argc, char *argv[])
 			nd=32;
 			for (int i=0; i<4; i++)
 			{
+				//placeholder 2/2
 				draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
 				draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
 				nx += nd*gw;
@@ -1512,6 +1516,7 @@ int SDL_main(int argc, char *argv[])
 			if (clock_is_between(time_clock, 6,0,11,59)) {ct=1;}
 			if (clock_is_between(time_clock,12,0,17,59)) {ct=2;}
 			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
+			//placeholder 1/2
 			draw_text_color(renderer,
 				uix,clocky2+gh,
 				font_ascii_w*gw,font_ascii_h*gh,
@@ -1620,88 +1625,73 @@ int SDL_main(int argc, char *argv[])
 
 		//first quiz. Rename variables for alpha.
 		if(quizOn1==1){
-			if(quiz1Num==1){
-			if(userAnswer==0){
-				//keeps it from looping infinite
+			if(quiz1QNum==1){//if first question
+			if(userAnswer==0){//keeps it from looping infinite
 			}
-			if(userAnswer==1){
-				quizQuestion="That is correct\nWhat is Seans name?";
-				answerA="Bradley";
-				answerB="Sean";
-				answerC="John";
-				userAnswer=0;
-				score+=500;
-				quiz1Num++;
+			if(userAnswer==1){quizQuestion="That is correct\nWhat is Seans name?";answerA="Bradley";answerB="Sean";answerC="John";userAnswer=0;score+=500;quiz1QNum++;
 			}
 			if(userAnswer==2){
-				quizQuestion="That is false\n next question\nWhat is Seans name?";
-				answerA="Bradley";
-				answerB="Sean";
-				answerC="John";
-				userAnswer=0;
-				score+=0;
-				quiz1Num++;
+				quizQuestion="That is false\n next question\nWhat is Seans name?";answerA="Bradley";answerB="Sean";answerC="John";userAnswer=0;score+=0;quiz1QNum++;
 			}
-			if(userAnswer==3){
-				quizQuestion="That is false\n next question\nWhat is Seans name?";
-				answerA="Bradley";
-				answerB="Sean";
-				answerC="John";
-				userAnswer=0;
-				score+=0;
-				quiz1Num++;
+			if(userAnswer==3){quizQuestion="That is false\n next question\nWhat is Seans name?";answerA="Bradley";answerB="Sean";answerC="John";userAnswer=0;score+=0;quiz1QNum++;
 			}
-			}else if(quiz1Num==2){
-			if(userAnswer==0){
-				//keeps it from looping infinite
+			}else if(quiz1QNum==2){//if second question
+			if(userAnswer==0){//keeps it from looping infinite}
+			if(userAnswer==1){quizQuestion="That is false\nThank you for playing";answerA="";answerB="";answerC="";userAnswer=0;score+=0;quiz1QNum++;
+				}
+			if(userAnswer==2){quizQuestion="That is correct\nThank you for playing";answerA="";answerB="";answerC="";userAnswer=0;score+=500;quiz1QNum++;
+				}
+			if(userAnswer==3){quizQuestion="That is false\nThank you for playing";answerA="";answerB="";answerC="";userAnswer=0;score+=0;quiz1QNum++;
+				}			
 			}
-			if(userAnswer==1){
-				quizQuestion="That is false\nThank you for playing";
-				answerA="";
-				answerB="";
-				answerC="";
-				userAnswer=0;
-				score+=0;
-				quiz1Num++;
-			}
-			if(userAnswer==2){
-				quizQuestion="That is correct\nThank you for playing";
-				answerA="";
-				answerB="";
-				answerC="";
-				userAnswer=0;
-				score+=500;
-				quiz1Num++;
-			}
-			if(userAnswer==3){
-				quizQuestion="That is false\nThank you for playing";
-				answerA="";
-				answerB="";
-				answerC="";
-				userAnswer=0;
-				score+=0;
-				quiz1Num++;
-			}			
-			}
-			else if(quiz1Num=3){
-			quizQuestion="Thank you for playing";
-				answerA="press 1 2 or 3 to exit";
-				answerB="";
-				answerC="";
-			if(userAnswer==1){
-			quizOn1=0;
-			quizOn=false;
-			}
-			if(userAnswer==2){
-			quizOn1=0;
-			quizOn=false;
-			}
-			if(userAnswer==3){
-			quizOn1=0;
-			quizOn=false;
-			}
+			else if(quiz1QNum=3){quizQuestion="Thank you for playing";answerA="press 1 2 or 3 to exit";answerB="";answerC="";//quiz finished
+			if(userAnswer==1){quizOn1=0;userAnswer=0;quizOn=false;
+				}
+			if(userAnswer==2){quizOn1=0;userAnswer=0;quizOn=false;
+				}
+			if(userAnswer==3){quizOn1=0;userAnswer=0;quizOn=false;
+				}
 			}
 		}
+		}
+
+		if(level_cur==2){
+			if(quiz2Called==false){
+				quizQuestion="Greetings wanderer\nAnswer my riddle to pass through\n Which of these macronutrients contains the most calories per gram";answerA="1. Carbohydrate";answerB="2. Fat";answerC="3. Protein";
+				quiz2Called=true;	
+				quizOn=true;
+				Player.move_spd=0;
+			}
+			if(quiz2QNum==1){//if first question
+			if(userAnswer==0){//keeps it from looping infinite
+			}
+			if(userAnswer==1){quizQuestion="That is false\n next question\nWhich of these meats has the highest protein count per 100g??";answerA="1. Rump Steak";answerB="2. Skinned Chicken Breast";answerC="3. Chocolate";userAnswer=0;score+=0;quiz2QNum++;
+			}
+			if(userAnswer==2){
+				quizQuestion="That is Correct, fat contains 9 calories per gram while protein and carbohydrates contain 4\n next question\nWhich of these meats has the highest protein count per 100g??";answerA="1. Rump Steak";answerB="2. Skinned Chicken Breast";answerC="3. Chocolate";userAnswer=0;score+=500;quiz2QNum++;
+			}
+			if(userAnswer==3){quizQuestion="That is false\n next question\nWhich of these meats has the highest protein count per 100g?";answerA="1. Rump Steak";answerB="2. Skinned Chicken Breast";answerC="3. Chocolate";userAnswer=0;quiz2QNum++;
+			}
+			}else if(quiz2QNum==2){//if second question
+			if(userAnswer==0){}
+			if(userAnswer==1){quizQuestion="That is false\nThank you for playing";answerA="";answerB="";answerC="";userAnswer=0;score+=0;quiz2QNum++;
+				}
+			if(userAnswer==2){quizQuestion="That is correct\nThere are 31g of protein per 100g of Chicken breast\nThank you for playing";answerA="";answerB="";answerC="";userAnswer=0;score+=500;quiz2QNum++;
+				}
+			if(userAnswer==3){quizQuestion="That is false\nThank you for playing";answerA="";answerB="";answerC="";userAnswer=0;score+=0;quiz2QNum++;
+				}			
+			}
+			else if(quiz2QNum=3){answerA="press 1 2 or 3 to exit";answerB="";answerC="";//quiz finished
+			if(userAnswer==0){}
+			if(userAnswer==1){quizOn2=0;quizOn=false;Player.move_spd=3*4;
+				}
+			if(userAnswer==2){quizOn2=0;quizOn=false;Player.move_spd=3*4;
+				}
+			if(userAnswer==3){quizOn2=0;quizOn=false;Player.move_spd=3*4;
+				}
+			}
+		}			
+		
 		//render the quiz popup
 			if (quizOn) {
     			// Render the quiz popup with a beige square background
