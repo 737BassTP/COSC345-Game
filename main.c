@@ -782,9 +782,9 @@ bool quizOn = false;//if a quiz is active
 int quizOn1 = 0;//turn on the test quiz
 int quiz1QNum = 1;//what question of the quiz we are on
 
-int quizOn2 = 0;
-int quiz2QNum = 1;
-bool quiz2Called = false;
+int quizOn2 = 0;//is quiz 2 active
+int quiz2QNum = 1;//question counter for quiz 2
+bool quiz2Called = false;//boolean to see if the player has completed quiz
 /*
 Entry point.
 */
@@ -1654,13 +1654,13 @@ int SDL_main(int argc, char *argv[])
 			}
 		}
 		}
-
+		//Second quiz
 		if(level_cur==2){
-			if(quiz2Called==false){
+			if(quiz2Called==false){//boolean check so the quiz doesn't open every time they hit level 2.
 				quizQuestion="Greetings wanderer\nAnswer my riddle to pass through\n Which of these macronutrients contains the most calories per gram";answerA="1. Carbohydrate";answerB="2. Fat";answerC="3. Protein";
 				quiz2Called=true;	
 				quizOn=true;
-				Player.move_spd=0;
+				Player.move_spd=0;//stop player moving
 			}
 			if(quiz2QNum==1){//if first question
 			if(userAnswer==0){//keeps it from looping infinite
