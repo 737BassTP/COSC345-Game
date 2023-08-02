@@ -1,6 +1,6 @@
 To do:
 
-2023-08-02
+2023-08-03
 	audio sfx (play once)
 	keyboard functions (hold, press, release)
 	compress leveldata
@@ -9,6 +9,16 @@ To do:
 
 ----------------
 Finished:
+
+2023-08-02
+	Nicholas:
+		Added graphics to the tileset.
+		Added tiles to the Tiled project.
+		Exported these tiles to the level file.
+	Thomas:
+		Added a weekday counter and a date counter (28 days).
+		Improved the level converter so that it reloads all levels in-game without a restart.
+		Added animated tiles for shallow water and shallow lava.
 
 2023-08-01
 	Thomas:

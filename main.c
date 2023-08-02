@@ -399,9 +399,19 @@ double cartodir(int x,int y)
 }
 void game_level_load(int lvl,int lvlmax)
 {
-	//done in main-loop.
+	//done below.
 }
-void dev_tiled_to_leveldata()
+void level_load(byte arr[],int siz,int count)
+{
+	FILE *fil = fopen("level.dat","rb");
+	for (int i=0; i<siz*count; i++)
+	{
+		arr[i] = 0;
+	}
+	fread(arr,siz*count,1,fil);
+	fclose(fil);
+}
+void dev_tiled_to_leveldata(byte arr[])
 {
 	//Extracts Tiles (done) and Objects (unfinished (unnecessary if tiles and objects share tileset)).
 	printf("may take a while; please wait.\n");
@@ -462,11 +472,8 @@ void dev_tiled_to_leveldata()
 	fwrite(array,maxsize,1,filout);
 	fclose(filin);
 	fclose(filout);
-}
-void play_WAV(const char* wavfile)
-{
-	//done manually in main.
-	
+	//Re-load in-game.
+	level_load(arr,256,256);//hard-coded to tiles only.
 }
 char* level_get_name(int lvl,char* ret)
 {
@@ -755,6 +762,10 @@ void audioCallback(void* userdata, Uint8* stream, int len) {
     SDL_memcpy(stream, audiodata->buffer + audiodata->position, bytesToCopy);
     audiodata->position += bytesToCopy;
 }
+void play_WAV(const char* wavfile,SDL_AudioSpec spec)
+{
+	
+}
 
 //Game clock. (HH:MM)
 int clock_get_hour(int time) {return (time/60)%24;}
@@ -914,6 +925,8 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *spr_sand  = IMG_LoadTexture(renderer,"img/spr_sand.png");
 	SDL_Texture *spr_water = IMG_LoadTexture(renderer,"img/spr_water_strip16.png");
 	SDL_Texture *spr_lava  = IMG_LoadTexture(renderer,"img/spr_lava_strip16.png");
+	SDL_Texture *spr_water_shallow = IMG_LoadTexture(renderer,"img/spr_water_shallow_strip16.png");
+	SDL_Texture *spr_lava_shallow  = IMG_LoadTexture(renderer,"img/spr_lava_shallow_strip16.png");
 	SDL_Texture *spr_tileset = IMG_LoadTexture(renderer,"tiled/tileset.png");
 	SDL_Texture *spr_hudshade = IMG_LoadTexture(renderer,"img/hudshade.png");
 	SDL_Texture *spr_enemy1 = IMG_LoadTexture(renderer,"img/spr_enemy1.png");
@@ -936,6 +949,10 @@ int SDL_main(int argc, char *argv[])
 	char *timestr_b="Morning";
 	char *timestr_c="Day";
 	char *timestr_d="Evening";
+	int weekday=0;
+	char *weekday_string="MTWTFSS";
+	int monthday=0;//4 weeks=28 days.
+	char month_str[5];//e.g "21stNULL"
 	
 	//Game Level.
 	int level_size = sqr(win_game_tile_num);//16*16=256
@@ -943,13 +960,7 @@ int SDL_main(int argc, char *argv[])
 	int level_cur=0;//256 = 16*16 
 	byte level_data[65536];//static; can not be free'd.
 	//65536 = 256*256 (level size * level count)
-	FILE *fil = fopen("level.dat","rb");
-	for (int i=0; i<level_size*level_count; i++)
-	{
-		level_data[i] = 0;
-	}
-	fread(level_data,sizeof(level_data),1,fil);
-	fclose(fil);
+	level_load(level_data,level_size,level_count);
 	
 	//Map.
 	SDL_Texture *spr_map = IMG_LoadTexture(renderer,"img/dunedin-map.png");
@@ -1020,6 +1031,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_QueueAudio(deviceid,wavbuffer,wavlength);
 	SDL_PauseAudioDevice(deviceid,0);//0 is unpause
 	//SDL_MixAudioFormat(wavbuffer,wavbuffer,AUDIO_S16,wavlength,32);
+	//play_WAV(wavfile,wavspec);
 	
 	//Splash intro screen.
 	int splashintro_bool=1;
@@ -1115,7 +1127,7 @@ int SDL_main(int argc, char *argv[])
 		if (glob_vk_f2)
 		{
 			printf("F2 started!\n");	
-			dev_tiled_to_leveldata();
+			dev_tiled_to_leveldata(level_data);
 			printf("F2 finished!\n");	
 		}
 		if(glob_vk_7)
@@ -1355,7 +1367,14 @@ int SDL_main(int argc, char *argv[])
         }
 		//Timekeeping.
 		time_clock_fps += 1*time_clock_fps_multiplier;
-		time_clock += (time_clock_fps>=time_clock_fps_max);
+		//time_clock += (time_clock_fps>=time_clock_fps_max);
+		while (time_clock_fps>=time_clock_fps_max)
+		{
+			time_clock++;
+			time_clock_fps-=time_clock_fps_max;
+		}
+		weekday = (weekday+(time_clock>=time_clock_max))%7;
+		monthday = (monthday+(time_clock>=time_clock_max))%28;
 		time_clock %= time_clock_max;
 		time_clock_fps %= time_clock_fps_max;
 		
@@ -1517,11 +1536,46 @@ int SDL_main(int argc, char *argv[])
 			if (clock_is_between(time_clock,12,0,17,59)) {ct=2;}
 			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
 			//placeholder 1/2
+			/*
 			draw_text_color(renderer,
 				uix,clocky2+gh,
 				font_ascii_w*gw,font_ascii_h*gh,
 				font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
 				font_ascii_w,font_ascii_h,tc);
+			/**/
+			//Weekday.
+			char wc[2];
+			double wf=1.0;
+			draw_rectangle_color(renderer,
+				uix+font_ascii_w*weekday*gw+(int)(wf*weekday*gw),clocky2+gh,
+				uix+font_ascii_w*weekday*gw+(int)(wf*weekday*gw)+font_ascii_w*gw,clocky2+gh+font_ascii_h*gh,
+				c_red);
+			for (int i=0; i<7; i++)
+			{
+				int wcol=i==6?c_red:c_black;
+				wcol=i==weekday?c_white:wcol;
+				wc[0]=weekday_string[i];
+				draw_text_color(renderer,
+					uix+font_ascii_w*i*gw+(int)(wf*i*gw),clocky2+gh,
+					font_ascii_w*gw,font_ascii_h*gh,
+					font_ascii,wc,
+					font_ascii_w,font_ascii_h,wcol);
+			}
+			//Day of the month.
+			month_str[0]=((monthday+1)/10)+48;
+			month_str[1]=((monthday+1)%10)+48;
+			month_str[2]=100+((monthday+1)%20>=4?16:mux_int((monthday+1)%20,16,15,10,14));
+			month_str[3]=100+((monthday+1)%20>=4? 4:mux_int((monthday+1)%20, 4,16, 0, 0));
+			draw_rectangle_color(renderer,
+				uix+8*font_ascii_w*gw,clocky2+gh,
+				uix+8*font_ascii_w*gw+4*font_ascii_w*gw,clocky2+gh+font_ascii_h*gh,
+				c_blue);
+			draw_text_color(renderer,
+				uix+8*font_ascii_w*gw,clocky2+gh,
+				font_ascii_w*gw,font_ascii_h*gh,
+				font_ascii,month_str,
+				font_ascii_w,font_ascii_h,
+				c_aqua);
 			
 			//Temperature.
 			int tempy1,tempy2;
@@ -1557,11 +1611,13 @@ int SDL_main(int argc, char *argv[])
 				if ((tex>=0x90) && (tex <=0x9F))
 				{//animated
 					int fr=16;
-					int di=(tex==0x90)?(60):(120);
+					int di=(tex<0x94)?(60):(120);
 					int at=(int)get_timer();
 					SDL_Texture *spr;
 					     if (tex==0x90) {spr=spr_water;}
+					else if (tex==0x91) {spr=spr_water_shallow;}
 					else if (tex==0x94) {spr=spr_lava;}
+					else if (tex==0x95) {spr=spr_lava_shallow;}
 					else {spr=spr_water;}
 					draw_image_part(renderer,x1,y1,x2,y2,spr,d*((at/di)%fr),0,d,d);
 				}
@@ -1826,6 +1882,8 @@ int SDL_main(int argc, char *argv[])
 	SDL_DestroyTexture(spr_sand);
 	SDL_DestroyTexture(spr_water);
 	SDL_DestroyTexture(spr_lava);
+	SDL_DestroyTexture(spr_water_shallow);
+	SDL_DestroyTexture(spr_lava_shallow);
 	SDL_DestroyTexture(spr_tileset);
 	SDL_DestroyTexture(spr_map);
 	SDL_DestroyTexture(spr_mapicon_unknown);
