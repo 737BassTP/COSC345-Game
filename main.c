@@ -31,6 +31,7 @@ https://wiki.libsdl.org/SDL2/APIByCategory
 
 //Typedef'ing.
 typedef unsigned char byte;//0-255, 0x00-0xFF
+typedef unsigned short word;//0-65535, 0x0000-0xFFFF
 
 //Colors (BGR because Big-Endianness).
 const int c_black 	= 0x000000;
@@ -401,14 +402,14 @@ void game_level_load(int lvl,int lvlmax)
 {
 	//done below.
 }
-void level_load(byte arr[],int siz,int count)
+void level_load(byte arr[],int siz,int count,int layers)
 {
 	FILE *fil = fopen("level.dat","rb");
-	for (int i=0; i<siz*count; i++)
+	for (int i=0; i<siz*count*layers; i++)
 	{
 		arr[i] = 0;
 	}
-	fread(arr,siz*count,1,fil);
+	fread(arr,siz*count*layers,1,fil);
 	fclose(fil);
 }
 void dev_tiled_to_leveldata(byte arr[])
@@ -419,23 +420,24 @@ void dev_tiled_to_leveldata(byte arr[])
 	FILE *filin = fopen("tiled/cosc345-game.tmx","rb");
 	FILE *filout = fopen("level.dat","wb");
 	int layers=2;
-	int layersize=65536;
+	int layersize=131072;
 	//layersize=512;//debug only
-	int maxsize = 65536*layers;//131072
-	byte array[131072];//tiles + objects.
+	int maxsize = layersize*layers;//131072
+	byte array[262144];//tiles + objects.
+	int arrsiz=sizeof(array);
 	for (long i=0; i<maxsize; i++) {array[i] = 0;}
 	//Discard input header.
-	fseek(filin,(long int)0x1F7-0,SEEK_SET);//hardcoded; may bug out in future, so avoid renaming or resizing in Tiled project file.
+	fseek(filin,(long int)0x1FC-0,SEEK_SET);//hardcoded; may bug out in future, so avoid renaming or resizing in Tiled project file.
 	//Read Tiles and Objects.
 	byte comma=","[0];
 	int ch=0;
 	byte entry[3];
-	byte val;
+	word val;
 	int counter=0;
 	int off=0;
 	int ij=0;
 	//Extract and restructure.
-	for (int i=0; i<layersize; i++)
+	for (int i=0; i<arrsiz; i++)
 	{
 		ch=fgetc(filin);
 		for (int j=0; j<3; j++) {entry[j]=48;}
@@ -459,7 +461,7 @@ void dev_tiled_to_leveldata(byte arr[])
 		for (int j=0; j<3; j++) {val+=(entry[j]-48)*(byte)pow((double)10,(double)(2-j));}
 		printf("i=%i/%i (v=%i)\n",i,layersize,val);//comment out to speed up.
 		val-=(val==0)?(-0xFF):(1)&0xFF;
-		array[(1<<(3<<(1<<1)))*(i>>(3<<(1<<1)))+(1<<(1<<3))*((i>>(1<<(1<<1)))&(3*(1<<(1<<1)|1)))+(1<<(1<<(1<<1)))*((i>>(1<<3))&(3*(1<<(1<<1)|1)))+(i&(3*(1<<(1<<1)|1)))]=val;//security through obscurity, or what?
+		array[(((1<<(1<<1))<<1)<<((1|(1<<1)|(1<<(1<<1)))<<1))*(val>=(((1<<1)<<1)<<((1+1+1)<<1)))+(1<<(3<<(1<<1)))*(i>>(3<<(1<<1)))+(1<<(1<<3))*((i>>(1<<(1<<1)))&(3*(1<<(1<<1)|1)))+(1<<(1<<(1<<1)))*((i>>(1<<3))&(3*(1<<(1<<1)|1)))+(i&(3*(1<<(1<<1)|1)))]=val;//security through obscurity, or what? (it crashes the compiler...)
 	}
 	//Compress.
 	val^=val;
@@ -473,7 +475,7 @@ void dev_tiled_to_leveldata(byte arr[])
 	fclose(filin);
 	fclose(filout);
 	//Re-load in-game.
-	level_load(arr,256,256);//hard-coded to tiles only.
+	level_load(arr,256,512,2);
 }
 char* level_get_name(int lvl,char* ret)
 {
@@ -762,9 +764,15 @@ void audioCallback(void* userdata, Uint8* stream, int len) {
     SDL_memcpy(stream, audiodata->buffer + audiodata->position, bytesToCopy);
     audiodata->position += bytesToCopy;
 }
-void play_WAV(const char* wavfile,SDL_AudioSpec spec)
+void play_WAV(const char* wavfile,SDL_AudioSpec spec,Uint8 *wavbuffer,int wavlength)
 {
-	
+	/*
+	if (SDL_LoadWAV(wavfile,&wavspec,&wavbuffer,&wavlength)==0)
+	{
+		printf("play_WAV failed");
+	}
+	//
+	/**/
 }
 
 //Game clock. (HH:MM)
@@ -956,18 +964,22 @@ int SDL_main(int argc, char *argv[])
 	
 	//Game Level.
 	int level_size = sqr(win_game_tile_num);//16*16=256
-	int level_count = 256;
+	int level_realms = 2;//overworld, underworld.
+	int level_count = 256*level_realms;
+	int level_layers = 2;
 	int level_cur=0;//256 = 16*16 
-	byte level_data[65536];//static; can not be free'd.
-	//65536 = 256*256 (level size * level count)
-	level_load(level_data,level_size,level_count);
+	byte level_data[262144];//static; can not be free'd.
+	//262144 = 256*512*2 (level size * level count * level layers)
+	level_load(level_data,level_size,level_count,level_layers);
+	int lvl_off_obj=0x20000;
+	int lvl_yoff=(int)sqrt(level_count/level_realms);
 	
 	//Map.
 	SDL_Texture *spr_map = IMG_LoadTexture(renderer,"img/dunedin-map.png");
 	SDL_Texture *spr_mapicon_unknown = IMG_LoadTexture(renderer,"img/spr_map_unknown.png");
 	char mapstr_location[16];
 	level_get_name(level_cur,mapstr_location);
-	Uint32 mapvisit[8];//256 bools.
+	Uint32 mapvisit[16];//512 bools.
 	mapvisit[level_cur/32]=1<<(level_cur%32);
 	
 	//Temperature.
@@ -1031,7 +1043,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_QueueAudio(deviceid,wavbuffer,wavlength);
 	SDL_PauseAudioDevice(deviceid,0);//0 is unpause
 	//SDL_MixAudioFormat(wavbuffer,wavbuffer,AUDIO_S16,wavlength,32);
-	//play_WAV(wavfile,wavspec);
+	//play_WAV(wavfile,&wavspec,&wavbuffer,&wavlength);
 	
 	//Splash intro screen.
 	int splashintro_bool=1;
@@ -1303,7 +1315,7 @@ int SDL_main(int argc, char *argv[])
 			{
 				//at north side
 				Player.y = p_south;
-				level_cur -= (int)sqrt(level_count);
+				level_cur -= lvl_yoff;
 			}
 			if (Player.x < p_west)
 			{
@@ -1315,10 +1327,11 @@ int SDL_main(int argc, char *argv[])
 			{
 				//at south side
 				Player.y = p_north;
-				level_cur += (int)sqrt(level_count);
+				level_cur += lvl_yoff;
 			}
 			if (lvlbool)//has changed level
 			{
+				
 				level_cur += level_count;//allows negative wrap.
 				level_cur %= level_count;//prevents overflow.
 				//printf("lvl=%i\n",level_cur);
@@ -1459,11 +1472,11 @@ int SDL_main(int argc, char *argv[])
 		if (!splashintro_bool)
 		{
 			//Level.
-			char *lvlstrold = "LVL: XYZ/255";
+			char *lvlstrold = "LVL: XYZ/511";
 			char lvlstrnew[strlen(lvlstrold)];//a hard-coded value too small causes a code-overwrite bug that messes with player movement!
 			strcpy(lvlstrnew,lvlstrold);
 			//lvlstrnew[7] = ((char)level_cur)+48;//7 is "X" above.
-			byte lc = (byte)level_cur;//note: "signed char" causes bugs out in the [128,255] range because it is out of range; "unsigned char" allows 255.
+			word lc = (word)level_cur;//note: "signed char" causes bugs out in the [128,255] range because it is out of range; "unsigned char" allows 255.
 			lvlstrnew[string_pos("X",lvlstrnew)] = ((lc/100)%10) + 48;//48="0"
 			lvlstrnew[string_pos("Y",lvlstrnew)] = ((lc/10 )%10) + 48;//%10 maps to 0-9.
 			lvlstrnew[string_pos("Z",lvlstrnew)] = ((lc/1  )%10) + 48;//
@@ -1493,16 +1506,18 @@ int SDL_main(int argc, char *argv[])
 					spr_mapicon_unknown);
 				}
 			}
-			//Location crosshair lines.
+			//Location crosshair lines.			
 			int mcx=(int)lerp((double)mapx1,(double)mapx2,(double)(BGG(lc,4,0)/16.0));
 			draw_rectangle_color(renderer,mcx-1,mapy1,mcx+1,mapy2,c_red);//ver(x)
 			int mcy=(int)lerp((double)mapy1,(double)mapy2,(double)(BGG(lc,4,1)/16.0));
 			draw_rectangle_color(renderer,mapx1,mcy-1,mapx2,mcy+1,c_red);//hor(y)
-			draw_rectangle_color(renderer,mcx,mcy,
-				(int)lerp((double)mapx1,(double)mapx2,(double)((BGG(lc,4,0)+1)/16.0)),
-				(int)lerp((double)mapy1,(double)mapy2,(double)((BGG(lc,4,1)+1)/16.0)),
-				c_red);
-			
+			if (!(lc>>8))
+			{
+				draw_rectangle_color(renderer,mcx,mcy,
+					(int)lerp((double)mapx1,(double)mapx2,(double)((BGG(lc,4,0)+1)/16.0)),
+					(int)lerp((double)mapy1,(double)mapy2,(double)((BGG(lc,4,1)+1)/16.0)),
+					c_red);
+			}
 			//Timekeeping.
 			//Digital clock.
 			int coff=0;
@@ -1593,37 +1608,55 @@ int SDL_main(int argc, char *argv[])
 		}
 		//Game area.
 		int d = win_game_tile_dim;
-		for (int j=0; j<win_game_tile_num; j++)
+		int defcol=make_color_hsv(0,0,((int)(get_timer()))/16);
+		for (int k=0; k<level_layers; k++)
 		{
-			for (int i=0; i<win_game_tile_num; i++)
+			for (int j=0; j<win_game_tile_num; j++)
 			{
-				int ij = i+j*win_game_tile_num;
-				int x1,y1,x2,y2;
-				x1 = win_game_x + (i+0)*gw*win_game_tile_dim;
-				y1 = win_game_y + (j+0)*gh*win_game_tile_dim;
-				x2 = win_game_x + (i+1)*gw*win_game_tile_dim;
-				y2 = win_game_y + (j+1)*gh*win_game_tile_dim;
-				
-				int col = mux_int(ij%3,c_red,c_green,c_blue);
-				draw_rectangle_color(renderer,x1,y1,x2,y2,col);//will show if image drawing below fails.
-				int off = ij + level_size*level_cur;
-				int tex = level_data[off];
-				if ((tex>=0x90) && (tex <=0x9F))
-				{//animated
-					int fr=16;
-					int di=(tex<0x94)?(60):(120);
-					int at=(int)get_timer();
-					SDL_Texture *spr;
-					     if (tex==0x90) {spr=spr_water;}
-					else if (tex==0x91) {spr=spr_water_shallow;}
-					else if (tex==0x94) {spr=spr_lava;}
-					else if (tex==0x95) {spr=spr_lava_shallow;}
-					else {spr=spr_water;}
-					draw_image_part(renderer,x1,y1,x2,y2,spr,d*((at/di)%fr),0,d,d);
-				}
-				else
-				{//static
-					draw_image_part(renderer,x1,y1,x2,y2,spr_tileset,d*(tex%win_game_tile_num),d*(tex/win_game_tile_num),d,d);
+				for (int i=0; i<win_game_tile_num; i++)
+				{
+					int ij = i+j*win_game_tile_num+k*lvl_off_obj;
+					int x1,y1,x2,y2;
+					x1 = win_game_x + (i+0)*gw*win_game_tile_dim;
+					y1 = win_game_y + (j+0)*gh*win_game_tile_dim;
+					x2 = win_game_x + (i+1)*gw*win_game_tile_dim;
+					y2 = win_game_y + (j+1)*gh*win_game_tile_dim;
+					
+					//int defcol = mux_int(ij%3,c_red,c_green,c_blue);
+					
+					int off = ij + level_size*level_cur;
+					int tex = level_data[off];
+					if (k==0)
+					{
+						draw_rectangle_color(renderer,x1,y1,x2,y2,defcol);//will show if image drawing below fails.
+						draw_image_part(renderer,x1,y1,x2,y2,spr_tileset,d*(tex%win_game_tile_num),d*(tex/win_game_tile_num),d,d);
+					}
+					else if (k==1)
+					{
+						//animated
+						if ((tex>=0x10) && (tex <=0x1F))
+						{
+							int fr=16;
+							int di=(tex<0x12)?(60):(120);
+							int at=(int)get_timer();
+							SDL_Texture *spr;
+								 if (tex==0x10) {spr=spr_water;}
+							else if (tex==0x11) {spr=spr_water_shallow;}
+							else if (tex==0x12) {spr=spr_lava;}
+							else if (tex==0x13) {spr=spr_lava_shallow;}
+							else {spr=spr_water;}
+							draw_image_part(renderer,x1,y1,x2,y2,spr,d*((at/di)%fr),0,d,d);
+						}
+						//unhandled.
+						else
+						{
+							if (tex!=0)//lazy hack.
+							{
+								tex+=0x100;
+								draw_image_part(renderer,x1,y1,x2,y2,spr_tileset,d*(tex%win_game_tile_num),d*(tex/win_game_tile_num),d,d);
+							}
+						}
+					}
 				}
 			}
 		}
