@@ -791,10 +791,14 @@ double temp_ctof(int c) {return (double)c * 1.8 + 32.0;}//Celsius to Fahrenheit.
 
 //quiz
 // Define the quiz question and answers
+const char* quizHeader = "default header message";
+const char* quizInfo = "";
+const char* quizInfoHolder ="";
 const char* quizQuestion = "What is the capital of France?";
 const char* answerA = "A) Paris";
 const char* answerB = "B) London";
 const char* answerC = "C) Berlin";
+int correctAnswer = 0;//current number of the answer.
 // Variable to store the user's answer (0 means no answer, 1 for A, and 2 for B)
 int userAnswer = 0;
 bool quizOn = false;//if a quiz is active
@@ -804,6 +808,89 @@ int quiz1QNum = 1;//what question of the quiz we are on
 int quizOn2 = 0;//is quiz 2 active
 int quiz2QNum = 1;//question counter for quiz 2
 bool quiz2Called = false;//boolean to see if the player has completed quiz
+
+int usedQuestions[100] = {0}; // Array to keep track of used question numbers
+int usedQuestionCount = 0;    // Variable to keep track of the number of used questions
+// Function to check if a question number has been used before
+int isQuestionUsed(int questionNumber) {
+    for (int i = 0; i < usedQuestionCount; i++) {
+        if (usedQuestions[i] == questionNumber) {
+            return 1; // Question number is already in the usedQuestions list
+        }
+    }
+    return 0; // Question number has not been used before
+}
+void updateQuizDataFromRandomLine(const char *filename,
+                                  const char **quizQuestion,
+                                  const char **answerA,
+                                  const char **answerB,
+                                  const char **answerC,
+                                  int *userAnswer,
+                                  int *correctAnswer,
+                                  const char **quizInfoHolder) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Error opening the file.\n");
+        return;
+    }
+
+    // Count the number of lines in the file
+    int lineCount = 0;
+    char ch;
+    while ((ch = fgetc(file)) != EOF) {
+        if (ch == '\n') {
+            lineCount++;
+        }
+    }
+    // Reset the file pointer to the beginning
+    rewind(file);
+
+    // Generate a random line number
+    srand(time(NULL));
+    int randomLine;
+
+    // Keep generating random line numbers until we get a line that hasn't been used before
+    do {
+        randomLine = rand() % lineCount;
+    } while (isQuestionUsed(randomLine));
+
+    // Add the question number to the list of used questions
+    usedQuestions[usedQuestionCount] = randomLine;
+    usedQuestionCount++;
+
+    // Read and process lines until we reach the randomly selected line
+    char line[1024];
+    for (int i = 0; i <= randomLine; i++) {
+        if (fgets(line, sizeof(line), file)) {
+            char *token;
+            const char *delim = ";";
+            token = strtok(line, delim);
+            while (token != NULL) {
+                char varName[256], varValue[768];
+                if (sscanf(token, "%[^=]=%[^\n]", varName, varValue) == 2) {
+                    if (strcmp(varName, "quizQuestion") == 0) {
+                        *quizQuestion = strdup(varValue);
+                    } else if (strcmp(varName, "answerA") == 0) {
+                        *answerA = strdup(varValue);
+                    } else if (strcmp(varName, "answerB") == 0) {
+                        *answerB = strdup(varValue);
+                    } else if (strcmp(varName, "answerC") == 0) {
+                        *answerC = strdup(varValue);
+                    } else if (strcmp(varName, "userAnswer") == 0) {
+                        *userAnswer = atoi(varValue);
+                    } else if (strcmp(varName, "correctAnswer") == 0) {
+                        *correctAnswer = atoi(varValue);
+                    } else if (strcmp(varName, "quizInfoHolder") == 0) {
+                        *quizInfoHolder = strdup(varValue);
+                    } 
+                }
+                token = strtok(NULL, delim);
+            }
+        }
+    }
+    fclose(file);
+}
+
 /*
 Entry point.
 */
@@ -1460,9 +1547,9 @@ int SDL_main(int argc, char *argv[])
 			for (int i=0; i<4; i++)
 			{
 				//placeholder 2/2
-				draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
-				draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
-				nx += nd*gw;
+				// draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
+				// draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
+				// nx += nd*gw;
 			}
 			// SDL_RenderPresent(renderer);
 		}
@@ -1747,70 +1834,109 @@ int SDL_main(int argc, char *argv[])
 		if(level_cur==2){
 			if(quiz2Called==false){//boolean check so the quiz doesn't open every time they hit level 2.
 				quizQuestion="Greetings wanderer\nAnswer my riddle to pass through\n Which of these macronutrients contains the most calories per gram";answerA="1. Carbohydrate";answerB="2. Fat";answerC="3. Protein";
-				quiz2Called=true;	
-				quizOn=true;
-				Player.move_spd=0;//stop player moving
+				quiz2Called=true;	quizOn=true;correctAnswer=2;Player.move_spd=0;
 			}
 			if(quiz2QNum==1){//if first question
-			if(userAnswer==0){//keeps it from looping infinite
+			if(userAnswer==0){}//keeps it from looping infinite
+			else if(userAnswer==correctAnswer){
+				quizInfo="Correct";
+    			updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quiz2QNum++;score+=500;
 			}
-			if(userAnswer==1){quizQuestion="That is false\n next question\nWhich of these meats has the highest protein count per 100g??";answerA="1. Rump Steak";answerB="2. Skinned Chicken Breast";answerC="3. Chocolate";userAnswer=0;score+=0;quiz2QNum++;
-			}
-			if(userAnswer==2){
-				quizQuestion="That is Correct, fat contains 9 calories per gram while protein and carbohydrates contain 4\n next question\nWhich of these meats has the highest protein count per 100g??";answerA="1. Rump Steak";answerB="2. Skinned Chicken Breast";answerC="3. Chocolate";userAnswer=0;score+=500;quiz2QNum++;
-			}
-			if(userAnswer==3){quizQuestion="That is false\n next question\nWhich of these meats has the highest protein count per 100g?";answerA="1. Rump Steak";answerB="2. Skinned Chicken Breast";answerC="3. Chocolate";userAnswer=0;quiz2QNum++;
+			else{
+				quizInfo="false";
+				updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quiz2QNum++;score+=0;
 			}
 			}else if(quiz2QNum==2){//if second question
 			if(userAnswer==0){}
-			if(userAnswer==1){quizQuestion="That is false\nThank you for playing";answerA="";answerB="";answerC="";userAnswer=0;score+=0;quiz2QNum++;
-				}
-			if(userAnswer==2){quizQuestion="That is correct\nThere are 31g of protein per 100g of Chicken breast\nThank you for playing";answerA="";answerB="";answerC="";userAnswer=0;score+=500;quiz2QNum++;
-				}
-			if(userAnswer==3){quizQuestion="That is false\nThank you for playing";answerA="";answerB="";answerC="";userAnswer=0;score+=0;quiz2QNum++;
-				}			
+			else if(userAnswer==correctAnswer){
+				quizInfo="correct";
+    			updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quiz2QNum++;score+=500;
 			}
-			else if(quiz2QNum=3){answerA="press 1 2 or 3 to exit";answerB="";answerC="";//quiz finished
+			else{
+				quizInfo="false";
+				updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quiz2QNum++;score+=0;
+			}		
+			}
+			else if(quiz2QNum==3){//if second question
 			if(userAnswer==0){}
-			if(userAnswer==1){quizOn2=0;quizOn=false;Player.move_spd=3*4;
-				}
-			if(userAnswer==2){quizOn2=0;quizOn=false;Player.move_spd=3*4;
-				}
-			if(userAnswer==3){quizOn2=0;quizOn=false;Player.move_spd=3*4;
-				}
+			else if(userAnswer==correctAnswer){
+				quizInfo="correct";
+    			updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quiz2QNum++;score+=500;
+			}
+			else{
+				quizInfo="false";
+				updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quiz2QNum++;score+=0;
+			}		
+			}
+
+
+			//end quiz
+			else if(quiz2QNum=4){quizQuestion=" ",answerA="press 1 2 or 3 to exit";answerB="";answerC="";//quiz finished
+			if(userAnswer==0){}else if(userAnswer==1||userAnswer==2||userAnswer==3){quizOn2=0;quizOn=false;Player.move_spd=3*4;}
 			}
 		}			
 		
 		//render the quiz popup
-			if (quizOn) {
-    			// Render the quiz popup with a beige square background
-    			SDL_Color bgColor = { 200, 200, 200 }; // Beige color
-    			SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, 255);
-    			int popupWidth = 400; // Adjust this value to change the width of the popup
-    			int popupHeight = 200; // Adjust this value to change the height of the popup
-    			int popupX = (800 - popupWidth) / 2 + 300; // Center the popup horizontally and move it right by 300 pixels
-    			int popupY = (600 - popupHeight) / 2;
-    			SDL_Rect popupRect = { popupX, popupY, popupWidth, popupHeight };
-    			SDL_RenderFillRect(renderer, &popupRect);
-    			// Render the quiz text inside the beige square background
-    			SDL_Color textColor = { 0, 0, 0 }; // black text color
-    			int maxTextWidth = popupWidth - 20; // Adjust this value based on your desired maximum text width
-    			char quizText[256];
-    			snprintf(quizText, sizeof(quizText), "%s\n%s\n%s\n%s", quizQuestion, answerA, answerB, answerC);
-    			SDL_Surface* textSurface = TTF_RenderText_Blended_Wrapped(font, quizText, textColor, maxTextWidth);
-    			SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-    			// Calculate the position to center the text inside the beige square background
-    			int textWidth = textSurface->w;
-    			int textHeight = textSurface->h;
-    			int textX = popupX + (popupWidth - textWidth) / 2;
-    			int textY = popupY + (popupHeight - textHeight) / 2;
-    			// Render the text
-    			SDL_Rect textRect = { textX, textY, textWidth, textHeight };
-    			SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
-    			// Cleanup
-    			SDL_FreeSurface(textSurface);
-    			SDL_DestroyTexture(textTexture);
-			}
+if (quizOn) {
+    // Render the quiz popup with a beige square background
+    SDL_Color bgColor = { 200, 200, 200 }; // Beige color
+    SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, 255);
+    int popupWidth = 400; // Adjust this value to change the width of the popup
+    int popupHeight = 200; // Adjust this value to change the height of the popup
+    int popupX = (800 - popupWidth) / 2 + 300; // Center the popup horizontally and move it right by 300 pixels
+    int popupY = (600 - popupHeight) / 2;
+    SDL_Rect popupRect = { popupX, popupY, popupWidth, popupHeight };
+    SDL_RenderFillRect(renderer, &popupRect);
+
+    // Render the quiz header just above the quiz text
+    SDL_Color headerColor = { 0, 0, 255 }; // blue header color
+    int maxHeaderWidth = popupWidth - 20; // Adjust this value based on your desired maximum header width
+    SDL_Surface* headerSurface = TTF_RenderText_Blended_Wrapped(font, quizHeader, headerColor, maxHeaderWidth);
+    SDL_Texture* headerTexture = SDL_CreateTextureFromSurface(renderer, headerSurface);
+    // Calculate the position to center the header inside the beige square background
+    int headerWidth = headerSurface->w;
+    int headerHeight = headerSurface->h;
+    int headerX = popupX + (popupWidth - headerWidth) / 2;
+    int headerY = popupY + 10; // Adjust the value 10 for the vertical position of the header
+    // Render the header
+    SDL_Rect headerRect = { headerX, headerY, headerWidth, headerHeight };
+    SDL_RenderCopy(renderer, headerTexture, NULL, &headerRect);
+    // Cleanup
+    SDL_FreeSurface(headerSurface);
+    SDL_DestroyTexture(headerTexture);
+
+    // Combine quizInfo and quizQuestion into one string separated by newline
+char combinedText[1024];
+snprintf(combinedText, sizeof(combinedText), "\n%s\n%s\n%s\n%s\n%s", quizInfo, quizQuestion, answerA, answerB, answerC);
+
+// Render the quiz text inside the beige square background
+SDL_Color textColor = { 0, 0, 0 }; // black text color
+int maxTextWidth = popupWidth - 20; // Adjust this value based on your desired maximum text width
+SDL_Surface* textSurface = TTF_RenderText_Blended_Wrapped(font, combinedText, textColor, maxTextWidth);
+if (textSurface == NULL) {
+    printf("Error creating text surface: %s\n", TTF_GetError());
+    return;
+}
+
+SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+if (textTexture == NULL) {
+    printf("Error creating text texture: %s\n", SDL_GetError());
+    SDL_FreeSurface(textSurface);
+    return;
+}
+
+// Calculate the position to center the text inside the beige square background
+int textWidth = textSurface->w;
+int textHeight = textSurface->h;
+int textX = popupX + (popupWidth - textWidth) / 2;
+int textY = popupY + (popupHeight - textHeight) / 2;
+// Render the text
+SDL_Rect textRect = { textX, textY, textWidth, textHeight };
+SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+// Cleanup
+SDL_FreeSurface(textSurface);
+SDL_DestroyTexture(textTexture);
+}
 		// Draw water particles
         for (int i = 0; i < MAX_WATER_PARTICLES; i++) 
 		{
