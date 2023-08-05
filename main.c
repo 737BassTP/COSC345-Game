@@ -623,6 +623,12 @@ void resetEnemy(struct Enemy* enemy) {
     enemy->dmg = 0;
     // Add other attributes reset if needed
 }
+//distance to player
+float distance(float x1, float y1, float x2, float y2) {
+    float dx = x2 - x1;
+    float dy = y2 - y1;
+    return sqrt(dx * dx + dy * dy);
+}
 // Function to check for collision between two rectangles
 // Returns true (non-zero) if the rectangles collide, false (0) otherwise
 int checkCollision(SDL_Rect rect1, SDL_Rect rect2) {
@@ -636,13 +642,13 @@ void calculateAttackHitbox(struct player* player, SDL_Rect* attackHitbox) {
     int attackX = player->x;
     int attackY = player->y;
     // Adjust the position of the attack hitbox based on the player's direction
-    if (player->facedir == 0) { // Up
+    if (player->facedir == 1) { // Up
         attackY -= player->attackRangeHeight;
-    } else if (player->facedir == 1) { // Right
+    } else if (player->facedir == 0) { // Right
         attackX += player->attackRangeWidth;
-    } else if (player->facedir == 2) { // Down
+    } else if (player->facedir == 3) { // Down
         attackY += player->attackRangeHeight;
-    } else if (player->facedir == 3) { // Left
+    } else if (player->facedir == 2) { // Left
         attackX -= player->attackRangeWidth;
     }
 
@@ -1090,7 +1096,7 @@ int SDL_main(int argc, char *argv[])
 	Player.move_spd = 3*4;
 	//damage stats
 	Player.attackRangeHeight=50;
-	Player.attackRangeWidth=100;
+	Player.attackRangeWidth=10;
 	Player.damage=50;
 
 	//test enemy
@@ -1532,9 +1538,9 @@ int SDL_main(int argc, char *argv[])
 			for (int i=0; i<4; i++)
 			{
 				//placeholder 2/2
-				draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
-				draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
-				nx += nd*gw;
+				// draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
+				// draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
+				// nx += nd*gw;
 			}
 			// SDL_RenderPresent(renderer);
 		}
@@ -1624,11 +1630,11 @@ int SDL_main(int argc, char *argv[])
 			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
 			//placeholder 1/2
 			
-			draw_text_color(renderer,
-				uix,clocky2+gh,
-				font_ascii_w*gw,font_ascii_h*gh,
-				font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
-				font_ascii_w,font_ascii_h,tc);
+			// draw_text_color(renderer,
+			// 	uix,clocky2+gh,
+			// 	font_ascii_w*gw,font_ascii_h*gh,
+			// 	font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
+			// 	font_ascii_w,font_ascii_h,tc);
 			
 			//Weekday.
 			char wc[2];
@@ -1912,10 +1918,24 @@ SDL_DestroyTexture(textTexture);
 		// Rendering the enemy
 		if (globalEnemy != NULL && globalEnemy->health > 0)
 		{
-    		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Set the render color to red
-    		SDL_Rect enemyRect = { globalEnemy->x, globalEnemy->y, globalEnemy->width, globalEnemy->height };
-    		SDL_RenderFillRect(renderer, &enemyRect);
-			draw_image(renderer,globalEnemy->x,globalEnemy->y,globalEnemy->x+globalEnemy->width,globalEnemy->y+globalEnemy->height,spr_enemy1);
+			float directionX = Player.x - globalEnemy->x;
+        	float directionY = Player.y - globalEnemy->y;
+			float distanceToPlayer = distance(Player.x, Player.y, globalEnemy->x, globalEnemy->y);
+			//stop the enemy when within the selected units (125)
+			if(distanceToPlayer > 110){
+				// Normalize the direction vector (make it a unit vector)
+				if (distanceToPlayer != 0) {
+					directionX /= distanceToPlayer;
+					directionY /= distanceToPlayer;
+				}
+				float enemySpeed = 2.0; //adjust this value to control the enemy's speed
+				globalEnemy->x += directionX * enemySpeed;
+				globalEnemy->y += directionY * enemySpeed;
+			}
+			SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+			SDL_Rect enemyRect = { globalEnemy->x, globalEnemy->y, globalEnemy->width, globalEnemy->height };
+			SDL_RenderFillRect(renderer, &enemyRect);
+			draw_image(renderer, globalEnemy->x, globalEnemy->y, globalEnemy->x + globalEnemy->width, globalEnemy->y + globalEnemy->height, spr_enemy1);
 		}
 
 		// Resetting the enemy
