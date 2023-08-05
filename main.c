@@ -1792,9 +1792,10 @@ int SDL_main(int argc, char *argv[])
 				quizQuestion="Greetings wanderer\nAnswer my riddle to pass through\n Which of these macronutrients contains the most calories per gram";answerA="1. Carbohydrate";answerB="2. Fat";answerC="3. Protein";
 				quiz2Called=true;	quizOn=true;correctAnswer=2;Player.move_spd=0; quizLoopOn=true;
 			}
-		}//third quiz
+		}//third quiz (currently used for testing, change for real game.) 
+		//Quiz turns on once the player enters level_curr==3, for other quizzes just copy this code and change the trigger. 
 		if(level_cur==3){
-			if(quiz3Called==false){//boolean check so the quiz doesn't open every time they hit level 2.
+			if(quiz3Called==false){//boolean check so the quiz doesn't open every time they hit level 3.
 				quizQuestion="Greetings wanderer\nAnswer my riddle to pass through\n Should this quiz work?";answerA="1. yes";answerB="2. no";answerC="3. definitely not";
 				quiz3Called=true;	quizOn=true;correctAnswer=1;Player.move_spd=0; quizLoopOn=true; quizInfo="";
 			}
