@@ -791,26 +791,24 @@ double temp_ctof(int c) {return (double)c * 1.8 + 32.0;}//Celsius to Fahrenheit.
 
 //quiz
 // Define the quiz question and answers
-const char* quizHeader = "default header message";
-const char* quizInfo = "";
-const char* quizInfoHolder ="";
-const char* quizQuestion = "What is the capital of France?";
-const char* answerA = "A) Paris";
-const char* answerB = "B) London";
-const char* answerC = "C) Berlin";
-int correctAnswer = 0;//current number of the answer.
-// Variable to store the user's answer (0 means no answer, 1 for A, and 2 for B)
-int userAnswer = 0;
-bool quizOn = false;//if a quiz is active
-int quizOn1 = 0;//turn on the test quiz
-int quiz1QNum = 1;//what question of the quiz we are on
+const char* quizHeader = "INSERT NAME HERE";//Name of person we are talking to
+const char* quizInfo = "";//"correct or false"
+const char* quizInfoHolder ="";//does nothing currently
+const char* quizQuestion = "What is the capital of France?";//default question
+const char* answerA = "A) Paris";//default answer a
+const char* answerB = "B) London";//default answer b
+const char* answerC = "C) Berlin";//default answer c
+int correctAnswer = 0;//current number relating to the correct answer.
+int userAnswer = 0;//user input for the quiz (1,2,3), 0 is default.
+bool quizOn = false;//if a quiz is active (rendering)
 
-int quizOn2 = 0;//is quiz 2 active
-int quiz2QNum = 1;//question counter for quiz 2
-bool quiz2Called = false;//boolean to see if the player has completed quiz
+int quizQNum = 1;//question counter for quiz (ends at 4 for three question quiz)
 
-int usedQuestions[100] = {0}; // Array to keep track of used question numbers
-int usedQuestionCount = 0;    // Variable to keep track of the number of used questions
+bool quiz2Called = false;//boolean to see if the player has completed quiz 2 etc
+bool quiz3Called = false;
+bool quizLoopOn = false;//are we going through the quiz loop in main
+int usedQuestions[100] = {0}; // Array to keep track of used question numbers (for random question)
+int usedQuestionCount = 0;    // Variable to keep track of the number of used questions (so we dont get the same random question)
 // Function to check if a question number has been used before
 int isQuestionUsed(int questionNumber) {
     for (int i = 0; i < usedQuestionCount; i++) {
@@ -1235,20 +1233,7 @@ int SDL_main(int argc, char *argv[])
 			attack(&Player);//calls attack function
 			renderWeaponSwing(renderer, spr_water, &Player);//renders the swing
 		}
-		if(glob_vk_8)
-		{
-			glob_vk_8=0;
-			if(quizOn==false){
-			quizOn=true;
-			quizOn1=1;
-			printf("quiz on");
-			}
-			else{
-				quizOn=false;
-				quizOn1=0;
-			}
 
-		}
 		//Rain toggle.
 		if (glob_vk_0)
 		{
@@ -1547,9 +1532,9 @@ int SDL_main(int argc, char *argv[])
 			for (int i=0; i<4; i++)
 			{
 				//placeholder 2/2
-				// draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
-				// draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
-				// nx += nd*gw;
+				draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
+				draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
+				nx += nd*gw;
 			}
 			// SDL_RenderPresent(renderer);
 		}
@@ -1638,13 +1623,13 @@ int SDL_main(int argc, char *argv[])
 			if (clock_is_between(time_clock,12,0,17,59)) {ct=2;}
 			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
 			//placeholder 1/2
-			/*
+			
 			draw_text_color(renderer,
 				uix,clocky2+gh,
 				font_ascii_w*gw,font_ascii_h*gh,
 				font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
 				font_ascii_w,font_ascii_h,tc);
-			/**/
+			
 			//Weekday.
 			char wc[2];
 			double wf=1.0;
@@ -1800,81 +1785,59 @@ int SDL_main(int argc, char *argv[])
 		}
 
 		//first quiz. Rename variables for alpha.
-		if(quizOn1==1){
-			if(quiz1QNum==1){//if first question
-			if(userAnswer==0){//keeps it from looping infinite
-			}
-			if(userAnswer==1){quizQuestion="That is correct\nWhat is Seans name?";answerA="Bradley";answerB="Sean";answerC="John";userAnswer=0;score+=500;quiz1QNum++;
-			}
-			if(userAnswer==2){
-				quizQuestion="That is false\n next question\nWhat is Seans name?";answerA="Bradley";answerB="Sean";answerC="John";userAnswer=0;score+=0;quiz1QNum++;
-			}
-			if(userAnswer==3){quizQuestion="That is false\n next question\nWhat is Seans name?";answerA="Bradley";answerB="Sean";answerC="John";userAnswer=0;score+=0;quiz1QNum++;
-			}
-			}else if(quiz1QNum==2){//if second question
-			if(userAnswer==0){//keeps it from looping infinite}
-			if(userAnswer==1){quizQuestion="That is false\nThank you for playing";answerA="";answerB="";answerC="";userAnswer=0;score+=0;quiz1QNum++;
-				}
-			if(userAnswer==2){quizQuestion="That is correct\nThank you for playing";answerA="";answerB="";answerC="";userAnswer=0;score+=500;quiz1QNum++;
-				}
-			if(userAnswer==3){quizQuestion="That is false\nThank you for playing";answerA="";answerB="";answerC="";userAnswer=0;score+=0;quiz1QNum++;
-				}			
-			}
-			else if(quiz1QNum=3){quizQuestion="Thank you for playing";answerA="press 1 2 or 3 to exit";answerB="";answerC="";//quiz finished
-			if(userAnswer==1){quizOn1=0;userAnswer=0;quizOn=false;
-				}
-			if(userAnswer==2){quizOn1=0;userAnswer=0;quizOn=false;
-				}
-			if(userAnswer==3){quizOn1=0;userAnswer=0;quizOn=false;
-				}
-			}
-		}
-		}
+
 		//Second quiz
 		if(level_cur==2){
 			if(quiz2Called==false){//boolean check so the quiz doesn't open every time they hit level 2.
 				quizQuestion="Greetings wanderer\nAnswer my riddle to pass through\n Which of these macronutrients contains the most calories per gram";answerA="1. Carbohydrate";answerB="2. Fat";answerC="3. Protein";
-				quiz2Called=true;	quizOn=true;correctAnswer=2;Player.move_spd=0;
+				quiz2Called=true;	quizOn=true;correctAnswer=2;Player.move_spd=0; quizLoopOn=true;
 			}
-			if(quiz2QNum==1){//if first question
+		}//third quiz
+		if(level_cur==3){
+			if(quiz3Called==false){//boolean check so the quiz doesn't open every time they hit level 2.
+				quizQuestion="Greetings wanderer\nAnswer my riddle to pass through\n Should this quiz work?";answerA="1. yes";answerB="2. no";answerC="3. definitely not";
+				quiz3Called=true;	quizOn=true;correctAnswer=1;Player.move_spd=0; quizLoopOn=true; quizInfo="";
+			}
+		}
+		//loop to go through three questions relating to food data. (copy this but replace questions.txt with data from other dataset if we choose.)
+		if(quizLoopOn){
+			if(quizQNum==1){//if first question
 			if(userAnswer==0){}//keeps it from looping infinite
 			else if(userAnswer==correctAnswer){
 				quizInfo="Correct";
-    			updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quiz2QNum++;score+=500;
+    			updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=500;
 			}
 			else{
 				quizInfo="false";
-				updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quiz2QNum++;score+=0;
+				updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=0;
 			}
-			}else if(quiz2QNum==2){//if second question
+			}else if(quizQNum==2){//if second question
 			if(userAnswer==0){}
 			else if(userAnswer==correctAnswer){
 				quizInfo="correct";
-    			updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quiz2QNum++;score+=500;
+    			updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=500;
 			}
 			else{
 				quizInfo="false";
-				updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quiz2QNum++;score+=0;
+				updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=0;
 			}		
 			}
-			else if(quiz2QNum==3){//if second question
+			else if(quizQNum==3){//if third question
 			if(userAnswer==0){}
 			else if(userAnswer==correctAnswer){
 				quizInfo="correct";
-    			updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quiz2QNum++;score+=500;
+    			updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=500;
 			}
 			else{
 				quizInfo="false";
-				updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quiz2QNum++;score+=0;
+				updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=0;
 			}		
 			}
-
-
 			//end quiz
-			else if(quiz2QNum=4){quizQuestion=" ",answerA="press 1 2 or 3 to exit";answerB="";answerC="";//quiz finished
-			if(userAnswer==0){}else if(userAnswer==1||userAnswer==2||userAnswer==3){quizOn2=0;quizOn=false;Player.move_spd=3*4;}
+			else if(quizQNum=4){quizQuestion=" ",answerA="press 1 2 or 3 to exit";answerB="";answerC="";//quiz finished
+			if(userAnswer==0){}else if(userAnswer==1||userAnswer==2||userAnswer==3){quizOn=false;Player.move_spd=3*4;quizQNum=1;quizInfo="";userAnswer=0;quizLoopOn=false;}
 			}
-		}			
+		}	
 		
 		//render the quiz popup
 if (quizOn) {
