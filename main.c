@@ -549,6 +549,14 @@ void deactivateAllWaterParticles() {
 //Health System test
 int health = 100;
 int maxHealth=100;
+SDL_Rect playerHitbox;
+// Function to update the globalRect's position and size
+void updatePlayerHitbox(int x, int y, int width, int height) {
+    playerHitbox.x = x;
+    playerHitbox.y = y;
+    playerHitbox.w = width;
+    playerHitbox.h = height;
+}
 //damaging test
 void damageMe(int dmg)
 {
@@ -593,6 +601,8 @@ struct player
 	int damage;
     int attackRangeWidth;
     int attackRangeHeight;
+	int width;
+	int height;
 };
 //enemy struct
 struct Enemy {
@@ -635,7 +645,11 @@ int checkCollision(SDL_Rect rect1, SDL_Rect rect2) {
     return (rect1.x < rect2.x + rect2.w &&
             rect1.x + rect1.w > rect2.x &&
             rect1.y < rect2.y + rect2.h &&
-            rect1.y + rect1.h > rect2.y);
+            rect1.y + rect1.h > rect2.y) ||
+           (rect2.x < rect1.x + rect1.w &&
+            rect2.x + rect2.w > rect1.x &&
+            rect2.y < rect1.y + rect1.h &&
+            rect2.y + rect2.h > rect1.y);
 }
 void calculateAttackHitbox(struct player* player, SDL_Rect* attackHitbox) {
     // Calculate the position of the attack hitbox based on player direction
@@ -1098,7 +1112,9 @@ int SDL_main(int argc, char *argv[])
 	Player.attackRangeHeight=50;
 	Player.attackRangeWidth=10;
 	Player.damage=50;
-
+	Player.width=15;
+	Player.height=15;
+	updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
 	//test enemy
 	struct Enemy enemy1;
 	initEnemy(&enemy1, 500, 500, 100, 100, 100, 10);
@@ -1350,21 +1366,25 @@ int SDL_main(int argc, char *argv[])
 		{
 			Player.facedir=0;
 			Player.x += Player.move_spd;
+			updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
 		}
 		if (glob_vk_up)
 		{
 			Player.facedir=1;
 			Player.y -= Player.move_spd;
+			updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
 		}
 		if (glob_vk_left)
 		{
 			Player.facedir=2;
 			Player.x -= Player.move_spd;
+			updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
 		}
 		if (glob_vk_down)
 		{
 			Player.facedir=3;
 			Player.y += Player.move_spd;
+			updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
 		}
 		if (glob_vk_right|glob_vk_left|glob_vk_up|glob_vk_down)
 		{
@@ -1918,6 +1938,7 @@ SDL_DestroyTexture(textTexture);
 		// Rendering the enemy
 		if (globalEnemy != NULL && globalEnemy->health > 0)
 		{
+			
 			float directionX = Player.x - globalEnemy->x;
         	float directionY = Player.y - globalEnemy->y;
 			float distanceToPlayer = distance(Player.x, Player.y, globalEnemy->x, globalEnemy->y);
@@ -1934,8 +1955,24 @@ SDL_DestroyTexture(textTexture);
 			}
 			SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 			SDL_Rect enemyRect = { globalEnemy->x, globalEnemy->y, globalEnemy->width, globalEnemy->height };
-			SDL_RenderFillRect(renderer, &enemyRect);
+			// SDL_RenderFillRect(renderer, &enemyRect);
 			draw_image(renderer, globalEnemy->x, globalEnemy->y, globalEnemy->x + globalEnemy->width, globalEnemy->y + globalEnemy->height, spr_enemy1);
+			if (checkCollision(playerHitbox, enemyRect)) {
+            // If the player collides with the enemy, apply damage to the player
+            printf("Player collided with enemy!\n");
+            int enemyDamage = globalEnemy->dmg; // Adjust this value as needed
+            damageMe(enemyDamage);
+			// Bump back the enemy when they run into us
+            int bumpDistance = 50;
+            float bumpDirectionX = directionX;
+            float bumpDirectionY = directionY;
+            if (distanceToPlayer != 0) {
+                bumpDirectionX /= distanceToPlayer;
+                bumpDirectionY /= distanceToPlayer;
+            }
+            globalEnemy->x -= bumpDirectionX * bumpDistance;
+            globalEnemy->y -= bumpDirectionY * bumpDistance;
+        }
 		}
 
 		// Resetting the enemy
