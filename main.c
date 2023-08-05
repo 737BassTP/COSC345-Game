@@ -612,16 +612,18 @@ struct Enemy {
     int height;
     int health;
 	int dmg;//damage it deals
+	SDL_Texture* texture;
     // Add more enemy-related attributes as needed
 };
 // Function to initialize an enemy with position and size
-void initEnemy(struct Enemy* enemy, int x, int y, int width, int height, int health, int dmg) {
+void initEnemy(struct Enemy* enemy, int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture) {
     enemy->x = x;
     enemy->y = y;
     enemy->width = width;
     enemy->height = height;
     enemy->health = health;
     enemy->dmg = dmg;
+	enemy->texture = texture;
 }
 // Function to reset an enemy to its default state
 void resetEnemy(struct Enemy* enemy) {
@@ -1110,16 +1112,15 @@ int SDL_main(int argc, char *argv[])
 	Player.move_spd = 3*4;
 	//damage stats
 	Player.attackRangeHeight=50;
-	Player.attackRangeWidth=10;
+	Player.attackRangeWidth=15;
 	Player.damage=50;
 	Player.width=15;
 	Player.height=15;
 	updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
 	//test enemy
-	struct Enemy enemy1;
-	initEnemy(&enemy1, 500, 500, 100, 100, 100, 10);
-	//global enemy
-	globalEnemy = &enemy1;
+	struct Enemy enemy1;//Random player enemy
+	initEnemy(&enemy1, 500, 500, 100, 100, 100, 10, spr_enemy1);//size, stats and image to go with it.
+	globalEnemy = &enemy1;//making it the global enemy.
 	//Nutrients.
 	SDL_Texture *spr_nutrients = IMG_LoadTexture(renderer,"img/spr_nutrients_strip4.png");
 	
@@ -1558,9 +1559,9 @@ int SDL_main(int argc, char *argv[])
 			for (int i=0; i<4; i++)
 			{
 				//placeholder 2/2
-				// draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
-				// draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
-				// nx += nd*gw;
+				draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
+				draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
+				nx += nd*gw;
 			}
 			// SDL_RenderPresent(renderer);
 		}
@@ -1650,11 +1651,11 @@ int SDL_main(int argc, char *argv[])
 			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
 			//placeholder 1/2
 			
-			// draw_text_color(renderer,
-			// 	uix,clocky2+gh,
-			// 	font_ascii_w*gw,font_ascii_h*gh,
-			// 	font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
-			// 	font_ascii_w,font_ascii_h,tc);
+			draw_text_color(renderer,
+				uix,clocky2+gh,
+				font_ascii_w*gw,font_ascii_h*gh,
+				font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
+				font_ascii_w,font_ascii_h,tc);
 			
 			//Weekday.
 			char wc[2];
@@ -1956,7 +1957,7 @@ SDL_DestroyTexture(textTexture);
 			SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 			SDL_Rect enemyRect = { globalEnemy->x, globalEnemy->y, globalEnemy->width, globalEnemy->height };
 			// SDL_RenderFillRect(renderer, &enemyRect);
-			draw_image(renderer, globalEnemy->x, globalEnemy->y, globalEnemy->x + globalEnemy->width, globalEnemy->y + globalEnemy->height, spr_enemy1);
+			draw_image(renderer, globalEnemy->x, globalEnemy->y, globalEnemy->x + globalEnemy->width, globalEnemy->y + globalEnemy->height, globalEnemy->texture);
 			if (checkCollision(playerHitbox, enemyRect)) {
             // If the player collides with the enemy, apply damage to the player
             printf("Player collided with enemy!\n");

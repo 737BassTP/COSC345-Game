@@ -2138,6 +2138,9 @@ initEnemy:
 	mov	rax, QWORD PTR 16[rbp]
 	mov	edx, DWORD PTR 64[rbp]
 	mov	DWORD PTR 20[rax], edx
+	mov	rax, QWORD PTR 16[rbp]
+	mov	rdx, QWORD PTR 72[rbp]
+	mov	QWORD PTR 24[rax], rdx
 	nop
 	pop	rbp
 	ret
@@ -3861,7 +3864,7 @@ SDL_main:
 	mov	BYTE PTR 1349[rbp], 2
 	mov	BYTE PTR 1350[rbp], 12
 	mov	DWORD PTR 1360[rbp], 50
-	mov	DWORD PTR 1356[rbp], 10
+	mov	DWORD PTR 1356[rbp], 15
 	mov	DWORD PTR 1352[rbp], 50
 	mov	DWORD PTR 1364[rbp], 15
 	mov	DWORD PTR 1368[rbp], 15
@@ -3874,6 +3877,8 @@ SDL_main:
 	mov	ecx, eax
 	call	updatePlayerHitbox
 	lea	rax, 1296[rbp]
+	mov	rdx, QWORD PTR 264512[rbp]
+	mov	QWORD PTR 56[rsp], rdx
 	mov	DWORD PTR 48[rsp], 10
 	mov	DWORD PTR 40[rsp], 100
 	mov	DWORD PTR 32[rsp], 100
@@ -7102,6 +7107,8 @@ SDL_main:
 	mov	eax, DWORD PTR 12[rax]
 	mov	DWORD PTR 1052[rbp], eax
 	mov	rax, QWORD PTR globalEnemy[rip]
+	mov	r8, QWORD PTR 24[rax]
+	mov	rax, QWORD PTR globalEnemy[rip]
 	mov	edx, DWORD PTR 4[rax]
 	mov	rax, QWORD PTR globalEnemy[rip]
 	mov	eax, DWORD PTR 12[rax]
@@ -7116,7 +7123,6 @@ SDL_main:
 	mov	rax, QWORD PTR globalEnemy[rip]
 	mov	edx, DWORD PTR [rax]
 	mov	rax, QWORD PTR 264640[rbp]
-	mov	r8, QWORD PTR 264512[rbp]
 	mov	QWORD PTR 40[rsp], r8
 	mov	DWORD PTR 32[rsp], ecx
 	mov	r8d, r10d
@@ -7145,7 +7151,7 @@ SDL_main:
 	mov	eax, DWORD PTR 263932[rbp]
 	mov	ecx, eax
 	call	damageMe
-	mov	DWORD PTR 263928[rbp], 100
+	mov	DWORD PTR 263928[rbp], 50
 	movss	xmm0, DWORD PTR 264760[rbp]
 	movss	DWORD PTR 264752[rbp], xmm0
 	movss	xmm0, DWORD PTR 264756[rbp]
