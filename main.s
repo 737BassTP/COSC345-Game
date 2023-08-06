@@ -2141,6 +2141,9 @@ initEnemy:
 	mov	rax, QWORD PTR 16[rbp]
 	mov	rdx, QWORD PTR 72[rbp]
 	mov	QWORD PTR 24[rax], rdx
+	mov	rax, QWORD PTR 16[rbp]
+	mov	edx, DWORD PTR 80[rbp]
+	mov	DWORD PTR 32[rax], edx
 	nop
 	pop	rbp
 	ret
@@ -2175,7 +2178,7 @@ resetEnemy:
 	.bss
 	.align 32
 enemies:
-	.space 8000
+	.space 10000
 	.text
 	.globl	addEnemy
 	.def	addEnemy;	.scl	2;	.type	32;	.endef
@@ -2185,8 +2188,8 @@ addEnemy:
 	.seh_pushreg	rbp
 	mov	rbp, rsp
 	.seh_setframe	rbp, 0
-	sub	rsp, 80
-	.seh_stackalloc	80
+	sub	rsp, 96
+	.seh_stackalloc	96
 	.seh_endprologue
 	mov	DWORD PTR 16[rbp], ecx
 	mov	DWORD PTR 24[rbp], edx
@@ -2196,10 +2199,12 @@ addEnemy:
 	jmp	.L145
 .L148:
 	mov	eax, DWORD PTR -4[rbp]
-	cdqe
-	sal	rax, 5
-	mov	rdx, rax
-	lea	rax, enemies[rip]
+	movsx	rdx, eax
+	mov	rax, rdx
+	sal	rax, 2
+	add	rax, rdx
+	sal	rax, 3
+	lea	rdx, enemies[rip]
 	add	rax, rdx
 	mov	QWORD PTR -16[rbp], rax
 	mov	rax, QWORD PTR -16[rbp]
@@ -2210,6 +2215,8 @@ addEnemy:
 	mov	r8d, DWORD PTR 24[rbp]
 	mov	edx, DWORD PTR 16[rbp]
 	mov	rax, QWORD PTR -16[rbp]
+	mov	ecx, DWORD PTR 72[rbp]
+	mov	DWORD PTR 64[rsp], ecx
 	mov	rcx, QWORD PTR 64[rbp]
 	mov	QWORD PTR 56[rsp], rcx
 	mov	ecx, DWORD PTR 56[rbp]
@@ -2227,7 +2234,7 @@ addEnemy:
 	cmp	DWORD PTR -4[rbp], 249
 	jle	.L148
 .L144:
-	add	rsp, 80
+	add	rsp, 96
 	pop	rbp
 	ret
 	.seh_endproc
@@ -2246,7 +2253,7 @@ randomSpawnEnemy:
 	mov	DWORD PTR 24[rbp], edx
 	mov	DWORD PTR 32[rbp], r8d
 	mov	DWORD PTR 40[rbp], r9d
-	mov	DWORD PTR -4[rbp], 50
+	mov	DWORD PTR -4[rbp], 25
 	mov	ecx, 0
 	call	time
 	mov	ecx, eax
@@ -2271,6 +2278,8 @@ randomSpawnEnemy:
 	mov	r8d, DWORD PTR 32[rbp]
 	mov	edx, DWORD PTR 24[rbp]
 	mov	eax, DWORD PTR 16[rbp]
+	mov	ecx, DWORD PTR 72[rbp]
+	mov	DWORD PTR 56[rsp], ecx
 	mov	rcx, QWORD PTR 64[rbp]
 	mov	QWORD PTR 48[rsp], rcx
 	mov	ecx, DWORD PTR 56[rbp]
@@ -2503,10 +2512,12 @@ attack:
 	jmp	.L166
 .L169:
 	mov	eax, DWORD PTR -4[rbp]
-	cdqe
-	sal	rax, 5
-	mov	rdx, rax
-	lea	rax, enemies[rip]
+	movsx	rdx, eax
+	mov	rax, rdx
+	sal	rax, 2
+	add	rax, rdx
+	sal	rax, 3
+	lea	rdx, enemies[rip]
 	add	rax, rdx
 	mov	QWORD PTR -16[rbp], rax
 	mov	rax, QWORD PTR -16[rbp]
@@ -4797,6 +4808,8 @@ SDL_main:
 	mov	eax, DWORD PTR 264196[rbp]
 	mov	DWORD PTR 1296[rbp], eax
 	add	DWORD PTR 264816[rbp], 1
+	mov	eax, DWORD PTR 264816[rbp]
+	mov	DWORD PTR 56[rsp], eax
 	mov	rax, QWORD PTR 264496[rbp]
 	mov	QWORD PTR 48[rsp], rax
 	mov	DWORD PTR 40[rsp], 10
@@ -4814,6 +4827,8 @@ SDL_main:
 	mov	DWORD PTR 1300[rbp], eax
 	mov	eax, DWORD PTR 264384[rbp]
 	sub	DWORD PTR 264816[rbp], eax
+	mov	eax, DWORD PTR 264816[rbp]
+	mov	DWORD PTR 56[rsp], eax
 	mov	rax, QWORD PTR 264496[rbp]
 	mov	QWORD PTR 48[rsp], rax
 	mov	DWORD PTR 40[rsp], 10
@@ -4830,6 +4845,8 @@ SDL_main:
 	mov	eax, DWORD PTR 264204[rbp]
 	mov	DWORD PTR 1296[rbp], eax
 	sub	DWORD PTR 264816[rbp], 1
+	mov	eax, DWORD PTR 264816[rbp]
+	mov	DWORD PTR 56[rsp], eax
 	mov	rax, QWORD PTR 264496[rbp]
 	mov	QWORD PTR 48[rsp], rax
 	mov	DWORD PTR 40[rsp], 10
@@ -4847,6 +4864,8 @@ SDL_main:
 	mov	DWORD PTR 1300[rbp], eax
 	mov	eax, DWORD PTR 264384[rbp]
 	add	DWORD PTR 264816[rbp], eax
+	mov	eax, DWORD PTR 264816[rbp]
+	mov	DWORD PTR 56[rsp], eax
 	mov	rax, QWORD PTR 264496[rbp]
 	mov	QWORD PTR 48[rsp], rax
 	mov	DWORD PTR 40[rsp], 10
@@ -6656,16 +6675,22 @@ SDL_main:
 	jmp	.L367
 .L376:
 	mov	eax, DWORD PTR 264748[rbp]
-	cdqe
-	sal	rax, 5
-	mov	rdx, rax
-	lea	rax, enemies[rip]
+	movsx	rdx, eax
+	mov	rax, rdx
+	sal	rax, 2
+	add	rax, rdx
+	sal	rax, 3
+	lea	rdx, enemies[rip]
 	add	rax, rdx
 	mov	QWORD PTR 263856[rbp], rax
 	mov	rax, QWORD PTR 263856[rbp]
 	mov	eax, DWORD PTR 16[rax]
 	test	eax, eax
 	jle	.L368
+	mov	rax, QWORD PTR 263856[rbp]
+	mov	eax, DWORD PTR 32[rax]
+	cmp	DWORD PTR 264816[rbp], eax
+	jne	.L368
 	mov	edx, DWORD PTR 1296[rbp]
 	mov	rax, QWORD PTR 263856[rbp]
 	mov	eax, DWORD PTR [rax]

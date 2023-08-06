@@ -613,12 +613,13 @@ struct Enemy {
     int health;
 	int dmg;//damage it deals
 	SDL_Texture* texture;
+	int spawnLevel;
     // Add more enemy-related attributes as needed
 };
 #define MAX_ENEMIES 250
 
 // Function to initialize an enemy with position and size
-void initEnemy(struct Enemy* enemy, int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture) {
+void initEnemy(struct Enemy* enemy, int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture,int spawnLevel) {
     enemy->x = x;
     enemy->y = y;
     enemy->width = width;
@@ -626,6 +627,7 @@ void initEnemy(struct Enemy* enemy, int x, int y, int width, int height, int hea
     enemy->health = health;
     enemy->dmg = dmg;
 	enemy->texture = texture;
+	enemy->spawnLevel = spawnLevel;
 }
 // Function to reset an enemy to its default state
 void resetEnemy(struct Enemy* enemy) {
@@ -640,22 +642,22 @@ void resetEnemy(struct Enemy* enemy) {
 // Function to add an enemy to the array
 struct Enemy enemies[MAX_ENEMIES];
 
-void addEnemy(int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture) {
+void addEnemy(int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture, int level) {
     for (int i = 0; i < MAX_ENEMIES; i++) {
         struct Enemy* currentEnemy = &enemies[i];
         if (currentEnemy->health <= 0) {
-            initEnemy(currentEnemy, x, y, width, height, health, dmg, texture);
+            initEnemy(currentEnemy, x, y, width, height, health, dmg, texture, level);
             return; // Exit the function after adding the enemy
         }
     }
     // If all slots are filled, you can handle this case as needed (e.g., ignore or overwrite)
 }
-void randomSpawnEnemy(int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture){
-	int spawnChance = 50; //50% chance of enemy spawning
+void randomSpawnEnemy(int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture, int level){
+	int spawnChance = 25; //50% chance of enemy spawning
 	srand((unsigned int)time(NULL));
 	int randomValue = rand() % 100;
 	if(randomValue<spawnChance){
-		addEnemy(x, y, width, height, health, dmg, texture);//size, stats and image to go with it.
+		addEnemy(x, y, width, height, health, dmg, texture, level);//size, stats and image to go with it.
 	}
 }
 //distance to player
@@ -1440,7 +1442,7 @@ int SDL_main(int argc, char *argv[])
 				//at east side
 				Player.x = p_west;
 				level_cur += 1;
-				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1);//size, stats and image to go with it.
+				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1, level_cur);//size, stats and image to go with it.
 
 				
 			}
@@ -1449,7 +1451,7 @@ int SDL_main(int argc, char *argv[])
 				//at north side
 				Player.y = p_south;
 				level_cur -= lvl_yoff;
-				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1);//size, stats and image to go with it.
+				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1,level_cur);//size, stats and image to go with it.
 
 			}
 			if (Player.x < p_west)
@@ -1457,7 +1459,7 @@ int SDL_main(int argc, char *argv[])
 				//at west side
 				Player.x = p_east;
 				level_cur -= 1;
-				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1);//size, stats and image to go with it.
+				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1,level_cur);//size, stats and image to go with it.
 
 			}
 			if (Player.y > p_south)
@@ -1465,7 +1467,7 @@ int SDL_main(int argc, char *argv[])
 				//at south side
 				Player.y = p_north;
 				level_cur += lvl_yoff;
-				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1);//size, stats and image to go with it.
+				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1,level_cur);//size, stats and image to go with it.
 
 			}
 			if (lvlbool)//has changed level
@@ -1894,7 +1896,7 @@ int SDL_main(int argc, char *argv[])
 
 		for (int i = 0; i < MAX_ENEMIES; i++) {
 		struct Enemy* currentEnemy = &enemies[i];
-		if (currentEnemy->health > 0) {
+		if (currentEnemy->health > 0 && currentEnemy->spawnLevel == level_cur) {
 			// Enemy movement logic
 			float directionX = Player.x - currentEnemy->x;
 			float directionY = Player.y - currentEnemy->y;
