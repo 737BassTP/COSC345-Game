@@ -701,20 +701,23 @@ struct Enemy* globalEnemy = NULL; // Initialize the global pointer to NULL initi
 
 // Function to perform the player's attack
 void attack(struct player* player) {
-    // Check if globalEnemy is not NULL (i.e., points to a valid enemy)
-    if (globalEnemy != NULL) {
-        // Create a rectangle representing the attack hitbox
-        SDL_Rect attackHitbox;
-        calculateAttackHitbox(player, &attackHitbox);
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        struct Enemy* currentEnemy = &enemies[i];
 
-        // Create a rectangle representing the enemy hitbox
-        SDL_Rect enemyHitbox = { globalEnemy->x, globalEnemy->y, globalEnemy->width, globalEnemy->height };
+        if (currentEnemy->health > 0) {
+            // Create a rectangle representing the attack hitbox
+            SDL_Rect attackHitbox;
+            calculateAttackHitbox(player, &attackHitbox);
 
-        // Check for collision with the enemy
-        if (checkCollision(attackHitbox, enemyHitbox)) {
-            // If the attack hitbox collides with the enemy, apply damage to the enemy
-            printf("Hit enemy!\n");
-            globalEnemy->health -= player->damage;
+            // Create a rectangle representing the enemy hitbox
+            SDL_Rect enemyHitbox = { currentEnemy->x, currentEnemy->y, currentEnemy->width, currentEnemy->height };
+
+            // Check for collision with the enemy
+            if (checkCollision(attackHitbox, enemyHitbox)) {
+                // If the attack hitbox collides with the enemy, apply damage to the enemy
+                printf("Hit enemy!\n");
+                currentEnemy->health -= player->damage;
+            }
         }
     }
 }
@@ -1141,10 +1144,11 @@ int SDL_main(int argc, char *argv[])
 	Player.width=15;
 	Player.height=15;
 	updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
+
 	//test enemy
-	struct Enemy enemy1;//Random player enemy
-	initEnemy(&enemy1, 500, 500, 100, 100, 100, 10, spr_enemy1);//size, stats and image to go with it.
-	globalEnemy = &enemy1;//making it the global enemy.
+	// struct Enemy enemy1;//Random player enemy
+	// initEnemy(&enemy1, 500, 500, 100, 100, 100, 10, spr_enemy1);//size, stats and image to go with it.
+	// globalEnemy = &enemy1;//making it the global enemy.
 
 
 
@@ -1846,7 +1850,100 @@ int SDL_main(int argc, char *argv[])
 			SDL_FreeSurface(textSurface);
 			SDL_DestroyTexture(textTexture);
 		}
+		// Rendering the global enemy(use for boss fight?? keep code unless decided we do not need.)
 
+		// if (globalEnemy != NULL && globalEnemy->health > 0)
+		// {
+			
+		// 	float directionX = Player.x - globalEnemy->x;
+        // 	float directionY = Player.y - globalEnemy->y;
+		// 	float distanceToPlayer = distance(Player.x, Player.y, globalEnemy->x, globalEnemy->y);
+		// 	//stop the enemy when within the selected units (125)
+		// 	if(distanceToPlayer > 110){
+		// 		// Normalize the direction vector (make it a unit vector)
+		// 		if (distanceToPlayer != 0) {
+		// 			directionX /= distanceToPlayer;
+		// 			directionY /= distanceToPlayer;
+		// 		}
+		// 		float enemySpeed = 2.0; //adjust this value to control the enemy's speed
+		// 		globalEnemy->x += directionX * enemySpeed;
+		// 		globalEnemy->y += directionY * enemySpeed;
+		// 	}
+		// 	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+		// 	SDL_Rect enemyRect = { globalEnemy->x, globalEnemy->y, globalEnemy->width, globalEnemy->height };
+		// 	// SDL_RenderFillRect(renderer, &enemyRect);
+		// 	draw_image(renderer, globalEnemy->x, globalEnemy->y, globalEnemy->x + globalEnemy->width, globalEnemy->y + globalEnemy->height, globalEnemy->texture);
+		// 	if (checkCollision(playerHitbox, enemyRect)) {
+        //     // If the player collides with the enemy, apply damage to the player
+        //     printf("Player collided with enemy!\n");
+        //     int enemyDamage = globalEnemy->dmg; // Adjust this value as needed
+        //     damageMe(enemyDamage);
+		// 	// Bump back the enemy when they run into us
+        //     int bumpDistance = 50;
+        //     float bumpDirectionX = directionX;
+        //     float bumpDirectionY = directionY;
+        //     if (distanceToPlayer != 0) {
+        //         bumpDirectionX /= distanceToPlayer;
+        //         bumpDirectionY /= distanceToPlayer;
+        //     }
+        //     globalEnemy->x -= bumpDirectionX * bumpDistance;
+        //     globalEnemy->y -= bumpDirectionY * bumpDistance;
+        // }
+		// }
+		//for all randomly spawned enemies.
+
+		for (int i = 0; i < MAX_ENEMIES; i++) {
+		struct Enemy* currentEnemy = &enemies[i];
+		if (currentEnemy->health > 0) {
+			// Enemy movement logic
+			float directionX = Player.x - currentEnemy->x;
+			float directionY = Player.y - currentEnemy->y;
+			float distanceToPlayer = distance(Player.x, Player.y, currentEnemy->x, currentEnemy->y);
+
+			// Stop the enemy when within the selected units (125)
+			if (distanceToPlayer > 110) {
+				// Normalize the direction vector (make it a unit vector)
+				if (distanceToPlayer != 0) {
+					directionX /= distanceToPlayer;
+					directionY /= distanceToPlayer;
+				}
+				if(quizOn==false){//enemies won't move when quiz is active
+				float enemySpeed = 2.0; // Adjust this value to control the enemy's speed
+				currentEnemy->x += directionX * enemySpeed;
+				currentEnemy->y += directionY * enemySpeed;
+				}
+			}
+
+        // Rendering
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_Rect enemyRect = { currentEnemy->x, currentEnemy->y, currentEnemy->width, currentEnemy->height };
+        draw_image(renderer, currentEnemy->x, currentEnemy->y, currentEnemy->x + currentEnemy->width, currentEnemy->y + currentEnemy->height, currentEnemy->texture);
+
+        // Collision detection with the player
+        if (checkCollision(playerHitbox, enemyRect)) {
+            // If the player collides with the enemy, apply damage to the player
+            printf("Player collided with enemy!\n");
+            int enemyDamage = currentEnemy->dmg; // Adjust this value as needed
+            damageMe(enemyDamage);
+
+            // Bump back the enemy when they run into the player
+            int bumpDistance = 50;
+            float bumpDirectionX = directionX;
+            float bumpDirectionY = directionY;
+            if (distanceToPlayer != 0) {
+                bumpDirectionX /= distanceToPlayer;
+                bumpDirectionY /= distanceToPlayer;
+            }
+            currentEnemy->x -= bumpDirectionX * bumpDistance;
+            currentEnemy->y -= bumpDirectionY * bumpDistance;
+        	}
+    	}
+	}
+
+		// Resetting the global enemy
+		if (globalEnemy != NULL && globalEnemy->health <= 0) {
+    		resetEnemy(globalEnemy);
+		}
 		//first quiz. Rename variables for alpha.
 
 		//Second quiz
@@ -1972,96 +2069,7 @@ SDL_DestroyTexture(textTexture);
                 draw_image(renderer, waterParticles[i].x, waterParticles[i].y, waterParticles[i].x + 5, waterParticles[i].y + 15, spr_water);
             }
         }
-		// Rendering the enemy
-		if (globalEnemy != NULL && globalEnemy->health > 0)
-		{
-			
-			float directionX = Player.x - globalEnemy->x;
-        	float directionY = Player.y - globalEnemy->y;
-			float distanceToPlayer = distance(Player.x, Player.y, globalEnemy->x, globalEnemy->y);
-			//stop the enemy when within the selected units (125)
-			if(distanceToPlayer > 110){
-				// Normalize the direction vector (make it a unit vector)
-				if (distanceToPlayer != 0) {
-					directionX /= distanceToPlayer;
-					directionY /= distanceToPlayer;
-				}
-				float enemySpeed = 2.0; //adjust this value to control the enemy's speed
-				globalEnemy->x += directionX * enemySpeed;
-				globalEnemy->y += directionY * enemySpeed;
-			}
-			SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-			SDL_Rect enemyRect = { globalEnemy->x, globalEnemy->y, globalEnemy->width, globalEnemy->height };
-			// SDL_RenderFillRect(renderer, &enemyRect);
-			draw_image(renderer, globalEnemy->x, globalEnemy->y, globalEnemy->x + globalEnemy->width, globalEnemy->y + globalEnemy->height, globalEnemy->texture);
-			if (checkCollision(playerHitbox, enemyRect)) {
-            // If the player collides with the enemy, apply damage to the player
-            printf("Player collided with enemy!\n");
-            int enemyDamage = globalEnemy->dmg; // Adjust this value as needed
-            damageMe(enemyDamage);
-			// Bump back the enemy when they run into us
-            int bumpDistance = 50;
-            float bumpDirectionX = directionX;
-            float bumpDirectionY = directionY;
-            if (distanceToPlayer != 0) {
-                bumpDirectionX /= distanceToPlayer;
-                bumpDirectionY /= distanceToPlayer;
-            }
-            globalEnemy->x -= bumpDirectionX * bumpDistance;
-            globalEnemy->y -= bumpDirectionY * bumpDistance;
-        }
-		}
-		//for all enemies
-		for (int i = 0; i < MAX_ENEMIES; i++) {
-		struct Enemy* currentEnemy = &enemies[i];
-		if (currentEnemy->health > 0) {
-			// Enemy movement logic
-			float directionX = Player.x - currentEnemy->x;
-			float directionY = Player.y - currentEnemy->y;
-			float distanceToPlayer = distance(Player.x, Player.y, currentEnemy->x, currentEnemy->y);
 
-			// Stop the enemy when within the selected units (125)
-			if (distanceToPlayer > 110) {
-				// Normalize the direction vector (make it a unit vector)
-				if (distanceToPlayer != 0) {
-					directionX /= distanceToPlayer;
-					directionY /= distanceToPlayer;
-				}
-
-				float enemySpeed = 2.0; // Adjust this value to control the enemy's speed
-				currentEnemy->x += directionX * enemySpeed;
-				currentEnemy->y += directionY * enemySpeed;
-			}
-
-        // Rendering
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_Rect enemyRect = { currentEnemy->x, currentEnemy->y, currentEnemy->width, currentEnemy->height };
-        draw_image(renderer, currentEnemy->x, currentEnemy->y, currentEnemy->x + currentEnemy->width, currentEnemy->y + currentEnemy->height, currentEnemy->texture);
-
-        // Collision detection with the player
-        if (checkCollision(playerHitbox, enemyRect)) {
-            // If the player collides with the enemy, apply damage to the player
-            printf("Player collided with enemy!\n");
-            int enemyDamage = currentEnemy->dmg; // Adjust this value as needed
-            damageMe(enemyDamage);
-
-            // Bump back the enemy when they run into the player
-            int bumpDistance = 50;
-            float bumpDirectionX = directionX;
-            float bumpDirectionY = directionY;
-            if (distanceToPlayer != 0) {
-                bumpDirectionX /= distanceToPlayer;
-                bumpDirectionY /= distanceToPlayer;
-            }
-            currentEnemy->x -= bumpDirectionX * bumpDistance;
-            currentEnemy->y -= bumpDirectionY * bumpDistance;
-        }
-    }
-}
-		// Resetting the enemy
-		if (globalEnemy != NULL && globalEnemy->health <= 0) {
-    		resetEnemy(globalEnemy);
-		}
 		/*
 		Overlay Drawing.
 		*/
