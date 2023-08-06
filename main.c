@@ -615,6 +615,8 @@ struct Enemy {
 	SDL_Texture* texture;
     // Add more enemy-related attributes as needed
 };
+#define MAX_ENEMIES 250
+
 // Function to initialize an enemy with position and size
 void initEnemy(struct Enemy* enemy, int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture) {
     enemy->x = x;
@@ -634,6 +636,27 @@ void resetEnemy(struct Enemy* enemy) {
     enemy->health = 0;
     enemy->dmg = 0;
     // Add other attributes reset if needed
+}
+// Function to add an enemy to the array
+struct Enemy enemies[MAX_ENEMIES];
+
+void addEnemy(int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture) {
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        struct Enemy* currentEnemy = &enemies[i];
+        if (currentEnemy->health <= 0) {
+            initEnemy(currentEnemy, x, y, width, height, health, dmg, texture);
+            return; // Exit the function after adding the enemy
+        }
+    }
+    // If all slots are filled, you can handle this case as needed (e.g., ignore or overwrite)
+}
+void randomSpawnEnemy(int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture){
+	int spawnChance = 50; //50% chance of enemy spawning
+	srand((unsigned int)time(NULL));
+	int randomValue = rand() % 100;
+	if(randomValue<spawnChance){
+		addEnemy(x, y, width, height, health, dmg, texture);//size, stats and image to go with it.
+	}
 }
 //distance to player
 float distance(float x1, float y1, float x2, float y2) {
@@ -675,6 +698,7 @@ void calculateAttackHitbox(struct player* player, SDL_Rect* attackHitbox) {
     attackHitbox->h = player->attackRangeHeight;
 }
 struct Enemy* globalEnemy = NULL; // Initialize the global pointer to NULL initially
+
 // Function to perform the player's attack
 void attack(struct player* player) {
     // Check if globalEnemy is not NULL (i.e., points to a valid enemy)
@@ -1121,6 +1145,9 @@ int SDL_main(int argc, char *argv[])
 	struct Enemy enemy1;//Random player enemy
 	initEnemy(&enemy1, 500, 500, 100, 100, 100, 10, spr_enemy1);//size, stats and image to go with it.
 	globalEnemy = &enemy1;//making it the global enemy.
+
+
+
 	//Nutrients.
 	SDL_Texture *spr_nutrients = IMG_LoadTexture(renderer,"img/spr_nutrients_strip4.png");
 	
@@ -1409,24 +1436,33 @@ int SDL_main(int argc, char *argv[])
 				//at east side
 				Player.x = p_west;
 				level_cur += 1;
+				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1);//size, stats and image to go with it.
+
+				
 			}
 			if (Player.y < p_north)
 			{
 				//at north side
 				Player.y = p_south;
 				level_cur -= lvl_yoff;
+				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1);//size, stats and image to go with it.
+
 			}
 			if (Player.x < p_west)
 			{
 				//at west side
 				Player.x = p_east;
 				level_cur -= 1;
+				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1);//size, stats and image to go with it.
+
 			}
 			if (Player.y > p_south)
 			{
 				//at south side
 				Player.y = p_north;
 				level_cur += lvl_yoff;
+				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1);//size, stats and image to go with it.
+
 			}
 			if (lvlbool)//has changed level
 			{
@@ -1559,9 +1595,9 @@ int SDL_main(int argc, char *argv[])
 			for (int i=0; i<4; i++)
 			{
 				//placeholder 2/2
-				draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
-				draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
-				nx += nd*gw;
+				// draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
+				// draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
+				// nx += nd*gw;
 			}
 			// SDL_RenderPresent(renderer);
 		}
@@ -1651,11 +1687,11 @@ int SDL_main(int argc, char *argv[])
 			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
 			//placeholder 1/2
 			
-			draw_text_color(renderer,
-				uix,clocky2+gh,
-				font_ascii_w*gw,font_ascii_h*gh,
-				font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
-				font_ascii_w,font_ascii_h,tc);
+			// draw_text_color(renderer,
+			// 	uix,clocky2+gh,
+			// 	font_ascii_w*gw,font_ascii_h*gh,
+			// 	font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
+			// 	font_ascii_w,font_ascii_h,tc);
 			
 			//Weekday.
 			char wc[2];
@@ -1975,7 +2011,53 @@ SDL_DestroyTexture(textTexture);
             globalEnemy->y -= bumpDirectionY * bumpDistance;
         }
 		}
+		//for all enemies
+		for (int i = 0; i < MAX_ENEMIES; i++) {
+		struct Enemy* currentEnemy = &enemies[i];
+		if (currentEnemy->health > 0) {
+			// Enemy movement logic
+			float directionX = Player.x - currentEnemy->x;
+			float directionY = Player.y - currentEnemy->y;
+			float distanceToPlayer = distance(Player.x, Player.y, currentEnemy->x, currentEnemy->y);
 
+			// Stop the enemy when within the selected units (125)
+			if (distanceToPlayer > 110) {
+				// Normalize the direction vector (make it a unit vector)
+				if (distanceToPlayer != 0) {
+					directionX /= distanceToPlayer;
+					directionY /= distanceToPlayer;
+				}
+
+				float enemySpeed = 2.0; // Adjust this value to control the enemy's speed
+				currentEnemy->x += directionX * enemySpeed;
+				currentEnemy->y += directionY * enemySpeed;
+			}
+
+        // Rendering
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_Rect enemyRect = { currentEnemy->x, currentEnemy->y, currentEnemy->width, currentEnemy->height };
+        draw_image(renderer, currentEnemy->x, currentEnemy->y, currentEnemy->x + currentEnemy->width, currentEnemy->y + currentEnemy->height, currentEnemy->texture);
+
+        // Collision detection with the player
+        if (checkCollision(playerHitbox, enemyRect)) {
+            // If the player collides with the enemy, apply damage to the player
+            printf("Player collided with enemy!\n");
+            int enemyDamage = currentEnemy->dmg; // Adjust this value as needed
+            damageMe(enemyDamage);
+
+            // Bump back the enemy when they run into the player
+            int bumpDistance = 50;
+            float bumpDirectionX = directionX;
+            float bumpDirectionY = directionY;
+            if (distanceToPlayer != 0) {
+                bumpDirectionX /= distanceToPlayer;
+                bumpDirectionY /= distanceToPlayer;
+            }
+            currentEnemy->x -= bumpDirectionX * bumpDistance;
+            currentEnemy->y -= bumpDirectionY * bumpDistance;
+        }
+    }
+}
 		// Resetting the enemy
 		if (globalEnemy != NULL && globalEnemy->health <= 0) {
     		resetEnemy(globalEnemy);
