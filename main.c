@@ -1442,7 +1442,7 @@ int SDL_main(int argc, char *argv[])
 				//at east side
 				Player.x = p_west;
 				level_cur += 1;
-				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1, level_cur);//size, stats and image to go with it.
+				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1, level_cur);//random spawn an enemy with these stats
 
 				
 			}
@@ -1451,7 +1451,7 @@ int SDL_main(int argc, char *argv[])
 				//at north side
 				Player.y = p_south;
 				level_cur -= lvl_yoff;
-				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1,level_cur);//size, stats and image to go with it.
+				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1,level_cur);//random spawn an enemy with these stats
 
 			}
 			if (Player.x < p_west)
@@ -1459,7 +1459,7 @@ int SDL_main(int argc, char *argv[])
 				//at west side
 				Player.x = p_east;
 				level_cur -= 1;
-				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1,level_cur);//size, stats and image to go with it.
+				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1,level_cur);//random spawn an enemy with these stats
 
 			}
 			if (Player.y > p_south)
@@ -1467,7 +1467,7 @@ int SDL_main(int argc, char *argv[])
 				//at south side
 				Player.y = p_north;
 				level_cur += lvl_yoff;
-				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1,level_cur);//size, stats and image to go with it.
+				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1,level_cur);//random spawn an enemy with these stats
 
 			}
 			if (lvlbool)//has changed level
@@ -1601,9 +1601,9 @@ int SDL_main(int argc, char *argv[])
 			for (int i=0; i<4; i++)
 			{
 				//placeholder 2/2
-				// draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
-				// draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
-				// nx += nd*gw;
+				draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
+				draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
+				nx += nd*gw;
 			}
 			// SDL_RenderPresent(renderer);
 		}
@@ -1693,11 +1693,11 @@ int SDL_main(int argc, char *argv[])
 			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
 			//placeholder 1/2
 			
-			// draw_text_color(renderer,
-			// 	uix,clocky2+gh,
-			// 	font_ascii_w*gw,font_ascii_h*gh,
-			// 	font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
-			// 	font_ascii_w,font_ascii_h,tc);
+			draw_text_color(renderer,
+				uix,clocky2+gh,
+				font_ascii_w*gw,font_ascii_h*gh,
+				font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
+				font_ascii_w,font_ascii_h,tc);
 			
 			//Weekday.
 			char wc[2];
