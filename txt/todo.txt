@@ -1,6 +1,6 @@
 To do:
 
-2023-07-31
+2023-08-05
 	audio sfx (play once)
 	keyboard functions (hold, press, release)
 	compress leveldata
@@ -9,6 +9,32 @@ To do:
 
 ----------------
 Finished:
+
+2023-08-04
+	Sean:
+		available soon
+
+	Thomas:
+		Improved the level converter and level loader.
+			Supports 512 levels, 256 per world (overworld + underworld).
+			Supports Object Layer above Tile Layer.
+				For ease of use, Tiled project merges both layers into one.
+				Expanded the tileset to support this.
+
+2023-08-02
+	Nicholas:
+		Added graphics to the tileset.
+		Added tiles to the Tiled project.
+		Exported these tiles to the level file.
+	Thomas:
+		Added a weekday counter and a date counter (28 days).
+		Improved the level converter so that it reloads all levels in-game without a restart.
+		Added animated tiles for shallow water and shallow lava.
+
+2023-08-01
+	Thomas:
+		Added a webpage for the game.
+		Added sheet music of the music file.
 
 2023-07-30
 	Sean:

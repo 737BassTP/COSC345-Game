@@ -31,6 +31,7 @@ https://wiki.libsdl.org/SDL2/APIByCategory
 
 //Typedef'ing.
 typedef unsigned char byte;//0-255, 0x00-0xFF
+typedef unsigned short word;//0-65535, 0x0000-0xFFFF
 
 //Colors (BGR because Big-Endianness).
 const int c_black 	= 0x000000;
@@ -399,9 +400,19 @@ double cartodir(int x,int y)
 }
 void game_level_load(int lvl,int lvlmax)
 {
-	//done in main-loop.
+	//done below.
 }
-void dev_tiled_to_leveldata()
+void level_load(byte arr[],int siz,int count,int layers)
+{
+	FILE *fil = fopen("level.dat","rb");
+	for (int i=0; i<siz*count*layers; i++)
+	{
+		arr[i] = 0;
+	}
+	fread(arr,siz*count*layers,1,fil);
+	fclose(fil);
+}
+void dev_tiled_to_leveldata(byte arr[])
 {
 	//Extracts Tiles (done) and Objects (unfinished (unnecessary if tiles and objects share tileset)).
 	printf("may take a while; please wait.\n");
@@ -409,23 +420,24 @@ void dev_tiled_to_leveldata()
 	FILE *filin = fopen("tiled/cosc345-game.tmx","rb");
 	FILE *filout = fopen("level.dat","wb");
 	int layers=2;
-	int layersize=65536;
+	int layersize=131072;
 	//layersize=512;//debug only
-	int maxsize = 65536*layers;//131072
-	byte array[131072];//tiles + objects.
+	int maxsize = layersize*layers;//131072
+	byte array[262144];//tiles + objects.
+	int arrsiz=sizeof(array);
 	for (long i=0; i<maxsize; i++) {array[i] = 0;}
 	//Discard input header.
-	fseek(filin,(long int)0x1F7-0,SEEK_SET);//hardcoded; may bug out in future, so avoid renaming or resizing in Tiled project file.
+	fseek(filin,(long int)0x1FC-0,SEEK_SET);//hardcoded; may bug out in future, so avoid renaming or resizing in Tiled project file.
 	//Read Tiles and Objects.
 	byte comma=","[0];
 	int ch=0;
 	byte entry[3];
-	byte val;
+	word val;
 	int counter=0;
 	int off=0;
 	int ij=0;
 	//Extract and restructure.
-	for (int i=0; i<layersize; i++)
+	for (int i=0; i<arrsiz; i++)
 	{
 		ch=fgetc(filin);
 		for (int j=0; j<3; j++) {entry[j]=48;}
@@ -449,7 +461,7 @@ void dev_tiled_to_leveldata()
 		for (int j=0; j<3; j++) {val+=(entry[j]-48)*(byte)pow((double)10,(double)(2-j));}
 		printf("i=%i/%i (v=%i)\n",i,layersize,val);//comment out to speed up.
 		val-=(val==0)?(-0xFF):(1)&0xFF;
-		array[(1<<(3<<(1<<1)))*(i>>(3<<(1<<1)))+(1<<(1<<3))*((i>>(1<<(1<<1)))&(3*(1<<(1<<1)|1)))+(1<<(1<<(1<<1)))*((i>>(1<<3))&(3*(1<<(1<<1)|1)))+(i&(3*(1<<(1<<1)|1)))]=val;//security through obscurity, or what?
+		array[(((1<<(1<<1))<<1)<<((1|(1<<1)|(1<<(1<<1)))<<1))*(val>=(((1<<1)<<1)<<((1+1+1)<<1)))+(1<<(3<<(1<<1)))*(i>>(3<<(1<<1)))+(1<<(1<<3))*((i>>(1<<(1<<1)))&(3*(1<<(1<<1)|1)))+(1<<(1<<(1<<1)))*((i>>(1<<3))&(3*(1<<(1<<1)|1)))+(i&(3*(1<<(1<<1)|1)))]=val;//security through obscurity, or what? (it crashes the compiler...)
 	}
 	//Compress.
 	val^=val;
@@ -462,11 +474,8 @@ void dev_tiled_to_leveldata()
 	fwrite(array,maxsize,1,filout);
 	fclose(filin);
 	fclose(filout);
-}
-void play_WAV(const char* wavfile)
-{
-	//done manually in main.
-	
+	//Re-load in-game.
+	level_load(arr,256,512,2);
 }
 char* level_get_name(int lvl,char* ret)
 {
@@ -540,6 +549,14 @@ void deactivateAllWaterParticles() {
 //Health System test
 int health = 100;
 int maxHealth=100;
+SDL_Rect playerHitbox;
+// Function to update the globalRect's position and size
+void updatePlayerHitbox(int x, int y, int width, int height) {
+    playerHitbox.x = x;
+    playerHitbox.y = y;
+    playerHitbox.w = width;
+    playerHitbox.h = height;
+}
 //damaging test
 void damageMe(int dmg)
 {
@@ -584,6 +601,8 @@ struct player
 	int damage;
     int attackRangeWidth;
     int attackRangeHeight;
+	int width;
+	int height;
 };
 //enemy struct
 struct Enemy {
@@ -593,16 +612,22 @@ struct Enemy {
     int height;
     int health;
 	int dmg;//damage it deals
+	SDL_Texture* texture;
+	int spawnLevel;
     // Add more enemy-related attributes as needed
 };
+#define MAX_ENEMIES 250
+
 // Function to initialize an enemy with position and size
-void initEnemy(struct Enemy* enemy, int x, int y, int width, int height, int health, int dmg) {
+void initEnemy(struct Enemy* enemy, int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture,int spawnLevel) {
     enemy->x = x;
     enemy->y = y;
     enemy->width = width;
     enemy->height = height;
     enemy->health = health;
     enemy->dmg = dmg;
+	enemy->texture = texture;
+	enemy->spawnLevel = spawnLevel;
 }
 // Function to reset an enemy to its default state
 void resetEnemy(struct Enemy* enemy) {
@@ -614,26 +639,57 @@ void resetEnemy(struct Enemy* enemy) {
     enemy->dmg = 0;
     // Add other attributes reset if needed
 }
+// Function to add an enemy to the array
+struct Enemy enemies[MAX_ENEMIES];
+
+void addEnemy(int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture, int level) {
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        struct Enemy* currentEnemy = &enemies[i];
+        if (currentEnemy->health <= 0) {
+            initEnemy(currentEnemy, x, y, width, height, health, dmg, texture, level);
+            return; // Exit the function after adding the enemy
+        }
+    }
+    // If all slots are filled, you can handle this case as needed (e.g., ignore or overwrite)
+}
+void randomSpawnEnemy(int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture, int level){
+	int spawnChance = 25; //50% chance of enemy spawning
+	srand((unsigned int)time(NULL));
+	int randomValue = rand() % 100;
+	if(randomValue<spawnChance){
+		addEnemy(x, y, width, height, health, dmg, texture, level);//size, stats and image to go with it.
+	}
+}
+//distance to player
+float distance(float x1, float y1, float x2, float y2) {
+    float dx = x2 - x1;
+    float dy = y2 - y1;
+    return sqrt(dx * dx + dy * dy);
+}
 // Function to check for collision between two rectangles
 // Returns true (non-zero) if the rectangles collide, false (0) otherwise
 int checkCollision(SDL_Rect rect1, SDL_Rect rect2) {
     return (rect1.x < rect2.x + rect2.w &&
             rect1.x + rect1.w > rect2.x &&
             rect1.y < rect2.y + rect2.h &&
-            rect1.y + rect1.h > rect2.y);
+            rect1.y + rect1.h > rect2.y) ||
+           (rect2.x < rect1.x + rect1.w &&
+            rect2.x + rect2.w > rect1.x &&
+            rect2.y < rect1.y + rect1.h &&
+            rect2.y + rect2.h > rect1.y);
 }
 void calculateAttackHitbox(struct player* player, SDL_Rect* attackHitbox) {
     // Calculate the position of the attack hitbox based on player direction
     int attackX = player->x;
     int attackY = player->y;
     // Adjust the position of the attack hitbox based on the player's direction
-    if (player->facedir == 0) { // Up
+    if (player->facedir == 1) { // Up
         attackY -= player->attackRangeHeight;
-    } else if (player->facedir == 1) { // Right
+    } else if (player->facedir == 0) { // Right
         attackX += player->attackRangeWidth;
-    } else if (player->facedir == 2) { // Down
+    } else if (player->facedir == 3) { // Down
         attackY += player->attackRangeHeight;
-    } else if (player->facedir == 3) { // Left
+    } else if (player->facedir == 2) { // Left
         attackX -= player->attackRangeWidth;
     }
 
@@ -644,22 +700,26 @@ void calculateAttackHitbox(struct player* player, SDL_Rect* attackHitbox) {
     attackHitbox->h = player->attackRangeHeight;
 }
 struct Enemy* globalEnemy = NULL; // Initialize the global pointer to NULL initially
+
 // Function to perform the player's attack
 void attack(struct player* player) {
-    // Check if globalEnemy is not NULL (i.e., points to a valid enemy)
-    if (globalEnemy != NULL) {
-        // Create a rectangle representing the attack hitbox
-        SDL_Rect attackHitbox;
-        calculateAttackHitbox(player, &attackHitbox);
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        struct Enemy* currentEnemy = &enemies[i];
 
-        // Create a rectangle representing the enemy hitbox
-        SDL_Rect enemyHitbox = { globalEnemy->x, globalEnemy->y, globalEnemy->width, globalEnemy->height };
+        if (currentEnemy->health > 0) {
+            // Create a rectangle representing the attack hitbox
+            SDL_Rect attackHitbox;
+            calculateAttackHitbox(player, &attackHitbox);
 
-        // Check for collision with the enemy
-        if (checkCollision(attackHitbox, enemyHitbox)) {
-            // If the attack hitbox collides with the enemy, apply damage to the enemy
-            printf("Hit enemy!\n");
-            globalEnemy->health -= player->damage;
+            // Create a rectangle representing the enemy hitbox
+            SDL_Rect enemyHitbox = { currentEnemy->x, currentEnemy->y, currentEnemy->width, currentEnemy->height };
+
+            // Check for collision with the enemy
+            if (checkCollision(attackHitbox, enemyHitbox)) {
+                // If the attack hitbox collides with the enemy, apply damage to the enemy
+                printf("Hit enemy!\n");
+                currentEnemy->health -= player->damage;
+            }
         }
     }
 }
@@ -755,6 +815,16 @@ void audioCallback(void* userdata, Uint8* stream, int len) {
     SDL_memcpy(stream, audiodata->buffer + audiodata->position, bytesToCopy);
     audiodata->position += bytesToCopy;
 }
+void play_WAV(const char* wavfile,SDL_AudioSpec spec,Uint8 *wavbuffer,int wavlength)
+{
+	/*
+	if (SDL_LoadWAV(wavfile,&wavspec,&wavbuffer,&wavlength)==0)
+	{
+		printf("play_WAV failed");
+	}
+	//
+	/**/
+}
 
 //Game clock. (HH:MM)
 int clock_get_hour(int time) {return (time/60)%24;}
@@ -772,19 +842,104 @@ double temp_ctof(int c) {return (double)c * 1.8 + 32.0;}//Celsius to Fahrenheit.
 
 //quiz
 // Define the quiz question and answers
-const char* quizQuestion = "What is the capital of France?";
-const char* answerA = "A) Paris";
-const char* answerB = "B) London";
-const char* answerC = "C) Berlin";
-// Variable to store the user's answer (0 means no answer, 1 for A, and 2 for B)
-int userAnswer = 0;
-bool quizOn = false;//if a quiz is active
-int quizOn1 = 0;//turn on the test quiz
-int quiz1QNum = 1;//what question of the quiz we are on
+const char* quizHeader = "INSERT NAME HERE";//Name of person we are talking to
+const char* quizInfo = "";//"correct or false"
+const char* quizInfoHolder ="";//does nothing currently
+const char* quizQuestion = "What is the capital of France?";//default question
+const char* answerA = "A) Paris";//default answer a
+const char* answerB = "B) London";//default answer b
+const char* answerC = "C) Berlin";//default answer c
+int correctAnswer = 0;//current number relating to the correct answer.
+int userAnswer = 0;//user input for the quiz (1,2,3), 0 is default.
+bool quizOn = false;//if a quiz is active (rendering)
 
-int quizOn2 = 0;//is quiz 2 active
-int quiz2QNum = 1;//question counter for quiz 2
-bool quiz2Called = false;//boolean to see if the player has completed quiz
+int quizQNum = 1;//question counter for quiz (ends at 4 for three question quiz)
+
+bool quiz2Called = false;//boolean to see if the player has completed quiz 2 etc
+bool quiz3Called = false;
+bool quizLoopOn = false;//are we going through the quiz loop in main
+int usedQuestions[100] = {0}; // Array to keep track of used question numbers (for random question)
+int usedQuestionCount = 0;    // Variable to keep track of the number of used questions (so we dont get the same random question)
+// Function to check if a question number has been used before
+int isQuestionUsed(int questionNumber) {
+    for (int i = 0; i < usedQuestionCount; i++) {
+        if (usedQuestions[i] == questionNumber) {
+            return 1; // Question number is already in the usedQuestions list
+        }
+    }
+    return 0; // Question number has not been used before
+}
+void updateQuizDataFromRandomLine(const char *filename,
+                                  const char **quizQuestion,
+                                  const char **answerA,
+                                  const char **answerB,
+                                  const char **answerC,
+                                  int *userAnswer,
+                                  int *correctAnswer,
+                                  const char **quizInfoHolder) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Error opening the file.\n");
+        return;
+    }
+
+    // Count the number of lines in the file
+    int lineCount = 0;
+    char ch;
+    while ((ch = fgetc(file)) != EOF) {
+        if (ch == '\n') {
+            lineCount++;
+        }
+    }
+    // Reset the file pointer to the beginning
+    rewind(file);
+
+    // Generate a random line number
+    srand(time(NULL));
+    int randomLine;
+
+    // Keep generating random line numbers until we get a line that hasn't been used before
+    do {
+        randomLine = rand() % lineCount;
+    } while (isQuestionUsed(randomLine));
+
+    // Add the question number to the list of used questions
+    usedQuestions[usedQuestionCount] = randomLine;
+    usedQuestionCount++;
+
+    // Read and process lines until we reach the randomly selected line
+    char line[1024];
+    for (int i = 0; i <= randomLine; i++) {
+        if (fgets(line, sizeof(line), file)) {
+            char *token;
+            const char *delim = ";";
+            token = strtok(line, delim);
+            while (token != NULL) {
+                char varName[256], varValue[768];
+                if (sscanf(token, "%[^=]=%[^\n]", varName, varValue) == 2) {
+                    if (strcmp(varName, "quizQuestion") == 0) {
+                        *quizQuestion = strdup(varValue);
+                    } else if (strcmp(varName, "answerA") == 0) {
+                        *answerA = strdup(varValue);
+                    } else if (strcmp(varName, "answerB") == 0) {
+                        *answerB = strdup(varValue);
+                    } else if (strcmp(varName, "answerC") == 0) {
+                        *answerC = strdup(varValue);
+                    } else if (strcmp(varName, "userAnswer") == 0) {
+                        *userAnswer = atoi(varValue);
+                    } else if (strcmp(varName, "correctAnswer") == 0) {
+                        *correctAnswer = atoi(varValue);
+                    } else if (strcmp(varName, "quizInfoHolder") == 0) {
+                        *quizInfoHolder = strdup(varValue);
+                    } 
+                }
+                token = strtok(NULL, delim);
+            }
+        }
+    }
+    fclose(file);
+}
+
 /*
 Entry point.
 */
@@ -914,6 +1069,8 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *spr_sand  = IMG_LoadTexture(renderer,"img/spr_sand.png");
 	SDL_Texture *spr_water = IMG_LoadTexture(renderer,"img/spr_water_strip16.png");
 	SDL_Texture *spr_lava  = IMG_LoadTexture(renderer,"img/spr_lava_strip16.png");
+	SDL_Texture *spr_water_shallow = IMG_LoadTexture(renderer,"img/spr_water_shallow_strip16.png");
+	SDL_Texture *spr_lava_shallow  = IMG_LoadTexture(renderer,"img/spr_lava_shallow_strip16.png");
 	SDL_Texture *spr_tileset = IMG_LoadTexture(renderer,"tiled/tileset.png");
 	SDL_Texture *spr_hudshade = IMG_LoadTexture(renderer,"img/hudshade.png");
 	SDL_Texture *spr_enemy1 = IMG_LoadTexture(renderer,"img/spr_enemy1.png");
@@ -936,27 +1093,29 @@ int SDL_main(int argc, char *argv[])
 	char *timestr_b="Morning";
 	char *timestr_c="Day";
 	char *timestr_d="Evening";
+	int weekday=0;
+	char *weekday_string="MTWTFSS";
+	int monthday=0;//4 weeks=28 days.
+	char month_str[5];//e.g "21stNULL"
 	
 	//Game Level.
 	int level_size = sqr(win_game_tile_num);//16*16=256
-	int level_count = 256;
+	int level_realms = 2;//overworld, underworld.
+	int level_count = 256*level_realms;
+	int level_layers = 2;
 	int level_cur=0;//256 = 16*16 
-	byte level_data[65536];//static; can not be free'd.
-	//65536 = 256*256 (level size * level count)
-	FILE *fil = fopen("level.dat","rb");
-	for (int i=0; i<level_size*level_count; i++)
-	{
-		level_data[i] = 0;
-	}
-	fread(level_data,sizeof(level_data),1,fil);
-	fclose(fil);
+	byte level_data[262144];//static; can not be free'd.
+	//262144 = 256*512*2 (level size * level count * level layers)
+	level_load(level_data,level_size,level_count,level_layers);
+	int lvl_off_obj=0x20000;
+	int lvl_yoff=(int)sqrt(level_count/level_realms);
 	
 	//Map.
 	SDL_Texture *spr_map = IMG_LoadTexture(renderer,"img/dunedin-map.png");
 	SDL_Texture *spr_mapicon_unknown = IMG_LoadTexture(renderer,"img/spr_map_unknown.png");
 	char mapstr_location[16];
 	level_get_name(level_cur,mapstr_location);
-	Uint32 mapvisit[8];//256 bools.
+	Uint32 mapvisit[16];//512 bools.
 	mapvisit[level_cur/32]=1<<(level_cur%32);
 	
 	//Temperature.
@@ -982,14 +1141,19 @@ int SDL_main(int argc, char *argv[])
 	Player.move_spd = 3*4;
 	//damage stats
 	Player.attackRangeHeight=50;
-	Player.attackRangeWidth=100;
+	Player.attackRangeWidth=15;
 	Player.damage=50;
+	Player.width=15;
+	Player.height=15;
+	updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
 
 	//test enemy
-	struct Enemy enemy1;
-	initEnemy(&enemy1, 500, 500, 100, 100, 100, 10);
-	//global enemy
-	globalEnemy = &enemy1;
+	// struct Enemy enemy1;//Random player enemy
+	// initEnemy(&enemy1, 500, 500, 100, 100, 100, 10, spr_enemy1);//size, stats and image to go with it.
+	// globalEnemy = &enemy1;//making it the global enemy.
+
+
+
 	//Nutrients.
 	SDL_Texture *spr_nutrients = IMG_LoadTexture(renderer,"img/spr_nutrients_strip4.png");
 	
@@ -1020,6 +1184,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_QueueAudio(deviceid,wavbuffer,wavlength);
 	SDL_PauseAudioDevice(deviceid,0);//0 is unpause
 	//SDL_MixAudioFormat(wavbuffer,wavbuffer,AUDIO_S16,wavlength,32);
+	//play_WAV(wavfile,&wavspec,&wavbuffer,&wavlength);
 	
 	//Splash intro screen.
 	int splashintro_bool=1;
@@ -1115,7 +1280,7 @@ int SDL_main(int argc, char *argv[])
 		if (glob_vk_f2)
 		{
 			printf("F2 started!\n");	
-			dev_tiled_to_leveldata();
+			dev_tiled_to_leveldata(level_data);
 			printf("F2 finished!\n");	
 		}
 		if(glob_vk_7)
@@ -1124,20 +1289,7 @@ int SDL_main(int argc, char *argv[])
 			attack(&Player);//calls attack function
 			renderWeaponSwing(renderer, spr_water, &Player);//renders the swing
 		}
-		if(glob_vk_8)
-		{
-			glob_vk_8=0;
-			if(quizOn==false){
-			quizOn=true;
-			quizOn1=1;
-			printf("quiz on");
-			}
-			else{
-				quizOn=false;
-				quizOn1=0;
-			}
 
-		}
 		//Rain toggle.
 		if (glob_vk_0)
 		{
@@ -1248,21 +1400,25 @@ int SDL_main(int argc, char *argv[])
 		{
 			Player.facedir=0;
 			Player.x += Player.move_spd;
+			updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
 		}
 		if (glob_vk_up)
 		{
 			Player.facedir=1;
 			Player.y -= Player.move_spd;
+			updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
 		}
 		if (glob_vk_left)
 		{
 			Player.facedir=2;
 			Player.x -= Player.move_spd;
+			updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
 		}
 		if (glob_vk_down)
 		{
 			Player.facedir=3;
 			Player.y += Player.move_spd;
+			updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
 		}
 		if (glob_vk_right|glob_vk_left|glob_vk_up|glob_vk_down)
 		{
@@ -1286,27 +1442,37 @@ int SDL_main(int argc, char *argv[])
 				//at east side
 				Player.x = p_west;
 				level_cur += 1;
+				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1, level_cur);//random spawn an enemy with these stats
+
+				
 			}
 			if (Player.y < p_north)
 			{
 				//at north side
 				Player.y = p_south;
-				level_cur -= (int)sqrt(level_count);
+				level_cur -= lvl_yoff;
+				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1,level_cur);//random spawn an enemy with these stats
+
 			}
 			if (Player.x < p_west)
 			{
 				//at west side
 				Player.x = p_east;
 				level_cur -= 1;
+				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1,level_cur);//random spawn an enemy with these stats
+
 			}
 			if (Player.y > p_south)
 			{
 				//at south side
 				Player.y = p_north;
-				level_cur += (int)sqrt(level_count);
+				level_cur += lvl_yoff;
+				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1,level_cur);//random spawn an enemy with these stats
+
 			}
 			if (lvlbool)//has changed level
 			{
+				
 				level_cur += level_count;//allows negative wrap.
 				level_cur %= level_count;//prevents overflow.
 				//printf("lvl=%i\n",level_cur);
@@ -1355,7 +1521,14 @@ int SDL_main(int argc, char *argv[])
         }
 		//Timekeeping.
 		time_clock_fps += 1*time_clock_fps_multiplier;
-		time_clock += (time_clock_fps>=time_clock_fps_max);
+		//time_clock += (time_clock_fps>=time_clock_fps_max);
+		while (time_clock_fps>=time_clock_fps_max)
+		{
+			time_clock++;
+			time_clock_fps-=time_clock_fps_max;
+		}
+		weekday = (weekday+(time_clock>=time_clock_max))%7;
+		monthday = (monthday+(time_clock>=time_clock_max))%28;
 		time_clock %= time_clock_max;
 		time_clock_fps %= time_clock_fps_max;
 		
@@ -1440,11 +1613,11 @@ int SDL_main(int argc, char *argv[])
 		if (!splashintro_bool)
 		{
 			//Level.
-			char *lvlstrold = "LVL: XYZ/255";
+			char *lvlstrold = "LVL: XYZ/511";
 			char lvlstrnew[strlen(lvlstrold)];//a hard-coded value too small causes a code-overwrite bug that messes with player movement!
 			strcpy(lvlstrnew,lvlstrold);
 			//lvlstrnew[7] = ((char)level_cur)+48;//7 is "X" above.
-			byte lc = (byte)level_cur;//note: "signed char" causes bugs out in the [128,255] range because it is out of range; "unsigned char" allows 255.
+			word lc = (word)level_cur;//note: "signed char" causes bugs out in the [128,255] range because it is out of range; "unsigned char" allows 255.
 			lvlstrnew[string_pos("X",lvlstrnew)] = ((lc/100)%10) + 48;//48="0"
 			lvlstrnew[string_pos("Y",lvlstrnew)] = ((lc/10 )%10) + 48;//%10 maps to 0-9.
 			lvlstrnew[string_pos("Z",lvlstrnew)] = ((lc/1  )%10) + 48;//
@@ -1474,16 +1647,18 @@ int SDL_main(int argc, char *argv[])
 					spr_mapicon_unknown);
 				}
 			}
-			//Location crosshair lines.
+			//Location crosshair lines.			
 			int mcx=(int)lerp((double)mapx1,(double)mapx2,(double)(BGG(lc,4,0)/16.0));
 			draw_rectangle_color(renderer,mcx-1,mapy1,mcx+1,mapy2,c_red);//ver(x)
 			int mcy=(int)lerp((double)mapy1,(double)mapy2,(double)(BGG(lc,4,1)/16.0));
 			draw_rectangle_color(renderer,mapx1,mcy-1,mapx2,mcy+1,c_red);//hor(y)
-			draw_rectangle_color(renderer,mcx,mcy,
-				(int)lerp((double)mapx1,(double)mapx2,(double)((BGG(lc,4,0)+1)/16.0)),
-				(int)lerp((double)mapy1,(double)mapy2,(double)((BGG(lc,4,1)+1)/16.0)),
-				c_red);
-			
+			if (!(lc>>8))
+			{
+				draw_rectangle_color(renderer,mcx,mcy,
+					(int)lerp((double)mapx1,(double)mapx2,(double)((BGG(lc,4,0)+1)/16.0)),
+					(int)lerp((double)mapy1,(double)mapy2,(double)((BGG(lc,4,1)+1)/16.0)),
+					c_red);
+			}
 			//Timekeeping.
 			//Digital clock.
 			int coff=0;
@@ -1517,11 +1692,46 @@ int SDL_main(int argc, char *argv[])
 			if (clock_is_between(time_clock,12,0,17,59)) {ct=2;}
 			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
 			//placeholder 1/2
+			
 			draw_text_color(renderer,
 				uix,clocky2+gh,
 				font_ascii_w*gw,font_ascii_h*gh,
 				font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
 				font_ascii_w,font_ascii_h,tc);
+			
+			//Weekday.
+			char wc[2];
+			double wf=1.0;
+			draw_rectangle_color(renderer,
+				uix+font_ascii_w*weekday*gw+(int)(wf*weekday*gw),clocky2+gh,
+				uix+font_ascii_w*weekday*gw+(int)(wf*weekday*gw)+font_ascii_w*gw,clocky2+gh+font_ascii_h*gh,
+				c_red);
+			for (int i=0; i<7; i++)
+			{
+				int wcol=i==6?c_red:c_black;
+				wcol=i==weekday?c_white:wcol;
+				wc[0]=weekday_string[i];
+				draw_text_color(renderer,
+					uix+font_ascii_w*i*gw+(int)(wf*i*gw),clocky2+gh,
+					font_ascii_w*gw,font_ascii_h*gh,
+					font_ascii,wc,
+					font_ascii_w,font_ascii_h,wcol);
+			}
+			//Day of the month.
+			month_str[0]=((monthday+1)/10)+48;
+			month_str[1]=((monthday+1)%10)+48;
+			month_str[2]=100+((monthday+1)%20>=4?16:mux_int((monthday+1)%20,16,15,10,14));
+			month_str[3]=100+((monthday+1)%20>=4? 4:mux_int((monthday+1)%20, 4,16, 0, 0));
+			draw_rectangle_color(renderer,
+				uix+8*font_ascii_w*gw,clocky2+gh,
+				uix+8*font_ascii_w*gw+4*font_ascii_w*gw,clocky2+gh+font_ascii_h*gh,
+				c_blue);
+			draw_text_color(renderer,
+				uix+8*font_ascii_w*gw,clocky2+gh,
+				font_ascii_w*gw,font_ascii_h*gh,
+				font_ascii,month_str,
+				font_ascii_w,font_ascii_h,
+				c_aqua);
 			
 			//Temperature.
 			int tempy1,tempy2;
@@ -1539,35 +1749,55 @@ int SDL_main(int argc, char *argv[])
 		}
 		//Game area.
 		int d = win_game_tile_dim;
-		for (int j=0; j<win_game_tile_num; j++)
+		int defcol=make_color_hsv(0,0,((int)(get_timer()))/16);
+		for (int k=0; k<level_layers; k++)
 		{
-			for (int i=0; i<win_game_tile_num; i++)
+			for (int j=0; j<win_game_tile_num; j++)
 			{
-				int ij = i+j*win_game_tile_num;
-				int x1,y1,x2,y2;
-				x1 = win_game_x + (i+0)*gw*win_game_tile_dim;
-				y1 = win_game_y + (j+0)*gh*win_game_tile_dim;
-				x2 = win_game_x + (i+1)*gw*win_game_tile_dim;
-				y2 = win_game_y + (j+1)*gh*win_game_tile_dim;
-				
-				int col = mux_int(ij%3,c_red,c_green,c_blue);
-				draw_rectangle_color(renderer,x1,y1,x2,y2,col);//will show if image drawing below fails.
-				int off = ij + level_size*level_cur;
-				int tex = level_data[off];
-				if ((tex>=0x90) && (tex <=0x9F))
-				{//animated
-					int fr=16;
-					int di=(tex==0x90)?(60):(120);
-					int at=(int)get_timer();
-					SDL_Texture *spr;
-					     if (tex==0x90) {spr=spr_water;}
-					else if (tex==0x94) {spr=spr_lava;}
-					else {spr=spr_water;}
-					draw_image_part(renderer,x1,y1,x2,y2,spr,d*((at/di)%fr),0,d,d);
-				}
-				else
-				{//static
-					draw_image_part(renderer,x1,y1,x2,y2,spr_tileset,d*(tex%win_game_tile_num),d*(tex/win_game_tile_num),d,d);
+				for (int i=0; i<win_game_tile_num; i++)
+				{
+					int ij = i+j*win_game_tile_num+k*lvl_off_obj;
+					int x1,y1,x2,y2;
+					x1 = win_game_x + (i+0)*gw*win_game_tile_dim;
+					y1 = win_game_y + (j+0)*gh*win_game_tile_dim;
+					x2 = win_game_x + (i+1)*gw*win_game_tile_dim;
+					y2 = win_game_y + (j+1)*gh*win_game_tile_dim;
+					
+					//int defcol = mux_int(ij%3,c_red,c_green,c_blue);
+					
+					int off = ij + level_size*level_cur;
+					int tex = level_data[off];
+					if (k==0)
+					{
+						draw_rectangle_color(renderer,x1,y1,x2,y2,defcol);//will show if image drawing below fails.
+						draw_image_part(renderer,x1,y1,x2,y2,spr_tileset,d*(tex%win_game_tile_num),d*(tex/win_game_tile_num),d,d);
+					}
+					else if (k==1)
+					{
+						//animated
+						if ((tex>=0x10) && (tex <=0x1F))
+						{
+							int fr=16;
+							int di=(tex<0x12)?(60):(120);
+							int at=(int)get_timer();
+							SDL_Texture *spr;
+								 if (tex==0x10) {spr=spr_water;}
+							else if (tex==0x11) {spr=spr_water_shallow;}
+							else if (tex==0x12) {spr=spr_lava;}
+							else if (tex==0x13) {spr=spr_lava_shallow;}
+							else {spr=spr_water;}
+							draw_image_part(renderer,x1,y1,x2,y2,spr,d*((at/di)%fr),0,d,d);
+						}
+						//unhandled.
+						else
+						{
+							if (tex!=0)//lazy hack.
+							{
+								tex+=0x100;
+								draw_image_part(renderer,x1,y1,x2,y2,spr_tileset,d*(tex%win_game_tile_num),d*(tex/win_game_tile_num),d,d);
+							}
+						}
+					}
 				}
 			}
 		}
@@ -1622,106 +1852,217 @@ int SDL_main(int argc, char *argv[])
 			SDL_FreeSurface(textSurface);
 			SDL_DestroyTexture(textTexture);
 		}
+		// Rendering the global enemy(use for boss fight?? keep code unless decided we do not need.)
 
+		// if (globalEnemy != NULL && globalEnemy->health > 0)
+		// {
+			
+		// 	float directionX = Player.x - globalEnemy->x;
+        // 	float directionY = Player.y - globalEnemy->y;
+		// 	float distanceToPlayer = distance(Player.x, Player.y, globalEnemy->x, globalEnemy->y);
+		// 	//stop the enemy when within the selected units (125)
+		// 	if(distanceToPlayer > 110){
+		// 		// Normalize the direction vector (make it a unit vector)
+		// 		if (distanceToPlayer != 0) {
+		// 			directionX /= distanceToPlayer;
+		// 			directionY /= distanceToPlayer;
+		// 		}
+		// 		float enemySpeed = 2.0; //adjust this value to control the enemy's speed
+		// 		globalEnemy->x += directionX * enemySpeed;
+		// 		globalEnemy->y += directionY * enemySpeed;
+		// 	}
+		// 	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+		// 	SDL_Rect enemyRect = { globalEnemy->x, globalEnemy->y, globalEnemy->width, globalEnemy->height };
+		// 	// SDL_RenderFillRect(renderer, &enemyRect);
+		// 	draw_image(renderer, globalEnemy->x, globalEnemy->y, globalEnemy->x + globalEnemy->width, globalEnemy->y + globalEnemy->height, globalEnemy->texture);
+		// 	if (checkCollision(playerHitbox, enemyRect)) {
+        //     // If the player collides with the enemy, apply damage to the player
+        //     printf("Player collided with enemy!\n");
+        //     int enemyDamage = globalEnemy->dmg; // Adjust this value as needed
+        //     damageMe(enemyDamage);
+		// 	// Bump back the enemy when they run into us
+        //     int bumpDistance = 50;
+        //     float bumpDirectionX = directionX;
+        //     float bumpDirectionY = directionY;
+        //     if (distanceToPlayer != 0) {
+        //         bumpDirectionX /= distanceToPlayer;
+        //         bumpDirectionY /= distanceToPlayer;
+        //     }
+        //     globalEnemy->x -= bumpDirectionX * bumpDistance;
+        //     globalEnemy->y -= bumpDirectionY * bumpDistance;
+        // }
+		// }
+		//for all randomly spawned enemies.
+
+		for (int i = 0; i < MAX_ENEMIES; i++) {
+		struct Enemy* currentEnemy = &enemies[i];
+		if (currentEnemy->health > 0 && currentEnemy->spawnLevel == level_cur) {
+			// Enemy movement logic
+			float directionX = Player.x - currentEnemy->x;
+			float directionY = Player.y - currentEnemy->y;
+			float distanceToPlayer = distance(Player.x, Player.y, currentEnemy->x, currentEnemy->y);
+
+			// Stop the enemy when within the selected units (125)
+			if (distanceToPlayer > 110) {
+				// Normalize the direction vector (make it a unit vector)
+				if (distanceToPlayer != 0) {
+					directionX /= distanceToPlayer;
+					directionY /= distanceToPlayer;
+				}
+				if(quizOn==false){//enemies won't move when quiz is active
+				float enemySpeed = 2.0; // Adjust this value to control the enemy's speed
+				currentEnemy->x += directionX * enemySpeed;
+				currentEnemy->y += directionY * enemySpeed;
+				}
+			}
+
+        // Rendering
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_Rect enemyRect = { currentEnemy->x, currentEnemy->y, currentEnemy->width, currentEnemy->height };
+        draw_image(renderer, currentEnemy->x, currentEnemy->y, currentEnemy->x + currentEnemy->width, currentEnemy->y + currentEnemy->height, currentEnemy->texture);
+
+        // Collision detection with the player
+        if (checkCollision(playerHitbox, enemyRect)) {
+            // If the player collides with the enemy, apply damage to the player
+            printf("Player collided with enemy!\n");
+            int enemyDamage = currentEnemy->dmg; // Adjust this value as needed
+            damageMe(enemyDamage);
+
+            // Bump back the enemy when they run into the player
+            int bumpDistance = 50;
+            float bumpDirectionX = directionX;
+            float bumpDirectionY = directionY;
+            if (distanceToPlayer != 0) {
+                bumpDirectionX /= distanceToPlayer;
+                bumpDirectionY /= distanceToPlayer;
+            }
+            currentEnemy->x -= bumpDirectionX * bumpDistance;
+            currentEnemy->y -= bumpDirectionY * bumpDistance;
+        	}
+    	}
+	}
+
+		// Resetting the global enemy
+		if (globalEnemy != NULL && globalEnemy->health <= 0) {
+    		resetEnemy(globalEnemy);
+		}
 		//first quiz. Rename variables for alpha.
-		if(quizOn1==1){
-			if(quiz1QNum==1){//if first question
-			if(userAnswer==0){//keeps it from looping infinite
-			}
-			if(userAnswer==1){quizQuestion="That is correct\nWhat is Seans name?";answerA="Bradley";answerB="Sean";answerC="John";userAnswer=0;score+=500;quiz1QNum++;
-			}
-			if(userAnswer==2){
-				quizQuestion="That is false\n next question\nWhat is Seans name?";answerA="Bradley";answerB="Sean";answerC="John";userAnswer=0;score+=0;quiz1QNum++;
-			}
-			if(userAnswer==3){quizQuestion="That is false\n next question\nWhat is Seans name?";answerA="Bradley";answerB="Sean";answerC="John";userAnswer=0;score+=0;quiz1QNum++;
-			}
-			}else if(quiz1QNum==2){//if second question
-			if(userAnswer==0){//keeps it from looping infinite}
-			if(userAnswer==1){quizQuestion="That is false\nThank you for playing";answerA="";answerB="";answerC="";userAnswer=0;score+=0;quiz1QNum++;
-				}
-			if(userAnswer==2){quizQuestion="That is correct\nThank you for playing";answerA="";answerB="";answerC="";userAnswer=0;score+=500;quiz1QNum++;
-				}
-			if(userAnswer==3){quizQuestion="That is false\nThank you for playing";answerA="";answerB="";answerC="";userAnswer=0;score+=0;quiz1QNum++;
-				}			
-			}
-			else if(quiz1QNum=3){quizQuestion="Thank you for playing";answerA="press 1 2 or 3 to exit";answerB="";answerC="";//quiz finished
-			if(userAnswer==1){quizOn1=0;userAnswer=0;quizOn=false;
-				}
-			if(userAnswer==2){quizOn1=0;userAnswer=0;quizOn=false;
-				}
-			if(userAnswer==3){quizOn1=0;userAnswer=0;quizOn=false;
-				}
-			}
-		}
-		}
+
 		//Second quiz
 		if(level_cur==2){
 			if(quiz2Called==false){//boolean check so the quiz doesn't open every time they hit level 2.
 				quizQuestion="Greetings wanderer\nAnswer my riddle to pass through\n Which of these macronutrients contains the most calories per gram";answerA="1. Carbohydrate";answerB="2. Fat";answerC="3. Protein";
-				quiz2Called=true;	
-				quizOn=true;
-				Player.move_spd=0;//stop player moving
+				quiz2Called=true;	quizOn=true;correctAnswer=2;Player.move_spd=0; quizLoopOn=true;
 			}
-			if(quiz2QNum==1){//if first question
-			if(userAnswer==0){//keeps it from looping infinite
+		}//third quiz (currently used for testing, change for real game.) 
+		//Quiz turns on once the player enters level_curr==3, for other quizzes just copy this code and change the trigger. 
+		if(level_cur==3){
+			if(quiz3Called==false){//boolean check so the quiz doesn't open every time they hit level 3.
+				quizQuestion="Greetings wanderer\nAnswer my riddle to pass through\n Should this quiz work?";answerA="1. yes";answerB="2. no";answerC="3. definitely not";
+				quiz3Called=true;	quizOn=true;correctAnswer=1;Player.move_spd=0; quizLoopOn=true; quizInfo="";
 			}
-			if(userAnswer==1){quizQuestion="That is false\n next question\nWhich of these meats has the highest protein count per 100g??";answerA="1. Rump Steak";answerB="2. Skinned Chicken Breast";answerC="3. Chocolate";userAnswer=0;score+=0;quiz2QNum++;
+		}
+		//loop to go through three questions relating to food data. (copy this but replace questions.txt with data from other dataset if we choose.)
+		if(quizLoopOn){
+			if(quizQNum==1){//if first question
+			if(userAnswer==0){}//keeps it from looping infinite
+			else if(userAnswer==correctAnswer){
+				quizInfo="Correct";
+    			updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=500;
 			}
-			if(userAnswer==2){
-				quizQuestion="That is Correct, fat contains 9 calories per gram while protein and carbohydrates contain 4\n next question\nWhich of these meats has the highest protein count per 100g??";answerA="1. Rump Steak";answerB="2. Skinned Chicken Breast";answerC="3. Chocolate";userAnswer=0;score+=500;quiz2QNum++;
+			else{
+				quizInfo="false";
+				updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=0;
 			}
-			if(userAnswer==3){quizQuestion="That is false\n next question\nWhich of these meats has the highest protein count per 100g?";answerA="1. Rump Steak";answerB="2. Skinned Chicken Breast";answerC="3. Chocolate";userAnswer=0;quiz2QNum++;
-			}
-			}else if(quiz2QNum==2){//if second question
+			}else if(quizQNum==2){//if second question
 			if(userAnswer==0){}
-			if(userAnswer==1){quizQuestion="That is false\nThank you for playing";answerA="";answerB="";answerC="";userAnswer=0;score+=0;quiz2QNum++;
-				}
-			if(userAnswer==2){quizQuestion="That is correct\nThere are 31g of protein per 100g of Chicken breast\nThank you for playing";answerA="";answerB="";answerC="";userAnswer=0;score+=500;quiz2QNum++;
-				}
-			if(userAnswer==3){quizQuestion="That is false\nThank you for playing";answerA="";answerB="";answerC="";userAnswer=0;score+=0;quiz2QNum++;
-				}			
+			else if(userAnswer==correctAnswer){
+				quizInfo="correct";
+    			updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=500;
 			}
-			else if(quiz2QNum=3){answerA="press 1 2 or 3 to exit";answerB="";answerC="";//quiz finished
+			else{
+				quizInfo="false";
+				updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=0;
+			}		
+			}
+			else if(quizQNum==3){//if third question
 			if(userAnswer==0){}
-			if(userAnswer==1){quizOn2=0;quizOn=false;Player.move_spd=3*4;
-				}
-			if(userAnswer==2){quizOn2=0;quizOn=false;Player.move_spd=3*4;
-				}
-			if(userAnswer==3){quizOn2=0;quizOn=false;Player.move_spd=3*4;
-				}
+			else if(userAnswer==correctAnswer){
+				quizInfo="correct";
+    			updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=500;
 			}
-		}			
+			else{
+				quizInfo="false";
+				updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=0;
+			}		
+			}
+			//end quiz
+			else if(quizQNum=4){quizQuestion=" ",answerA="press 1 2 or 3 to exit";answerB="";answerC="";//quiz finished
+			if(userAnswer==0){}else if(userAnswer==1||userAnswer==2||userAnswer==3){quizOn=false;Player.move_spd=3*4;quizQNum=1;quizInfo="";userAnswer=0;quizLoopOn=false;}
+			}
+		}	
 		
 		//render the quiz popup
-			if (quizOn) {
-    			// Render the quiz popup with a beige square background
-    			SDL_Color bgColor = { 200, 200, 200 }; // Beige color
-    			SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, 255);
-    			int popupWidth = 400; // Adjust this value to change the width of the popup
-    			int popupHeight = 200; // Adjust this value to change the height of the popup
-    			int popupX = (800 - popupWidth) / 2 + 300; // Center the popup horizontally and move it right by 300 pixels
-    			int popupY = (600 - popupHeight) / 2;
-    			SDL_Rect popupRect = { popupX, popupY, popupWidth, popupHeight };
-    			SDL_RenderFillRect(renderer, &popupRect);
-    			// Render the quiz text inside the beige square background
-    			SDL_Color textColor = { 0, 0, 0 }; // black text color
-    			int maxTextWidth = popupWidth - 20; // Adjust this value based on your desired maximum text width
-    			char quizText[256];
-    			snprintf(quizText, sizeof(quizText), "%s\n%s\n%s\n%s", quizQuestion, answerA, answerB, answerC);
-    			SDL_Surface* textSurface = TTF_RenderText_Blended_Wrapped(font, quizText, textColor, maxTextWidth);
-    			SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-    			// Calculate the position to center the text inside the beige square background
-    			int textWidth = textSurface->w;
-    			int textHeight = textSurface->h;
-    			int textX = popupX + (popupWidth - textWidth) / 2;
-    			int textY = popupY + (popupHeight - textHeight) / 2;
-    			// Render the text
-    			SDL_Rect textRect = { textX, textY, textWidth, textHeight };
-    			SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
-    			// Cleanup
-    			SDL_FreeSurface(textSurface);
-    			SDL_DestroyTexture(textTexture);
-			}
+if (quizOn) {
+    // Render the quiz popup with a beige square background
+    SDL_Color bgColor = { 200, 200, 200 }; // Beige color
+    SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, 255);
+    int popupWidth = 400; // Adjust this value to change the width of the popup
+    int popupHeight = 200; // Adjust this value to change the height of the popup
+    int popupX = (800 - popupWidth) / 2 + 300; // Center the popup horizontally and move it right by 300 pixels
+    int popupY = (600 - popupHeight) / 2;
+    SDL_Rect popupRect = { popupX, popupY, popupWidth, popupHeight };
+    SDL_RenderFillRect(renderer, &popupRect);
+
+    // Render the quiz header just above the quiz text
+    SDL_Color headerColor = { 0, 0, 255 }; // blue header color
+    int maxHeaderWidth = popupWidth - 20; // Adjust this value based on your desired maximum header width
+    SDL_Surface* headerSurface = TTF_RenderText_Blended_Wrapped(font, quizHeader, headerColor, maxHeaderWidth);
+    SDL_Texture* headerTexture = SDL_CreateTextureFromSurface(renderer, headerSurface);
+    // Calculate the position to center the header inside the beige square background
+    int headerWidth = headerSurface->w;
+    int headerHeight = headerSurface->h;
+    int headerX = popupX + (popupWidth - headerWidth) / 2;
+    int headerY = popupY + 10; // Adjust the value 10 for the vertical position of the header
+    // Render the header
+    SDL_Rect headerRect = { headerX, headerY, headerWidth, headerHeight };
+    SDL_RenderCopy(renderer, headerTexture, NULL, &headerRect);
+    // Cleanup
+    SDL_FreeSurface(headerSurface);
+    SDL_DestroyTexture(headerTexture);
+
+    // Combine quizInfo and quizQuestion into one string separated by newline
+char combinedText[1024];
+snprintf(combinedText, sizeof(combinedText), "\n%s\n%s\n%s\n%s\n%s", quizInfo, quizQuestion, answerA, answerB, answerC);
+
+// Render the quiz text inside the beige square background
+SDL_Color textColor = { 0, 0, 0 }; // black text color
+int maxTextWidth = popupWidth - 20; // Adjust this value based on your desired maximum text width
+SDL_Surface* textSurface = TTF_RenderText_Blended_Wrapped(font, combinedText, textColor, maxTextWidth);
+if (textSurface == NULL) {
+    printf("Error creating text surface: %s\n", TTF_GetError());
+    return;
+}
+
+SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+if (textTexture == NULL) {
+    printf("Error creating text texture: %s\n", SDL_GetError());
+    SDL_FreeSurface(textSurface);
+    return;
+}
+
+// Calculate the position to center the text inside the beige square background
+int textWidth = textSurface->w;
+int textHeight = textSurface->h;
+int textX = popupX + (popupWidth - textWidth) / 2;
+int textY = popupY + (popupHeight - textHeight) / 2;
+// Render the text
+SDL_Rect textRect = { textX, textY, textWidth, textHeight };
+SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+// Cleanup
+SDL_FreeSurface(textSurface);
+SDL_DestroyTexture(textTexture);
+}
 		// Draw water particles
         for (int i = 0; i < MAX_WATER_PARTICLES; i++) 
 		{
@@ -1730,19 +2071,7 @@ int SDL_main(int argc, char *argv[])
                 draw_image(renderer, waterParticles[i].x, waterParticles[i].y, waterParticles[i].x + 5, waterParticles[i].y + 15, spr_water);
             }
         }
-		// Rendering the enemy
-		if (globalEnemy != NULL && globalEnemy->health > 0)
-		{
-    		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Set the render color to red
-    		SDL_Rect enemyRect = { globalEnemy->x, globalEnemy->y, globalEnemy->width, globalEnemy->height };
-    		SDL_RenderFillRect(renderer, &enemyRect);
-			draw_image(renderer,globalEnemy->x,globalEnemy->y,globalEnemy->x+globalEnemy->width,globalEnemy->y+globalEnemy->height,spr_enemy1);
-		}
 
-		// Resetting the enemy
-		if (globalEnemy != NULL && globalEnemy->health <= 0) {
-    		resetEnemy(globalEnemy);
-		}
 		/*
 		Overlay Drawing.
 		*/
@@ -1826,6 +2155,8 @@ int SDL_main(int argc, char *argv[])
 	SDL_DestroyTexture(spr_sand);
 	SDL_DestroyTexture(spr_water);
 	SDL_DestroyTexture(spr_lava);
+	SDL_DestroyTexture(spr_water_shallow);
+	SDL_DestroyTexture(spr_lava_shallow);
 	SDL_DestroyTexture(spr_tileset);
 	SDL_DestroyTexture(spr_map);
 	SDL_DestroyTexture(spr_mapicon_unknown);

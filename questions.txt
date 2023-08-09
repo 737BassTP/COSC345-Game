@@ -1,0 +1,7 @@
+quizQuestion="Which of these food items contains the most protein per 100g";answerA="1. Rump Steak";answerB="2. Skinned Chicken Breast";answerC="3. Chocolate";userAnswer=0;correctAnswer=2;score+=500;quiz2QNum++;quizInfoHolder="skinned chicken breast has 32g protein per 100g";
+quizQuestion="Which of these food items would you eat if you wanted high carbohydrates";answerA="1. rice";answerB="2. water";answerC="3. olive oil";userAnswer=0;correctAnswer=1;quizInfoHolder="Correct, rice is known to be high carb";
+quizQuestion="Which of these food items would you eat if you wanted to eat chocolate";answerA="1. apple";answerB="2. coconut";answerC="3. chocolate";userAnswer=0;correctAnswer=3;quizInfoHolder="YEAH CHOCOLATE";
+quizQuestion="Which of these food items would you eat if love apples";answerA="1. rice";answerB="2. Apples";answerC="3. wine";userAnswer=0;correctAnswer=2;quizInfoHolder="YEAH APPLES";
+quizQuestion="Which of these food items would not eat probably";answerA="1. rat meat";answerB="2. cous cous";answerC="3. potato";userAnswer=0;correctAnswer=1;quizInfoHolder="Correct, rice is known to be high carb";
+quizQuestion="Which of these does Sean prefer";answerA="1. Fried Chicken";answerB="2. Bao bun";answerC="3. pizza";userAnswer=0;correctAnswer=1;quizInfoHolder="Correct, Sean loves fried chicken";
+quizQuestion="Which of these is not food";answerA="1. Sweet potato";answerB="2. orange";answerC="3. Stalagmite rock";userAnswer=0;correctAnswer=3;quizInfoHolder="ROCK BAD FOR TEETH";
