@@ -21,6 +21,12 @@ asm:
 clean:
 	rm -rf *.exe *.s
 	
+check:
+	@echo TODO: Self-tests.
+	
+distcheck:
+	@echo TODO: todo.
+	
 run:
 	./$(PROGRAM).exe
 
