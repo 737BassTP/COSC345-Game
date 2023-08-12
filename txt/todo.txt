@@ -1,6 +1,6 @@
 To do:
 
-2023-08-05
+2023-08-13
 	audio sfx (play once)
 	keyboard functions (hold, press, release)
 	compress leveldata
@@ -10,10 +10,33 @@ To do:
 ----------------
 Finished:
 
-2023-08-04
-	Sean:
-		available soon
+2023-08-12
+	Thomas:
+		Started code refactoring process.
+			Multiple source files available in src/-folder.
+			Edited the Makefile to account for this.
+			Disabled automatic building for assembly.
+		Added some very basic mountains in the Tiled project file.
 
+2023-08-10
+	Matthew:
+		Setup CI/CD with Github Actions.
+			"All checks have failed" on multiple pushes.
+
+2023-08-06
+	Sean:
+		Enemies randomly spawn when changing levels.
+			They will remain in the level they spawned in.
+		Quiz appears above enemies.
+
+2023-08-05
+	Sean:
+		Various improvements to the quiz system.
+		Added hitbox to player.
+		Enemy follows player.
+		Improvements to the enemy system.
+
+2023-08-04
 	Thomas:
 		Improved the level converter and level loader.
 			Supports 512 levels, 256 per world (overworld + underworld).
