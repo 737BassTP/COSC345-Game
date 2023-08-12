@@ -3,7 +3,7 @@ SDL2 = $(WORKDIR)\SDL2
 SDL2b = C:\Users\Thomas Pedersen\Documents\UiT\UTV-0001\University of Otago\COSC345 - Game\SDL2
 
 CC = gcc
-CFLAGS = -Wall -Wextra -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -g `sdl2-config --cflags --libs`
+CFLAGS = -Wall -Wextra -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -g $(shell sdl2-config --cflags --libs)
 PROGRAM = main
 
 SRCDIR = ./src/
@@ -15,7 +15,6 @@ all:
 	@echo $(WORKDIR)
 	$(CC) -std=c17 $(SOURCES) -I "$(SDL2)\include" -L "$(SDL2)\lib" $(CFLAGS) -o $(PROGRAM)
 	@echo Build succeeded!
-	$(MAKE) run
 asm:
 	gcc $(SOURCES) -O0 -S -o $(PROGRAM).s -masm=intel $<
 	

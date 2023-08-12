@@ -17,6 +17,7 @@ Finished:
 			Edited the Makefile to account for this.
 			Disabled automatic building for assembly.
 		Added some very basic mountains in the Tiled project file.
+		Removed automatic running of the .exe-file from the Makefile, to prevent GitHub Actions failing checks from trying to run the game.
 
 2023-08-10
 	Matthew:
