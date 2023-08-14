@@ -22,9 +22,14 @@ https://wiki.libsdl.org/SDL2/APIByCategory
 #include <stdarg.h> //for variadic functions.
 //#include <.h>
 //#include "SDL2.dll"
-#include "SDL2/include/SDL2/SDL.h"
-#include "SDL2/include/SDL2/SDL_image.h"
-#include "SDL2/include/SDL2/SDL_ttf.h"
+#include "../SDL2/include/SDL2/SDL.h"
+#include "../SDL2/include/SDL2/SDL_image.h"
+#include "../SDL2/include/SDL2/SDL_ttf.h"
+#include "enemy.c"
+#include "menu.c"
+#include "quiz.c"
+#include "ui.c"
+//#include ".c"
 
 //Definitions.
 #define PI 3.1415926535897932
@@ -1400,28 +1405,25 @@ int SDL_main(int argc, char *argv[])
 		{
 			Player.facedir=0;
 			Player.x += Player.move_spd;
-			updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
 		}
 		if (glob_vk_up)
 		{
 			Player.facedir=1;
 			Player.y -= Player.move_spd;
-			updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
 		}
 		if (glob_vk_left)
 		{
 			Player.facedir=2;
 			Player.x -= Player.move_spd;
-			updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
 		}
 		if (glob_vk_down)
 		{
 			Player.facedir=3;
 			Player.y += Player.move_spd;
-			updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
 		}
 		if (glob_vk_right|glob_vk_left|glob_vk_up|glob_vk_down)
 		{
+			updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
 			//Position.
 			
 			//Animation.
@@ -1442,36 +1444,29 @@ int SDL_main(int argc, char *argv[])
 				//at east side
 				Player.x = p_west;
 				level_cur += 1;
-				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1, level_cur);//random spawn an enemy with these stats
-
-				
 			}
 			if (Player.y < p_north)
 			{
 				//at north side
 				Player.y = p_south;
 				level_cur -= lvl_yoff;
-				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1,level_cur);//random spawn an enemy with these stats
-
 			}
 			if (Player.x < p_west)
 			{
 				//at west side
 				Player.x = p_east;
 				level_cur -= 1;
-				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1,level_cur);//random spawn an enemy with these stats
-
 			}
 			if (Player.y > p_south)
 			{
 				//at south side
 				Player.y = p_north;
 				level_cur += lvl_yoff;
-				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1,level_cur);//random spawn an enemy with these stats
-
 			}
 			if (lvlbool)//has changed level
 			{
+				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1, level_cur);//random spawn an enemy with these stats
+
 				
 				level_cur += level_count;//allows negative wrap.
 				level_cur %= level_count;//prevents overflow.
@@ -1509,11 +1504,15 @@ int SDL_main(int argc, char *argv[])
                 waterParticles[i].y += waterParticles[i].speed;
 
                 // Check if particle has reached the bottom of the window
-                if (waterParticles[i].y > screen_h) {
+                if (waterParticles[i].y > screen_h) 
+				{
                     // Randomly deactivate particle (remove randomness for constant rain)
-                    if (rand() % 100 < 5) {
+                    if (rand() % 100 < 5) 
+					{
                         waterParticles[i].active = 0; // Set active to 0 (false)
-                    } else {
+                    } 
+					else 
+					{
                         createWaterParticle(i, screen_w, screen_h);
                     }
                 }
@@ -1601,9 +1600,9 @@ int SDL_main(int argc, char *argv[])
 			for (int i=0; i<4; i++)
 			{
 				//placeholder 2/2
-				draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
-				draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
-				nx += nd*gw;
+				// draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
+				// draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
+				// nx += nd*gw;
 			}
 			// SDL_RenderPresent(renderer);
 		}
@@ -1692,13 +1691,13 @@ int SDL_main(int argc, char *argv[])
 			if (clock_is_between(time_clock,12,0,17,59)) {ct=2;}
 			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
 			//placeholder 1/2
-			
+			/*
 			draw_text_color(renderer,
 				uix,clocky2+gh,
 				font_ascii_w*gw,font_ascii_h*gh,
 				font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
 				font_ascii_w,font_ascii_h,tc);
-			
+			/**/
 			//Weekday.
 			char wc[2];
 			double wf=1.0;
@@ -1894,76 +1893,96 @@ int SDL_main(int argc, char *argv[])
 		// }
 		//for all randomly spawned enemies.
 
-		for (int i = 0; i < MAX_ENEMIES; i++) {
-		struct Enemy* currentEnemy = &enemies[i];
-		if (currentEnemy->health > 0 && currentEnemy->spawnLevel == level_cur) {
-			// Enemy movement logic
-			float directionX = Player.x - currentEnemy->x;
-			float directionY = Player.y - currentEnemy->y;
-			float distanceToPlayer = distance(Player.x, Player.y, currentEnemy->x, currentEnemy->y);
+		for (int i = 0; i < MAX_ENEMIES; i++) 
+		{
+			struct Enemy* currentEnemy = &enemies[i];
+			if (currentEnemy->health > 0 && currentEnemy->spawnLevel == level_cur)
+			{
+				// Enemy movement logic
+				float directionX = Player.x - currentEnemy->x;
+				float directionY = Player.y - currentEnemy->y;
+				float distanceToPlayer = distance(Player.x, Player.y, currentEnemy->x, currentEnemy->y);
 
-			// Stop the enemy when within the selected units (125)
-			if (distanceToPlayer > 110) {
-				// Normalize the direction vector (make it a unit vector)
-				if (distanceToPlayer != 0) {
-					directionX /= distanceToPlayer;
-					directionY /= distanceToPlayer;
+				// Stop the enemy when within the selected units (125)
+				if (distanceToPlayer > 110) 
+				{
+					// Normalize the direction vector (make it a unit vector)
+					if (distanceToPlayer != 0) 
+					{
+						directionX /= distanceToPlayer;
+						directionY /= distanceToPlayer;
+					}
+					if(quizOn==false)
+					{
+						//enemies won't move when quiz is active
+						float enemySpeed = 2.0; // Adjust this value to control the enemy's speed
+						currentEnemy->x += directionX * enemySpeed;
+						currentEnemy->y += directionY * enemySpeed;
+					}
 				}
-				if(quizOn==false){//enemies won't move when quiz is active
-				float enemySpeed = 2.0; // Adjust this value to control the enemy's speed
-				currentEnemy->x += directionX * enemySpeed;
-				currentEnemy->y += directionY * enemySpeed;
+				
+				// Rendering
+				SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+				SDL_Rect enemyRect = { currentEnemy->x, currentEnemy->y, currentEnemy->width, currentEnemy->height };
+				draw_image(renderer, currentEnemy->x, currentEnemy->y, currentEnemy->x + currentEnemy->width, currentEnemy->y + currentEnemy->height, currentEnemy->texture);
+
+				// Collision detection with the player
+				if (checkCollision(playerHitbox, enemyRect)) 
+				{
+					// If the player collides with the enemy, apply damage to the player
+					printf("Player collided with enemy!\n");
+					int enemyDamage = currentEnemy->dmg; // Adjust this value as needed
+					damageMe(enemyDamage);
+
+					// Bump back the enemy when they run into the player
+					int bumpDistance = 50;
+					float bumpDirectionX = directionX;
+					float bumpDirectionY = directionY;
+					if (distanceToPlayer != 0)
+					{
+						bumpDirectionX /= distanceToPlayer;
+						bumpDirectionY /= distanceToPlayer;
+					}
+					currentEnemy->x -= bumpDirectionX * bumpDistance;
+					currentEnemy->y -= bumpDirectionY * bumpDistance;
 				}
 			}
-
-        // Rendering
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_Rect enemyRect = { currentEnemy->x, currentEnemy->y, currentEnemy->width, currentEnemy->height };
-        draw_image(renderer, currentEnemy->x, currentEnemy->y, currentEnemy->x + currentEnemy->width, currentEnemy->y + currentEnemy->height, currentEnemy->texture);
-
-        // Collision detection with the player
-        if (checkCollision(playerHitbox, enemyRect)) {
-            // If the player collides with the enemy, apply damage to the player
-            printf("Player collided with enemy!\n");
-            int enemyDamage = currentEnemy->dmg; // Adjust this value as needed
-            damageMe(enemyDamage);
-
-            // Bump back the enemy when they run into the player
-            int bumpDistance = 50;
-            float bumpDirectionX = directionX;
-            float bumpDirectionY = directionY;
-            if (distanceToPlayer != 0) {
-                bumpDirectionX /= distanceToPlayer;
-                bumpDirectionY /= distanceToPlayer;
-            }
-            currentEnemy->x -= bumpDirectionX * bumpDistance;
-            currentEnemy->y -= bumpDirectionY * bumpDistance;
-        	}
-    	}
-	}
+		}
 
 		// Resetting the global enemy
-		if (globalEnemy != NULL && globalEnemy->health <= 0) {
+		if (globalEnemy != NULL && globalEnemy->health <= 0)
+		{
     		resetEnemy(globalEnemy);
 		}
 		//first quiz. Rename variables for alpha.
 
 		//Second quiz
-		if(level_cur==2){
-			if(quiz2Called==false){//boolean check so the quiz doesn't open every time they hit level 2.
+		if(level_cur==2)
+		{
+			if(quiz2Called==false)
+			{
+				//boolean check so the quiz doesn't open every time they hit level 2.
 				quizQuestion="Greetings wanderer\nAnswer my riddle to pass through\n Which of these macronutrients contains the most calories per gram";answerA="1. Carbohydrate";answerB="2. Fat";answerC="3. Protein";
-				quiz2Called=true;	quizOn=true;correctAnswer=2;Player.move_spd=0; quizLoopOn=true;
+				quiz2Called=true;
+				quizOn=true;
+				correctAnswer=2;
+				Player.move_spd=0;
+				quizLoopOn=true;								 
 			}
 		}//third quiz (currently used for testing, change for real game.) 
 		//Quiz turns on once the player enters level_curr==3, for other quizzes just copy this code and change the trigger. 
-		if(level_cur==3){
-			if(quiz3Called==false){//boolean check so the quiz doesn't open every time they hit level 3.
+		if(level_cur==3)
+		{
+			if(quiz3Called==false)
+			{
+				//boolean check so the quiz doesn't open every time they hit level 3.
 				quizQuestion="Greetings wanderer\nAnswer my riddle to pass through\n Should this quiz work?";answerA="1. yes";answerB="2. no";answerC="3. definitely not";
 				quiz3Called=true;	quizOn=true;correctAnswer=1;Player.move_spd=0; quizLoopOn=true; quizInfo="";
 			}
 		}
 		//loop to go through three questions relating to food data. (copy this but replace questions.txt with data from other dataset if we choose.)
-		if(quizLoopOn){
+		if(quizLoopOn)
+		{
 			if(quizQNum==1){//if first question
 			if(userAnswer==0){}//keeps it from looping infinite
 			else if(userAnswer==correctAnswer){
@@ -2003,74 +2022,77 @@ int SDL_main(int argc, char *argv[])
 		}	
 		
 		//render the quiz popup
-if (quizOn) {
-    // Render the quiz popup with a beige square background
-    SDL_Color bgColor = { 200, 200, 200 }; // Beige color
-    SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, 255);
-    int popupWidth = 400; // Adjust this value to change the width of the popup
-    int popupHeight = 200; // Adjust this value to change the height of the popup
-    int popupX = (800 - popupWidth) / 2 + 300; // Center the popup horizontally and move it right by 300 pixels
-    int popupY = (600 - popupHeight) / 2;
-    SDL_Rect popupRect = { popupX, popupY, popupWidth, popupHeight };
-    SDL_RenderFillRect(renderer, &popupRect);
-
-    // Render the quiz header just above the quiz text
-    SDL_Color headerColor = { 0, 0, 255 }; // blue header color
-    int maxHeaderWidth = popupWidth - 20; // Adjust this value based on your desired maximum header width
-    SDL_Surface* headerSurface = TTF_RenderText_Blended_Wrapped(font, quizHeader, headerColor, maxHeaderWidth);
-    SDL_Texture* headerTexture = SDL_CreateTextureFromSurface(renderer, headerSurface);
-    // Calculate the position to center the header inside the beige square background
-    int headerWidth = headerSurface->w;
-    int headerHeight = headerSurface->h;
-    int headerX = popupX + (popupWidth - headerWidth) / 2;
-    int headerY = popupY + 10; // Adjust the value 10 for the vertical position of the header
-    // Render the header
-    SDL_Rect headerRect = { headerX, headerY, headerWidth, headerHeight };
-    SDL_RenderCopy(renderer, headerTexture, NULL, &headerRect);
-    // Cleanup
-    SDL_FreeSurface(headerSurface);
-    SDL_DestroyTexture(headerTexture);
-
-    // Combine quizInfo and quizQuestion into one string separated by newline
-char combinedText[1024];
-snprintf(combinedText, sizeof(combinedText), "\n%s\n%s\n%s\n%s\n%s", quizInfo, quizQuestion, answerA, answerB, answerC);
-
-// Render the quiz text inside the beige square background
-SDL_Color textColor = { 0, 0, 0 }; // black text color
-int maxTextWidth = popupWidth - 20; // Adjust this value based on your desired maximum text width
-SDL_Surface* textSurface = TTF_RenderText_Blended_Wrapped(font, combinedText, textColor, maxTextWidth);
-if (textSurface == NULL) {
-    printf("Error creating text surface: %s\n", TTF_GetError());
-    return;
-}
-
-SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-if (textTexture == NULL) {
-    printf("Error creating text texture: %s\n", SDL_GetError());
-    SDL_FreeSurface(textSurface);
-    return;
-}
-
-// Calculate the position to center the text inside the beige square background
-int textWidth = textSurface->w;
-int textHeight = textSurface->h;
-int textX = popupX + (popupWidth - textWidth) / 2;
-int textY = popupY + (popupHeight - textHeight) / 2;
-// Render the text
-SDL_Rect textRect = { textX, textY, textWidth, textHeight };
-SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
-// Cleanup
-SDL_FreeSurface(textSurface);
-SDL_DestroyTexture(textTexture);
-}
-		// Draw water particles
-        for (int i = 0; i < MAX_WATER_PARTICLES; i++) 
+		if (quizOn) 
 		{
-            if (waterParticles[i].active) 
+			// Render the quiz popup with a beige square background
+			SDL_Color bgColor = { 200, 200, 200 }; // Beige color
+			SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, 255);
+			int popupWidth = 400; // Adjust this value to change the width of the popup
+			int popupHeight = 200; // Adjust this value to change the height of the popup
+			int popupX = (800 - popupWidth) / 2 + 300; // Center the popup horizontally and move it right by 300 pixels
+			int popupY = (600 - popupHeight) / 2;
+			SDL_Rect popupRect = { popupX, popupY, popupWidth, popupHeight };
+			SDL_RenderFillRect(renderer, &popupRect);
+
+			// Render the quiz header just above the quiz text
+			SDL_Color headerColor = { 0, 0, 255 }; // blue header color
+			int maxHeaderWidth = popupWidth - 20; // Adjust this value based on your desired maximum header width
+			SDL_Surface* headerSurface = TTF_RenderText_Blended_Wrapped(font, quizHeader, headerColor, maxHeaderWidth);
+			SDL_Texture* headerTexture = SDL_CreateTextureFromSurface(renderer, headerSurface);
+			// Calculate the position to center the header inside the beige square background
+			int headerWidth = headerSurface->w;
+			int headerHeight = headerSurface->h;
+			int headerX = popupX + (popupWidth - headerWidth) / 2;
+			int headerY = popupY + 10; // Adjust the value 10 for the vertical position of the header
+			// Render the header
+			SDL_Rect headerRect = { headerX, headerY, headerWidth, headerHeight };
+			SDL_RenderCopy(renderer, headerTexture, NULL, &headerRect);
+			// Cleanup
+			SDL_FreeSurface(headerSurface);
+			SDL_DestroyTexture(headerTexture);
+
+			// Combine quizInfo and quizQuestion into one string separated by newline
+			char combinedText[1024];
+			snprintf(combinedText, sizeof(combinedText), "\n%s\n%s\n%s\n%s\n%s", quizInfo, quizQuestion, answerA, answerB, answerC);
+
+			// Render the quiz text inside the beige square background
+			SDL_Color textColor = { 0, 0, 0 }; // black text color
+			int maxTextWidth = popupWidth - 20; // Adjust this value based on your desired maximum text width
+			SDL_Surface* textSurface = TTF_RenderText_Blended_Wrapped(font, combinedText, textColor, maxTextWidth);
+			if (textSurface == NULL) 
 			{
-                draw_image(renderer, waterParticles[i].x, waterParticles[i].y, waterParticles[i].x + 5, waterParticles[i].y + 15, spr_water);
-            }
-        }
+				printf("Error creating text surface: %s\n", TTF_GetError());
+				return;
+			}
+
+			SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+			if (textTexture == NULL) 
+			{
+				printf("Error creating text texture: %s\n", SDL_GetError());
+				SDL_FreeSurface(textSurface);
+				return;
+			}
+
+			// Calculate the position to center the text inside the beige square background
+			int textWidth = textSurface->w;
+			int textHeight = textSurface->h;
+			int textX = popupX + (popupWidth - textWidth) / 2;
+			int textY = popupY + (popupHeight - textHeight) / 2;
+			// Render the text
+			SDL_Rect textRect = { textX, textY, textWidth, textHeight };
+			SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+			// Cleanup
+			SDL_FreeSurface(textSurface);
+			SDL_DestroyTexture(textTexture);
+		}
+		// Draw water particles
+		for (int i = 0; i < MAX_WATER_PARTICLES; i++) 
+		{
+			if (waterParticles[i].active) 
+			{
+				draw_image(renderer, waterParticles[i].x, waterParticles[i].y, waterParticles[i].x + 5, waterParticles[i].y + 15, spr_water);
+			}
+		}
 
 		/*
 		Overlay Drawing.
