@@ -1,0 +1,121 @@
+---
+title: "Weather_Data"
+author: "Matthew Yi"
+date: "2023-07-19"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+Setup chunk - run this to load the data.
+
+Set working directory, install packages, load packages, load data, lubridate.
+Data is missing for October 31st at 23:55:00 so insert data at that time equal to the previous reading.
+
+```{r}
+setwd(dir = "C:/Users/yclma/OneDrive/Documents/2023 S2/COSC345/Data")
+library("readxl") 
+library(dplyr)
+library(lubridate)
+weather = read_xlsx("C:/Users/yclma/OneDrive/Documents/2023 S2/COSC345/Data/Weather_Data.xlsx")
+weather$DATE <- ymd(weather$DATE)
+weather$TIME <- sub("^[^ ]+ ", "", weather$TIME)
+weather$TIME <- ifelse(weather$TIME == "1899-12-31", "00:00:00", weather$TIME)
+# weather$TIME <- as_datetime(weather$TIME, format = "%H:%M:%S")
+weather$TIME <- hms(weather$TIME)
+# for (i in 2:length(weather$TIME)) {
+#   if (!((weather$TIME[i] - weather$TIME[i - 1]) %in% c("5M 0S", "-23H -55M 0S", "1H -55M 0S"))) {
+#     print(i)
+#   }
+# }
+weather <- rbind(weather[1:35422, ], weather[35423,], weather[35423:nrow(weather), ])
+weather$TIME[35424] = hms("23H 55M 0S")
+```
+
+Segment the data into 28 segments. For each game day, choose a random day from the corresponding 28th of the year
+
+```{r}
+library(dplyr)
+library(lubridate)
+
+sub_weather <- list()
+
+start_date <- ymd("2022-07-01")
+end_date <- ymd("2023-06-30")
+date_intervals <- seq(start_date, end_date, by = "13 days")
+
+for (i in 1:(length(date_intervals) - 1)) {
+  interval_start <- date_intervals[i]
+  interval_end <- date_intervals[i + 1] - days(1)
+  subset <- weather %>% filter(DATE >= interval_start, DATE <= interval_end)
+  sub_weather[[i]] <- subset
+}
+
+summer <- sub_weather[1:7]
+```
+
+
+```{r}
+sub_weather <- list()
+
+start_date <- ymd("2022-01-01")
+end_date <- ymd("2022-12-31")
+date_intervals <- seq(start_date, end_date, by = "13 days")
+date_intervals <- c(date_intervals, end_date + days(1))  # Include the end date in the intervals
+
+for (i in 1:28) {
+  subset <- weather[weather$DATE >= date_intervals[i] & weather$DATE < date_intervals[i + 1], ]
+  sub_weather[[i]] <- subset
+}
+summary(sub_weather[[2]])
+```
+
+
+Rain data. It rains 3.076% of the time. Most of the time it only rains for 5 mins
+```{r}
+rain <- data.frame(date=weather$DATE, time=weather$TIME, rain=ifelse(weather$RAIN == 0, 0, 1))
+plot(rain$date, rain$rain, pch=16)
+summary(rain)
+
+rain_duration <- c()
+mins_rain <- 0
+
+for (i in 1:length(rain$date)) {
+  if (rain$rain[i] == 1) {
+    mins_rain <- mins_rain + 5
+  } else {
+    if (mins_rain != 0) {
+      rain_duration <- c(rain_duration, mins_rain)
+      mins_rain <- 0
+    }
+  }
+}
+
+rain_duration
+hist(rain_duration)
+summary(rain_duration)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+28/99 make U, 71 don't
+25th card made U
+```{r pressure, echo=FALSE}
+71/99
+chances <- c()
+chance <- 1
+for (i in c(1:24)){
+  chance <- chance * ((72-i)/(100-i))
+  print(chance)
+  chances <- c(chances, chance)
+}
+plot(chances)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
