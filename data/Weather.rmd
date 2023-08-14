@@ -18,11 +18,12 @@ Set working directory, install packages, load packages, load data, lubridate.
 Data is missing for October 31st at 23:55:00 so insert data at that time equal to the previous reading.
 
 ```{r}
-setwd(dir = "C:/Users/yclma/OneDrive/Documents/2023 S2/COSC345/Data")
+rm(list=ls())
+setwd(dir = "C:/Users/yclma/OneDrive/Documents/2023 S2/COSC345/COSC345-Game/data")
 library("readxl") 
 library(dplyr)
 library(lubridate)
-weather = read_xlsx("C:/Users/yclma/OneDrive/Documents/2023 S2/COSC345/Data/Weather_Data.xlsx")
+weather = read_xlsx("C:/Users/yclma/OneDrive/Documents/2023 S2/COSC345/COSC345-Game/data/Weather_Data.xlsx")
 weather$DATE <- ymd(weather$DATE)
 weather$TIME <- sub("^[^ ]+ ", "", weather$TIME)
 weather$TIME <- ifelse(weather$TIME == "1899-12-31", "00:00:00", weather$TIME)
@@ -33,11 +34,27 @@ weather$TIME <- hms(weather$TIME)
 #     print(i)
 #   }
 # }
-weather <- rbind(weather[1:35422, ], weather[35423,], weather[35423:nrow(weather), ])
-weather$TIME[35424] = hms("23H 55M 0S")
+# weather <- rbind(weather[1:35422, ], weather[35423,], weather[35423:nrow(weather), ])
+# weather$TIME[35424] = hms("23H 55M 0S")
+weather <- rbind(weather[1:44063, ], weather[44064,], weather[44064:nrow(weather), ])
+
+weather$DATE[44064] = ymd("2022-10-31")
+weather$TIME[44064] = hms("23H 55M 0S")
+weather$TEMP[44064] = 12.8
+weather$RH[44064] = 74
+weather$WINDSPD[44064] = 1.1
+weather$WINDIR[44064] = 20
+weather$GLOBAL[44064] = 0.8
+weather$UVA[44064] = 0.0
+weather$UVB[44064] = 0.01
+weather$VISIBLE[44064] = 0
+weather$RAIN[44064] = 0
+weather$PRESS[44064] = 1002
+weather$MAXGUST[44064] = 1.8
+weather$GUSTIME[44064] = 2350
 ```
 
-Segment the data into 28 segments. For each game day, choose a random day from the corresponding 28th of the year
+Segment the data into 28 segments. Seasons are one week long.
 
 ```{r}
 library(dplyr)
@@ -45,8 +62,8 @@ library(lubridate)
 
 sub_weather <- list()
 
-start_date <- ymd("2022-07-01")
-end_date <- ymd("2023-06-30")
+start_date <- ymd("2022-06-01")
+end_date <- ymd("2023-05-31")
 date_intervals <- seq(start_date, end_date, by = "13 days")
 
 for (i in 1:(length(date_intervals) - 1)) {
@@ -56,7 +73,38 @@ for (i in 1:(length(date_intervals) - 1)) {
   sub_weather[[i]] <- subset
 }
 
-summer <- sub_weather[1:7]
+winter1 <- sub_weather[[1]]
+winter2 <- sub_weather[[2]]
+winter2 <- sub_weather[[3]]
+winter3 <- sub_weather[[4]]
+winter4 <- sub_weather[[5]]
+winter5 <- sub_weather[[6]]
+winter6 <- sub_weather[[7]]
+
+spring1 <- sub_weather[[8]]
+spring2 <- sub_weather[[9]]
+spring3 <- sub_weather[[10]]
+spring4 <- sub_weather[[11]]
+spring5 <- sub_weather[[12]]
+spring6 <- sub_weather[[13]]
+spring7 <- sub_weather[[14]]
+
+summer1 <- sub_weather[[15]]
+summer2 <- sub_weather[[16]]
+summer3 <- sub_weather[[17]]
+summer4 <- sub_weather[[18]]
+summer5 <- sub_weather[[19]]
+summer6 <- sub_weather[[20]]
+summer7 <- sub_weather[[21]]
+
+
+autumn1 <- sub_weather[[22]]
+autumn2 <- sub_weather[[23]]
+autumn3 <- sub_weather[[24]]
+autumn4 <- sub_weather[[25]]
+autumn5 <- sub_weather[[26]]
+autumn6 <- sub_weather[[27]]
+autumn7 <- sub_weather[[28]]
 ```
 
 
