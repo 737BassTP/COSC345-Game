@@ -1063,15 +1063,15 @@ int SDL_main(int argc, char *argv[])
 	//int option = 0;
     //char optionText[2] = "0";
     //pop up window test
-	SDL_Rect buttonRect = { 800, 100, 100, 100 };//dimension of popup
+	SDL_Rect buttonRect = { 800, 100, 175, 120 };//dimension of popup
 	char buttonTexts[100] = "default message";//message in the window
 	char* buttonText = buttonTexts;
 	SDL_Rect* buttonRectPtr = &buttonRect; // Declare and initialize buttonRectPtr to point to buttonRect
-	
+	int nextChat = 0;
 	int buttonVis = 0;//0 for no window and 1 for visible window
 	int buttonVis2 = 0;//for second person chatting
 	
-
+	int tutorChatCompleted = 0;
     // Load a TTF font (adjust the file path and size as needed)
 	    // Initialize SDL_ttf
     if (TTF_Init() == -1) {
@@ -1186,7 +1186,7 @@ int SDL_main(int argc, char *argv[])
 
 	struct NPC* globalNpc = NULL;//global npc
 	struct NPC Tutor;//npc on level 016
-	initNPC(&Tutor, 400, 400,50, 50, 400, 400, 2, spr_enemy1, 16);//init tutor
+	initNPC(&Tutor, 400, 300,50, 50, 400, 400, 2, spr_enemy1, 16);//init tutor
 	addNPC(&Tutor);//add tutor to NPC array
 	//Nutrients.
 	SDL_Texture *spr_nutrients = IMG_LoadTexture(renderer,"img/spr_nutrients_strip4.png");
@@ -1362,11 +1362,7 @@ int SDL_main(int argc, char *argv[])
 			if(buttonVis==1)
 			{
 				// chatBoxMod(buttonRectPtr, 100, 200, 300, 400); //testing function to see if it works.
-				const char* newButtonText = "you pressed 1, good job. Lets test the limit";
-				size_t maxButtonLen = sizeof(buttonTexts) - 1; // Leave space for null terminator
-				strncpy(buttonTexts, newButtonText, maxButtonLen);//pressing 1 changes text inside test box.
-				buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
-				score += 50;
+				nextChat+=1;
 			}
 			else if(quizOn)
 			{
@@ -1629,9 +1625,9 @@ int SDL_main(int argc, char *argv[])
 			for (int i=0; i<4; i++)
 			{
 				//placeholder 2/2
-				draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
-				draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
-				nx += nd*gw;
+				// draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
+				// draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
+				// nx += nd*gw;
 			}
 			// SDL_RenderPresent(renderer);
 		}
@@ -1845,12 +1841,12 @@ int SDL_main(int argc, char *argv[])
 			buttonRect.y = globalNpc->y - 120;
 
 			// Render the filled rectangle using the updated buttonRectPtr
-			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+			SDL_SetRenderDrawColor(renderer, 245, 245, 200, 255);//chat box colour
 			SDL_RenderFillRect(renderer, buttonRectPtr);
 
 			//Render the lines to make it look chat box-like
 			// Draw a line from the player's mouth to the chat box
-			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // white color for the line
+			SDL_SetRenderDrawColor(renderer, 245, 245, 200, 255);//line colour
 			SDL_RenderDrawLine(renderer, globalNpc->x+45, globalNpc->y-15, buttonRectPtr->x + buttonRectPtr->w*0.1, buttonRectPtr->y + buttonRectPtr->h / 4);//top line
 			SDL_RenderDrawLine(renderer, globalNpc->x+45, globalNpc->y-15, buttonRectPtr->x + buttonRectPtr->w*0.3, buttonRectPtr->y + buttonRectPtr->h / 1);//bottom line
 			// Render text on the button (chat box)
@@ -2132,6 +2128,23 @@ int SDL_main(int argc, char *argv[])
         	SDL_Rect npcRect = { currentNPC->x, currentNPC->y, currentNPC->width, currentNPC->height };
         	SDL_RenderCopy(renderer, currentNPC->texture, NULL, &npcRect);
     	}
+	}
+	if(level_cur==16){
+		if(tutorChatCompleted==0){
+		buttonVis=1;
+		strcpy(buttonTexts, "Hello there, welcome to Dun'eatin! press 1 to continue chat");
+		}
+		if(nextChat==1){
+			strcpy(buttonTexts, "I will be your guide to this realm");
+		}
+		if(nextChat==2){
+			strcpy(buttonTexts, "this is how chat works, modify it as needed");
+		}
+		if(nextChat==3){
+			buttonVis=0;
+			nextChat=0;
+			tutorChatCompleted=1;
+		}
 	}
 		/*
 		Overlay Drawing.
