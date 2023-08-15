@@ -536,6 +536,7 @@ struct WaterParticle {
 const int MAX_WATER_PARTICLES = 100;
 struct WaterParticle* waterParticles;
 int waterOn = 0; //decide if raining or not
+int waterSlow = 0;//turn on to have rain fade away instead of turning off instantly
 //function to create water particle.
 void createWaterParticle(int index, int window_width, int window_height) {
     waterParticles[index].x = rand() % (1366-596)+298;     // Random x position within window width
@@ -1072,6 +1073,7 @@ int SDL_main(int argc, char *argv[])
 	int buttonVis2 = 0;//for second person chatting
 	
 	int tutorChatCompleted = 0;
+	int penguinSamChatCompleted = 0;
     // Load a TTF font (adjust the file path and size as needed)
 	    // Initialize SDL_ttf
     if (TTF_Init() == -1) {
@@ -1106,7 +1108,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *spr_tileset = IMG_LoadTexture(renderer,"tiled/tileset.png");
 	SDL_Texture *spr_hudshade = IMG_LoadTexture(renderer,"img/hudshade.png");
 	SDL_Texture *spr_enemy1 = IMG_LoadTexture(renderer,"img/spr_enemy1.png");
-	
+	SDL_Texture *penguinSamImg = IMG_LoadTexture(renderer,"img/sammy.png");
 	//Player.
 	SDL_Texture *sprstrip_player = IMG_LoadTexture(renderer,"img/player_strip8.png");
 	//Text.
@@ -1186,8 +1188,11 @@ int SDL_main(int argc, char *argv[])
 
 	struct NPC* globalNpc = NULL;//global npc
 	struct NPC Tutor;//npc on level 016
-	initNPC(&Tutor, 400, 300,50, 50, 400, 400, 2, spr_enemy1, 16);//init tutor
+	struct NPC penguinSam;
+	initNPC(&Tutor, 900, 700,50, 50, 400, 400, 2, spr_enemy1, 16);//init tutor
 	addNPC(&Tutor);//add tutor to NPC array
+	initNPC(&penguinSam, 700, 900,50, 50, 400, 400, 2, penguinSamImg, 110);//init sammyPenguin
+	addNPC(&penguinSam);
 	//Nutrients.
 	SDL_Texture *spr_nutrients = IMG_LoadTexture(renderer,"img/spr_nutrients_strip4.png");
 	
@@ -1329,6 +1334,7 @@ int SDL_main(int argc, char *argv[])
 		{
 			glob_vk_0=0;
 			//turn water on and off for testing
+			// waterSlow=1; //testing waterSlow function
 			if(waterOn==0)
 			{
 				waterOn=1;
@@ -1483,7 +1489,7 @@ int SDL_main(int argc, char *argv[])
 				
 				level_cur += level_count;//allows negative wrap.
 				level_cur %= level_count;//prevents overflow.
-				//printf("lvl=%i\n",level_cur);
+				printf("lvl=%i\n",level_cur);
 				level_get_name(level_cur,mapstr_location);
 				
 				mapvisit[level_cur/32] |= (Uint32)(1<<level_cur%32);
@@ -1512,22 +1518,21 @@ int SDL_main(int argc, char *argv[])
 		// Update water particles (rain drops)
         for (int i = 0; i < MAX_WATER_PARTICLES; i++) 
 		{
-            if (waterParticles[i].active) 
-			{
+            if (waterParticles[i].active) {
                 waterParticles[i].y += waterParticles[i].speed;
-
                 // Check if particle has reached the bottom of the window
-                if (waterParticles[i].y > screen_h) 
-				{
-                    // Randomly deactivate particle (remove randomness for constant rain)
-                    if (rand() % 100 < 5) 
-					{
+                if (waterParticles[i].y > screen_h) {
+					if(waterSlow==1){
+                    if (rand() % 2 == 0){ //every drop that hits bottom of screen has 50% chance of dissapearing with waterSlow toggled.
                         waterParticles[i].active = 0; // Set active to 0 (false)
                     } 
-					else 
-					{
+					else {
                         createWaterParticle(i, screen_w, screen_h);
                     }
+					}
+					else{
+						createWaterParticle(i, screen_w, screen_h);
+					}
                 }
             }
         }
@@ -1613,9 +1618,9 @@ int SDL_main(int argc, char *argv[])
 			for (int i=0; i<4; i++)
 			{
 				//placeholder 2/2
-				// draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
-				// draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
-				// nx += nd*gw;
+				draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
+				draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
+				nx += nd*gw;
 			}
 			// SDL_RenderPresent(renderer);
 		}
@@ -1821,13 +1826,16 @@ int SDL_main(int argc, char *argv[])
 			(Player.facedir*d*Player.anim_max)+(Player.anim_cur*d*1),0,
 			d,d);
 		
-		//test pop up chat box (button)
+		//NPC chat box
 		if (buttonVis >= 1) 
 		{
 			// Update the buttonRect using the chat box position and size
 			buttonRect.x = globalNpc->x + 60;
 			buttonRect.y = globalNpc->y - 120;
-
+			if(buttonRect.x>600){//if np is on the right side of the map, place the chat box to the left of them
+				buttonRect.x-=200;
+				buttonRect.y-=20;
+			}
 			// Render the filled rectangle using the updated buttonRectPtr
 			SDL_SetRenderDrawColor(renderer, 245, 245, 200, 255);//chat box colour
 			SDL_RenderFillRect(renderer, buttonRectPtr);
@@ -1835,8 +1843,8 @@ int SDL_main(int argc, char *argv[])
 			//Render the lines to make it look chat box-like
 			// Draw a line from the player's mouth to the chat box
 			SDL_SetRenderDrawColor(renderer, 245, 245, 200, 255);//line colour
-			SDL_RenderDrawLine(renderer, globalNpc->x+45, globalNpc->y-15, buttonRectPtr->x + buttonRectPtr->w*0.1, buttonRectPtr->y + buttonRectPtr->h / 4);//top line
-			SDL_RenderDrawLine(renderer, globalNpc->x+45, globalNpc->y-15, buttonRectPtr->x + buttonRectPtr->w*0.3, buttonRectPtr->y + buttonRectPtr->h / 1);//bottom line
+			// SDL_RenderDrawLine(renderer, globalNpc->x+45, globalNpc->y-15, buttonRectPtr->x + buttonRectPtr->w*0.1, buttonRectPtr->y + buttonRectPtr->h / 4);//top line
+			// SDL_RenderDrawLine(renderer, globalNpc->x+45, globalNpc->y-15, buttonRectPtr->x + buttonRectPtr->w*0.3, buttonRectPtr->y + buttonRectPtr->h / 1);//bottom line
 			// Render text on the button (chat box)
 			SDL_Color textColor = { 0, 0, 0 }; // black text color
 			int maxTextWidth = buttonRectPtr->w - 10; // Adjust this value to leave some padding for the text
@@ -2133,6 +2141,23 @@ int SDL_main(int argc, char *argv[])
 			buttonVis=0;
 			nextChat=0;
 			tutorChatCompleted=1;
+		}
+	}
+		if(level_cur==110){
+		if(penguinSamChatCompleted==0){
+		buttonVis=1;
+		strcpy(buttonTexts, "Wow, you have made it so far!");
+		}
+		if(nextChat==1){
+			strcpy(buttonTexts, "Walk on further, you are almost done with your journey.");
+		}
+		if(nextChat==2){
+			strcpy(buttonTexts, "Beware though, for Andrew is heard to lurk here...");
+		}
+		if(nextChat==3){
+			buttonVis=0;
+			nextChat=0;
+			penguinSamChatCompleted=1;
 		}
 	}
 		/*
