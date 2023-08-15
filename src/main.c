@@ -1374,11 +1374,7 @@ int SDL_main(int argc, char *argv[])
 			glob_vk_2=0;
 			if(buttonVis==1)
 			{
-				const char* newButtonText = "you pressed 2, good job. Lets test the limit woo";
-				size_t maxButtonLen = sizeof(buttonTexts) - 1; // Leave space for null terminator
-				strncpy(buttonTexts, newButtonText, maxButtonLen);//pressing 1 changes text inside test box.
-				buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
-				score += 50;
+				//functionality to be added
 			}
 			else if(quizOn)
 			{
@@ -1390,11 +1386,7 @@ int SDL_main(int argc, char *argv[])
 			glob_vk_3=0;
 			if(buttonVis==1)
 			{
-				const char* newButtonText = "you pressed 3";
-				size_t maxButtonLen = sizeof(buttonTexts) - 1; // Leave space for null terminator
-				strncpy(buttonTexts, newButtonText, maxButtonLen);//pressing 1 changes text inside test box.
-				buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
-				score += 50;
+				//functionality to be added
 			}
 			else if(quizOn)
 			{
@@ -1406,11 +1398,7 @@ int SDL_main(int argc, char *argv[])
 			glob_vk_4=0;
 			if(buttonVis==1)
 			{
-				const char* newButtonText = "you pressed 4, good job. Lets test the limit woo";
-				size_t maxButtonLen = sizeof(buttonTexts) - 1; // Leave space for null terminator
-				strncpy(buttonTexts, newButtonText, maxButtonLen);//pressing 1 changes text inside test box.
-				buttonTexts[maxButtonLen] = '\0'; // Ensure the destination string is null-terminated
-				score += 50;
+				//functionality to be added
 			}
 		}
 		if (glob_vk_5)
@@ -2129,6 +2117,7 @@ int SDL_main(int argc, char *argv[])
         	SDL_RenderCopy(renderer, currentNPC->texture, NULL, &npcRect);
     	}
 	}
+	//tutor on level 16 chat.
 	if(level_cur==16){
 		if(tutorChatCompleted==0){
 		buttonVis=1;
