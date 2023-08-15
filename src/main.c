@@ -1479,7 +1479,7 @@ int SDL_main(int argc, char *argv[])
 			if (lvlbool)//has changed level
 			{
 				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1, level_cur);//random spawn an enemy with these stats
-
+				buttonVis=0;//remove npc chatbox if you walk away
 				
 				level_cur += level_count;//allows negative wrap.
 				level_cur %= level_count;//prevents overflow.
