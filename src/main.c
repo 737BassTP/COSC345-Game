@@ -517,9 +517,13 @@ struct NPC
 {
 	int x;
 	int y;
+	int width;
+	int height;
 	int xprevious;
 	int yprevious;
 	byte face_dir;
+	SDL_Texture* texture;
+	int appearsOnLevel;
 };
 //rain struct
 struct WaterParticle {
@@ -622,7 +626,8 @@ struct Enemy {
     // Add more enemy-related attributes as needed
 };
 #define MAX_ENEMIES 250
-
+#define MAX_NPCS 250
+struct NPC npcs[MAX_NPCS];
 // Function to initialize an enemy with position and size
 void initEnemy(struct Enemy* enemy, int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture,int spawnLevel) {
     enemy->x = x;
@@ -633,6 +638,28 @@ void initEnemy(struct Enemy* enemy, int x, int y, int width, int height, int hea
     enemy->dmg = dmg;
 	enemy->texture = texture;
 	enemy->spawnLevel = spawnLevel;
+}
+//initialize an npc
+void initNPC(struct NPC* npc, int x, int y,int width,int height, int xprevious, int yprevious, uint8_t face_dir, SDL_Texture* texture, int appearsOnLevel){
+    npc->x = x;
+    npc->y = y;
+	npc->width = width;
+	npc->height = height;
+    npc->xprevious = xprevious;
+    npc->yprevious = yprevious;
+    npc->face_dir = face_dir;
+    npc->texture = texture;
+    npc->appearsOnLevel = appearsOnLevel;
+}
+// add an NPC reference to the npcs array
+void addNPC(struct NPC* npc) {
+    for (int i = 0; i < MAX_NPCS; i++) {
+        struct NPC* currentNPC = &npcs[i];
+        if (currentNPC->appearsOnLevel <= 0) {
+            *currentNPC = *npc; // Copy the contents of the passed NPC to the array
+            return;
+        }
+    }
 }
 // Function to reset an enemy to its default state
 void resetEnemy(struct Enemy* enemy) {
@@ -1157,8 +1184,10 @@ int SDL_main(int argc, char *argv[])
 	// initEnemy(&enemy1, 500, 500, 100, 100, 100, 10, spr_enemy1);//size, stats and image to go with it.
 	// globalEnemy = &enemy1;//making it the global enemy.
 
-
-
+	struct NPC* globalNpc = NULL;//global npc
+	struct NPC Tutor;//npc on level 016
+	initNPC(&Tutor, 400, 400,50, 50, 400, 400, 2, spr_enemy1, 16);//init tutor
+	addNPC(&Tutor);//add tutor to NPC array
 	//Nutrients.
 	SDL_Texture *spr_nutrients = IMG_LoadTexture(renderer,"img/spr_nutrients_strip4.png");
 	
@@ -1600,9 +1629,9 @@ int SDL_main(int argc, char *argv[])
 			for (int i=0; i<4; i++)
 			{
 				//placeholder 2/2
-				// draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
-				// draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
-				// nx += nd*gw;
+				draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
+				draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
+				nx += nd*gw;
 			}
 			// SDL_RenderPresent(renderer);
 		}
@@ -1812,8 +1841,8 @@ int SDL_main(int argc, char *argv[])
 		if (buttonVis >= 1) 
 		{
 			// Update the buttonRect using the chat box position and size
-			buttonRect.x = Player.x + 60;
-			buttonRect.y = Player.y - 120;
+			buttonRect.x = globalNpc->x + 60;
+			buttonRect.y = globalNpc->y - 120;
 
 			// Render the filled rectangle using the updated buttonRectPtr
 			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -1822,8 +1851,8 @@ int SDL_main(int argc, char *argv[])
 			//Render the lines to make it look chat box-like
 			// Draw a line from the player's mouth to the chat box
 			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // white color for the line
-			SDL_RenderDrawLine(renderer, Player.x+45, Player.y-15, buttonRectPtr->x + buttonRectPtr->w*0.1, buttonRectPtr->y + buttonRectPtr->h / 4);//top line
-			SDL_RenderDrawLine(renderer, Player.x+45, Player.y-15, buttonRectPtr->x + buttonRectPtr->w*0.3, buttonRectPtr->y + buttonRectPtr->h / 1);//bottom line
+			SDL_RenderDrawLine(renderer, globalNpc->x+45, globalNpc->y-15, buttonRectPtr->x + buttonRectPtr->w*0.1, buttonRectPtr->y + buttonRectPtr->h / 4);//top line
+			SDL_RenderDrawLine(renderer, globalNpc->x+45, globalNpc->y-15, buttonRectPtr->x + buttonRectPtr->w*0.3, buttonRectPtr->y + buttonRectPtr->h / 1);//bottom line
 			// Render text on the button (chat box)
 			SDL_Color textColor = { 0, 0, 0 }; // black text color
 			int maxTextWidth = buttonRectPtr->w - 10; // Adjust this value to leave some padding for the text
@@ -2093,7 +2122,17 @@ int SDL_main(int argc, char *argv[])
 				draw_image(renderer, waterParticles[i].x, waterParticles[i].y, waterParticles[i].x + 5, waterParticles[i].y + 15, spr_water);
 			}
 		}
+		//npc stuff
+		for (int i = 0; i < MAX_NPCS; i++) {
+    		struct NPC* currentNPC = &npcs[i];
 
+    	if (currentNPC->appearsOnLevel == level_cur) {
+        // Rendering
+			globalNpc = currentNPC;
+        	SDL_Rect npcRect = { currentNPC->x, currentNPC->y, currentNPC->width, currentNPC->height };
+        	SDL_RenderCopy(renderer, currentNPC->texture, NULL, &npcRect);
+    	}
+	}
 		/*
 		Overlay Drawing.
 		*/
