@@ -73,54 +73,68 @@ for (i in 1:(length(date_intervals) - 1)) {
   sub_weather[[i]] <- subset
 }
 
-winter1 <- sub_weather[[1]]
-winter2 <- sub_weather[[2]]
-winter2 <- sub_weather[[3]]
-winter3 <- sub_weather[[4]]
-winter4 <- sub_weather[[5]]
-winter5 <- sub_weather[[6]]
-winter6 <- sub_weather[[7]]
-
-spring1 <- sub_weather[[8]]
-spring2 <- sub_weather[[9]]
-spring3 <- sub_weather[[10]]
-spring4 <- sub_weather[[11]]
-spring5 <- sub_weather[[12]]
-spring6 <- sub_weather[[13]]
-spring7 <- sub_weather[[14]]
-
-summer1 <- sub_weather[[15]]
-summer2 <- sub_weather[[16]]
-summer3 <- sub_weather[[17]]
-summer4 <- sub_weather[[18]]
-summer5 <- sub_weather[[19]]
-summer6 <- sub_weather[[20]]
-summer7 <- sub_weather[[21]]
-
-
-autumn1 <- sub_weather[[22]]
-autumn2 <- sub_weather[[23]]
-autumn3 <- sub_weather[[24]]
-autumn4 <- sub_weather[[25]]
-autumn5 <- sub_weather[[26]]
-autumn6 <- sub_weather[[27]]
-autumn7 <- sub_weather[[28]]
+# winter1 <- sub_weather[[1]]
+# winter2 <- sub_weather[[2]]
+# winter2 <- sub_weather[[3]]
+# winter3 <- sub_weather[[4]]
+# winter4 <- sub_weather[[5]]
+# winter5 <- sub_weather[[6]]
+# winter6 <- sub_weather[[7]]
+# 
+# spring1 <- sub_weather[[8]]
+# spring2 <- sub_weather[[9]]
+# spring3 <- sub_weather[[10]]
+# spring4 <- sub_weather[[11]]
+# spring5 <- sub_weather[[12]]
+# spring6 <- sub_weather[[13]]
+# spring7 <- sub_weather[[14]]
+# 
+# summer1 <- sub_weather[[15]]
+# summer2 <- sub_weather[[16]]
+# summer3 <- sub_weather[[17]]
+# summer4 <- sub_weather[[18]]
+# summer5 <- sub_weather[[19]]
+# summer6 <- sub_weather[[20]]
+# summer7 <- sub_weather[[21]]
+# 
+# autumn1 <- sub_weather[[22]]
+# autumn2 <- sub_weather[[23]]
+# autumn3 <- sub_weather[[24]]
+# autumn4 <- sub_weather[[25]]
+# autumn5 <- sub_weather[[26]]
+# autumn6 <- sub_weather[[27]]
+# autumn7 <- sub_weather[[28]]
 ```
-
-
+Generate a year of random data
 ```{r}
-sub_weather <- list()
-
-start_date <- ymd("2022-01-01")
-end_date <- ymd("2022-12-31")
-date_intervals <- seq(start_date, end_date, by = "13 days")
-date_intervals <- c(date_intervals, end_date + days(1))  # Include the end date in the intervals
-
+weather2 <- data.frame()
 for (i in 1:28) {
-  subset <- weather[weather$DATE >= date_intervals[i] & weather$DATE < date_intervals[i + 1], ]
-  sub_weather[[i]] <- subset
+  start_date <- min(sub_weather[[i]]$DATE)
+  end_date <- max(sub_weather[[i]]$DATE)
+  dates <- seq(start_date, end_date, by = "1 days")
+
+  chosen_days <- sample(x = dates, size = 1, replace = FALSE)
+  
+  week <- sub_weather[[i]] %>% 
+    filter(DATE %in% chosen_days) # this filters in order so even if chosen_days is not sorted week will be
+  weather2 <- rbind(weather2, week)
 }
-summary(sub_weather[[2]])
+
+print(all(diff(weather2$DATE) >= 0))
+print(unique(weather2$DATE))
+```
+Can replace part of data frame with vector
+```{r}
+x <- c(1, 2, 3, 4, 5)
+y <- c(5, 4, 3, 2, 1)
+df <- data.frame(x, y)
+df$x
+df$x[2:4] <- c(6, 7, 8)
+df
+```
+Blend between days
+```{r}
+
 ```
 
 
@@ -148,22 +162,3 @@ rain_duration
 hist(rain_duration)
 summary(rain_duration)
 ```
-
-## Including Plots
-
-You can also embed plots, for example:
-28/99 make U, 71 don't
-25th card made U
-```{r pressure, echo=FALSE}
-71/99
-chances <- c()
-chance <- 1
-for (i in c(1:24)){
-  chance <- chance * ((72-i)/(100-i))
-  print(chance)
-  chances <- c(chances, chance)
-}
-plot(chances)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
