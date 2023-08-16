@@ -8,12 +8,15 @@ PROGRAM = main
 
 SRCDIR = ./src/
 
-HEADERS = $(PROGRAM).h
-SOURCES = $(SRCDIR)$(PROGRAM).c $(SRCDIR)enemy.c $(SRCDIR)menu.c $(SRCDIR)quiz.c $(SRCDIR)ui.c
+HEADERS_OBSOLETE = $(PROGRAM).h
+HEADERSb = $(SRCDIR)$(PROGRAM).h $(SRCDIR)enemy.h $(SRCDIR)functions.h $(SRCDIR)menu.h $(SRCDIR)quiz.h $(SRCDIR)ui.h
+HEADERSa = 
+HEADERS = $(HEADERSb)
+SOURCES = $(SRCDIR)$(PROGRAM).c $(SRCDIR)enemy.c $(SRCDIR)functions.c $(SRCDIR)menu.c $(SRCDIR)quiz.c $(SRCDIR)ui.c
 
 all:
 	@echo $(WORKDIR)
-	$(CC) -std=c17 $(SOURCES) -I "$(SDL2)\include" -L "$(SDL2)\lib" $(CFLAGS) -o $(PROGRAM)
+	$(CC) -std=c17 $(HEADERS) $(SOURCES) -I "$(SDL2)\include" -L "$(SDL2)\lib" $(CFLAGS) -o $(PROGRAM)
 	@echo Build succeeded!
 asm:
 	gcc $(SOURCES) -O0 -S -o $(PROGRAM).s -masm=intel $<
