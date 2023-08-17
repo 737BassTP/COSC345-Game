@@ -4,22 +4,20 @@ SDL2b = C:\Users\Thomas Pedersen\Documents\UiT\UTV-0001\University of Otago\COSC
 
 CC = gcc
 CFLAGS = -Wall -Wextra -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -g $(shell sdl2-config --cflags --libs)
-PROGRAM = main
 
 SRCDIR = ./src/
 
-HEADERS_OBSOLETE = $(PROGRAM).h
-HEADERSb = $(SRCDIR)$(PROGRAM).h $(SRCDIR)enemy.h $(SRCDIR)functions.h $(SRCDIR)menu.h $(SRCDIR)quiz.h $(SRCDIR)ui.h
 HEADERSa = 
+HEADERSb = $(SRCDIR)everything.h $(SRCDIR)functions.h $(SRCDIR)game.h $(SRCDIR)main.h $(SRCDIR)audio.h $(SRCDIR)player.h $(SRCDIR)enemy.h $(SRCDIR)menu.h $(SRCDIR)quiz.h $(SRCDIR)ui.h
+SOURCES =                        $(SRCDIR)functions.c $(SRCDIR)game.c $(SRCDIR)main.c $(SRCDIR)audio.c $(SRCDIR)player.c $(SRCDIR)enemy.c $(SRCDIR)menu.c $(SRCDIR)quiz.c $(SRCDIR)ui.c
 HEADERS = $(HEADERSb)
-SOURCES = $(SRCDIR)$(PROGRAM).c $(SRCDIR)enemy.c $(SRCDIR)functions.c $(SRCDIR)menu.c $(SRCDIR)quiz.c $(SRCDIR)ui.c
 
 all:
 	@echo $(WORKDIR)
-	$(CC) -std=c17 $(HEADERS) $(SOURCES) -I "$(SDL2)\include" -L "$(SDL2)\lib" $(CFLAGS) -o $(PROGRAM)
+	$(CC) -std=c17 $(HEADERS) $(SOURCES) -I "$(SDL2)\include" -L "$(SDL2)\lib" $(CFLAGS) -o main
 	@echo Build succeeded!
 asm:
-	gcc $(SOURCES) -O0 -S -o $(PROGRAM).s -masm=intel $<
+	gcc $(SOURCES) -O0 -S -o main.s -masm=intel $<
 	
 clean:
 	rm -rf *.exe *.s
@@ -31,7 +29,7 @@ distcheck:
 	@echo TODO: todo.
 	
 run:
-	./$(PROGRAM).exe
+	./main.exe
 
 obsolete_1:
 	gcc -std=c17 main.c -I "C:\Users\Thomas Pedersen\Documents\UiT\UTV-0001\University of Otago\COSC345 - Game\SDL2\include" -L "C:\Users\Thomas Pedersen\Documents\UiT\UTV-0001\University of Otago\COSC345 - Game\SDL2\lib" -Wall -Wextra -lmingw32 -lSDL2main -lSDL2 -o main

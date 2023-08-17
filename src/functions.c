@@ -1,92 +1,52 @@
 //Definitions.
-#ifndef functions
-#define functions 1
+#include "everything.h"
 
-#define PI 3.1415926535897932
 
-#include "functions.h"
-#include "main.h"
 
-#include <stdbool.h>
-#include <stdio.h>
-#include <math.h>
-#include <stdlib.h> // for rand() and srand()
-#include <time.h>   // for time()
-#include <string.h>
-#include <stdarg.h> //for variadic functions.
-#include "../SDL2/include/SDL2/SDL.h"
-#include "../SDL2/include/SDL2/SDL_image.h"
-#include "../SDL2/include/SDL2/SDL_ttf.h"
 
-extern int gw;
-extern int gh;
-extern int screen_w;
-extern int screen_h;
-extern int win_game_x;
-extern int win_game_y;
-extern int win_game_w;
-extern int win_game_h;
-extern int win_game_x2;
-extern int win_game_y2;
-extern SDL_Texture *splashintro_img1;
-extern SDL_Texture *splashintro_img2;
-extern SDL_Texture *splashintro_img3;
-extern int font_ascii_w;
-extern int font_ascii_h;
-extern SDL_Texture *font_ascii;
-extern char *splashintro_string;
-extern int splashintro_slen2;
-extern char *splashintro_string_copyright;
-extern SDL_Surface *surface;
-extern SDL_Renderer *renderer;
-extern SDL_Texture *texture;
-
-//Colors (BGR because Big-Endianness).
-const int c_black 	= 0x000000;
-const int c_dkgray 	= 0x404040;
-const int c_gray 	= 0x808080;
-const int c_ltgray 	= 0xC0C0C0;
-const int c_white 	= 0xFFFFFF;
-const int c_red 	= 0x0000FF; 
-const int c_orange 	= 0x0080FF;
-const int c_yellow 	= 0x00FFFF;
-const int c_lime 	= 0x00FF80;
-const int c_green 	= 0x00FF00;
-const int c_slime	= 0x80FF00;
-const int c_aqua 	= 0xFFFF00;//turquoise
-const int c_sky 	= 0xFF8000;
-const int c_blue 	= 0xFF0000;
-const int c_purple 	= 0xFF0080;
-const int c_fuchsia = 0xFF00FF;
-const int c_rose 	= 0x8000FF;
-/*
-const int c_ = 0x;
-const int c_ = 0x;
-const int c_ = 0x;
-/**/
+extern const int c_black    = 0x000000;
+extern const int c_dkgray   = 0x404040;
+extern const int c_gray     = 0x808080;
+extern const int c_ltgray   = 0xC0C0C0;
+extern const int c_white    = 0xFFFFFF;
+extern const int c_red      = 0x0000FF; 
+extern const int c_orange   = 0x0080FF;
+extern const int c_yellow   = 0x00FFFF;
+extern const int c_lime     = 0x00FF80;
+extern const int c_green    = 0x00FF00;
+extern const int c_slime    = 0x80FF00;
+extern const int c_aqua     = 0xFFFF00;//turquoise
+extern const int c_sky      = 0xFF8000;
+extern const int c_blue     = 0xFF0000;
+extern const int c_purple   = 0xFF0080;
+extern const int c_fuchsia  = 0xFF00FF;
+extern const int c_rose     = 0x8000FF;
+//extern const int c_ = 0x;
+//extern const int c_ = 0x;
 
 //Global variables.
-int glob_draw_alpha = 255;
-int glob_draw_color = c_white;
-int glob_vk_right 	= 0;
-int glob_vk_left 	= 0;
-int glob_vk_up 		= 0;
-int glob_vk_down 	= 0;
-int glob_vk_space   = 0;
-int glob_vk_enter   = 0;
-int glob_vk_f2      = 0;
-int glob_vk_0       = 0;
-int glob_vk_1       = 0;
-int glob_vk_2       = 0;
-int glob_vk_3       = 0;
-int glob_vk_4       = 0;
-int glob_vk_5       = 0;
-int glob_vk_6       = 0;
-int glob_vk_7       = 0;
-int glob_vk_8       = 0;
-int glob_vk_9       = 0;
+extern int glob_draw_alpha = 255;
+extern int glob_draw_color = c_white;
+extern int glob_vk_right   = 0;
+extern int glob_vk_left    = 0;
+extern int glob_vk_up 	   = 0;
+extern int glob_vk_down    = 0;
+extern int glob_vk_space   = 0;
+extern int glob_vk_enter   = 0;
+extern int glob_vk_f2      = 0;
+extern int glob_vk_0       = 0;
+extern int glob_vk_1       = 0;
+extern int glob_vk_2       = 0;
+extern int glob_vk_3       = 0;
+extern int glob_vk_4       = 0;
+extern int glob_vk_5       = 0;
+extern int glob_vk_6       = 0;
+extern int glob_vk_7       = 0;
+extern int glob_vk_8       = 0;
+extern int glob_vk_9       = 0;
+//extern int glob_vk_;
+//extern int glob_vk_;
 
-//Functions.
 //Clear the surface by filling it with a colour.
 void clear_screen(SDL_Surface *surface)
 {
@@ -503,4 +463,28 @@ char* level_get_name(int lvl,char* ret)
 	return ret;
 }
 
-#endif
+//distance to player
+float distance(float x1, float y1, float x2, float y2)
+{
+    float dx = x2 - x1;
+    float dy = y2 - y1;
+    return sqrt(dx * dx + dy * dy);
+}
+// Function to check for collision between two rectangles; returns true (non-zero) if the rectangles collide, false (0) otherwise
+int checkCollision(SDL_Rect rect1, SDL_Rect rect2)
+{
+    return (rect1.x < rect2.x + rect2.w &&
+            rect1.x + rect1.w > rect2.x &&
+            rect1.y < rect2.y + rect2.h &&
+            rect1.y + rect1.h > rect2.y) ||
+           (rect2.x < rect1.x + rect1.w &&
+            rect2.x + rect2.w > rect1.x &&
+            rect2.y < rect1.y + rect1.h &&
+            rect2.y + rect2.h > rect1.y);
+}
+
+
+
+
+
+

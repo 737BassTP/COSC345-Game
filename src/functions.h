@@ -1,75 +1,73 @@
 #ifndef functions_h
-#define functions_h
-
-#include "../SDL2/include/SDL2/SDL.h"
-#include "../SDL2/include/SDL2/SDL_image.h"
-#include "../SDL2/include/SDL2/SDL_ttf.h"
+#define functions_h 1
 
 //Typedef'ing.
-typedef unsigned char byte;//0-255, 0x00-0xFF
-typedef unsigned short word;//0-65535, 0x0000-0xFFFF
+typedef unsigned char byte;     //0-255   , 0x00                              -0xFF                               (  8-bit byte)      .
+typedef unsigned short word;    //0-65535 , 0x0000                            -0xFFFF                             ( 16-bit word)      .
+typedef unsigned int dword;     //0-  4.3B, 0x00000000                        -0xFFFFFFFF                         ( 32-bit doubleword).
+typedef unsigned long qword;    //0- 18.4Q, 0x0000000000000000                -0xFFFFFFFFFFFFFFFF                 ( 64-bit quadword)  .
+typedef unsigned __int128 oword;//0-340.2U, 0x00000000000000000000000000000000-0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF (128-bit octoword)  .
+//256-bit sedecword, 512-bit duotrigintiword, 1024-bit quadsexagintiword, 2048-bit octoviginticentiword, 4096-bit sexquinquagintiducentiword, ...
 
-extern int gw;
-extern int gh;
-extern int screen_w;
-extern int screen_h;
-extern int win_game_x;
-extern int win_game_y;
-extern int win_game_w;
-extern int win_game_h;
-extern int win_game_x2;
-extern int win_game_y2;
-extern SDL_Texture *splashintro_img1;
-extern SDL_Texture *splashintro_img2;
-extern SDL_Texture *splashintro_img3;
-extern int font_ascii_w;
-extern int font_ascii_h;
-extern SDL_Texture *font_ascii;
-extern char *splashintro_string;
-extern int splashintro_slen2;
-extern char *splashintro_string_copyright;
-extern SDL_Surface *surface;
-extern SDL_Renderer *renderer;
-extern SDL_Texture *texture;
+#include "everything.h"
 
-const int c_black;
-const int c_dkgray;
-const int c_gray;
-const int c_ltgray;
-const int c_white;
-const int c_red;
-const int c_orange;
-const int c_yellow;
-const int c_lime;
-const int c_green;
-const int c_slime;
-const int c_aqua;
-const int c_sky;
-const int c_blue;
-const int c_purple;
-const int c_fuchsia;
-const int c_rose;
-int glob_draw_alpha;
-int glob_draw_color;
-int glob_vk_right;
-int glob_vk_left;
-int glob_vk_up;
-int glob_vk_down;
-int glob_vk_space;
-int glob_vk_enter;
-int glob_vk_f2;
-int glob_vk_0;
-int glob_vk_1;
-int glob_vk_2;
-int glob_vk_3;
-int glob_vk_4;
-int glob_vk_5;
-int glob_vk_6;
-int glob_vk_7;
-int glob_vk_8;
-int glob_vk_9;
+#include <stdbool.h>
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h> // for rand() and srand()
+#include <time.h>   // for time()
+#include <string.h>
+#include <stdarg.h> //for variadic functions.
 
-void clear_screen(SDL_Surface *surface);
+//Definitions.
+#define PI 3.1415926535897932
+
+//Colors (BGR because Big-Endianness).
+extern const int c_black;
+extern const int c_dkgray;
+extern const int c_gray;
+extern const int c_ltgray;
+extern const int c_white;
+extern const int c_red;
+extern const int c_orange;
+extern const int c_yellow;
+extern const int c_lime;
+extern const int c_green;
+extern const int c_slime;
+extern const int c_aqua;
+extern const int c_sky;
+extern const int c_blue;
+extern const int c_purple;
+extern const int c_fuchsia;
+extern const int c_rose;
+//extern const int c_ = 0x;
+//extern const int c_ = 0x;
+
+//Global variables.
+extern int glob_draw_alpha;
+extern int glob_draw_color;
+extern int glob_vk_right;
+extern int glob_vk_left;
+extern int glob_vk_up;
+extern int glob_vk_down;
+extern int glob_vk_space;
+extern int glob_vk_enter;
+extern int glob_vk_f2;
+extern int glob_vk_0;
+extern int glob_vk_1;
+extern int glob_vk_2;
+extern int glob_vk_3;
+extern int glob_vk_4;
+extern int glob_vk_5;
+extern int glob_vk_6;
+extern int glob_vk_7;
+extern int glob_vk_8;
+extern int glob_vk_9;
+//extern int glob_vk_;
+//extern int glob_vk_;
+
+//Functions.
+void clear_screen(SDL_Surface *surface);//Clear the surface by filling it with a colour.
 int make_color_rgb(int r,int g,int b);
 double lerp(double from,double to,double percentage);
 int make_color_hsv(int h,int s,int v);
@@ -109,5 +107,16 @@ void game_level_load(int lvl,int lvlmax);
 void level_load(byte arr[],int siz,int count,int layers);
 void dev_tiled_to_leveldata(byte arr[]);
 char* level_get_name(int lvl,char* ret);
+
+float distance(float x1, float y1, float x2, float y2);//distance to player
+int checkCollision(SDL_Rect rect1, SDL_Rect rect2);// Function to check for collision between two rectangles; returns true (non-zero) if the rectangles collide, false (0) otherwise
+
+
+
+
+
+
+
+
 
 #endif
