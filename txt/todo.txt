@@ -1,6 +1,6 @@
 To do:
 
-2023-08-13
+2023-08-18
 	audio sfx (play once)
 	keyboard functions (hold, press, release)
 	compress leveldata
@@ -9,6 +9,54 @@ To do:
 
 ----------------
 Finished:
+
+2023-08-17
+	Matthew:
+		Created a data frame of 28 random days in the Weather data set.
+	Sean:
+		Added tiles to the Tiled project file.
+	Thomas:
+		Progress on the "refactor" branch.
+			Compiles well now.
+			Logic is now spread across multiple smaller source files.
+			(More refactoring still needs to be done).
+		Improved the drawing code for UI Right.
+		Swapped drawing y-positions of clock, calendar, and weekday.
+		Changed all indentation styles from K&R and Ratliff to Allman for better readability.
+
+2023-08-16
+	Sean:
+		Added tiles to Tiled project file.
+	Thomas:
+		Started a new branch "refactor".
+			Aims to do code refactoring from a single huge source file to many smaller source files.
+			This build is pushed in a broken state, with linker errors.
+
+2023-08-15
+	Sean:
+		Improved on the rain.
+		Added penguin NPC + graphics.
+		Added a tutor NPC to level 16.
+		Varius NPC improvements.
+
+2023-08-14
+	Matthew:
+		Added weather data as .xlsx and .rmd-files.
+	Sean:
+		Added tiles to the Tiled project file.
+
+2023-08-13
+	Sean:
+		Added very many tiles to the Tiled project file.
+			Sea follows shoreline.
+			Upper part of map filled in.
+
+	Thomas:
+		Added graphics to the Tilemap.
+			Dark green + 48 transitions.
+			Two trees (standard + spruce).
+			House chimney.
+			Inverse gray cobblestone.
 
 2023-08-12
 	Thomas:
