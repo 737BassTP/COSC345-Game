@@ -8,30 +8,23 @@ on:
 
 jobs:
   build:
-
     runs-on: windows-latest
-
     steps:
     - uses: actions/checkout@v3
-    
     - name: Set up Strawberry Perl
     - uses: shogo82148/actions-setup-perl@v1
       with:
         perl-version: '5.32'
         distribution: strawberry
-        
     - name: print versions
       run: |
         gcc -v
         gcc --version
         make -v
         mingw32-make -v
-        
     - name: make all
       run: make all
-      
     - name: Run tests (make check).
       run: make check
-      
     - name: Run ? (make distcheck).
       run: make distcheck
