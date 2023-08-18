@@ -13,6 +13,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Set up GCC 8.3.0
+      run: |
+        choco install mingw --version=8.3.0
+        echo "##[add-path]$($(Get-Command mingw).Source.Replace('\\bin\\mingw32-make.exe', ''))"
+      shell: bash
     - name: make all
       run: make all
     - name: make check
