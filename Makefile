@@ -29,6 +29,7 @@ distcheck:
 	@echo TODO: todo.
 	
 run:
+	@echo Will run the game!
 	./main.exe
 
 obsolete_1:
