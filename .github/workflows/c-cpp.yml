@@ -15,10 +15,8 @@ jobs:
     - uses: actions/checkout@v3
     - name: Set up Strawberry Perl.
       run: |
-        choco install strawberryperl -y --install-arguments="INSTALLDIR=""C:\Strawberry"""
-        set tmppath=%PATH%
-        set PATH=C:\Strawberry\c\bin;%tmppath%
-        gcc --version
+        choco install strawberryperl -y --force --install-arguments="INSTALLDIR=""C:\Strawberry"""
+        set PATH=C:\Strawberry\c\bin;%PATH%
     - name: print versions
       run: |
         gcc -v
