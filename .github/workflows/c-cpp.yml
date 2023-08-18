@@ -13,19 +13,25 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Strawberry Perl.
-      run: |
-        choco install strawberryperl -y --force --install-arguments="INSTALLDIR=""C:\Strawberry"""
-        set PATH=C:\Strawberry\c\bin;%PATH%
+    
+    - name: Set up Strawberry Perl
+    - uses: shogo82148/actions-setup-perl@v1
+      with:
+        perl-version: '5.32'
+        distribution: strawberry
+        
     - name: print versions
       run: |
         gcc -v
         gcc --version
         make -v
         mingw32-make -v
+        
     - name: make all
       run: make all
-    - name: make check
+      
+    - name: Run tests (make check).
       run: make check
-    - name: make distcheck
+      
+    - name: Run ? (make distcheck).
       run: make distcheck
