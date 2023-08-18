@@ -13,11 +13,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up GCC 8.3.0
+    - name: Set up Strawberry Perl.
       run: |
-        choco install mingw --version=8.3.0 --allow-downgrade
-        echo "##[add-path]$($(Get-Command mingw).Source.Replace('\\bin\\mingw32-make.exe', ''))"
-      shell: bash
+        choco install strawberryperl -y --install-arguments="INSTALLDIR=""C:\Strawberry"""
+        set tmppath=%PATH%
+        set PATH=C:\Strawberry\c\bin;%tmppath%
+        gcc --version
+    - name: print versions
+      run: |
+        gcc -v
+        gcc --version
+        make -v
+        mingw32-make -v
     - name: make all
       run: make all
     - name: make check
