@@ -69,7 +69,7 @@ void addEnemy(int x, int y, int width, int height, int health, int dmg, SDL_Text
 }
 void randomSpawnEnemy(int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture, int level)
 {
-	int spawnChance = 25; //50% chance of enemy spawning
+	int spawnChance = 25; //25% chance of enemy spawning
 	srand((unsigned int)time(NULL));
 	int randomValue = rand() % 100;
 	if(randomValue<spawnChance)

@@ -227,10 +227,16 @@ int SDL_main(int argc, char *argv[])
 	struct NPC* globalNpc = NULL;//global npc
 	struct NPC Tutor;//npc on level 016
 	struct NPC penguinSam;
+	struct NPC forestMan;
+	struct NPC Tutorlvl2;
 	initNPC(&Tutor, 900, 700,50, 50, 400, 400, 2, spr_enemy1, 16);//init tutor
 	addNPC(&Tutor);//add tutor to NPC array
+	initNPC(&Tutorlvl2, 900, 400,50, 50, 400, 400, 2, spr_enemy1, 1);//init tutor2
+	addNPC(&Tutorlvl2);//add tutor to NPC array
 	initNPC(&penguinSam, 700, 900,50, 50, 400, 400, 2, penguinSamImg, 110);//init sammyPenguin
 	addNPC(&penguinSam);
+	initNPC(&forestMan, 630, 520,50, 50, 400, 400, 2, spr_enemy1, 160);//init forestMan
+	addNPC(&forestMan);
 	//Nutrients.
 	SDL_Texture *spr_nutrients = IMG_LoadTexture(renderer,"img/spr_nutrients_strip4.png");
 	
@@ -287,7 +293,9 @@ int SDL_main(int argc, char *argv[])
 	int buttonVis = 0;//0 for no window and 1 for visible window
 	int buttonVis2 = 0;//for second person chatting
 	int tutorChatCompleted = 0;
+	int tutorlvl2ChatCompleted = 0;
 	int penguinSamChatCompleted = 0;
+	int forestManChatCompleted = 0;
 	int popup = 0;
 	//score display
 	int score = 0; //initial score
@@ -409,11 +417,10 @@ int SDL_main(int argc, char *argv[])
 		if (glob_vk_9)
 		{
 			glob_vk_9=0;//press, not hold.
-			//pressing 9 brings up chat window
+			//pressing 9 resets chat with npc if you have already completed the dialogue
 			if(buttonVis==0)
 			{
 				buttonVis=1;
-				strcpy(buttonTexts, "press 1,2,3,4");
 			}
 			else
 			{
@@ -1239,21 +1246,43 @@ int SDL_main(int argc, char *argv[])
 				SDL_RenderCopy(renderer, currentNPC->texture, NULL, &npcRect);
 			}
 		}
+		if(level_cur==1)
+		{
+			if(tutorlvl2ChatCompleted==0)
+			{
+				buttonVis=1;
+				strcpy(buttonTexts, "Greetings, press 1 to continue npc dialogue");
+			}
+			if(nextChat==1)
+			{
+				strcpy(buttonTexts, "Following the path will provide safety");
+			}
+			if(nextChat==2)
+			{
+				strcpy(buttonTexts, "But exploring is more likely to be rewarded..");
+			}
+			if(nextChat==3)
+			{
+				buttonVis=0;
+				nextChat=0;
+				tutorlvl2ChatCompleted=1;
+			}
+		}
 		//tutor on level 16 chat.
 		if(level_cur==16)
 		{
 			if(tutorChatCompleted==0)
 			{
 				buttonVis=1;
-				strcpy(buttonTexts, "Hello there, welcome to Dun'eatin! press 1 to continue chat");
+				strcpy(buttonTexts, "Greetings, press 1 to continue npc dialogue");
 			}
 			if(nextChat==1)
 			{
-				strcpy(buttonTexts, "I will be your guide to this realm");
+				strcpy(buttonTexts, "Beware for this road is far more treacherous");
 			}
 			if(nextChat==2)
 			{
-				strcpy(buttonTexts, "this is how chat works, modify it as needed");
+				strcpy(buttonTexts, "Carry forward at your own risk..");
 			}
 			if(nextChat==3)
 			{
@@ -1282,6 +1311,28 @@ int SDL_main(int argc, char *argv[])
 				buttonVis=0;
 				nextChat=0;
 				penguinSamChatCompleted=1;
+			}
+		}
+				if(level_cur==160)
+		{
+			if(forestManChatCompleted==0)
+			{
+				buttonVis=1;
+				strcpy(buttonTexts, "Hello wanderer, are you lost?");
+			}
+			if(nextChat==1)
+			{
+				strcpy(buttonTexts, "To the east from here you will seek what you find.");
+			}
+			if(nextChat==2)
+			{
+				strcpy(buttonTexts, "Follow the southern peninsula and you will be rewarded greatly.");
+			}
+			if(nextChat==3)
+			{
+				buttonVis=0;
+				nextChat=0;
+				forestManChatCompleted=1;
 			}
 		}
 		/*
