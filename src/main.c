@@ -13,965 +13,39 @@ https://wiki.libsdl.org/SDL2/APIByCategory
 */
 
 //Includes.
+#include "everything.h"
+
+#include <math.h>
+#include <stdarg.h> //for variadic functions.
 #include <stdbool.h>
 #include <stdio.h>
-#include <math.h>
 #include <stdlib.h> // for rand() and srand()
-#include <time.h>   // for time()
 #include <string.h>
-#include <stdarg.h> //for variadic functions.
-//#include <.h>
-//#include "SDL2.dll"
-#include "../SDL2/include/SDL2/SDL.h"
-#include "../SDL2/include/SDL2/SDL_image.h"
-#include "../SDL2/include/SDL2/SDL_ttf.h"
-#include "enemy.c"
-#include "menu.c"
-#include "quiz.c"
-#include "ui.c"
-//#include ".c"
-
-//Definitions.
-#define PI 3.1415926535897932
-
-//Typedef'ing.
-typedef unsigned char byte;//0-255, 0x00-0xFF
-typedef unsigned short word;//0-65535, 0x0000-0xFFFF
-
-//Colors (BGR because Big-Endianness).
-const int c_black 	= 0x000000;
-const int c_dkgray 	= 0x404040;
-const int c_gray 	= 0x808080;
-const int c_ltgray 	= 0xC0C0C0;
-const int c_white 	= 0xFFFFFF;
-const int c_red 	= 0x0000FF; 
-const int c_orange 	= 0x0080FF;
-const int c_yellow 	= 0x00FFFF;
-const int c_lime 	= 0x00FF80;
-const int c_green 	= 0x00FF00;
-const int c_slime	= 0x80FF00;
-const int c_aqua 	= 0xFFFF00;//turquoise
-const int c_sky 	= 0xFF8000;
-const int c_blue 	= 0xFF0000;
-const int c_purple 	= 0xFF0080;
-const int c_fuchsia = 0xFF00FF;
-const int c_rose 	= 0x8000FF;
-/*
-const int c_ = 0x;
-const int c_ = 0x;
-const int c_ = 0x;
-/**/
-
-//Global variables.
-int glob_draw_alpha = 255;
-int glob_draw_color = c_white;
-int glob_vk_right 	= 0;
-int glob_vk_left 	= 0;
-int glob_vk_up 		= 0;
-int glob_vk_down 	= 0;
-int glob_vk_space   = 0;
-int glob_vk_enter   = 0;
-int glob_vk_f2      = 0;
-int glob_vk_0       = 0;
-int glob_vk_1       = 0;
-int glob_vk_2       = 0;
-int glob_vk_3       = 0;
-int glob_vk_4       = 0;
-int glob_vk_5       = 0;
-int glob_vk_6       = 0;
-int glob_vk_7       = 0;
-int glob_vk_8       = 0;
-int glob_vk_9       = 0;
-
-//Functions.
-//Clear the surface by filling it with a colour.
-void clear_screen(SDL_Surface *surface)
-{
-    if(SDL_FillRect(surface, NULL, 0xFF000040) < 0){
-        fprintf(stderr, "Unable to clear the surface. Error returned: %s\n", SDL_GetError());
-        SDL_Quit();
-        exit(EXIT_FAILURE);
-    }
-}
-int make_color_rgb(int r,int g,int b)
-{
-	return (r&0xFF)|((g&0xFF)<<8)|((b&0xFF)<<16);
-}
-double lerp(double from,double to,double percentage)
-{
-	//Lerp = Linear Interpolation.
-	return from+(to-from)*percentage;
-}
-int make_color_hsv(int h,int s,int v)
-{
-	//source: https://stackoverflow.com/questions/3018313/algorithm-to-convert-rgb-to-hsv-and-hsv-to-rgb-in-range-0-255-for-both/14733008#14733008
-	byte region, remainder, p, q, t;
-    if (s == 0) {return make_color_rgb(v,v,v);}
-    region = h / 43;
-    remainder = (h - (region * 43)) * 6; 
-    p = (v * (255 - s)) >> 8;
-    q = (v * (255 - ((s * remainder) >> 8))) >> 8;
-    t = (v * (255 - ((s * (255 - remainder)) >> 8))) >> 8;
-	byte rr,gg,bb;//if buggy, change to int.
-    switch (region)
-    {
-        case 0:
-            rr = v; gg = t; bb = p;
-            break;
-        case 1:
-            rr = q; gg = v; bb = p;
-            break;
-        case 2:
-            rr = p; gg = v; bb = t;
-            break;
-        case 3:
-            rr = p; gg = q; bb = v;
-            break;
-        case 4:
-            rr = t; gg = p; bb = v;
-            break;
-        default:
-            rr = v; gg = p; bb = q;
-            break;
-    }
-    return make_color_rgb(rr,gg,bb);
-}
-int draw_get_alpha()
-{
-	return glob_draw_alpha;
-}
-int draw_get_color()
-{
-	return glob_draw_color;
-}
-void draw_set_color(SDL_Renderer* renderer,int bgr)
-{
-	glob_draw_color = bgr&0xFFFFFF;
-	SDL_SetRenderDrawColor(renderer,bgr&0xFF,(bgr>>8)&0xFF,(bgr>>16)&0xFF,draw_get_alpha());
-}
-void draw_set_alpha(SDL_Renderer* renderer,int alpha)
-{
-	glob_draw_alpha = alpha&0xFF;
-	int bgr = draw_get_color();
-	SDL_SetRenderDrawColor(renderer,bgr&0xFF,(bgr>>8)&0xFF,(bgr>>16)&0xFF,alpha);
-}
-void draw_clear(SDL_Renderer* renderer,int bgr)
-{
-	draw_set_color(renderer,bgr);
-	SDL_RenderClear(renderer);//fills whole with draw-color.	
-}
-void draw_clear_alpha(SDL_Renderer* renderer,int bgr,int alpha)
-{
-	draw_set_alpha(renderer,alpha);
-	draw_clear(renderer,bgr);//invokes above function to avoid duplicate functionality.
-}
-void draw_rectangle(SDL_Renderer *renderer,int x1,int y1,int x2,int y2)
-{
-	//bug lookout: SDL_Rect is x,y,w,h, and draw_rectangle is x1,y1,x2,y2.
-	SDL_Rect r;// = {.x=32,.y=64,.w=480,.h=480};
-	r.x = x1;
-	r.y = y1;
-	r.w = x2-x1;//convert x2,y2 to w,h
-	r.h = y2-y1;
-	SDL_RenderFillRect(renderer,&r);
-}
-void draw_rectangle_color(SDL_Renderer *renderer,int x1,int y1,int x2,int y2,int bgr)
-{
-	int tmp=draw_get_color();
-	draw_set_color(renderer,bgr);
-	draw_rectangle(renderer,x1,y1,x2,y2);
-	draw_set_color(renderer,tmp);
-}
-void draw_image(SDL_Renderer *renderer,int x1,int y1,int x2,int y2,SDL_Texture *texture)
-{
-	//draws the whole texture into a rectangle, stretch-to-fit.
-	SDL_Rect r;// = {.x=32,.y=64,.w=480,.h=480};
-	r.x = x1;
-	r.y = y1;
-	r.w = x2-x1;//convert x2,y2 to w,h
-	r.h = y2-y1;
-	int col=glob_draw_color;
-	SDL_SetTextureColorMod(texture,col&0xFF,(col>>8)&0xFF,(col>>16)&0xFF);
-	SDL_RenderCopy(renderer,texture,NULL,&r);//texture fill whole renderer.
-}
-void draw_image_part(SDL_Renderer *renderer,int x1,int y1,int x2,int y2,SDL_Texture *texture,int left,int top,int width,int height)
-{
-	SDL_Rect r;
-	r.x = x1;
-	r.y = y1;
-	r.w = x2-x1;//convert x2,y2 to w,h
-	r.h = y2-y1;
-	SDL_Rect s;
-	s.x = left;
-	s.y = top;
-	s.w = width;
-	s.h = height;
-	int col=glob_draw_color;
-	SDL_SetTextureColorMod(texture,col&0xFF,(col>>8)&0xFF,(col>>16)&0xFF);
-	SDL_RenderCopy(renderer,texture,&s,&r);
-}
-void draw_text(SDL_Renderer *renderer,int x,int y,int w,int h,SDL_Texture *font,char* str,int fontw,int fonth)
-{
-	//"#" = newline.
-	//"##" = prints "#" with newline (unfinished: without newline).
-	int len=strlen(str);
-	int ch=0;
-	int xo=0;
-	int yo=0;
-	int nl=((int)"#"[0])-32;//should I be proud or scared of myself?
-	for (int i=0; i<len; i++)
-	{
-		ch = ((int)str[i])-32;
-		if (ch == nl)
-		{
-			if (!(((int)str[i+1])-32 == nl))//next char is not nl.
-			{
-				xo = 0;
-				yo += h;
-				continue;
-			}
-		}
-		draw_image_part(renderer,
-			x+xo+0,y+yo,x+xo+w,y+yo+h,
-			font,
-			ch*fontw,0,fontw,fonth);
-		xo += w;
-	}
-}
-void draw_text_color(SDL_Renderer *renderer,int x,int y,int w,int h,SDL_Texture *font,char* str,int fontw,int fonth,int color)
-{
-	int dgc=draw_get_color();
-	draw_set_color(renderer,color);
-	draw_text(renderer,x,y,w,h,font,str,fontw,fonth);
-	draw_set_color(renderer,dgc);
-}
-int keyboard_check(int key)
-{
-	return glob_vk_down;
-}
-int keyboard_check_pressed(int key)
-{
-	return glob_vk_down;
-}
-int keyboard_check_released(int key)
-{
-	return glob_vk_down;
-}
-int mux_int(int nth,...)
-{
-	//Multiplexer for ints.
-	//Returns the nth argument.
-	va_list args;
-	va_start(args,nth);
-	int ret = va_arg(args,int);
-	for (int i=0; i<nth; i++)
-	{
-		ret = va_arg(args,int);
-	}
-	va_end(args);
-	return ret;
-}
-char* mux_str(int nth,...)
-{
-	//Multiplexer for ints.
-	//Returns the nth argument.
-	va_list args;
-	va_start(args,nth);
-	char* ret = va_arg(args,int);
-	for (int i=0; i<nth; i++)
-	{
-		ret = va_arg(args,char*);
-	}
-	va_end(args);
-	return ret;
-}
-SDL_Texture* mux_sdltex(int nth,...)
-{
-	//Multiplexer for SDL_Texture pointers.
-	//Returns the nth argument.
-	va_list args;
-	va_start(args,nth);
-	int ret = va_arg(args,int);
-	for (int i=0; i<nth; i++)
-	{
-		ret = va_arg(args,SDL_Texture*);
-	}
-	va_end(args);
-	return ret;
-}
-int pos_int(int num,int val,...)
-{
-	//A demultiplexer variant for ints.
-	//Returns the position a value appears in, or -1 if not.
-	
-	//untested.
-	
-	va_list args;
-	va_start(args,val);
-	int ret = va_arg(args,int);
-	int i=0;
-	int tmp;
-	for (i=0; i<num; i++)
-	{
-		tmp = va_arg(args,int);
-		if (val == tmp)
-		{
-			va_end(args);
-			return i;
-		}
-	}
-	va_end(args);
-	return -1;
-}
-int BG(int val,int nth)
-{
-	return (val>>nth)&1;
-}
-int BGG(int val,int size,int nth)
-{
-	return (val>>(nth*size))&((1<<size)-1);
-}
-int sqr(int v)
-{
-	return v*v;
-}
-double degtorad(double deg)
-{
-	return (deg/180)*PI;
-}
-double radtodeg(double rad)
-{
-	return (rad/PI)*180;
-}
-double dcos(double deg)
-{
-	return cos(degtorad(deg));
-}
-double dsin(double deg)
-{
-	return sin(degtorad(deg));
-}
-Uint64 get_timer()
-{
-	return SDL_GetTicks64();
-}
-int point_in_rectangle(int px,int py,int rx1,int ry1,int rx2,int ry2)
-{
-	return ((px>=rx1 && px<rx2) && (py>=ry1 && py<ry2));
-}
-int rectangle_in_rectangle(int sx1,int sy1,int sx2,int sy2,int dx1,int dy1,int dx2,int dy2)
-{
-	//returns: 0=outside, 1=inside, 2=partially
-	//ensure that *x2,*y2 are larger than *x1,*y1 for best results.
-	int tmp=0;
-	tmp += point_in_rectangle(sx1,sy1,dx1,dy1,dx2,dy2);
-	tmp += point_in_rectangle(sx2,sy1,dx1,dy1,dx2,dy2);
-	tmp += point_in_rectangle(sx1,sy2,dx1,dy1,dx2,dy2);
-	tmp += point_in_rectangle(sx2,sy2,dx1,dy1,dx2,dy2);
-	     if (tmp == 0) {return 0;}
-	else if (tmp == 4) {return 1;}
-	else {return 2;}
-}
-int string_pos(char *substr,char *str)
-{
-	//finds single-char substr in str.
-	//todo: find multiple-char substr in str.
-	//if not found, returns -1
-	char *a = substr[0];
-	char *b;// = str[0];
-	int len=strlen(str);
-	int ret=0;
-	for (int i=0; i<len; i++)
-	{
-		b = str[i];
-		if ((char)a == (char)b)
-		//if (strcmp((const char*)&a,(const char*)&b)==0)
-		{
-			return i;
-		}
-	}
-	return -1;
-}
-double darctan2(int y,int x)
-{
-	return radtodeg(atan2(y,x));
-}
-double cartodir(int x,int y)
-{
-	//return (darctan2(y,x)+360.0)%360.0;
-	double ret = darctan2(y,x)+360.0;
-	if (ret >= 360.0) {ret -= 360.0;}
-	return ret;
-}
-void game_level_load(int lvl,int lvlmax)
-{
-	//done below.
-}
-void level_load(byte arr[],int siz,int count,int layers)
-{
-	FILE *fil = fopen("level.dat","rb");
-	for (int i=0; i<siz*count*layers; i++)
-	{
-		arr[i] = 0;
-	}
-	fread(arr,siz*count*layers,1,fil);
-	fclose(fil);
-}
-void dev_tiled_to_leveldata(byte arr[])
-{
-	//Extracts Tiles (done) and Objects (unfinished (unnecessary if tiles and objects share tileset)).
-	printf("may take a while; please wait.\n");
-	glob_vk_f2=0;//fakes a keyboard press event (fails if held).
-	FILE *filin = fopen("tiled/cosc345-game.tmx","rb");
-	FILE *filout = fopen("level.dat","wb");
-	int layers=2;
-	int layersize=131072;
-	//layersize=512;//debug only
-	int maxsize = layersize*layers;//131072
-	byte array[262144];//tiles + objects.
-	int arrsiz=sizeof(array);
-	for (long i=0; i<maxsize; i++) {array[i] = 0;}
-	//Discard input header.
-	fseek(filin,(long int)0x1FC-0,SEEK_SET);//hardcoded; may bug out in future, so avoid renaming or resizing in Tiled project file.
-	//Read Tiles and Objects.
-	byte comma=","[0];
-	int ch=0;
-	byte entry[3];
-	word val;
-	int counter=0;
-	int off=0;
-	int ij=0;
-	//Extract and restructure.
-	for (int i=0; i<arrsiz; i++)
-	{
-		ch=fgetc(filin);
-		for (int j=0; j<3; j++) {entry[j]=48;}
-		while ((ch==0xD) || (ch==0xA)) {ch=fgetc(filin);}
-		entry[2]=ch;
-		ch=fgetc(filin);
-		if (ch!=comma)
-		{
-			entry[1]=entry[2];
-			entry[2]=ch;
-			ch=fgetc(filin);
-			if (ch!=comma)
-			{
-				entry[0]=entry[1];
-				entry[1]=entry[2];
-				entry[2]=ch;
-				fgetc(filin);//important.
-			}
-		}
-		val^=val;
-		for (int j=0; j<3; j++) {val+=(entry[j]-48)*(byte)pow((double)10,(double)(2-j));}
-		printf("i=%i/%i (v=%i)\n",i,layersize,val);//comment out to speed up.
-		val-=(val==0)?(-0xFF):(1)&0xFF;
-		array[(((1<<(1<<1))<<1)<<((1|(1<<1)|(1<<(1<<1)))<<1))*(val>=(((1<<1)<<1)<<((1+1+1)<<1)))+(1<<(3<<(1<<1)))*(i>>(3<<(1<<1)))+(1<<(1<<3))*((i>>(1<<(1<<1)))&(3*(1<<(1<<1)|1)))+(1<<(1<<(1<<1)))*((i>>(1<<3))&(3*(1<<(1<<1)|1)))+(i&(3*(1<<(1<<1)|1)))]=val;//security through obscurity, or what? (it crashes the compiler...)
-	}
-	//Compress.
-	val^=val;
-	counter=0;
-	for (int i=0; i<layersize; i++)
-	{
-		break;
-	}
-	//Write to file.
-	fwrite(array,maxsize,1,filout);
-	fclose(filin);
-	fclose(filout);
-	//Re-load in-game.
-	level_load(arr,256,512,2);
-}
-char* level_get_name(int lvl,char* ret)
-{
-	//Translates e.g level 8/256 to "Warrington".
-	FILE *fil;
-	fil=fopen("location.dat","rb");
-	fseek(fil,(long int)lvl,SEEK_SET);
-	int tmp=(int)fgetc(fil);
-	fseek(fil,(long int)256,SEEK_SET);
-	fgets(ret,16,fil);
-	while (tmp>0)
-	{
-		fgets(ret,16,fil);
-		tmp--;
-	}
-	fclose(fil);
-	return ret;
-}
-
+#include <time.h>   // for time()
 
 /*
-Structs.
+Global variables and memory allocations.
 */
-//Position.
-struct pos
-{
-	int x;
-	int y;
-	int xprevious;
-	int yprevious;
-};
-//NPC.
-struct NPC
-{
-	int x;
-	int y;
-	int width;
-	int height;
-	int xprevious;
-	int yprevious;
-	byte face_dir;
-	SDL_Texture* texture;
-	int appearsOnLevel;
-};
-//rain struct
-struct WaterParticle {
-    float x;
-    float y;
-    float speed;
-    int active;
-};
-//initialize number of water particles wanted
-const int MAX_WATER_PARTICLES = 100;
-struct WaterParticle* waterParticles;
-int waterOn = 0; //decide if raining or not
-int waterSlow = 0;//turn on to have rain fade away instead of turning off instantly
-//function to create water particle.
-void createWaterParticle(int index, int window_width, int window_height) {
-    waterParticles[index].x = rand() % (1366-596)+298;     // Random x position within window width
-    waterParticles[index].y = -(rand() % window_height); // Random initial y position above the window
-    waterParticles[index].speed = 10;        // Rain speed
-    waterParticles[index].active = 1;                    // Set active to 1 (true)
-}
-//function to reactivate water particles
-void activateAllWaterParticles() {
-    for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
-        waterParticles[i].active = 1; // Set active to 1 (true)
-    }
-}
-//deactivate them all
-void deactivateAllWaterParticles() {
-    for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
-        waterParticles[i].active = 0; // Set active to 0 (false)
-    }
-}
-//Health System test
-int health = 100;
-int maxHealth=100;
-SDL_Rect playerHitbox;
-// Function to update the globalRect's position and size
-void updatePlayerHitbox(int x, int y, int width, int height) {
-    playerHitbox.x = x;
-    playerHitbox.y = y;
-    playerHitbox.w = width;
-    playerHitbox.h = height;
-}
-//damaging test
-void damageMe(int dmg)
-{
-	if(health-dmg<=0)
-	{
-		health=0;
-	}
-	else
-	{
-		health -= dmg;
-	}
-}
-//healing test
-void healMe(int dmg)
-{
-	if(health+dmg>=maxHealth)
-	{
-		health=100;
-	}
-	else
-	{
-		health += dmg;
-	}
-}					
-//Player.
-struct player
-{
-	//pos Pos;
-	int x;
-	int y;
-	int xprevious;
-	int yprevious;
-	byte facedir;
-	byte anim_spd_cur;//counter.
-	byte anim_spd_spd;//inc counter by spd per frame.
-	byte anim_spd_wrap;//inc sprite frame when counter exceeds this value.
-	byte anim_cur;//current sprite frame.
-	byte anim_max;//max sprite frame before rollover.
-	byte move_spd;//moving speed of player.
-	byte can_move;//bit-flag to be set while displaying map, questions, etc..., to prevent the player from moving.
-	// Attack attributes
-	int damage;
-    int attackRangeWidth;
-    int attackRangeHeight;
-	int width;
-	int height;
-};
-//enemy struct
-struct Enemy {
-    int x;//position x
-    int y;//position y
-    int width;//hit box stats
-    int height;
-    int health;
-	int dmg;//damage it deals
-	SDL_Texture* texture;
-	int spawnLevel;
-    // Add more enemy-related attributes as needed
-};
-#define MAX_ENEMIES 250
-#define MAX_NPCS 250
-struct NPC npcs[MAX_NPCS];
-// Function to initialize an enemy with position and size
-void initEnemy(struct Enemy* enemy, int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture,int spawnLevel) {
-    enemy->x = x;
-    enemy->y = y;
-    enemy->width = width;
-    enemy->height = height;
-    enemy->health = health;
-    enemy->dmg = dmg;
-	enemy->texture = texture;
-	enemy->spawnLevel = spawnLevel;
-}
-//initialize an npc
-void initNPC(struct NPC* npc, int x, int y,int width,int height, int xprevious, int yprevious, uint8_t face_dir, SDL_Texture* texture, int appearsOnLevel){
-    npc->x = x;
-    npc->y = y;
-	npc->width = width;
-	npc->height = height;
-    npc->xprevious = xprevious;
-    npc->yprevious = yprevious;
-    npc->face_dir = face_dir;
-    npc->texture = texture;
-    npc->appearsOnLevel = appearsOnLevel;
-}
-// add an NPC reference to the npcs array
-void addNPC(struct NPC* npc) {
-    for (int i = 0; i < MAX_NPCS; i++) {
-        struct NPC* currentNPC = &npcs[i];
-        if (currentNPC->appearsOnLevel <= 0) {
-            *currentNPC = *npc; // Copy the contents of the passed NPC to the array
-            return;
-        }
-    }
-}
-// Function to reset an enemy to its default state
-void resetEnemy(struct Enemy* enemy) {
-    enemy->x = 0;
-    enemy->y = 0;
-    enemy->width = 0;
-    enemy->height = 0;
-    enemy->health = 0;
-    enemy->dmg = 0;
-    // Add other attributes reset if needed
-}
-// Function to add an enemy to the array
-struct Enemy enemies[MAX_ENEMIES];
+//Dimensions.
+const int screen_w = 1366;
+const int screen_h = 768;
 
-void addEnemy(int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture, int level) {
-    for (int i = 0; i < MAX_ENEMIES; i++) {
-        struct Enemy* currentEnemy = &enemies[i];
-        if (currentEnemy->health <= 0) {
-            initEnemy(currentEnemy, x, y, width, height, health, dmg, texture, level);
-            return; // Exit the function after adding the enemy
-        }
-    }
-    // If all slots are filled, you can handle this case as needed (e.g., ignore or overwrite)
-}
-void randomSpawnEnemy(int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture, int level){
-	int spawnChance = 25; //50% chance of enemy spawning
-	srand((unsigned int)time(NULL));
-	int randomValue = rand() % 100;
-	if(randomValue<spawnChance){
-		addEnemy(x, y, width, height, health, dmg, texture, level);//size, stats and image to go with it.
-	}
-}
-//distance to player
-float distance(float x1, float y1, float x2, float y2) {
-    float dx = x2 - x1;
-    float dy = y2 - y1;
-    return sqrt(dx * dx + dy * dy);
-}
-// Function to check for collision between two rectangles
-// Returns true (non-zero) if the rectangles collide, false (0) otherwise
-int checkCollision(SDL_Rect rect1, SDL_Rect rect2) {
-    return (rect1.x < rect2.x + rect2.w &&
-            rect1.x + rect1.w > rect2.x &&
-            rect1.y < rect2.y + rect2.h &&
-            rect1.y + rect1.h > rect2.y) ||
-           (rect2.x < rect1.x + rect1.w &&
-            rect2.x + rect2.w > rect1.x &&
-            rect2.y < rect1.y + rect1.h &&
-            rect2.y + rect2.h > rect1.y);
-}
-void calculateAttackHitbox(struct player* player, SDL_Rect* attackHitbox) {
-    // Calculate the position of the attack hitbox based on player direction
-    int attackX = player->x;
-    int attackY = player->y;
-    // Adjust the position of the attack hitbox based on the player's direction
-    if (player->facedir == 1) { // Up
-        attackY -= player->attackRangeHeight;
-    } else if (player->facedir == 0) { // Right
-        attackX += player->attackRangeWidth;
-    } else if (player->facedir == 3) { // Down
-        attackY += player->attackRangeHeight;
-    } else if (player->facedir == 2) { // Left
-        attackX -= player->attackRangeWidth;
-    }
+//Game area.
+const int win_game_x = (screen_w-screen_h)/2;//(1366-768)/2=299
+const int win_game_y = 0;
+const int win_game_w = screen_h;
+const int win_game_h = screen_h;//both are "h" to make it quadratic.
+const int win_game_x2 = win_game_x+win_game_w;
+const int win_game_y2 = win_game_y+win_game_h;
+const int win_game_tile_num = 16;//16 "tiles" per screen axis.
+const int win_game_tile_dim = 16;//each tile is 16 "pixels" along each axis.
 
-    // Set the attack hitbox's position and size
-    attackHitbox->x = attackX;
-    attackHitbox->y = attackY;
-    attackHitbox->w = player->attackRangeWidth;
-    attackHitbox->h = player->attackRangeHeight;
-}
+//Scaling.
+int gw,gh;
+
+//Structs.
 struct Enemy* globalEnemy = NULL; // Initialize the global pointer to NULL initially
 
-// Function to perform the player's attack
-void attack(struct player* player) {
-    for (int i = 0; i < MAX_ENEMIES; i++) {
-        struct Enemy* currentEnemy = &enemies[i];
-
-        if (currentEnemy->health > 0) {
-            // Create a rectangle representing the attack hitbox
-            SDL_Rect attackHitbox;
-            calculateAttackHitbox(player, &attackHitbox);
-
-            // Create a rectangle representing the enemy hitbox
-            SDL_Rect enemyHitbox = { currentEnemy->x, currentEnemy->y, currentEnemy->width, currentEnemy->height };
-
-            // Check for collision with the enemy
-            if (checkCollision(attackHitbox, enemyHitbox)) {
-                // If the attack hitbox collides with the enemy, apply damage to the enemy
-                printf("Hit enemy!\n");
-                currentEnemy->health -= player->damage;
-            }
-        }
-    }
-}
-#define NUM_FRAMES 8
-#define ANGLE_INCREMENT 5.625
-// Function to render the weapon swing animation
-void renderWeaponSwing(SDL_Renderer* renderer, SDL_Texture* weaponTexture, struct player* player) {
-    // Calculate the angle increment per frame
-    float angleIncrementPerFrame = ANGLE_INCREMENT;
-
-    // Calculate the initial angle based on the player's facing direction
-    float initialAngle = 0.0;
-    if (player->facedir == 0) { // Right
-        initialAngle = 0.0; // Swing right (right of the player) when facing right
-    } else if (player->facedir == 1) { // Up
-        initialAngle = -90.0; // Swing up (above the player) when facing up
-    } else if (player->facedir == 2) { // Left
-        initialAngle = 180.0; // Swing left (left of the player) when facing left
-    } else if (player->facedir == 3) { // Down
-        initialAngle = 90.0; // Swing down (below the player) when facing down
-    }
-
-    // Calculate the center offset for the weapon texture
-    int weaponCenterX, weaponCenterY;
-    SDL_QueryTexture(weaponTexture, NULL, NULL, &weaponCenterX, &weaponCenterY);
-    weaponCenterX /= 2;
-    weaponCenterY /= 2;
-
-    // Define the scaling factor to make the weapon smaller
-    float scalingFactor = 0.2; // Adjust this value to control the size
-
-    // Define the offset distance from the player for the weapon to appear in front
-    int distanceFromPlayer = 20; // Adjust this value to control the distance
-
-    // Render the weapon swing animation
-    for (int i = 0; i < NUM_FRAMES; i++) {
-        // Calculate the angle for this frame
-        float currentAngle = initialAngle + (i * angleIncrementPerFrame);
-
-        // Calculate the position for the weapon's anchor point based on the current angle and facing direction
-        int anchorOffsetX = distanceFromPlayer * cosf(currentAngle * M_PI / 180.0);
-        int anchorOffsetY = distanceFromPlayer * sinf(currentAngle * M_PI / 180.0);
-
-        // Calculate the scaled size of the weapon texture
-        int scaledWidth = weaponCenterX * 2 * scalingFactor;
-        int scaledHeight = weaponCenterY * 2 * scalingFactor;
-
-        // Render the weapon texture at the current angle with the anchor offset and scaled size
-        SDL_Rect renderRect;
-        renderRect.w = scaledWidth;
-        renderRect.h = scaledHeight;
-        
-        // Position the weapon in front of the player (adjust the offsets as needed)
-        renderRect.x = player->x - weaponCenterX + anchorOffsetX+120;
-		if(player->facedir==0){
-			renderRect.x+=20;
-			renderRect.y+=5;
-		}
-        renderRect.y = player->y - weaponCenterY + anchorOffsetY +40;
-
-        SDL_RenderCopyEx(renderer, weaponTexture, NULL, &renderRect, currentAngle, NULL, SDL_FLIP_NONE);
-
-        // Update the screen
-        SDL_RenderPresent(renderer);
-
-        // Add a delay to control the animation speed (adjust as needed)
-        SDL_Delay(10);
-    }
-}
-//Pushable block.
-struct pushblock
-{
-	int x;
-	int y;
-	char pushmask;
-};
-
-//Audio.
-typedef struct
-{
-    Uint8* buffer;
-    Uint32 length;
-    Uint32 position;
-} AudioData;//must be typedef'ed like this to fix compile bugs.
-
-void audioCallback(void* userdata, Uint8* stream, int len) {
-    AudioData* audiodata = (AudioData*)userdata;
-    if (audiodata->position >= audiodata->length) {
-        audiodata->position = 0;  // Reset position to the beginning of the buffer
-    }
-    Uint32 remainingBytes = audiodata->length - audiodata->position;
-    Uint32 bytesToCopy = len < remainingBytes ? len : remainingBytes;
-    SDL_memcpy(stream, audiodata->buffer + audiodata->position, bytesToCopy);
-    audiodata->position += bytesToCopy;
-}
-void play_WAV(const char* wavfile,SDL_AudioSpec spec,Uint8 *wavbuffer,int wavlength)
-{
-	/*
-	if (SDL_LoadWAV(wavfile,&wavspec,&wavbuffer,&wavlength)==0)
-	{
-		printf("play_WAV failed");
-	}
-	//
-	/**/
-}
-
-//Game clock. (HH:MM)
-int clock_get_hour(int time) {return (time/60)%24;}
-int clock_get_minute(int time) {return time%60;}
-int clock_is_between(int time,int h1,int m1,int h2,int m2)
-{
-	int c1,c2;
-	c1 = (h1%24)*60 + m1%60;
-	c2 = (h2%24)*60 + m2%60;
-	return ((time>=c1) && (time<=c2));
-}
-
-//Temperature.
-double temp_ctof(int c) {return (double)c * 1.8 + 32.0;}//Celsius to Fahrenheit.
-
-//quiz
-// Define the quiz question and answers
-const char* quizHeader = "INSERT NAME HERE";//Name of person we are talking to
-const char* quizInfo = "";//"correct or false"
-const char* quizInfoHolder ="";//does nothing currently
-const char* quizQuestion = "What is the capital of France?";//default question
-const char* answerA = "A) Paris";//default answer a
-const char* answerB = "B) London";//default answer b
-const char* answerC = "C) Berlin";//default answer c
-int correctAnswer = 0;//current number relating to the correct answer.
-int userAnswer = 0;//user input for the quiz (1,2,3), 0 is default.
-bool quizOn = false;//if a quiz is active (rendering)
-
-int quizQNum = 1;//question counter for quiz (ends at 4 for three question quiz)
-
-bool quiz2Called = false;//boolean to see if the player has completed quiz 2 etc
-bool quiz3Called = false;
-bool quizLoopOn = false;//are we going through the quiz loop in main
-int usedQuestions[100] = {0}; // Array to keep track of used question numbers (for random question)
-int usedQuestionCount = 0;    // Variable to keep track of the number of used questions (so we dont get the same random question)
-// Function to check if a question number has been used before
-int isQuestionUsed(int questionNumber) {
-    for (int i = 0; i < usedQuestionCount; i++) {
-        if (usedQuestions[i] == questionNumber) {
-            return 1; // Question number is already in the usedQuestions list
-        }
-    }
-    return 0; // Question number has not been used before
-}
-void updateQuizDataFromRandomLine(const char *filename,
-                                  const char **quizQuestion,
-                                  const char **answerA,
-                                  const char **answerB,
-                                  const char **answerC,
-                                  int *userAnswer,
-                                  int *correctAnswer,
-                                  const char **quizInfoHolder) {
-    FILE *file = fopen(filename, "r");
-    if (file == NULL) {
-        printf("Error opening the file.\n");
-        return;
-    }
-
-    // Count the number of lines in the file
-    int lineCount = 0;
-    char ch;
-    while ((ch = fgetc(file)) != EOF) {
-        if (ch == '\n') {
-            lineCount++;
-        }
-    }
-    // Reset the file pointer to the beginning
-    rewind(file);
-
-    // Generate a random line number
-    srand(time(NULL));
-    int randomLine;
-
-    // Keep generating random line numbers until we get a line that hasn't been used before
-    do {
-        randomLine = rand() % lineCount;
-    } while (isQuestionUsed(randomLine));
-
-    // Add the question number to the list of used questions
-    usedQuestions[usedQuestionCount] = randomLine;
-    usedQuestionCount++;
-
-    // Read and process lines until we reach the randomly selected line
-    char line[1024];
-    for (int i = 0; i <= randomLine; i++) {
-        if (fgets(line, sizeof(line), file)) {
-            char *token;
-            const char *delim = ";";
-            token = strtok(line, delim);
-            while (token != NULL) {
-                char varName[256], varValue[768];
-                if (sscanf(token, "%[^=]=%[^\n]", varName, varValue) == 2) {
-                    if (strcmp(varName, "quizQuestion") == 0) {
-                        *quizQuestion = strdup(varValue);
-                    } else if (strcmp(varName, "answerA") == 0) {
-                        *answerA = strdup(varValue);
-                    } else if (strcmp(varName, "answerB") == 0) {
-                        *answerB = strdup(varValue);
-                    } else if (strcmp(varName, "answerC") == 0) {
-                        *answerC = strdup(varValue);
-                    } else if (strcmp(varName, "userAnswer") == 0) {
-                        *userAnswer = atoi(varValue);
-                    } else if (strcmp(varName, "correctAnswer") == 0) {
-                        *correctAnswer = atoi(varValue);
-                    } else if (strcmp(varName, "quizInfoHolder") == 0) {
-                        *quizInfoHolder = strdup(varValue);
-                    } 
-                }
-                token = strtok(NULL, delim);
-            }
-        }
-    }
-    fclose(file);
-}
 
 /*
 Entry point.
@@ -993,44 +67,23 @@ int SDL_main(int argc, char *argv[])
 		SDL_Log("Linked against SDL version %u.%u.%u.\n",sdlver_linked.major,sdlver_linked.minor,sdlver_linked.patch);
 	}
 	
-	//Window size.
-	//Dimensions.
-	const int screen_w = 1366;
-    const int screen_h = 768;
-	//Game area.
-	const int win_game_x = (screen_w-screen_h)/2;//(1366-768)/2=299
-	const int win_game_y = 0;
-	const int win_game_w = screen_h;
-	const int win_game_h = screen_h;//both are "h" to make it quadratic.
-	const int win_game_x2 = win_game_x+win_game_w;
-	const int win_game_y2 = win_game_y+win_game_h;
-	
-	const int win_game_tile_num = 16;//16 "tiles" per screen axis.
-	const int win_game_tile_dim = 16;//each tile is 16 "pixels" along each axis.
-	
-	int gw,gh;//scaling.
+	//Scaling.
 	gw = screen_h/sqr(win_game_tile_num);// == 3, an int (for res. 1366/768 and 16x 16*16 px tiles per axis).
 	gh = gw;
-		
+
+	//SDL2 structs.
 	SDL_Surface* surface;
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Event event;
-	//rain
-
-    // Allocate memory for water particles
-    waterParticles = malloc(MAX_WATER_PARTICLES * sizeof(struct WaterParticle));
-    if (waterParticles == NULL) {
-        // Handle allocation failure
-        fprintf(stderr, "Failed to allocate memory for water particles\n");
-        return 1;
-    }
+	
 	//initialize random number generator seed
 	srand(time(NULL));
-    // Initialize water particles
-    for (int i = 0; i < MAX_WATER_PARTICLES; i++) {
-        createWaterParticle(i, screen_w, screen_h);
-    }
+	
+	//rain
+	rain_create();
+	
+	//Set up SDL2.
 	//void SDL_SetMainReady(void);
 	//int flags = SDL_INIT_VIDEO|SDL_INIT_AUDIO;
 	int flags = SDL_INIT_EVERYTHING;
@@ -1056,43 +109,28 @@ int SDL_main(int argc, char *argv[])
     }
     //Create the surface in RAM that we manipulate the pixels of.
     surface = SDL_GetWindowSurface(window);
-    if (!surface) {
+    if (!surface)
+	{
         snprintf(errmsg, bufsize, "Surface error");
         goto error;
     }
-	
-	//int option = 0;
-    //char optionText[2] = "0";
-    //pop up window test
-	SDL_Rect buttonRect = { 800, 100, 175, 120 };//dimension of popup
-	char buttonTexts[100] = "default message";//message in the window
-	char* buttonText = buttonTexts;
-	SDL_Rect* buttonRectPtr = &buttonRect; // Declare and initialize buttonRectPtr to point to buttonRect
-	int nextChat = 0;
-	int buttonVis = 0;//0 for no window and 1 for visible window
-	int buttonVis2 = 0;//for second person chatting
-	
-	int tutorChatCompleted = 0;
-	int penguinSamChatCompleted = 0;
-    // Load a TTF font (adjust the file path and size as needed)
-	    // Initialize SDL_ttf
-    if (TTF_Init() == -1) {
+	// Load a TTF font (adjust the file path and size as needed)
+	// Initialize SDL_ttf
+    if (TTF_Init() == -1)
+	{
         printf("SDL_ttf could not initialize! TTF_Error: %s\n", TTF_GetError());
         return 1;
     }
     TTF_Font* font = TTF_OpenFont("font.ttf", 12);
-    if (font == NULL) {
+    if (font == NULL)
+	{
         printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
         return 1;
     }
-	int popup = 0;
-	
-	//score display
-	int score = 0; //initial score
-	SDL_Color scoreColour = { 0, 0, 0, 255 };
-    //Create a renderer for the window
+	//Create a renderer for the window
     SDL_Renderer* rendererPop = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (renderer == NULL) {
+    if (renderer == NULL)
+	{
         printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
     }
 	
@@ -1189,14 +227,21 @@ int SDL_main(int argc, char *argv[])
 	struct NPC* globalNpc = NULL;//global npc
 	struct NPC Tutor;//npc on level 016
 	struct NPC penguinSam;
+	struct NPC forestMan;
+	struct NPC Tutorlvl2;
 	initNPC(&Tutor, 900, 700,50, 50, 400, 400, 2, spr_enemy1, 16);//init tutor
 	addNPC(&Tutor);//add tutor to NPC array
+	initNPC(&Tutorlvl2, 900, 400,50, 50, 400, 400, 2, spr_enemy1, 1);//init tutor2
+	addNPC(&Tutorlvl2);//add tutor to NPC array
 	initNPC(&penguinSam, 700, 900,50, 50, 400, 400, 2, penguinSamImg, 110);//init sammyPenguin
 	addNPC(&penguinSam);
+	initNPC(&forestMan, 630, 520,50, 50, 400, 400, 2, spr_enemy1, 160);//init forestMan
+	addNPC(&forestMan);
 	//Nutrients.
 	SDL_Texture *spr_nutrients = IMG_LoadTexture(renderer,"img/spr_nutrients_strip4.png");
 	
 	//Music.
+	//music_bootup();
 	const char *wavfile="music.wav";
 	SDL_AudioSpec wavspec;
 	Uint8 *wavbuffer;
@@ -1215,7 +260,8 @@ int SDL_main(int argc, char *argv[])
 	
 	SDL_AudioDeviceID deviceid;
 	deviceid = SDL_OpenAudioDevice(NULL,0,&wavspec,NULL,0);
-	if (deviceid == 0) {
+	if (deviceid == 0)
+	{
         printf("Failed to open audio device: %s\n", SDL_GetError());
         SDL_FreeWAV(wavbuffer);
         return;
@@ -1224,6 +270,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_PauseAudioDevice(deviceid,0);//0 is unpause
 	//SDL_MixAudioFormat(wavbuffer,wavbuffer,AUDIO_S16,wavlength,32);
 	//play_WAV(wavfile,&wavspec,&wavbuffer,&wavlength);
+	
 	
 	//Splash intro screen.
 	int splashintro_bool=1;
@@ -1234,6 +281,26 @@ int SDL_main(int argc, char *argv[])
 	char* splashintro_string_copyright = "(C) 2023 - Thomas, Sean, Matthew, Nicholas - COSC345";
 	int splashintro_slen1=strlen(splashintro_string);
 	int splashintro_slen2=strlen(splashintro_string_copyright);
+	
+	//pop up window test
+	//int option = 0;
+    //char optionText[2] = "0";
+	SDL_Rect buttonRect = { 800, 100, 175, 120 };//dimension of popup
+	char buttonTexts[100] = "default message";//message in the window
+	char* buttonText = buttonTexts;
+	SDL_Rect* buttonRectPtr = &buttonRect; // Declare and initialize buttonRectPtr to point to buttonRect
+	int nextChat = 0;
+	int buttonVis = 0;//0 for no window and 1 for visible window
+	int buttonVis2 = 0;//for second person chatting
+	int tutorChatCompleted = 0;
+	int tutorlvl2ChatCompleted = 0;
+	int penguinSamChatCompleted = 0;
+	int forestManChatCompleted = 0;
+	int popup = 0;
+	//score display
+	int score = 0; //initial score
+	SDL_Color scoreColour = { 0, 0, 0, 255 };
+    
 	
 	//Mainloop here.
 	int running=1;
@@ -1350,11 +417,10 @@ int SDL_main(int argc, char *argv[])
 		if (glob_vk_9)
 		{
 			glob_vk_9=0;//press, not hold.
-			//pressing 9 brings up chat window
+			//pressing 9 resets chat with npc if you have already completed the dialogue
 			if(buttonVis==0)
 			{
 				buttonVis=1;
-				strcpy(buttonTexts, "press 1,2,3,4");
 			}
 			else
 			{
@@ -1518,19 +584,25 @@ int SDL_main(int argc, char *argv[])
 		// Update water particles (rain drops)
         for (int i = 0; i < MAX_WATER_PARTICLES; i++) 
 		{
-            if (waterParticles[i].active) {
+            if (waterParticles[i].active) 
+			{
                 waterParticles[i].y += waterParticles[i].speed;
                 // Check if particle has reached the bottom of the window
-                if (waterParticles[i].y > screen_h) {
-					if(waterSlow==1){
-                    if (rand() % 2 == 0){ //every drop that hits bottom of screen has 50% chance of dissapearing with waterSlow toggled.
-                        waterParticles[i].active = 0; // Set active to 0 (false)
-                    } 
-					else {
-                        createWaterParticle(i, screen_w, screen_h);
-                    }
+                if (waterParticles[i].y > screen_h) 
+				{
+					if(waterSlow==1)
+					{
+						if (rand() % 2 == 0)
+						{ //every drop that hits bottom of screen has 50% chance of dissapearing with waterSlow toggled.
+							waterParticles[i].active = 0; // Set active to 0 (false)
+						} 
+						else
+						{
+							createWaterParticle(i, screen_w, screen_h);
+						}
 					}
-					else{
+					else
+					{
 						createWaterParticle(i, screen_w, screen_h);
 					}
                 }
@@ -1643,11 +715,12 @@ int SDL_main(int argc, char *argv[])
 			draw_text_color(renderer,uix,uiy                ,font_ascii_w*gw,font_ascii_h*gh,font_ascii,lvlstrnew,font_ascii_w,font_ascii_h,tc);
 			draw_text_color(renderer,uix,uiy+font_ascii_h*gh,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mapstr_location,font_ascii_w,font_ascii_h,tc);
 			
+			uiy += font_ascii_h*2*gh;
 			
 			//Map.
 			int mapx1,mapy1,mapx2,mapy2;
 			mapx1=uix;
-			mapy1=uiy+font_ascii_h*2*gh;
+			mapy1=uiy;
 			mapx2=mapx1+256;
 			mapy2=mapy1+256;
 			draw_image(renderer,mapx1,mapy1,mapx2,mapy2,spr_map);
@@ -1676,52 +749,16 @@ int SDL_main(int argc, char *argv[])
 					(int)lerp((double)mapy1,(double)mapy2,(double)((BGG(lc,4,1)+1)/16.0)),
 					c_red);
 			}
-			//Timekeeping.
-			//Digital clock.
-			int coff=0;
-			int clocky2 = mapy2+32*gh;
-			draw_set_color(renderer,tc);
-			for (int i=0; i<5; i++)
-			{
-				int clo = mux_int(i,(time_clock/600),(time_clock/60)%10,737,(time_clock/10)%6,time_clock%10);
-				if (i != 2)
-				{
-				draw_image_part(renderer,
-					uix+(i+0)*16*gw+coff,mapy2,
-					uix+(i+1)*16*gw+coff,clocky2,
-					spr_clock_digital,
-					clo*16,0,
-					16,32);
-				coff += gw;
-				}
-				else
-				{
-					draw_text_color(renderer,uix+2*16*gw,mapy2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,":",font_ascii_w,font_ascii_h,tc);
-				}
-			}
-			draw_set_color(renderer,c_white);
-			//char ct[10];
-			//const char time_clock_str="Daytime";
-			//strcpy(ct,time_clock_str);
-			int ct=0;
-			if (clock_is_between(time_clock, 0,0, 5,59)) {ct=0;}
-			if (clock_is_between(time_clock, 6,0,11,59)) {ct=1;}
-			if (clock_is_between(time_clock,12,0,17,59)) {ct=2;}
-			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
-			//placeholder 1/2
-			/*
-			draw_text_color(renderer,
-				uix,clocky2+gh,
-				font_ascii_w*gw,font_ascii_h*gh,
-				font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
-				font_ascii_w,font_ascii_h,tc);
-			/**/
+			uiy += mapy2-mapy1;
+			
 			//Weekday.
+			uiy += gh;
+			int wyh=font_ascii_h*gh;
 			char wc[2];
 			double wf=1.0;
 			draw_rectangle_color(renderer,
-				uix+font_ascii_w*weekday*gw+(int)(wf*weekday*gw),clocky2+gh,
-				uix+font_ascii_w*weekday*gw+(int)(wf*weekday*gw)+font_ascii_w*gw,clocky2+gh+font_ascii_h*gh,
+				uix+font_ascii_w*weekday*gw+(int)(wf*weekday*gw),uiy,
+				uix+font_ascii_w*weekday*gw+(int)(wf*weekday*gw)+font_ascii_w*gw,uiy+wyh,
 				c_red);
 			for (int i=0; i<7; i++)
 			{
@@ -1729,7 +766,7 @@ int SDL_main(int argc, char *argv[])
 				wcol=i==weekday?c_white:wcol;
 				wc[0]=weekday_string[i];
 				draw_text_color(renderer,
-					uix+font_ascii_w*i*gw+(int)(wf*i*gw),clocky2+gh,
+					uix+font_ascii_w*i*gw+(int)(wf*i*gw),uiy,
 					font_ascii_w*gw,font_ascii_h*gh,
 					font_ascii,wc,
 					font_ascii_w,font_ascii_h,wcol);
@@ -1740,27 +777,74 @@ int SDL_main(int argc, char *argv[])
 			month_str[2]=100+((monthday+1)%20>=4?16:mux_int((monthday+1)%20,16,15,10,14));
 			month_str[3]=100+((monthday+1)%20>=4? 4:mux_int((monthday+1)%20, 4,16, 0, 0));
 			draw_rectangle_color(renderer,
-				uix+8*font_ascii_w*gw,clocky2+gh,
-				uix+8*font_ascii_w*gw+4*font_ascii_w*gw,clocky2+gh+font_ascii_h*gh,
+				uix+8*font_ascii_w*gw,uiy,
+				uix+8*font_ascii_w*gw+4*font_ascii_w*gw,uiy+wyh,
 				c_blue);
 			draw_text_color(renderer,
-				uix+8*font_ascii_w*gw,clocky2+gh,
+				uix+8*font_ascii_w*gw,uiy,
 				font_ascii_w*gw,font_ascii_h*gh,
 				font_ascii,month_str,
 				font_ascii_w,font_ascii_h,
 				c_aqua);
+			uiy += wyh;
+			
+			//Timekeeping.
+			//Digital clock.
+			int coff=0;
+			int clocky1 = uiy;
+			int clocky2 = uiy+32*gh;
+			draw_set_color(renderer,tc);
+			for (int i=0; i<5; i++)
+			{
+				int clo = mux_int(i,(time_clock/600),(time_clock/60)%10,737,(time_clock/10)%6,time_clock%10);
+				if (i != 2)
+				{
+				draw_image_part(renderer,
+					uix+(i+0)*16*gw+coff,clocky1,
+					uix+(i+1)*16*gw+coff,clocky2,
+					spr_clock_digital,
+					clo*16,0,
+					16,32);
+				coff += gw;
+				}
+				else
+				{
+					draw_text_color(renderer,uix+2*16*gw,clocky1,font_ascii_w*gw,font_ascii_h*gh,font_ascii,":",font_ascii_w,font_ascii_h,tc);
+				}
+			}
+			draw_set_color(renderer,c_white);
+			uiy += clocky2-clocky1;
+			
+			//Time of day as string.
+			uiy += gh;
+			//char ct[10];
+			//const char time_clock_str="Daytime";
+			//strcpy(ct,time_clock_str);
+			int ct=0;
+			if (clock_is_between(time_clock, 0,0, 5,59)) {ct=0;}
+			if (clock_is_between(time_clock, 6,0,11,59)) {ct=1;}
+			if (clock_is_between(time_clock,12,0,17,59)) {ct=2;}
+			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
+			//placeholder 1/2
+			/**/
+			draw_text_color(renderer,
+				uix,uiy,
+				font_ascii_w*gw,font_ascii_h*gh,
+				font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
+				font_ascii_w,font_ascii_h,tc);
+			/**/
+			uiy += font_ascii_h*gh;
 			
 			//Temperature.
 			int tempy1,tempy2;
-			tempy1=clocky2+gh+font_ascii_h*gh;
+			tempy1=uiy;
 			tempy2=tempy1+48*gh;
 			//int dgc=draw_get_color();
 			//draw_set_color(renderer,c_blue);
 			draw_image(renderer,uix,tempy1,uix+16*gw,tempy2,spr_thermometer);
 			//draw_set_color(renderer,dgc);
 			draw_text_color(renderer,uix+48,(int)lerp((double)tempy1,(double)tempy2,0.25),font_ascii_w*gw,font_ascii_h*gh,font_ascii,newtempstr,font_ascii_w,font_ascii_h,tc);
-			
-			//
+			uiy += tempy2-tempy1;
 			
 			
 		}
@@ -1802,7 +886,7 @@ int SDL_main(int argc, char *argv[])
 							else if (tex==0x11) {spr=spr_water_shallow;}
 							else if (tex==0x12) {spr=spr_lava;}
 							else if (tex==0x13) {spr=spr_lava_shallow;}
-							else {spr=spr_water;}
+							else                {spr=spr_water;}
 							draw_image_part(renderer,x1,y1,x2,y2,spr,d*((at/di)%fr),0,d,d);
 						}
 						//unhandled.
@@ -1832,7 +916,9 @@ int SDL_main(int argc, char *argv[])
 			// Update the buttonRect using the chat box position and size
 			buttonRect.x = globalNpc->x + 60;
 			buttonRect.y = globalNpc->y - 120;
-			if(buttonRect.x>600){//if np is on the right side of the map, place the chat box to the left of them
+			if(buttonRect.x>600)
+			{
+				//if np is on the right side of the map, place the chat box to the left of them
 				buttonRect.x-=200;
 				buttonRect.y-=20;
 			}
@@ -1990,7 +1076,8 @@ int SDL_main(int argc, char *argv[])
 				Player.move_spd=0;
 				quizLoopOn=true;								 
 			}
-		}//third quiz (currently used for testing, change for real game.) 
+		}
+		//third quiz (currently used for testing, change for real game.) 
 		//Quiz turns on once the player enters level_curr==3, for other quizzes just copy this code and change the trigger. 
 		if(level_cur==3)
 		{
@@ -2004,41 +1091,74 @@ int SDL_main(int argc, char *argv[])
 		//loop to go through three questions relating to food data. (copy this but replace questions.txt with data from other dataset if we choose.)
 		if(quizLoopOn)
 		{
-			if(quizQNum==1){//if first question
-			if(userAnswer==0){}//keeps it from looping infinite
-			else if(userAnswer==correctAnswer){
-				quizInfo="Correct";
-    			updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=500;
+			if(quizQNum==1)
+			{//if first question
+				if(userAnswer==0)
+				{
+					//keeps it from looping infinite
+				}
+				else if(userAnswer==correctAnswer)
+				{
+					quizInfo="Correct";
+					updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=500;
+				}
+				else
+				{
+					quizInfo="false";
+					updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=0;
+				}
 			}
-			else{
-				quizInfo="false";
-				updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=0;
+			else if(quizQNum==2)
+			{
+				//if second question
+				if(userAnswer==0)
+				{
+					
+				}
+				else if(userAnswer==correctAnswer)
+				{
+					quizInfo="correct";
+					updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=500;
+				}
+				else
+				{
+					quizInfo="false";
+					updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=0;
+				}		
 			}
-			}else if(quizQNum==2){//if second question
-			if(userAnswer==0){}
-			else if(userAnswer==correctAnswer){
-				quizInfo="correct";
-    			updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=500;
-			}
-			else{
-				quizInfo="false";
-				updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=0;
-			}		
-			}
-			else if(quizQNum==3){//if third question
-			if(userAnswer==0){}
-			else if(userAnswer==correctAnswer){
-				quizInfo="correct";
-    			updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=500;
-			}
-			else{
-				quizInfo="false";
-				updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=0;
-			}		
+			else if(quizQNum==3)
+			{
+				//if third question
+				if(userAnswer==0)
+				{
+					
+				}
+				else if(userAnswer==correctAnswer)
+				{
+					quizInfo="correct";
+					updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=500;
+				}
+				else
+				{
+					quizInfo="false";
+					updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=0;
+				}		
 			}
 			//end quiz
-			else if(quizQNum=4){quizQuestion=" ",answerA="press 1 2 or 3 to exit";answerB="";answerC="";//quiz finished
-			if(userAnswer==0){}else if(userAnswer==1||userAnswer==2||userAnswer==3){quizOn=false;Player.move_spd=3*4;quizQNum=1;quizInfo="";userAnswer=0;quizLoopOn=false;}
+			else if(quizQNum=4)
+			{
+				quizQuestion=" ";
+				answerA="press 1 2 or 3 to exit";
+				answerB="";
+				answerC="";//quiz finished
+				if(userAnswer==0)
+				{
+					
+				}
+				else if(userAnswer==1||userAnswer==2||userAnswer==3)
+				{
+					quizOn=false;Player.move_spd=3*4;quizQNum=1;quizInfo="";userAnswer=0;quizLoopOn=false;
+				}
 			}
 		}	
 		
@@ -2115,51 +1235,106 @@ int SDL_main(int argc, char *argv[])
 			}
 		}
 		//npc stuff
-		for (int i = 0; i < MAX_NPCS; i++) {
+		for (int i = 0; i < MAX_NPCS; i++) 
+		{
     		struct NPC* currentNPC = &npcs[i];
-
-    	if (currentNPC->appearsOnLevel == level_cur) {
-        // Rendering
-			globalNpc = currentNPC;
-        	SDL_Rect npcRect = { currentNPC->x, currentNPC->y, currentNPC->width, currentNPC->height };
-        	SDL_RenderCopy(renderer, currentNPC->texture, NULL, &npcRect);
-    	}
-	}
-	//tutor on level 16 chat.
-	if(level_cur==16){
-		if(tutorChatCompleted==0){
-		buttonVis=1;
-		strcpy(buttonTexts, "Hello there, welcome to Dun'eatin! press 1 to continue chat");
+			if (currentNPC->appearsOnLevel == level_cur)
+			{
+				// Rendering
+				globalNpc = currentNPC;
+				SDL_Rect npcRect = { currentNPC->x, currentNPC->y, currentNPC->width, currentNPC->height };
+				SDL_RenderCopy(renderer, currentNPC->texture, NULL, &npcRect);
+			}
 		}
-		if(nextChat==1){
-			strcpy(buttonTexts, "I will be your guide to this realm");
+		if(level_cur==1)
+		{
+			if(tutorlvl2ChatCompleted==0)
+			{
+				buttonVis=1;
+				strcpy(buttonTexts, "Greetings, press 1 to continue npc dialogue");
+			}
+			if(nextChat==1)
+			{
+				strcpy(buttonTexts, "Following the path will provide safety");
+			}
+			if(nextChat==2)
+			{
+				strcpy(buttonTexts, "But exploring is more likely to be rewarded..");
+			}
+			if(nextChat==3)
+			{
+				buttonVis=0;
+				nextChat=0;
+				tutorlvl2ChatCompleted=1;
+			}
 		}
-		if(nextChat==2){
-			strcpy(buttonTexts, "this is how chat works, modify it as needed");
+		//tutor on level 16 chat.
+		if(level_cur==16)
+		{
+			if(tutorChatCompleted==0)
+			{
+				buttonVis=1;
+				strcpy(buttonTexts, "Greetings, press 1 to continue npc dialogue");
+			}
+			if(nextChat==1)
+			{
+				strcpy(buttonTexts, "Beware for this road is far more treacherous");
+			}
+			if(nextChat==2)
+			{
+				strcpy(buttonTexts, "Carry forward at your own risk..");
+			}
+			if(nextChat==3)
+			{
+				buttonVis=0;
+				nextChat=0;
+				tutorChatCompleted=1;
+			}
 		}
-		if(nextChat==3){
-			buttonVis=0;
-			nextChat=0;
-			tutorChatCompleted=1;
+		if(level_cur==110)
+		{
+			if(penguinSamChatCompleted==0)
+			{
+				buttonVis=1;
+				strcpy(buttonTexts, "Wow, you have made it so far!");
+			}
+			if(nextChat==1)
+			{
+				strcpy(buttonTexts, "Walk on further, you are almost done with your journey.");
+			}
+			if(nextChat==2)
+			{
+				strcpy(buttonTexts, "Beware though, for Andrew is heard to lurk here...");
+			}
+			if(nextChat==3)
+			{
+				buttonVis=0;
+				nextChat=0;
+				penguinSamChatCompleted=1;
+			}
 		}
-	}
-		if(level_cur==110){
-		if(penguinSamChatCompleted==0){
-		buttonVis=1;
-		strcpy(buttonTexts, "Wow, you have made it so far!");
+				if(level_cur==160)
+		{
+			if(forestManChatCompleted==0)
+			{
+				buttonVis=1;
+				strcpy(buttonTexts, "Hello wanderer, are you lost?");
+			}
+			if(nextChat==1)
+			{
+				strcpy(buttonTexts, "To the east from here you will seek what you find.");
+			}
+			if(nextChat==2)
+			{
+				strcpy(buttonTexts, "Follow the southern peninsula and you will be rewarded greatly.");
+			}
+			if(nextChat==3)
+			{
+				buttonVis=0;
+				nextChat=0;
+				forestManChatCompleted=1;
+			}
 		}
-		if(nextChat==1){
-			strcpy(buttonTexts, "Walk on further, you are almost done with your journey.");
-		}
-		if(nextChat==2){
-			strcpy(buttonTexts, "Beware though, for Andrew is heard to lurk here...");
-		}
-		if(nextChat==3){
-			buttonVis=0;
-			nextChat=0;
-			penguinSamChatCompleted=1;
-		}
-	}
 		/*
 		Overlay Drawing.
 		*/
@@ -2260,6 +1435,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_DestroyTexture(spr_enemy1);
 	IMG_Quit();
 	
+	//music_free();
 	//SDL_FreeWAV(&audio_spec);
 	SDL_CloseAudioDevice(deviceid);
     SDL_FreeWAV(wavbuffer);

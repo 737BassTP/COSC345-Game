@@ -8,14 +8,18 @@ on:
 
 jobs:
   build:
-
     runs-on: windows-latest
-
     steps:
     - uses: actions/checkout@v3
-    - name: make
-      run: make
-    - name: make check
+    - name: print versions
+      run: |
+        gcc -v
+        gcc --version
+        make -v
+        mingw32-make -v
+    - name: make all
+      run: make all
+    - name: Run tests (make check).
       run: make check
-    - name: make distcheck
+    - name: Run ? (make distcheck).
       run: make distcheck
