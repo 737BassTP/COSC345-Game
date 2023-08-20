@@ -121,6 +121,30 @@ for (i in 1:(length(unique(weather2$DATE)) - 1)) {
 plot(weather2$TEMP, pch = 20)
 ```
 
+Add season and day of week
+
+```{r}
+day <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+day <- rep(day, each = 288)
+day <- rep(day, times = 40)
+
+season <- c("winter", "spring", "summer", "autumn")
+season <- rep(season, each = 2016)
+season <- rep(season, times = 10)
+
+weather2 <- weather2 %>% 
+  mutate(day = day, season = season)
+
+weather2 <- weather2 %>% 
+  select(day, season, everything(), DATE)
+
+weather2 <- weather2 %>% 
+  rename(source_date = DATE)
+
+colnames(weather2) <- tolower(colnames(weather2))
+```
+
+
 Output data to csv
 
 ```{r}
