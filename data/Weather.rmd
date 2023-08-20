@@ -29,6 +29,7 @@ weather$TIME <- sub("^[^ ]+ ", "", weather$TIME)
 weather$TIME <- ifelse(weather$TIME == "1899-12-31", "00:00:00", weather$TIME)
 # weather$TIME <- as_datetime(weather$TIME, format = "%H:%M:%S")
 weather$TIME <- hms(weather$TIME)
+# identify missing data
 # for (i in 2:length(weather$TIME)) {
 #   if (!((weather$TIME[i] - weather$TIME[i - 1]) %in% c("5M 0S", "-23H -55M 0S", "1H -55M 0S"))) {
 #     print(i)
@@ -72,38 +73,6 @@ for (i in 1:(length(date_intervals) - 1)) {
   subset <- weather %>% filter(DATE >= interval_start, DATE <= interval_end)
   sub_weather[[i]] <- subset
 }
-
-# winter1 <- sub_weather[[1]]
-# winter2 <- sub_weather[[2]]
-# winter2 <- sub_weather[[3]]
-# winter3 <- sub_weather[[4]]
-# winter4 <- sub_weather[[5]]
-# winter5 <- sub_weather[[6]]
-# winter6 <- sub_weather[[7]]
-# 
-# spring1 <- sub_weather[[8]]
-# spring2 <- sub_weather[[9]]
-# spring3 <- sub_weather[[10]]
-# spring4 <- sub_weather[[11]]
-# spring5 <- sub_weather[[12]]
-# spring6 <- sub_weather[[13]]
-# spring7 <- sub_weather[[14]]
-# 
-# summer1 <- sub_weather[[15]]
-# summer2 <- sub_weather[[16]]
-# summer3 <- sub_weather[[17]]
-# summer4 <- sub_weather[[18]]
-# summer5 <- sub_weather[[19]]
-# summer6 <- sub_weather[[20]]
-# summer7 <- sub_weather[[21]]
-# 
-# autumn1 <- sub_weather[[22]]
-# autumn2 <- sub_weather[[23]]
-# autumn3 <- sub_weather[[24]]
-# autumn4 <- sub_weather[[25]]
-# autumn5 <- sub_weather[[26]]
-# autumn6 <- sub_weather[[27]]
-# autumn7 <- sub_weather[[28]]
 ```
 Generate a year of random data
 ```{r}
@@ -123,18 +92,59 @@ for (i in 1:28) {
 print(all(diff(weather2$DATE) >= 0))
 print(unique(weather2$DATE))
 ```
-Can replace part of data frame with vector
-```{r}
-x <- c(1, 2, 3, 4, 5)
-y <- c(5, 4, 3, 2, 1)
-df <- data.frame(x, y)
-df$x
-df$x[2:4] <- c(6, 7, 8)
-df
-```
 Blend between days
 ```{r}
+# for (i in 1:(length(unique(weather2$DATE)) - 1)) {
+#   nine_idx <- (i * 288) - 35
+#   three_idx <- (i * 288) + 37
+#   
+#   if (nine_idx >= 1 && three_idx <= nrow(weather2)) {
+#     transitional_values <- seq(from = weather2$TIME[nine_idx], to = weather2$TIME[three_idx], length.out = 73)
+#     transitional_values <- round(transitional_values, 1)
+#     weather2$TIME[(nine_idx+1):(three_idx-1)] <- transitional_values[-c(1, length(transitional_values))]
+#   }
+}
+```
 
+```{r}
+# for (i in 1:(length(unique(weather2$DATE)) - 1)) {
+#   nine_idx <- (i * 288) + 1  # Index of 9pm (21:00)
+#   three_idx <- (i * 288) + 73  # Index of 3am (03:00)
+#   
+#   if (nine_idx >= 1 && three_idx <= nrow(weather2)) {
+#     transitional_values <- seq(from = weather2$TIME[nine_idx], to = weather2$TIME[three_idx], length.out = 73)
+#     transitional_values <- round(transitional_values, 1)
+#     weather2$TIME[(nine_idx + 1):(three_idx - 1)] <- transitional_values[-c(1, length(transitional_values))]
+#   }
+}
+```
+
+
+```{r}
+weather2$TIME[1] - weather2$TIME[10]
+times <- weather2$TIME[253:325]
+
+for (i in 1:(length(unique(weather2$DATE)) - 1)) {
+  nine_idx <- (i * 288) - 35
+  three_idx <- (i * 288) + 37
+  # transitional_period <- weather2[(i*288-35):(i*288+37)]
+  if (nine_idx >= 1 && three_idx <= nrow(weather2)) {
+    
+    for (col in colnames(weather2)) {
+      if (col %in% c("DATE", "TIME")) {
+        next
+      }
+      weather2[[col]][(i*288-35):(i*288+37)] <- round(seq(from = weather2[[col]][i*288-35], to = weather2[[col]][i*288+37], length.out = 73), (nchar(as.character(weather2[[col]][1] - floor(weather2[[col]][1])))-2))
+    }  
+  }
+}
+
+plot(weather2$TEMP, pch = 20)
+
+x = c(1:20)
+plot(x, x, pch = x)
+
+round(seq(from = weather2$TEMP[1*288-35], to = weather2$TEMP[1*288+37], length.out = 73), 1)
 ```
 
 
