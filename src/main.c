@@ -229,6 +229,7 @@ int SDL_main(int argc, char *argv[])
 	struct NPC penguinSam;
 	struct NPC forestMan;
 	struct NPC Tutorlvl2;
+	struct NPC quizTutor;
 	initNPC(&Tutor, 900, 700,50, 50, 400, 400, 2, spr_enemy1, 16);//init tutor
 	addNPC(&Tutor);//add tutor to NPC array
 	initNPC(&Tutorlvl2, 900, 400,50, 50, 400, 400, 2, spr_enemy1, 1);//init tutor2
@@ -237,6 +238,8 @@ int SDL_main(int argc, char *argv[])
 	addNPC(&penguinSam);
 	initNPC(&forestMan, 630, 520,50, 50, 400, 400, 2, spr_enemy1, 160);//init forestMan
 	addNPC(&forestMan);
+	initNPC(&quizTutor, 850, 520,50, 50, 400, 400, 2, spr_enemy1, 3);//init forestMan
+	addNPC(&quizTutor);
 	//Nutrients.
 	SDL_Texture *spr_nutrients = IMG_LoadTexture(renderer,"img/spr_nutrients_strip4.png");
 	
@@ -296,6 +299,7 @@ int SDL_main(int argc, char *argv[])
 	int tutorlvl2ChatCompleted = 0;
 	int penguinSamChatCompleted = 0;
 	int forestManChatCompleted = 0;
+	int quizTutorChatCompleted = 0;
 	int popup = 0;
 	//score display
 	int score = 0; //initial score
@@ -1063,28 +1067,28 @@ int SDL_main(int argc, char *argv[])
 		}
 		//first quiz. Rename variables for alpha.
 
-		//Second quiz
-		if(level_cur==2)
-		{
-			if(quiz2Called==false)
-			{
-				//boolean check so the quiz doesn't open every time they hit level 2.
-				quizQuestion="Greetings wanderer\nAnswer my riddle to pass through\n Which of these macronutrients contains the most calories per gram";answerA="1. Carbohydrate";answerB="2. Fat";answerC="3. Protein";
-				quiz2Called=true;
-				quizOn=true;
-				correctAnswer=2;
-				Player.move_spd=0;
-				quizLoopOn=true;								 
-			}
-		}
+		//Second quiz used for testing purposes.
+		// if(level_cur==2)
+		// {
+		// 	if(quiz2Called==false)
+		// 	{
+		// 		//boolean check so the quiz doesn't open every time they hit level 2.
+		// 		quizQuestion="Greetings wanderer\nAnswer my riddle to pass through\n Which of these macronutrients contains the most calories per gram";answerA="1. Carbohydrate";answerB="2. Fat";answerC="3. Protein";
+		// 		quiz2Called=true;
+		// 		quizOn=true;
+		// 		correctAnswer=2;
+		// 		Player.move_spd=0;
+		// 		quizLoopOn=true;								 
+		// 	}
+		// }
 		//third quiz (currently used for testing, change for real game.) 
 		//Quiz turns on once the player enters level_curr==3, for other quizzes just copy this code and change the trigger. 
 		if(level_cur==3)
 		{
-			if(quiz3Called==false)
+			if(quiz3Called==false && quizTutorChatCompleted==1)
 			{
 				//boolean check so the quiz doesn't open every time they hit level 3.
-				quizQuestion="Greetings wanderer\nAnswer my riddle to pass through\n Should this quiz work?";answerA="1. yes";answerB="2. no";answerC="3. definitely not";
+				quizQuestion="Answer my riddle to pass through\n Should this quiz work?";answerA="1. yes";answerB="2. no";answerC="3. definitely not";
 				quiz3Called=true;	quizOn=true;correctAnswer=1;Player.move_spd=0; quizLoopOn=true; quizInfo="";
 			}
 		}
@@ -1333,6 +1337,27 @@ int SDL_main(int argc, char *argv[])
 				buttonVis=0;
 				nextChat=0;
 				forestManChatCompleted=1;
+			}
+		}
+		if(level_cur==3){
+			if(quizTutorChatCompleted==0)
+			{
+				buttonVis=1;
+				strcpy(buttonTexts, "Hello wanderer");
+			}
+			if(nextChat==1)
+			{
+				strcpy(buttonTexts, "To learn more about the enemies you will face");
+			}
+			if(nextChat==2)
+			{
+				strcpy(buttonTexts, "You must learn about them.. complete quizzes to learn more");
+			}
+			if(nextChat==3)
+			{
+				buttonVis=0;
+				nextChat=0;
+				quizTutorChatCompleted=1;
 			}
 		}
 		/*
