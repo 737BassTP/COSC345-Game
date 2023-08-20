@@ -29,6 +29,7 @@ weather$TIME <- sub("^[^ ]+ ", "", weather$TIME)
 weather$TIME <- ifelse(weather$TIME == "1899-12-31", "00:00:00", weather$TIME)
 # weather$TIME <- as_datetime(weather$TIME, format = "%H:%M:%S")
 weather$TIME <- hms(weather$TIME)
+# identify missing data
 # for (i in 2:length(weather$TIME)) {
 #   if (!((weather$TIME[i] - weather$TIME[i - 1]) %in% c("5M 0S", "-23H -55M 0S", "1H -55M 0S"))) {
 #     print(i)
@@ -72,73 +73,63 @@ for (i in 1:(length(date_intervals) - 1)) {
   subset <- weather %>% filter(DATE >= interval_start, DATE <= interval_end)
   sub_weather[[i]] <- subset
 }
-
-# winter1 <- sub_weather[[1]]
-# winter2 <- sub_weather[[2]]
-# winter2 <- sub_weather[[3]]
-# winter3 <- sub_weather[[4]]
-# winter4 <- sub_weather[[5]]
-# winter5 <- sub_weather[[6]]
-# winter6 <- sub_weather[[7]]
-# 
-# spring1 <- sub_weather[[8]]
-# spring2 <- sub_weather[[9]]
-# spring3 <- sub_weather[[10]]
-# spring4 <- sub_weather[[11]]
-# spring5 <- sub_weather[[12]]
-# spring6 <- sub_weather[[13]]
-# spring7 <- sub_weather[[14]]
-# 
-# summer1 <- sub_weather[[15]]
-# summer2 <- sub_weather[[16]]
-# summer3 <- sub_weather[[17]]
-# summer4 <- sub_weather[[18]]
-# summer5 <- sub_weather[[19]]
-# summer6 <- sub_weather[[20]]
-# summer7 <- sub_weather[[21]]
-# 
-# autumn1 <- sub_weather[[22]]
-# autumn2 <- sub_weather[[23]]
-# autumn3 <- sub_weather[[24]]
-# autumn4 <- sub_weather[[25]]
-# autumn5 <- sub_weather[[26]]
-# autumn6 <- sub_weather[[27]]
-# autumn7 <- sub_weather[[28]]
 ```
-Generate a year of random data
+
+Generate 10 years of random data
+
 ```{r}
 weather2 <- data.frame()
-for (i in 1:28) {
-  start_date <- min(sub_weather[[i]]$DATE)
-  end_date <- max(sub_weather[[i]]$DATE)
-  dates <- seq(start_date, end_date, by = "1 days")
 
-  chosen_days <- sample(x = dates, size = 1, replace = FALSE)
+for (i in 1:10) {
+    for (i in 1:28) {
+    start_date <- min(sub_weather[[i]]$DATE)
+    end_date <- max(sub_weather[[i]]$DATE)
+    dates <- seq(start_date, end_date, by = "1 days")
   
-  week <- sub_weather[[i]] %>% 
-    filter(DATE %in% chosen_days) # this filters in order so even if chosen_days is not sorted week will be
-  weather2 <- rbind(weather2, week)
+    chosen_days <- sample(x = dates, size = 1, replace = FALSE)
+    
+    week <- sub_weather[[i]] %>% 
+      filter(DATE %in% chosen_days) # this filters in order so even if chosen_days is not sorted week will be
+    weather2 <- rbind(weather2, week)
+  }
 }
 
 print(all(diff(weather2$DATE) >= 0))
 print(unique(weather2$DATE))
 ```
-Can replace part of data frame with vector
-```{r}
-x <- c(1, 2, 3, 4, 5)
-y <- c(5, 4, 3, 2, 1)
-df <- data.frame(x, y)
-df$x
-df$x[2:4] <- c(6, 7, 8)
-df
-```
 Blend between days
-```{r}
 
+```{r}
+weather2$TIME[1] - weather2$TIME[10]
+times <- weather2$TIME[253:325]
+
+for (i in 1:(length(unique(weather2$DATE)) - 1)) {
+  nine_idx <- (i * 288) - 35
+  three_idx <- (i * 288) + 37
+  # transitional_period <- weather2[(i*288-35):(i*288+37)]
+  if (nine_idx >= 1 && three_idx <= nrow(weather2)) {
+    
+    for (col in colnames(weather2)) {
+      if (col %in% c("DATE", "TIME")) {
+        next
+      }
+      weather2[[col]][(i*288-35):(i*288+37)] <- round(seq(from = weather2[[col]][i*288-35], to = weather2[[col]][i*288+37], length.out = 73), (nchar(as.character(weather2[[col]][1] - floor(weather2[[col]][1])))-2))
+    }  
+  }
+}
+
+plot(weather2$TEMP, pch = 20)
+```
+
+Output data to csv
+
+```{r}
+write.csv(weather2, file="weather_10yrs.csv")
 ```
 
 
 Rain data. It rains 3.076% of the time. Most of the time it only rains for 5 mins
+
 ```{r}
 rain <- data.frame(date=weather$DATE, time=weather$TIME, rain=ifelse(weather$RAIN == 0, 0, 1))
 plot(rain$date, rain$rain, pch=16)
