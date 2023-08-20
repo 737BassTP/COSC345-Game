@@ -82,7 +82,7 @@ int SDL_main(int argc, char *argv[])
 	
 	//rain
 	rain_create();
-	
+	snow_create();
 	//Set up SDL2.
 	//void SDL_SetMainReady(void);
 	//int flags = SDL_INIT_VIDEO|SDL_INIT_AUDIO;
@@ -147,6 +147,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *spr_hudshade = IMG_LoadTexture(renderer,"img/hudshade.png");
 	SDL_Texture *spr_enemy1 = IMG_LoadTexture(renderer,"img/spr_enemy1.png");
 	SDL_Texture *penguinSamImg = IMG_LoadTexture(renderer,"img/sammy.png");
+	SDL_Texture *snowflake = IMG_LoadTexture(renderer,"img/snowflake.png");
 	//Player.
 	SDL_Texture *sprstrip_player = IMG_LoadTexture(renderer,"img/player_strip8.png");
 	//Text.
@@ -410,11 +411,13 @@ int SDL_main(int argc, char *argv[])
 			{
 				waterOn=1;
 				activateAllWaterParticles();
+				activateAllSnowParticles();
 			}
 			else
 			{
 				waterOn=0;
 				deactivateAllWaterParticles();
+				deactivateAllSnowParticles();
 			}
 		}
 		//Popup window.
@@ -596,8 +599,8 @@ int SDL_main(int argc, char *argv[])
 				{
 					if(waterSlow==1)
 					{
-						if (rand() % 2 == 0)
-						{ //every drop that hits bottom of screen has 50% chance of dissapearing with waterSlow toggled.
+						if (rand() % 4 < 3)
+						{ //every drop that hits bottom of screen has 75% chance of dissapearing with waterSlow toggled.
 							waterParticles[i].active = 0; // Set active to 0 (false)
 						} 
 						else
@@ -608,6 +611,33 @@ int SDL_main(int argc, char *argv[])
 					else
 					{
 						createWaterParticle(i, screen_w, screen_h);
+					}
+                }
+            }
+        }
+		//snow fall loop
+		for (int i = 0; i < MAX_SNOW_PARTICLES; i++) 
+		{
+            if (snowParticles[i].active) 
+			{
+                snowParticles[i].y += snowParticles[i].speed;
+                // Check if particle has reached the bottom of the window
+                if (snowParticles[i].y > screen_h) 
+				{
+					if(snowSlow==1)
+					{
+						if (rand() % 4 < 3)
+						{ //every drop that hits bottom of screen has 75% chance of dissapearing with waterSlow toggled.
+							snowParticles[i].active = 0; // Set active to 0 (false)
+						} 
+						else
+						{
+							createSnowParticle(i, screen_w, screen_h);
+						}
+					}
+					else
+					{
+						createSnowParticle(i, screen_w, screen_h);
 					}
                 }
             }
@@ -1003,7 +1033,6 @@ int SDL_main(int argc, char *argv[])
         // }
 		// }
 		//for all randomly spawned enemies.
-
 		for (int i = 0; i < MAX_ENEMIES; i++) 
 		{
 			struct Enemy* currentEnemy = &enemies[i];
@@ -1236,6 +1265,14 @@ int SDL_main(int argc, char *argv[])
 			if (waterParticles[i].active) 
 			{
 				draw_image(renderer, waterParticles[i].x, waterParticles[i].y, waterParticles[i].x + 5, waterParticles[i].y + 15, spr_water);
+			}
+		}
+		// Draw snow particles
+		for (int i = 0; i < MAX_SNOW_PARTICLES; i++) 
+		{
+			if (snowParticles[i].active) 
+			{
+				draw_image(renderer, snowParticles[i].x, snowParticles[i].y, snowParticles[i].x + 25, snowParticles[i].y + 25, snowflake);
 			}
 		}
 		//npc stuff
