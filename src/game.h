@@ -24,6 +24,13 @@ struct WaterParticle
     float speed;
     int active;
 };
+struct SnowParticle
+{
+    int x;
+    int y;
+    int speed;
+    int active;
+}; 
 //Pushable block.
 struct pushblock
 {
@@ -34,13 +41,18 @@ struct pushblock
 
 //initialize number of water particles wanted
 const int MAX_WATER_PARTICLES;
+const int MAX_SNOW_PARTICLES;
 struct WaterParticle* waterParticles;
+struct SnowParticle* snowParticles;
 int waterOn; //decide if raining or not
 int waterSlow;//turn on to have rain fade away instead of turning off instantly
+int snowSlow;
 void createWaterParticle(int index, int window_width, int window_height);//function to create water particle.
 void activateAllWaterParticles();//function to reactivate water particles
-void deactivateAllWaterParticles();//deactivate them all
-
+void deactivateAllWaterParticles();//deactivate them all. To have the water slowly fade away instead of toggle off, toggle rainSlow to 1.
+void createSnowParticle(int index, int window_width, int window_height);
+void activateAllSnowParticles();//activate all snow
+void deactivateAllSnowParticles();//deactivate all snow. To have the snow slowly fade away instead of turn off, toggle snowSlow to 1.
 //Health System test
 int health;
 int maxHealth;
@@ -59,5 +71,5 @@ int clock_is_between(int time,int h1,int m1,int h2,int m2);
 double temp_ctof(int c);//Celsius to Fahrenheit.
 
 void rain_create();
-
+void snow_create();
 #endif
