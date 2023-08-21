@@ -52,6 +52,12 @@ Entry point.
 */
 int SDL_main(int argc, char *argv[])
 {
+	/*!
+	* Doxygen test in the main function.
+	* \file main.c
+	* Ran from main.c
+	*/
+	
 	//Error printing.
 	const size_t bufsize = 0x100;
 	char errmsg[bufsize];
