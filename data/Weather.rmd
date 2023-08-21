@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 Setup chunk - run this to load the data.
 
 Set working directory, install packages, load packages, load data, lubridate.
-Data is missing for October 31st at 23:55:00 so insert data at that time equal to the previous reading.
+Data is missing for October 31st at 23:55:00 so insert row equal to mean of predecessor and successor.
 
 ```{r}
 rm(list=ls())
@@ -55,7 +55,7 @@ weather$MAXGUST[44064] = 1.8
 weather$GUSTIME[44064] = 2350
 ```
 
-Segment the data into 28 segments. Seasons are one week long.
+Segment the data into 28 segments. Each sub_weather is 13 days long
 
 ```{r}
 library(dplyr)
@@ -75,13 +75,13 @@ for (i in 1:(length(date_intervals) - 1)) {
 }
 ```
 
-Generate 10 years of random data
+Generate 10 years of random data, with each year being 28 days long.
 
 ```{r}
 weather2 <- data.frame()
 
 for (i in 1:10) {
-    for (i in 1:28) {
+  for (i in 1:28) {
     start_date <- min(sub_weather[[i]]$DATE)
     end_date <- max(sub_weather[[i]]$DATE)
     dates <- seq(start_date, end_date, by = "1 days")
@@ -93,11 +93,8 @@ for (i in 1:10) {
     weather2 <- rbind(weather2, week)
   }
 }
-
-print(all(diff(weather2$DATE) >= 0))
-print(unique(weather2$DATE))
 ```
-Blend between days
+Blend between days by making the data between 9pm and 3am linear progressions.
 
 ```{r}
 weather2$TIME[1] - weather2$TIME[10]
@@ -121,7 +118,7 @@ for (i in 1:(length(unique(weather2$DATE)) - 1)) {
 plot(weather2$TEMP, pch = 20)
 ```
 
-Add season and day of week
+Add season and day of week.
 
 ```{r}
 day <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
