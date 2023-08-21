@@ -55,6 +55,7 @@ int SDL_main(int argc, char *argv[])
 	/*!
 	* Doxygen test in the main function.
 	* \file main.c
+	* @file main.c
 	* Ran from main.c
 	*/
 	
