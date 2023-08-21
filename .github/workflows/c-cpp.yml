@@ -16,7 +16,8 @@ jobs:
       - name: Install Doxygen
         run: |
           choco install doxygen.portable -y
-          export PATH="/c/tools/doxygen:$PATH"
+          $env:PATH = "/c/tools/doxygen;$env:PATH"
+
       
       # Add a step to generate documentation using Doxygen
       - name: Generate Documentation
