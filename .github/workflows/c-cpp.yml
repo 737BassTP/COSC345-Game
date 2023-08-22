@@ -7,10 +7,9 @@ on:
     branches: [ "main" ]
 
 jobs:
+  # Build job: Make executable from source.
   build:
-
     runs-on: windows-latest
-
     steps:
     - uses: actions/checkout@v3
     # Add a step to install Doxygen
@@ -37,3 +36,14 @@ jobs:
       run: make check
     - name: Run ? (make distcheck).
       run: make distcheck
+  
+  # Codecov job: Run CodeCov.
+  codecov:
+    if: ${{ always() }} # always run this job even if previous jobs failed.
+    needs: build # run this job after "build" job has finished.
+    runs-on: windows-latest
+    steps:
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
