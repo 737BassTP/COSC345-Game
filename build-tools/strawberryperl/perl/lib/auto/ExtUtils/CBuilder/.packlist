@@ -1,0 +1,14 @@
+D:\Strawberry\perl\lib\ExtUtils\CBuilder.pm
+D:\Strawberry\perl\lib\ExtUtils\CBuilder\Base.pm
+D:\Strawberry\perl\lib\ExtUtils\CBuilder\Platform\Unix.pm
+D:\Strawberry\perl\lib\ExtUtils\CBuilder\Platform\VMS.pm
+D:\Strawberry\perl\lib\ExtUtils\CBuilder\Platform\Windows.pm
+D:\Strawberry\perl\lib\ExtUtils\CBuilder\Platform\Windows\BCC.pm
+D:\Strawberry\perl\lib\ExtUtils\CBuilder\Platform\Windows\GCC.pm
+D:\Strawberry\perl\lib\ExtUtils\CBuilder\Platform\Windows\MSVC.pm
+D:\Strawberry\perl\lib\ExtUtils\CBuilder\Platform\aix.pm
+D:\Strawberry\perl\lib\ExtUtils\CBuilder\Platform\android.pm
+D:\Strawberry\perl\lib\ExtUtils\CBuilder\Platform\cygwin.pm
+D:\Strawberry\perl\lib\ExtUtils\CBuilder\Platform\darwin.pm
+D:\Strawberry\perl\lib\ExtUtils\CBuilder\Platform\dec_osf.pm
+D:\Strawberry\perl\lib\ExtUtils\CBuilder\Platform\os2.pm
