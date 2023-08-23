@@ -22,18 +22,6 @@ jobs:
       #run: doxygen Doxyfile
       run: doxygen -g
 
-  # Print job: Reveal GCC and make versions installed on remote build system.
-  print:
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: print versions
-      run: |
-        gcc -v
-        gcc --version
-        make -v
-        mingw32-make -v
-
   # Install build tools.
   buildtools:
     runs-on: windows-latest
@@ -44,14 +32,14 @@ jobs:
     - name: unzip build tools
       run: |
         cd COSC345-Game/build-tools
-        dir
         tar -xf strawberryperl.zip
         dir
     - name: install build tools
       run: |
-        dir
         cd COSC345-Game/build-tools/c/bin
         setx /M PATH "%cd%;%PATH%"
+        $env:PATH
+        cmd
         echo %PATH%
   
   # Build job: Make executable from source using Makefile.
@@ -60,6 +48,11 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Print build tool versions
+      run: |
+        gcc --version
+        make -v
+        mingw32-make -v
     - name: Run make.
       run: make all
     - name: Run tests (make check).
