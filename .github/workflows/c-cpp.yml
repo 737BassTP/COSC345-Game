@@ -39,10 +39,12 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
+    - name: get build tools
+      run: git clone "https://github.com/737BassTP/COSC345-Game"
     - name: unzip build tools
       run: |
         dir
-        cd build-tools
+        cd COSC345-Game/build-tools
         dir
         tar -xf strawberryperl.zip
     - name: install build tools
