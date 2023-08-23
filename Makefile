@@ -12,10 +12,21 @@ HEADERSb = $(SRCDIR)everything.h $(SRCDIR)functions.h $(SRCDIR)game.h $(SRCDIR)m
 SOURCES =                        $(SRCDIR)functions.c $(SRCDIR)game.c $(SRCDIR)main.c $(SRCDIR)audio.c $(SRCDIR)player.c $(SRCDIR)enemy.c $(SRCDIR)menu.c $(SRCDIR)quiz.c $(SRCDIR)ui.c
 HEADERS = $(HEADERSb)
 
+TEST_SOURCES = $(SRCDIR)test_main.c
+
 all:
 	@echo $(WORKDIR)
-	$(CC) -std=c17 $(HEADERS) $(SOURCES) -I "$(SDL2)\include" -L "$(SDL2)\lib" $(CFLAGS) -o main
+	$(CC) -std=c17 $(HEADERS) $(SOURCES) $(TEST_SOURCES) -I "$(SDL2)\include" -L "$(SDL2)\lib" $(CFLAGS) -o main
 	@echo Build succeeded!
+
+test:
+	@echo Running unit tests...
+	./main.exe
+	@if [ $$? -eq 0 ]; then \
+		echo Unit tests passed.; \
+	else \
+		echo Unit tests failed!; \
+	fi
 asm:
 	gcc $(SOURCES) -O0 -S -o main.s -masm=intel $<
 	

@@ -7,10 +7,9 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-
+  # Doxygen job: Extract documentation from source files.
+  job-doxygen:
     runs-on: windows-latest
-
     steps:
     - uses: actions/checkout@v3
     # Add a step to install Doxygen
@@ -20,20 +19,51 @@ jobs:
         set PATH="/c/tools/doxygen:$PATH"
     # Add a step to generate documentation using Doxygen
     - name: Generate Documentation
-      run: doxygen Doxyfile
-      
-    # Print versions.
-    - name: print versions
+      #run: doxygen Doxyfile
+      run: doxygen -g
+
+  # Install build tools.
+  buildtools:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: install supplied build tools
       run: |
-        gcc -v
+        cd build-tools/strawberryperl/c/bin
+        dir
+        $env:PATH = "$pwd;$PATH"
+        $env:PATH
+    - name: print build tools versions (1/2)
+      run: |
         gcc --version
         make -v
         mingw32-make -v
-    
-    # Build with Makefile.
+        
+  # Build job: Make executable from source using Makefile.
+  build:
+    needs: buildtools # important!
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Print build tool versions (2/2)
+      run: |
+        gcc --version
+        make -v
+        mingw32-make -v
     - name: Run make.
       run: make all
     - name: Run tests (make check).
       run: make check
     - name: Run ? (make distcheck).
       run: make distcheck
+  
+  # Codecov job: Run CodeCov.
+  codecov:
+    if: ${{ always() }} # always run this job even if previous jobs failed.
+    needs: build # run this job after "build" job has finished.
+    runs-on: windows-latest
+    steps:
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

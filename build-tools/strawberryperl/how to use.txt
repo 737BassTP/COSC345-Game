@@ -1,0 +1,30 @@
+how to use (for COSC345-Game)
+
+1: Unzipping
+	1a: Unzip strawberryperl.zip to e.g "C:\Strawberry"
+	1b: Navigate to the "C:\Strawberry\c\bin" folder.
+	1c: Copy this path to the clipboard.
+
+2: Update Environment Variable (system, not user)
+	2a: On the keyboard, hold the Windows-button and press Pause/Break (near PrintScreen and ScrollLock).
+	2b: On the right side, click "Advanced system settings".
+	2c: Near the bottom, click "Environment Variables".
+	2d1: Here are two views; use the bottom view (system variables).
+	2d2: Scroll down to "Path", then double-click it.
+	2e1: Click "New".
+	2e2: Paste from the clipboard, so it reads e.g "C:\Strawberry\c\bin".
+	2e3: Press Enter on the keyboard to confirm.
+	2f1: Use "Move up" to move it to the top of the list, or at least above other GCC/MinGW compilers.
+	2f2: If you are unsure, just move it all the way to the top (press multiple times).
+	2g: Click "OK" on the 3 windows you previously opened, then close the 4th window.
+
+3: Check that it works.
+	3a: Run cmd.exe
+	3b: Type "gcc --version" and press Enter.
+	3c: The first line should read "gcc (x86_64-posix-seh, Built by strawberryperl.com project) 8.3.0".
+
+4: Compile COSC345-Game
+	4a: Navigate to the repository.
+	4b: Once the prompt is in the repository, type "make all" and press Enter.
+	4c: Success?
+
