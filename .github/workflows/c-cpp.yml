@@ -43,12 +43,13 @@ jobs:
       run: git clone "https://github.com/737BassTP/COSC345-Game"
     - name: unzip build tools
       run: |
-        dir
         cd COSC345-Game/build-tools
         dir
         tar -xf strawberryperl.zip
+        dir
     - name: install build tools
       run: |
+        dir
         cd c/bin
         setx /M PATH "%cd%;%PATH%"
   
