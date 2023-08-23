@@ -43,6 +43,7 @@ jobs:
       run: |
         dir
         cd build-tools
+        dir
         tar -xf strawberryperl.zip
     - name: install build tools
       run: |
