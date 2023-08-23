@@ -34,7 +34,7 @@ jobs:
         make -v
         mingw32-make -v
 
-  # Download build tools.
+  # Install build tools.
   buildtools:
     runs-on: windows-latest
     steps:
@@ -45,7 +45,11 @@ jobs:
         # working-directory: ./build-tools
     - name: unzip build tools
       run: |
-        cd COSC345-Game/build-tools
+        dir
+        cd COSC345-Game
+        dir
+        cd build-tools
+        dir
         tar -xf strawberry-perl.zip
     - name: install build tools
       run: |
