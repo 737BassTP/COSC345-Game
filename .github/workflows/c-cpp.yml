@@ -42,7 +42,7 @@ jobs:
     - name: get build tools
       run: |
         git clone "https://github.com/737BassTP/COSC345-Game"
-        REM working-directory: ./build-tools
+        # working-directory: ./build-tools
     - name: unzip build tools
       run: |
         cd COSC345-Game/build-tools
