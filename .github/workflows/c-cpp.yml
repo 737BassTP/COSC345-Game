@@ -27,26 +27,25 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
-    - name: get build tools
-      run: git clone "https://github.com/737BassTP/COSC345-Game"
-    - name: unzip build tools
+    - name: install supplied build tools
       run: |
-        cd COSC345-Game/build-tools
-        tar -xf strawberryperl.zip
         dir
-    - name: install build tools
-      run: |
-        cd COSC345-Game/build-tools/c/bin
+        cd build-tools/c/bin
         $env:PATH = "$pwd;$PATH"
-        $env:PATH  
-  
+        $env:PATH
+    - name: print build tools versions (1/2)
+      run: |
+        gcc --version
+        make -v
+        mingw32-make -v
+        
   # Build job: Make executable from source using Makefile.
   build:
     needs: buildtools # important!
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Print build tool versions
+    - name: Print build tool versions (2/2)
       run: |
         gcc --version
         make -v
