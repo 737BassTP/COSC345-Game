@@ -7,20 +7,28 @@ on:
     branches: [ "main" ]
 
 jobs:
-  # Build job: Make executable from source.
-  build:
-    runs-on: windows-latest
+  # Doxygen job: Extract documentation from source files.
+  job-doxygen:
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     # Add a step to install Doxygen
-    - name: Install Doxygen
-      run: |
-        choco install doxygen.portable -y
-        set PATH="/c/tools/doxygen:$PATH"
+    # Try to assume Doxygen is already installed.
+    #- name: Install Doxygen
+    #  run: |
+    #    choco install doxygen.portable -y
+    #    set PATH="/c/tools/doxygen:$PATH"
     # Add a step to generate documentation using Doxygen
     - name: Generate Documentation
-      run: doxygen Doxyfile
-      
+      #run: doxygen Doxyfile
+      run: doxygen -g
+  
+  # Build job: Make executable from source.
+  build:
+    runs-on: ubuntu-latest # proposed by Sean.
+    steps:
+    - uses: actions/checkout@v3
+    
     # Print versions.
     - name: print versions
       run: |
