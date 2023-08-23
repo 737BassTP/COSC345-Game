@@ -50,8 +50,9 @@ jobs:
     - name: install build tools
       run: |
         dir
-        cd c/bin
+        cd COSC345-Game/build-tools/c/bin
         setx /M PATH "%cd%;%PATH%"
+        echo %PATH%
   
   # Build job: Make executable from source using Makefile.
   build:
