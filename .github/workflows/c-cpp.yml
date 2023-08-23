@@ -9,35 +9,55 @@ on:
 jobs:
   # Doxygen job: Extract documentation from source files.
   job-doxygen:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
     # Add a step to install Doxygen
-    # Try to assume Doxygen is already installed.
-    #- name: Install Doxygen
-    #  run: |
-    #    choco install doxygen.portable -y
-    #    set PATH="/c/tools/doxygen:$PATH"
+    - name: Install Doxygen
+      run: |
+        choco install doxygen.portable -y
+        set PATH="/c/tools/doxygen:$PATH"
     # Add a step to generate documentation using Doxygen
     - name: Generate Documentation
       #run: doxygen Doxyfile
       run: doxygen -g
-  
-  # Build job: Make executable from source.
-  build:
-    runs-on: ubuntu-latest # proposed by Sean.
+
+  # Print job: Reveal GCC and make versions installed on remote build system.
+  print:
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
-    
-    # Print versions.
     - name: print versions
       run: |
         gcc -v
         gcc --version
         make -v
         mingw32-make -v
-    
-    # Build with Makefile.
+
+  # Download build tools.
+  buildtools:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: get build tools
+      run: |
+        git clone "https://github.com/737BassTP/COSC345-Game"
+        REM working-directory: ./build-tools
+    - name: unzip build tools
+      run: |
+        cd COSC345-Game/build-tools
+        tar -xf strawberry-perl.zip
+    - name: install build tools
+      run: |
+        cd strawberry-perl/c/bin
+        setx /M PATH "%cd%;%PATH%"
+  
+  # Build job: Make executable from source using Makefile.
+  build:
+    needs: buildtools # important!
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
     - name: Run make.
       run: make all
     - name: Run tests (make check).
