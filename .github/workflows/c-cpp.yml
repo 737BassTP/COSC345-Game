@@ -37,10 +37,8 @@ jobs:
     - name: install build tools
       run: |
         cd COSC345-Game/build-tools/c/bin
-        setx /M PATH "%cd%;%PATH%"
-        $env:PATH
-        cmd
-        echo %PATH%
+        $env:PATH = "$pwd;$PATH"
+        $env:PATH  
   
   # Build job: Make executable from source using Makefile.
   build:
