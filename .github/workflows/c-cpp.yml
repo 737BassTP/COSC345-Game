@@ -32,7 +32,7 @@ jobs:
         run: |
           gcc --version
           make -v
-        mingw32-make -v
+          mingw32-make -v
         
   # Build job: Make executable from source using Makefile.
   build:
