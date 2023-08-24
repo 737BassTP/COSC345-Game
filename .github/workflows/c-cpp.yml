@@ -43,6 +43,9 @@ jobs:
         run: |
           $current_dir = Get-Location
           choco install make
+          $make_dir = (Get-Command make).Source
+          $env:PATH = "$make_dir;$env:PATH"
+          where.exe make
           cd build-tools/strawberryperl/c/bin
           dir
           $env:PATH = "$pwd;$PATH"
