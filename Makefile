@@ -8,24 +8,22 @@ CFLAGS = -Wall -Wextra -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -g $(
 SRCDIR = ./src/
 
 HEADERSa = 
-HEADERSb = $(SRCDIR)everything.h $(SRCDIR)functions.h $(SRCDIR)game.h $(SRCDIR)main.h $(SRCDIR)audio.h $(SRCDIR)player.h $(SRCDIR)enemy.h $(SRCDIR)menu.h $(SRCDIR)quiz.h $(SRCDIR)ui.h
-SOURCES =                        $(SRCDIR)functions.c $(SRCDIR)game.c $(SRCDIR)main.c $(SRCDIR)audio.c $(SRCDIR)player.c $(SRCDIR)enemy.c $(SRCDIR)menu.c $(SRCDIR)quiz.c $(SRCDIR)ui.c
+HEADERSb = $(SRCDIR)everything.h $(SRCDIR)functions.h $(SRCDIR)game.h $(SRCDIR)main.h $(SRCDIR)audio.h $(SRCDIR)player.h $(SRCDIR)enemy.h $(SRCDIR)menu.h $(SRCDIR)quiz.h $(SRCDIR)ui.h $(SRCDIR)unittest.h
+SOURCES =                        $(SRCDIR)functions.c $(SRCDIR)game.c $(SRCDIR)main.c $(SRCDIR)audio.c $(SRCDIR)player.c $(SRCDIR)enemy.c $(SRCDIR)menu.c $(SRCDIR)quiz.c $(SRCDIR)ui.c $(SRCDIR)unittest.c
 HEADERS = $(HEADERSb)
-
-TEST_SOURCES = $(SRCDIR)test_main.c
 
 all:
 	@echo $(WORKDIR)
-	$(CC) -std=c17 $(HEADERS) $(SOURCES) $(TEST_SOURCES) -I "$(SDL2)\include" -L "$(SDL2)\lib" $(CFLAGS) -o main
+	$(CC) -std=c17 $(HEADERS) $(UNITTEST_HEADERS) $(SOURCES) $(UNITTEST_SOURCES) -I "$(SDL2)\include" -L "$(SDL2)\lib" $(CFLAGS) -o main
 	@echo Build succeeded!
 
 test:
 	@echo Running unit tests...
-	./main.exe
+	./main.exe unittest
 	@if [ $$? -eq 0 ]; then \
-		echo Unit tests passed.; \
+		echo All unit tests passed.; \
 	else \
-		echo Unit tests failed!; \
+		echo Some unit tests failed!; \
 	fi
 asm:
 	gcc $(SOURCES) -O0 -S -o main.s -masm=intel $<

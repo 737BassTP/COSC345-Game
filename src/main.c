@@ -59,6 +59,27 @@ int SDL_main(int argc, char *argv[])
 	* Ran from main.c
 	*/
 	
+	//Handle command-line arguments.
+	if (argc >= 2)
+	{
+		//Unit testing with "unittest".
+		//Will quit the game after all tests.
+		const char* unittest = "unittest";
+		if (strcmp(argv[1],"unittest") == 0)
+		{
+			int ret = 0;
+			printf("Unit testing will start:\n");
+			ret = unit_test_all();
+			printf("Unit testing is complete!\nIt found %i errors!\n",ret);
+			return ret;
+		}
+		//Invalid command-line argument.
+		else
+		{
+			printf("No such argument exists!\nGot: %s\n",argv[1]);
+		}
+	}
+	
 	//Error printing.
 	const size_t bufsize = 0x100;
 	char errmsg[bufsize];

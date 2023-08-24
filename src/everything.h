@@ -15,5 +15,6 @@
 #include "player.h"
 #include "quiz.h"
 #include "ui.h"
+#include "unittest.h"
 
 #endif
