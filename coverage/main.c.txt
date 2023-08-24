@@ -1,0 +1,1552 @@
+        -:    0:Source:src/main.c
+        -:    0:Programs:17
+        -:    1:/*
+        -:    2:COSC345 - Game
+        -:    3:
+        -:    4:Authors: (sorted alphabetically)
+        -:    5:	Matthew Yi
+        -:    6:	Nicholas Campbell
+        -:    7:	Sven Russell
+        -:    8:	Thomas Pedersen
+        -:    9:
+        -:   10:SDL2 Documentation:
+        -:   11:https://wiki.libsdl.org/SDL2/APIByCategory
+        -:   12:
+        -:   13:*/
+        -:   14:
+        -:   15://Includes.
+        -:   16:#include "everything.h"
+        -:   17:
+        -:   18:#include <math.h>
+        -:   19:#include <stdarg.h> //for variadic functions.
+        -:   20:#include <stdbool.h>
+        -:   21:#include <stdio.h>
+        -:   22:#include <stdlib.h> // for rand() and srand()
+        -:   23:#include <string.h>
+        -:   24:#include <time.h>   // for time()
+        -:   25:
+        -:   26:/*
+        -:   27:Global variables and memory allocations.
+        -:   28:*/
+        -:   29://Dimensions.
+        -:   30:const int screen_w = 1366;
+        -:   31:const int screen_h = 768;
+        -:   32:
+        -:   33://Game area.
+        -:   34:const int win_game_x = (screen_w-screen_h)/2;//(1366-768)/2=299
+        -:   35:const int win_game_y = 0;
+        -:   36:const int win_game_w = screen_h;
+        -:   37:const int win_game_h = screen_h;//both are "h" to make it quadratic.
+        -:   38:const int win_game_x2 = win_game_x+win_game_w;
+        -:   39:const int win_game_y2 = win_game_y+win_game_h;
+        -:   40:const int win_game_tile_num = 16;//16 "tiles" per screen axis.
+        -:   41:const int win_game_tile_dim = 16;//each tile is 16 "pixels" along each axis.
+        -:   42:
+        -:   43://Scaling.
+        -:   44:int gw,gh;
+        -:   45:
+        -:   46://Structs.
+        -:   47:struct Enemy* globalEnemy = NULL; // Initialize the global pointer to NULL initially
+        -:   48:
+        -:   49:
+        -:   50:/*
+        -:   51:Entry point.
+        -:   52:*/
+        3:   53:int SDL_main(int argc, char *argv[])
+        3:   54:{
+        -:   55:	/*!
+        -:   56:	* Doxygen test in the main function.
+        -:   57:	* \file main.c
+        -:   58:	* @file main.c
+        -:   59:	* Ran from main.c
+        -:   60:	*/
+        -:   61:	
+        -:   62:	//Handle command-line arguments.
+        -:   63:	//!
+        -:   64:	//! command line args
+        -:   65:	//!
+        3:   66:	if (argc >= 2)
+        -:   67:	{
+        -:   68:		//Unit testing with "unittest".
+        -:   69:		//Will quit the game after all tests.
+    #####:   70:		const char* unittest = "unittest";
+    #####:   71:		if (strcmp(argv[1],"unittest") == 0)
+        -:   72:		{
+    #####:   73:			int ret = 0;
+    #####:   74:			printf("Unit testing will start:\n");
+    #####:   75:			ret = unit_test_all();
+    #####:   76:			printf("Unit testing is complete!\nIt found %i errors!\n",ret);
+       3*:   77:			return ret;
+        -:   78:		}
+        -:   79:		//Invalid command-line argument.
+        -:   80:		else
+        -:   81:		{
+    #####:   82:			printf("No such argument exists!\nGot: %s\n",argv[1]);
+        -:   83:		}
+        -:   84:	}
+        -:   85:	
+        -:   86:	//Error printing.
+        3:   87:	const size_t bufsize = 0x100;
+        3:   88:	char errmsg[bufsize];
+        -:   89:	
+        -:   90:	//Print SDL2 version.
+        -:   91:	if (1)
+        -:   92:	{
+        -:   93:		SDL_version sdlver_compiled;
+        -:   94:		SDL_version sdlver_linked;
+        3:   95:		SDL_VERSION(&sdlver_compiled);
+        3:   96:		SDL_GetVersion(&sdlver_linked);
+        3:   97:		SDL_Log("Compiled with SDL version %u.%u.%u ...\n",sdlver_compiled.major,sdlver_compiled.minor,sdlver_compiled.patch);
+        3:   98:		SDL_Log("Linked against SDL version %u.%u.%u.\n",sdlver_linked.major,sdlver_linked.minor,sdlver_linked.patch);
+        -:   99:	}
+        -:  100:	
+        -:  101:	//Scaling.
+        3:  102:	gw = screen_h/sqr(win_game_tile_num);// == 3, an int (for res. 1366/768 and 16x 16*16 px tiles per axis).
+        3:  103:	gh = gw;
+        -:  104:
+        -:  105:	//SDL2 structs.
+        -:  106:	SDL_Surface* surface;
+        -:  107:    SDL_Window* window;
+        -:  108:    SDL_Renderer* renderer;
+        -:  109:    SDL_Event event;
+        -:  110:	
+        -:  111:	//initialize random number generator seed
+        3:  112:	srand(time(NULL));
+        -:  113:	
+        -:  114:	//rain
+        3:  115:	rain_create();
+        3:  116:	snow_create();
+        -:  117:	//Set up SDL2.
+        -:  118:	//void SDL_SetMainReady(void);
+        -:  119:	//int flags = SDL_INIT_VIDEO|SDL_INIT_AUDIO;
+        3:  120:	int flags = SDL_INIT_EVERYTHING;
+        3:  121:	if (SDL_Init(flags) != 0)
+        -:  122:	{
+    #####:  123:		printf("SDL init error:%s\n",SDL_GetError());
+    #####:  124:		return -1;
+        -:  125:	}
+        -:  126:	
+        -:  127:	//Create window (main window).
+        3:  128:	window = SDL_CreateWindow("COSC345 - Game",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,screen_w,screen_h,0);
+        3:  129:	if (!window)
+        -:  130:	{
+    #####:  131:		snprintf(errmsg, bufsize, "Window error");
+    #####:  132:		goto error;
+        -:  133:	}
+        -:  134:	//Create renderer.
+        3:  135:    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+        3:  136:    if (!renderer)
+        -:  137:    {
+    #####:  138:        snprintf(errmsg, bufsize, "Render error");
+    #####:  139:        goto error;
+        -:  140:    }
+        -:  141:    //Create the surface in RAM that we manipulate the pixels of.
+        3:  142:    surface = SDL_GetWindowSurface(window);
+        3:  143:    if (!surface)
+        -:  144:	{
+    #####:  145:        snprintf(errmsg, bufsize, "Surface error");
+    #####:  146:        goto error;
+        -:  147:    }
+        -:  148:	// Load a TTF font (adjust the file path and size as needed)
+        -:  149:	// Initialize SDL_ttf
+        3:  150:    if (TTF_Init() == -1)
+        -:  151:	{
+    #####:  152:        printf("SDL_ttf could not initialize! TTF_Error: %s\n", TTF_GetError());
+    #####:  153:        return 1;
+        -:  154:    }
+        3:  155:    TTF_Font* font = TTF_OpenFont("font.ttf", 12);
+        3:  156:    if (font == NULL)
+        -:  157:	{
+    #####:  158:        printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
+    #####:  159:        return 1;
+        -:  160:    }
+        -:  161:	//Create a renderer for the window
+        3:  162:    SDL_Renderer* rendererPop = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+        3:  163:    if (renderer == NULL)
+        -:  164:	{
+    #####:  165:        printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+        -:  166:    }
+        -:  167:	
+        -:  168:	//Images.
+        3:  169:	IMG_Init(IMG_INIT_PNG);
+        -:  170:	//SDL_Texture *spr_grass = IMG_LoadTexture(renderer,"image-test.png");
+        3:  171:	SDL_Texture *spr_grass = IMG_LoadTexture(renderer,"img/spr_grass.png");
+        3:  172:	SDL_Texture *spr_sand  = IMG_LoadTexture(renderer,"img/spr_sand.png");
+        3:  173:	SDL_Texture *spr_water = IMG_LoadTexture(renderer,"img/spr_water_strip16.png");
+        3:  174:	SDL_Texture *spr_lava  = IMG_LoadTexture(renderer,"img/spr_lava_strip16.png");
+        3:  175:	SDL_Texture *spr_water_shallow = IMG_LoadTexture(renderer,"img/spr_water_shallow_strip16.png");
+        3:  176:	SDL_Texture *spr_lava_shallow  = IMG_LoadTexture(renderer,"img/spr_lava_shallow_strip16.png");
+        3:  177:	SDL_Texture *spr_tileset = IMG_LoadTexture(renderer,"tiled/tileset.png");
+        3:  178:	SDL_Texture *spr_hudshade = IMG_LoadTexture(renderer,"img/hudshade.png");
+        3:  179:	SDL_Texture *spr_enemy1 = IMG_LoadTexture(renderer,"img/spr_enemy1.png");
+        3:  180:	SDL_Texture *penguinSamImg = IMG_LoadTexture(renderer,"img/sammy.png");
+        3:  181:	SDL_Texture *snowflake = IMG_LoadTexture(renderer,"img/snowflake.png");
+        -:  182:	//Player.
+        3:  183:	SDL_Texture *sprstrip_player = IMG_LoadTexture(renderer,"img/player_strip8.png");
+        -:  184:	//Text.
+        3:  185:	SDL_Texture *font_ascii = IMG_LoadTexture(renderer,"img/ascii_strip96.png");
+        3:  186:	int font_ascii_w = 8;
+        3:  187:	int font_ascii_h = 24;
+        -:  188:	
+        -:  189:	//Clock (digital).
+        3:  190:	SDL_Texture *spr_clock_digital = IMG_LoadTexture(renderer,"img/clock1_strip10.png");
+        3:  191:	int time_clock_max=1440;
+        3:  192:	int time_clock = 0;//range: 0-1439 = 00:00-23:59
+        3:  193:	int time_clock_fps=0;//rapidly emulate sub-seconds.
+        3:  194:	int time_clock_fps_max=57;//below 60 to accommodate for delays.
+        3:  195:	int time_clock_fps_multiplier=60;//1=1/1 second, 4=1/4 second.
+        3:  196:	char *timestr_a="Night";
+        3:  197:	char *timestr_b="Morning";
+        3:  198:	char *timestr_c="Day";
+        3:  199:	char *timestr_d="Evening";
+        3:  200:	int weekday=0;
+        3:  201:	char *weekday_string="MTWTFSS";
+        3:  202:	int monthday=0;//4 weeks=28 days.
+        -:  203:	char month_str[5];//e.g "21stNULL"
+        -:  204:	
+        -:  205:	//Game Level.
+        3:  206:	int level_size = sqr(win_game_tile_num);//16*16=256
+        3:  207:	int level_realms = 2;//overworld, underworld.
+        3:  208:	int level_count = 256*level_realms;
+        3:  209:	int level_layers = 2;
+        3:  210:	int level_cur=0;//256 = 16*16 
+        -:  211:	byte level_data[262144];//static; can not be free'd.
+        -:  212:	//262144 = 256*512*2 (level size * level count * level layers)
+        3:  213:	level_load(level_data,level_size,level_count,level_layers);
+        3:  214:	int lvl_off_obj=0x20000;
+        3:  215:	int lvl_yoff=(int)sqrt(level_count/level_realms);
+        -:  216:	
+        -:  217:	//Map.
+        3:  218:	SDL_Texture *spr_map = IMG_LoadTexture(renderer,"img/dunedin-map.png");
+        3:  219:	SDL_Texture *spr_mapicon_unknown = IMG_LoadTexture(renderer,"img/spr_map_unknown.png");
+        -:  220:	char mapstr_location[16];
+        3:  221:	level_get_name(level_cur,mapstr_location);
+        -:  222:	Uint32 mapvisit[16];//512 bools.
+        3:  223:	mapvisit[level_cur/32]=1<<(level_cur%32);
+        -:  224:	
+        -:  225:	//Temperature.
+        3:  226:	int temp_mode=0;//0=Celsius, 1=Fahrenheit.
+        3:  227:	int temp_cur=10;
+        -:  228:	char temp_str[5];//(-/+)xy*(C/F)
+        3:  229:	temp_str[3]="*"[0];
+        3:  230:	SDL_Texture *spr_thermometer = IMG_LoadTexture(renderer,"img/spr_thermometer.png");
+        3:  231:	byte temp_col=0x80;
+        -:  232:	
+        -:  233:	//Player.
+        -:  234:	struct player Player;
+        -:  235:	//struct pos Pos;
+        -:  236:	//Player.Pos = Pos;
+        3:  237:	Player.x = win_game_x + 8*gw*win_game_tile_dim;
+        3:  238:	Player.y = win_game_y + 8*gh*win_game_tile_dim;
+        3:  239:	Player.facedir = 0;
+        3:  240:	Player.anim_spd_cur = 0;//counter.
+        3:  241:	Player.anim_spd_spd = 1;//inc counter by spd per frame.
+        3:  242:	Player.anim_spd_wrap = 12;//inc sprite frame when counter exceeds this value.
+        3:  243:	Player.anim_cur = 0;//current sprite frame.
+        3:  244:	Player.anim_max = 2;//max sprite frame before rollover.
+        3:  245:	Player.move_spd = 3*4;
+        -:  246:	//damage stats
+        3:  247:	Player.attackRangeHeight=50;
+        3:  248:	Player.attackRangeWidth=15;
+        3:  249:	Player.damage=50;
+        3:  250:	Player.width=15;
+        3:  251:	Player.height=15;
+        3:  252:	updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
+        -:  253:
+        -:  254:	//test enemy
+        -:  255:	// struct Enemy enemy1;//Random player enemy
+        -:  256:	// initEnemy(&enemy1, 500, 500, 100, 100, 100, 10, spr_enemy1);//size, stats and image to go with it.
+        -:  257:	// globalEnemy = &enemy1;//making it the global enemy.
+        -:  258:
+        3:  259:	struct NPC* globalNpc = NULL;//global npc
+        -:  260:	struct NPC Tutor;//npc on level 016
+        -:  261:	struct NPC penguinSam;
+        -:  262:	struct NPC forestMan;
+        -:  263:	struct NPC Tutorlvl2;
+        -:  264:	struct NPC quizTutor;
+        3:  265:	initNPC(&Tutor, 900, 700,50, 50, 400, 400, 2, spr_enemy1, 16);//init tutor
+        3:  266:	addNPC(&Tutor);//add tutor to NPC array
+        3:  267:	initNPC(&Tutorlvl2, 900, 400,50, 50, 400, 400, 2, spr_enemy1, 1);//init tutor2
+        3:  268:	addNPC(&Tutorlvl2);//add tutor to NPC array
+        3:  269:	initNPC(&penguinSam, 700, 900,50, 50, 400, 400, 2, penguinSamImg, 110);//init sammyPenguin
+        3:  270:	addNPC(&penguinSam);
+        3:  271:	initNPC(&forestMan, 630, 520,50, 50, 400, 400, 2, spr_enemy1, 160);//init forestMan
+        3:  272:	addNPC(&forestMan);
+        3:  273:	initNPC(&quizTutor, 850, 520,50, 50, 400, 400, 2, spr_enemy1, 3);//init forestMan
+        3:  274:	addNPC(&quizTutor);
+        -:  275:	//Nutrients.
+        3:  276:	SDL_Texture *spr_nutrients = IMG_LoadTexture(renderer,"img/spr_nutrients_strip4.png");
+        -:  277:	
+        -:  278:	//Music.
+        -:  279:	//music_bootup();
+        3:  280:	const char *wavfile="music.wav";
+        -:  281:	SDL_AudioSpec wavspec;
+        -:  282:	Uint8 *wavbuffer;
+        -:  283:	Uint32 wavlength;
+        3:  284:	if (SDL_LoadWAV(wavfile, &wavspec, &wavbuffer, &wavlength) == NULL) 
+        -:  285:	{
+    #####:  286:        printf("Failed to load WAV file: %s\n", SDL_GetError());
+    #####:  287:        return;
+        -:  288:    }
+        -:  289:	AudioData audiodata;
+        3:  290:    audiodata.buffer = wavbuffer;
+        3:  291:    audiodata.length = wavlength;
+        3:  292:    audiodata.position = 0;
+        3:  293:	wavspec.callback = audioCallback;
+        3:  294:    wavspec.userdata = &audiodata;
+        -:  295:	
+        -:  296:	SDL_AudioDeviceID deviceid;
+        3:  297:	deviceid = SDL_OpenAudioDevice(NULL,0,&wavspec,NULL,0);
+        3:  298:	if (deviceid == 0)
+        -:  299:	{
+    #####:  300:        printf("Failed to open audio device: %s\n", SDL_GetError());
+    #####:  301:        SDL_FreeWAV(wavbuffer);
+    #####:  302:        return;
+        -:  303:    }
+        3:  304:	SDL_QueueAudio(deviceid,wavbuffer,wavlength);
+        3:  305:	SDL_PauseAudioDevice(deviceid,0);//0 is unpause
+        -:  306:	//SDL_MixAudioFormat(wavbuffer,wavbuffer,AUDIO_S16,wavlength,32);
+        -:  307:	//play_WAV(wavfile,&wavspec,&wavbuffer,&wavlength);
+        -:  308:	
+        -:  309:	
+        -:  310:	//Splash intro screen.
+        3:  311:	int splashintro_bool=1;
+        3:  312:	SDL_Texture *splashintro_img1 = IMG_LoadTexture(renderer,"img/logo1a.png");
+        3:  313:	SDL_Texture *splashintro_img2 = IMG_LoadTexture(renderer,"img/logo1b.png");
+        3:  314:	SDL_Texture *splashintro_img3 = IMG_LoadTexture(renderer,"img/logo1c.png");
+        3:  315:	char* splashintro_string = "Press SPACE to continue.";
+        3:  316:	char* splashintro_string_copyright = "(C) 2023 - Thomas, Sean, Matthew, Nicholas - COSC345";
+        3:  317:	int splashintro_slen1=strlen(splashintro_string);
+        3:  318:	int splashintro_slen2=strlen(splashintro_string_copyright);
+        -:  319:	
+        -:  320:	//pop up window test
+        -:  321:	//int option = 0;
+        -:  322:    //char optionText[2] = "0";
+        3:  323:	SDL_Rect buttonRect = { 800, 100, 175, 120 };//dimension of popup
+        3:  324:	char buttonTexts[100] = "default message";//message in the window
+        3:  325:	char* buttonText = buttonTexts;
+        3:  326:	SDL_Rect* buttonRectPtr = &buttonRect; // Declare and initialize buttonRectPtr to point to buttonRect
+        3:  327:	int nextChat = 0;
+        3:  328:	int buttonVis = 0;//0 for no window and 1 for visible window
+        3:  329:	int buttonVis2 = 0;//for second person chatting
+        3:  330:	int tutorChatCompleted = 0;
+        3:  331:	int tutorlvl2ChatCompleted = 0;
+        3:  332:	int penguinSamChatCompleted = 0;
+        3:  333:	int forestManChatCompleted = 0;
+        3:  334:	int quizTutorChatCompleted = 0;
+        3:  335:	int popup = 0;
+        -:  336:	//score display
+        3:  337:	int score = 0; //initial score
+        3:  338:	SDL_Color scoreColour = { 0, 0, 0, 255 };
+        -:  339:    
+        -:  340:	
+        -:  341:	//Mainloop here.
+        3:  342:	int running=1;
+        3:  343:	printf("Entering main loop...\n");
+     3024:  344:	while (running)
+        -:  345:	{
+        -:  346:		//Organize SDL Polls.
+     6564:  347:        while (SDL_PollEvent(&event))
+        -:  348:        {
+      522:  349:            switch (event.type)
+        -:  350:            {
+    #####:  351:                case SDL_QUIT:
+        -:  352:                {
+        -:  353:					//close using red cross or ALT+F4.
+    #####:  354:                    running = 0;
+    #####:  355:                    break;
+        -:  356:                }
+      291:  357:				case SDL_KEYDOWN:
+        -:  358:				{
+        -:  359:					//key held down or pressed
+      291:  360:					int v=1;
+      291:  361:					switch (event.key.keysym.sym)
+        -:  362:					{
+        3:  363:						case SDLK_ESCAPE:{running=0;} break;//escape quits game.
+       87:  364:						case SDLK_RIGHT: {glob_vk_right	=v;} break;
+       36:  365:						case SDLK_LEFT:  {glob_vk_left	=v;} break;
+       24:  366:						case SDLK_UP:    {glob_vk_up	=v;} break;
+       84:  367:						case SDLK_DOWN:  {glob_vk_down	=v;} break;
+        3:  368:						case SDLK_SPACE: {glob_vk_space	=v;} break;
+    #####:  369:						case SDLK_KP_ENTER: {glob_vk_enter	=v;} break;//seems broken.
+    #####:  370:						case SDLK_F2:  {glob_vk_f2	=v;} break;
+        9:  371:						case SDLK_0:  {glob_vk_0=v;} break;
+       18:  372:						case SDLK_1:  {glob_vk_1=v;} break;
+    #####:  373:						case SDLK_2:  {glob_vk_2=v;} break;
+    #####:  374:						case SDLK_3:  {glob_vk_3=v;} break;
+    #####:  375:						case SDLK_4:  {glob_vk_4=v;} break;
+    #####:  376:						case SDLK_5:  {glob_vk_5=v;} break;
+    #####:  377:						case SDLK_6:  {glob_vk_6=v;} break;
+       27:  378:						case SDLK_7:  {glob_vk_7=v;} break;
+    #####:  379:						case SDLK_8:  {glob_vk_8=v;} break;
+    #####:  380:						case SDLK_9:  {glob_vk_9=v;} break;
+        -:  381:						//case SDLK_:  {glob_vk_	=v;} break;
+        -:  382:						
+        -:  383:					}
+      291:  384:					break;
+        -:  385:				}
+      144:  386:				case SDL_KEYUP:
+        -:  387:				{
+        -:  388:					//key released
+      144:  389:					int v=0;
+      144:  390:					switch (event.key.keysym.sym)
+        -:  391:					{
+       21:  392:						case SDLK_RIGHT: {glob_vk_right	=v;} break;
+       24:  393:						case SDLK_LEFT:  {glob_vk_left	=v;} break;
+       21:  394:						case SDLK_UP:    {glob_vk_up	=v;} break;
+       21:  395:						case SDLK_DOWN:  {glob_vk_down	=v;} break;
+        3:  396:						case SDLK_SPACE: {glob_vk_space	=v;} break;
+    #####:  397:						case SDLK_KP_ENTER: {glob_vk_enter	=v;} break;
+    #####:  398:						case SDLK_F2:  {glob_vk_f2	=v;} break;
+        9:  399:						case SDLK_0:  {glob_vk_0=v;} break;
+       18:  400:						case SDLK_1:  {glob_vk_1=v;} break;
+    #####:  401:						case SDLK_2:  {glob_vk_2=v;} break;
+    #####:  402:						case SDLK_3:  {glob_vk_3=v;} break;
+    #####:  403:						case SDLK_4:  {glob_vk_4=v;} break;
+    #####:  404:						case SDLK_5:  {glob_vk_5=v;} break;
+    #####:  405:						case SDLK_6:  {glob_vk_6=v;} break;
+       27:  406:						case SDLK_7:  {glob_vk_7=v;} break;
+    #####:  407:						case SDLK_8:  {glob_vk_8=v;} break;
+    #####:  408:						case SDLK_9:  {glob_vk_9=v;} break;
+        -:  409:						//case SDLK_:  {glob_vk_	=v;} break;
+        -:  410:						
+        -:  411:					}
+      144:  412:					break;
+        -:  413:				}
+        -:  414:				
+        -:  415:            }
+     3543:  416:        }
+        -:  417:		
+        -:  418:		/*
+        -:  419:		Process inputs.
+        -:  420:		*/
+        -:  421:		//Debug input:
+     3021:  422:		if (glob_vk_f2)
+        -:  423:		{
+    #####:  424:			printf("F2 started!\n");	
+    #####:  425:			dev_tiled_to_leveldata(level_data);
+    #####:  426:			printf("F2 finished!\n");	
+        -:  427:		}
+     3021:  428:		if(glob_vk_7)
+        -:  429:		{
+       27:  430:			glob_vk_7=0;
+       27:  431:			attack(&Player);//calls attack function
+       27:  432:			renderWeaponSwing(renderer, spr_water, &Player);//renders the swing
+        -:  433:		}
+        -:  434:
+        -:  435:		//Rain toggle.
+     3021:  436:		if (glob_vk_0)
+        -:  437:		{
+        9:  438:			glob_vk_0=0;
+        -:  439:			//turn water on and off for testing
+        -:  440:			// waterSlow=1; //testing waterSlow function
+        9:  441:			if(waterOn==0)
+        -:  442:			{
+        6:  443:				waterOn=1;
+        6:  444:				activateAllWaterParticles();
+        6:  445:				activateAllSnowParticles();
+        -:  446:			}
+        -:  447:			else
+        -:  448:			{
+        3:  449:				waterOn=0;
+        3:  450:				deactivateAllWaterParticles();
+        3:  451:				deactivateAllSnowParticles();
+        -:  452:			}
+        -:  453:		}
+        -:  454:		//Popup window.
+     3021:  455:		if (glob_vk_9)
+        -:  456:		{
+    #####:  457:			glob_vk_9=0;//press, not hold.
+        -:  458:			//pressing 9 resets chat with npc if you have already completed the dialogue
+    #####:  459:			if(buttonVis==0)
+        -:  460:			{
+    #####:  461:				buttonVis=1;
+        -:  462:			}
+        -:  463:			else
+        -:  464:			{
+    #####:  465:				buttonVis=0;
+        -:  466:			}
+        -:  467:		}
+        -:  468:		//pressing 1 changes text inside test box.
+     3021:  469:		if (glob_vk_1)
+        -:  470:		{
+       18:  471:			glob_vk_1=0;
+       18:  472:			if(buttonVis==1)
+        -:  473:			{
+        -:  474:				// chatBoxMod(buttonRectPtr, 100, 200, 300, 400); //testing function to see if it works.
+       18:  475:				nextChat+=1;
+        -:  476:			}
+    #####:  477:			else if(quizOn)
+        -:  478:			{
+    #####:  479:				userAnswer=1;
+        -:  480:			}
+        -:  481:		}
+     3021:  482:		if (glob_vk_2)
+        -:  483:		{
+    #####:  484:			glob_vk_2=0;
+    #####:  485:			if(buttonVis==1)
+        -:  486:			{
+        -:  487:				//functionality to be added
+        -:  488:			}
+    #####:  489:			else if(quizOn)
+        -:  490:			{
+    #####:  491:				userAnswer=2;
+        -:  492:			}
+        -:  493:		}
+     3021:  494:		if (glob_vk_3)
+        -:  495:		{
+    #####:  496:			glob_vk_3=0;
+    #####:  497:			if(buttonVis==1)
+        -:  498:			{
+        -:  499:				//functionality to be added
+        -:  500:			}
+    #####:  501:			else if(quizOn)
+        -:  502:			{
+    #####:  503:				userAnswer=3;
+        -:  504:			}
+        -:  505:		}
+     3021:  506:		if (glob_vk_4)
+        -:  507:		{
+    #####:  508:			glob_vk_4=0;
+        -:  509:			if(buttonVis==1)
+        -:  510:			{
+        -:  511:				//functionality to be added
+        -:  512:			}
+        -:  513:		}
+     3021:  514:		if (glob_vk_5)
+        -:  515:		{
+    #####:  516:			glob_vk_5=0;
+    #####:  517:			damageMe(10);
+        -:  518:		}
+     3021:  519:		if (glob_vk_6)
+        -:  520:		{
+    #####:  521:			glob_vk_6=0;
+    #####:  522:			healMe(10);
+        -:  523:		}		
+        -:  524:		
+        -:  525:		
+        -:  526:		//Player movement.
+     3021:  527:		if (glob_vk_right)
+        -:  528:		{
+      558:  529:			Player.facedir=0;
+      558:  530:			Player.x += Player.move_spd;
+        -:  531:		}
+     3021:  532:		if (glob_vk_up)
+        -:  533:		{
+      261:  534:			Player.facedir=1;
+      261:  535:			Player.y -= Player.move_spd;
+        -:  536:		}
+     3021:  537:		if (glob_vk_left)
+        -:  538:		{
+      267:  539:			Player.facedir=2;
+      267:  540:			Player.x -= Player.move_spd;
+        -:  541:		}
+     3021:  542:		if (glob_vk_down)
+        -:  543:		{
+      414:  544:			Player.facedir=3;
+      414:  545:			Player.y += Player.move_spd;
+        -:  546:		}
+     3021:  547:		if (glob_vk_right|glob_vk_left|glob_vk_up|glob_vk_down)
+        -:  548:		{
+     1398:  549:			updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
+        -:  550:			//Position.
+        -:  551:			
+        -:  552:			//Animation.
+     1398:  553:			Player.anim_spd_cur += Player.anim_spd_spd;
+     1398:  554:			Player.anim_cur += (Player.anim_spd_cur >= Player.anim_spd_wrap);
+     1398:  555:			Player.anim_spd_cur %= Player.anim_spd_wrap;
+     1398:  556:			Player.anim_cur %= Player.anim_max;
+        -:  557:			//Position wrapping and level loading.
+        -:  558:			int p_east,p_north,p_west,p_south;
+     1398:  559:			p_east  = win_game_x2-win_game_tile_dim*gw;
+     1398:  560:			p_north = win_game_y;
+     1398:  561:			p_west  = win_game_x;
+     1398:  562:			p_south = win_game_y2-win_game_tile_dim*gh;
+     1398:  563:			int lvlbool = 0;
+     1398:  564:			lvlbool = ((Player.x > p_east)||(Player.y > p_south)||(Player.x < p_west)||(Player.y < p_north));//must be here, and not below the individual checks!
+     1398:  565:			if (Player.x > p_east)
+        -:  566:			{
+        -:  567:				//at east side
+       12:  568:				Player.x = p_west;
+       12:  569:				level_cur += 1;
+        -:  570:			}
+     1398:  571:			if (Player.y < p_north)
+        -:  572:			{
+        -:  573:				//at north side
+        9:  574:				Player.y = p_south;
+        9:  575:				level_cur -= lvl_yoff;
+        -:  576:			}
+     1398:  577:			if (Player.x < p_west)
+        -:  578:			{
+        -:  579:				//at west side
+        6:  580:				Player.x = p_east;
+        6:  581:				level_cur -= 1;
+        -:  582:			}
+     1398:  583:			if (Player.y > p_south)
+        -:  584:			{
+        -:  585:				//at south side
+       12:  586:				Player.y = p_north;
+       12:  587:				level_cur += lvl_yoff;
+        -:  588:			}
+     1398:  589:			if (lvlbool)//has changed level
+        -:  590:			{
+       39:  591:				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1, level_cur);//random spawn an enemy with these stats
+       39:  592:				buttonVis=0;//remove npc chatbox if you walk away
+        -:  593:				
+       39:  594:				level_cur += level_count;//allows negative wrap.
+       39:  595:				level_cur %= level_count;//prevents overflow.
+       39:  596:				printf("lvl=%i\n",level_cur);
+       39:  597:				level_get_name(level_cur,mapstr_location);
+        -:  598:				
+       39:  599:				mapvisit[level_cur/32] |= (Uint32)(1<<level_cur%32);
+        -:  600:			}
+        -:  601:		}
+        -:  602:		else
+        -:  603:		{
+     1623:  604:			Player.anim_spd_cur = 0;
+     1623:  605:			Player.anim_cur = 0;
+        -:  606:		}
+     3021:  607:		if (glob_vk_space|glob_vk_enter)
+        -:  608:		{
+       18:  609:			splashintro_bool=0;
+        -:  610:		}
+        -:  611:
+        -:  612:		/*
+        -:  613:		Post-update of inputs.
+        -:  614:		*/
+     3021:  615:		Player.xprevious = Player.x;
+     3021:  616:		Player.yprevious = Player.y;
+        -:  617:		
+        -:  618:		/*
+        -:  619:		General updates.
+        -:  620:		*/
+        -:  621:		//water stuff
+        -:  622:		// Update water particles (rain drops)
+   305121:  623:        for (int i = 0; i < MAX_WATER_PARTICLES; i++) 
+        -:  624:		{
+   302100:  625:            if (waterParticles[i].active) 
+        -:  626:			{
+   298800:  627:                waterParticles[i].y += waterParticles[i].speed;
+        -:  628:                // Check if particle has reached the bottom of the window
+   298800:  629:                if (waterParticles[i].y > screen_h) 
+        -:  630:				{
+     2457:  631:					if(waterSlow==1)
+        -:  632:					{
+    #####:  633:						if (rand() % 4 < 3)
+        -:  634:						{ //every drop that hits bottom of screen has 75% chance of dissapearing with waterSlow toggled.
+    #####:  635:							waterParticles[i].active = 0; // Set active to 0 (false)
+        -:  636:						} 
+        -:  637:						else
+        -:  638:						{
+    #####:  639:							createWaterParticle(i, screen_w, screen_h);
+        -:  640:						}
+        -:  641:					}
+        -:  642:					else
+        -:  643:					{
+     2457:  644:						createWaterParticle(i, screen_w, screen_h);
+        -:  645:					}
+        -:  646:                }
+        -:  647:            }
+        -:  648:        }
+        -:  649:		//snow fall loop
+   305121:  650:		for (int i = 0; i < MAX_SNOW_PARTICLES; i++) 
+        -:  651:		{
+   302100:  652:            if (snowParticles[i].active) 
+        -:  653:			{
+   163800:  654:                snowParticles[i].y += snowParticles[i].speed;
+        -:  655:                // Check if particle has reached the bottom of the window
+   163800:  656:                if (snowParticles[i].y > screen_h) 
+        -:  657:				{
+        9:  658:					if(snowSlow==1)
+        -:  659:					{
+    #####:  660:						if (rand() % 4 < 3)
+        -:  661:						{ //every drop that hits bottom of screen has 75% chance of dissapearing with waterSlow toggled.
+    #####:  662:							snowParticles[i].active = 0; // Set active to 0 (false)
+        -:  663:						} 
+        -:  664:						else
+        -:  665:						{
+    #####:  666:							createSnowParticle(i, screen_w, screen_h);
+        -:  667:						}
+        -:  668:					}
+        -:  669:					else
+        -:  670:					{
+        9:  671:						createSnowParticle(i, screen_w, screen_h);
+        -:  672:					}
+        -:  673:                }
+        -:  674:            }
+        -:  675:        }
+        -:  676:		//Timekeeping.
+     3021:  677:		time_clock_fps += 1*time_clock_fps_multiplier;
+        -:  678:		//time_clock += (time_clock_fps>=time_clock_fps_max);
+     6201:  679:		while (time_clock_fps>=time_clock_fps_max)
+        -:  680:		{
+     3180:  681:			time_clock++;
+     3180:  682:			time_clock_fps-=time_clock_fps_max;
+        -:  683:		}
+     3021:  684:		weekday = (weekday+(time_clock>=time_clock_max))%7;
+     3021:  685:		monthday = (monthday+(time_clock>=time_clock_max))%28;
+     3021:  686:		time_clock %= time_clock_max;
+     3021:  687:		time_clock_fps %= time_clock_fps_max;
+        -:  688:		
+        -:  689:		//Temperature.
+        -:  690:		char newtempstr[6];//[5]=NULL
+     3021:  691:		strcpy(newtempstr,temp_str);
+    3021*:  692:		newtempstr[0] = (char)(temp_cur>=0)?("+"[0]):("-"[0]);
+     3021:  693:		newtempstr[1] = (char)(temp_cur/10)+48;
+     3021:  694:		newtempstr[2] = (char)(temp_cur%10)+48;
+     3021:  695:		newtempstr[3] = (char)("*"[0]);
+    3021*:  696:		newtempstr[4] = (char)(temp_mode==0)?(67):(70);
+        -:  697:		//newtempstr[4] = (char)(temp_mode==0)?("C"[0]):("F"[0]);
+        -:  698:		
+        -:  699:		/*
+        -:  700:		Draw to the screen.
+        -:  701:		*/
+        -:  702:		//Drawing settings.
+     3021:  703:		draw_clear(renderer,c_black);
+     3021:  704:		draw_set_color(renderer,c_white);
+        -:  705:		
+        -:  706:		//UI areas.
+     3021:  707:		draw_rectangle_color(renderer,//left
+        -:  708:			0,0,
+        -:  709:			win_game_x,screen_h,
+        -:  710:			c_orange);
+     3021:  711:		draw_image(renderer,0,0,win_game_x,screen_h,spr_hudshade);
+     3021:  712:		draw_rectangle_color(renderer,//middle
+        -:  713:			win_game_x,0,
+        -:  714:			screen_w-win_game_x,screen_h,
+        -:  715:			c_rose);
+     3021:  716:		draw_rectangle_color(renderer,//right
+        -:  717:			screen_w-win_game_x,0,
+        -:  718:			screen_w,screen_h,
+        -:  719:			c_orange);
+     3021:  720:		draw_image(renderer,screen_w-win_game_x,0,screen_w,screen_h,spr_hudshade);
+        -:  721:		//SDL_RenderCopy(renderer,png,NULL,NULL);//test: texture fills whole renderer.
+        -:  722:		
+        -:  723:		//UI.
+        -:  724:		int uix,uiy;
+     3021:  725:		int tc=c_black;
+        -:  726:		//UI Left (player).
+     3021:  727:		uix = gw; 
+     3021:  728:		uiy = gh;
+     3021:  729:		if (!splashintro_bool)
+        -:  730:		{
+     2865:  731:			draw_text_color(renderer,uix,uiy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,"HEALTH:",font_ascii_w,font_ascii_h,tc);
+     2865:  732:			uiy += font_ascii_h*gh;
+        -:  733:			//health bar
+        -:  734:			//SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        -:  735:			//draw_set_color(renderer,c_white);
+     2865:  736:			int maxWidth = 200; // Replace this with the maximum width of the health bar
+     2865:  737:			int maxHeight = 20; //this too.
+     2865:  738:			int currentWidth = (health * maxWidth) / maxHealth;
+        -:  739:			// Render the red health bar
+        -:  740:			/*
+        -:  741:			SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        -:  742:			SDL_Rect healthBarRect = { 0, 200, currentWidth, 20 };
+        -:  743:			SDL_RenderFillRect(renderer, &healthBarRect);
+        -:  744:			/**/
+        -:  745:			//int col=make_color_hsv((int)lerp(120.0,0.0,(double)health/(double)maxHealth),255,255);
+     2865:  746:			int col=c_red;
+     2865:  747:			draw_rectangle_color(renderer,0,uiy,maxWidth,uiy+maxHeight,c_black);
+     2865:  748:			draw_rectangle_color(renderer,0,uiy,currentWidth,uiy+maxHeight,col);
+     2865:  749:			uiy += maxHeight;
+        -:  750:			
+        -:  751:			//Nutrients
+        -:  752:			int nx,nd;
+     2865:  753:			nx=0;
+     2865:  754:			nd=32;
+    14325:  755:			for (int i=0; i<4; i++)
+        -:  756:			{
+        -:  757:				//placeholder 2/2
+    11460:  758:				draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
+    11460:  759:				draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
+    11460:  760:				nx += nd*gw;
+        -:  761:			}
+        -:  762:			// SDL_RenderPresent(renderer);
+        -:  763:		}
+        -:  764:		//UI Right (world).
+     3021:  765:		uix = gw+win_game_x2;
+     3021:  766:		uiy = gh;
+     3021:  767:		if (!splashintro_bool)
+     2865:  768:		{
+        -:  769:			//Level.
+     2865:  770:			char *lvlstrold = "LVL: XYZ/511";
+     2865:  771:			char lvlstrnew[strlen(lvlstrold)];//a hard-coded value too small causes a code-overwrite bug that messes with player movement!
+     2865:  772:			strcpy(lvlstrnew,lvlstrold);
+        -:  773:			//lvlstrnew[7] = ((char)level_cur)+48;//7 is "X" above.
+     2865:  774:			word lc = (word)level_cur;//note: "signed char" causes bugs out in the [128,255] range because it is out of range; "unsigned char" allows 255.
+     2865:  775:			lvlstrnew[string_pos("X",lvlstrnew)] = ((lc/100)%10) + 48;//48="0"
+     2865:  776:			lvlstrnew[string_pos("Y",lvlstrnew)] = ((lc/10 )%10) + 48;//%10 maps to 0-9.
+     2865:  777:			lvlstrnew[string_pos("Z",lvlstrnew)] = ((lc/1  )%10) + 48;//
+        -:  778:			//sprintf(lvlstr,"Level:#",level_cur);
+        -:  779:			
+     2865:  780:			draw_text_color(renderer,uix,uiy                ,font_ascii_w*gw,font_ascii_h*gh,font_ascii,lvlstrnew,font_ascii_w,font_ascii_h,tc);
+     2865:  781:			draw_text_color(renderer,uix,uiy+font_ascii_h*gh,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mapstr_location,font_ascii_w,font_ascii_h,tc);
+        -:  782:			
+     2865:  783:			uiy += font_ascii_h*2*gh;
+        -:  784:			
+        -:  785:			//Map.
+        -:  786:			int mapx1,mapy1,mapx2,mapy2;
+     2865:  787:			mapx1=uix;
+     2865:  788:			mapy1=uiy;
+     2865:  789:			mapx2=mapx1+256;
+     2865:  790:			mapy2=mapy1+256;
+     2865:  791:			draw_image(renderer,mapx1,mapy1,mapx2,mapy2,spr_map);
+        -:  792:			//Discovered map levels.
+   736305:  793:			for (int i=0; i<256; i++)
+        -:  794:			{
+   733440:  795:				if (!BG(mapvisit[i/32],i%32))
+        -:  796:				{
+   720150:  797:					draw_image(renderer,
+   720150:  798:					(int)lerp((double)mapx1,(double)mapx2,(double)(i%16+0)/16.0),
+   720150:  799:					(int)lerp((double)mapy1,(double)mapy2,(double)(i/16+0)/16.0),
+   720150:  800:					(int)lerp((double)mapx1,(double)mapx2,(double)(i%16+1)/16.0),
+   720150:  801:					(int)lerp((double)mapy1,(double)mapy2,(double)(i/16+1)/16.0),
+        -:  802:					spr_mapicon_unknown);
+        -:  803:				}
+        -:  804:			}
+        -:  805:			//Location crosshair lines.			
+     2865:  806:			int mcx=(int)lerp((double)mapx1,(double)mapx2,(double)(BGG(lc,4,0)/16.0));
+     2865:  807:			draw_rectangle_color(renderer,mcx-1,mapy1,mcx+1,mapy2,c_red);//ver(x)
+     2865:  808:			int mcy=(int)lerp((double)mapy1,(double)mapy2,(double)(BGG(lc,4,1)/16.0));
+     2865:  809:			draw_rectangle_color(renderer,mapx1,mcy-1,mapx2,mcy+1,c_red);//hor(y)
+     2865:  810:			if (!(lc>>8))
+        -:  811:			{
+     2865:  812:				draw_rectangle_color(renderer,mcx,mcy,
+     2865:  813:					(int)lerp((double)mapx1,(double)mapx2,(double)((BGG(lc,4,0)+1)/16.0)),
+     2865:  814:					(int)lerp((double)mapy1,(double)mapy2,(double)((BGG(lc,4,1)+1)/16.0)),
+        -:  815:					c_red);
+        -:  816:			}
+     2865:  817:			uiy += mapy2-mapy1;
+        -:  818:			
+        -:  819:			//Weekday.
+     2865:  820:			uiy += gh;
+     2865:  821:			int wyh=font_ascii_h*gh;
+        -:  822:			char wc[2];
+     2865:  823:			double wf=1.0;
+     8595:  824:			draw_rectangle_color(renderer,
+     2865:  825:				uix+font_ascii_w*weekday*gw+(int)(wf*weekday*gw),uiy,
+     2865:  826:				uix+font_ascii_w*weekday*gw+(int)(wf*weekday*gw)+font_ascii_w*gw,uiy+wyh,
+        -:  827:				c_red);
+    22920:  828:			for (int i=0; i<7; i++)
+        -:  829:			{
+    20055:  830:				int wcol=i==6?c_red:c_black;
+    20055:  831:				wcol=i==weekday?c_white:wcol;
+    20055:  832:				wc[0]=weekday_string[i];
+    40110:  833:				draw_text_color(renderer,
+    20055:  834:					uix+font_ascii_w*i*gw+(int)(wf*i*gw),uiy,
+        -:  835:					font_ascii_w*gw,font_ascii_h*gh,
+        -:  836:					font_ascii,wc,
+        -:  837:					font_ascii_w,font_ascii_h,wcol);
+        -:  838:			}
+        -:  839:			//Day of the month.
+     2865:  840:			month_str[0]=((monthday+1)/10)+48;
+     2865:  841:			month_str[1]=((monthday+1)%10)+48;
+    2865*:  842:			month_str[2]=100+((monthday+1)%20>=4?16:mux_int((monthday+1)%20,16,15,10,14));
+    2865*:  843:			month_str[3]=100+((monthday+1)%20>=4? 4:mux_int((monthday+1)%20, 4,16, 0, 0));
+     8595:  844:			draw_rectangle_color(renderer,
+     2865:  845:				uix+8*font_ascii_w*gw,uiy,
+     2865:  846:				uix+8*font_ascii_w*gw+4*font_ascii_w*gw,uiy+wyh,
+        -:  847:				c_blue);
+     5730:  848:			draw_text_color(renderer,
+     2865:  849:				uix+8*font_ascii_w*gw,uiy,
+        -:  850:				font_ascii_w*gw,font_ascii_h*gh,
+        -:  851:				font_ascii,month_str,
+        -:  852:				font_ascii_w,font_ascii_h,
+        -:  853:				c_aqua);
+     2865:  854:			uiy += wyh;
+        -:  855:			
+        -:  856:			//Timekeeping.
+        -:  857:			//Digital clock.
+     2865:  858:			int coff=0;
+     2865:  859:			int clocky1 = uiy;
+     2865:  860:			int clocky2 = uiy+32*gh;
+     2865:  861:			draw_set_color(renderer,tc);
+    17190:  862:			for (int i=0; i<5; i++)
+        -:  863:			{
+    14325:  864:				int clo = mux_int(i,(time_clock/600),(time_clock/60)%10,737,(time_clock/10)%6,time_clock%10);
+    14325:  865:				if (i != 2)
+        -:  866:				{
+    34380:  867:				draw_image_part(renderer,
+    11460:  868:					uix+(i+0)*16*gw+coff,clocky1,
+    11460:  869:					uix+(i+1)*16*gw+coff,clocky2,
+        -:  870:					spr_clock_digital,
+        -:  871:					clo*16,0,
+        -:  872:					16,32);
+    11460:  873:				coff += gw;
+        -:  874:				}
+        -:  875:				else
+        -:  876:				{
+     2865:  877:					draw_text_color(renderer,uix+2*16*gw,clocky1,font_ascii_w*gw,font_ascii_h*gh,font_ascii,":",font_ascii_w,font_ascii_h,tc);
+        -:  878:				}
+        -:  879:			}
+     2865:  880:			draw_set_color(renderer,c_white);
+     2865:  881:			uiy += clocky2-clocky1;
+        -:  882:			
+        -:  883:			//Time of day as string.
+     2865:  884:			uiy += gh;
+        -:  885:			//char ct[10];
+        -:  886:			//const char time_clock_str="Daytime";
+        -:  887:			//strcpy(ct,time_clock_str);
+     2865:  888:			int ct=0;
+     2865:  889:			if (clock_is_between(time_clock, 0,0, 5,59)) {ct=0;}
+     2865:  890:			if (clock_is_between(time_clock, 6,0,11,59)) {ct=1;}
+     2865:  891:			if (clock_is_between(time_clock,12,0,17,59)) {ct=2;}
+    2865*:  892:			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
+        -:  893:			//placeholder 1/2
+        -:  894:			/**/
+     2865:  895:			draw_text_color(renderer,
+        -:  896:				uix,uiy,
+        -:  897:				font_ascii_w*gw,font_ascii_h*gh,
+        -:  898:				font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
+        -:  899:				font_ascii_w,font_ascii_h,tc);
+        -:  900:			/**/
+     2865:  901:			uiy += font_ascii_h*gh;
+        -:  902:			
+        -:  903:			//Temperature.
+        -:  904:			int tempy1,tempy2;
+     2865:  905:			tempy1=uiy;
+     2865:  906:			tempy2=tempy1+48*gh;
+        -:  907:			//int dgc=draw_get_color();
+        -:  908:			//draw_set_color(renderer,c_blue);
+     2865:  909:			draw_image(renderer,uix,tempy1,uix+16*gw,tempy2,spr_thermometer);
+        -:  910:			//draw_set_color(renderer,dgc);
+     2865:  911:			draw_text_color(renderer,uix+48,(int)lerp((double)tempy1,(double)tempy2,0.25),font_ascii_w*gw,font_ascii_h*gh,font_ascii,newtempstr,font_ascii_w,font_ascii_h,tc);
+     2865:  912:			uiy += tempy2-tempy1;
+        -:  913:			
+        -:  914:			
+        -:  915:		}
+        -:  916:		//Game area.
+     3021:  917:		int d = win_game_tile_dim;
+     3021:  918:		int defcol=make_color_hsv(0,0,((int)(get_timer()))/16);
+     9063:  919:		for (int k=0; k<level_layers; k++)
+        -:  920:		{
+   102714:  921:			for (int j=0; j<win_game_tile_num; j++)
+        -:  922:			{
+  1643424:  923:				for (int i=0; i<win_game_tile_num; i++)
+        -:  924:				{
+  1546752:  925:					int ij = i+j*win_game_tile_num+k*lvl_off_obj;
+        -:  926:					int x1,y1,x2,y2;
+  1546752:  927:					x1 = win_game_x + (i+0)*gw*win_game_tile_dim;
+  1546752:  928:					y1 = win_game_y + (j+0)*gh*win_game_tile_dim;
+  1546752:  929:					x2 = win_game_x + (i+1)*gw*win_game_tile_dim;
+  1546752:  930:					y2 = win_game_y + (j+1)*gh*win_game_tile_dim;
+        -:  931:					
+        -:  932:					//int defcol = mux_int(ij%3,c_red,c_green,c_blue);
+        -:  933:					
+  1546752:  934:					int off = ij + level_size*level_cur;
+  1546752:  935:					int tex = level_data[off];
+  1546752:  936:					if (k==0)
+        -:  937:					{
+   773376:  938:						draw_rectangle_color(renderer,x1,y1,x2,y2,defcol);//will show if image drawing below fails.
+   773376:  939:						draw_image_part(renderer,x1,y1,x2,y2,spr_tileset,d*(tex%win_game_tile_num),d*(tex/win_game_tile_num),d,d);
+        -:  940:					}
+   773376:  941:					else if (k==1)
+        -:  942:					{
+        -:  943:						//animated
+   773376:  944:						if ((tex>=0x10) && (tex <=0x1F))
+    37170:  945:						{
+    37170:  946:							int fr=16;
+    37170:  947:							int di=(tex<0x12)?(60):(120);
+    37170:  948:							int at=(int)get_timer();
+        -:  949:							SDL_Texture *spr;
+    37170:  950:								 if (tex==0x10) {spr=spr_water;}
+    8190*:  951:							else if (tex==0x11) {spr=spr_water_shallow;}
+     8190:  952:							else if (tex==0x12) {spr=spr_lava;}
+    #####:  953:							else if (tex==0x13) {spr=spr_lava_shallow;}
+    #####:  954:							else                {spr=spr_water;}
+    37170:  955:							draw_image_part(renderer,x1,y1,x2,y2,spr,d*((at/di)%fr),0,d,d);
+        -:  956:						}
+        -:  957:						//unhandled.
+        -:  958:						else
+        -:  959:						{
+   736206:  960:							if (tex!=0)//lazy hack.
+        -:  961:							{
+    21288:  962:								tex+=0x100;
+    21288:  963:								draw_image_part(renderer,x1,y1,x2,y2,spr_tileset,d*(tex%win_game_tile_num),d*(tex/win_game_tile_num),d,d);
+        -:  964:							}
+        -:  965:						}
+        -:  966:					}
+        -:  967:				}
+        -:  968:			}
+        -:  969:		}
+        -:  970:		//Player.
+     9063:  971:		draw_image_part(renderer,
+        -:  972:			Player.x,Player.y,
+     6042:  973:			Player.x+d*gw,Player.y+d*gh,
+        -:  974:			sprstrip_player,
+     3021:  975:			(Player.facedir*d*Player.anim_max)+(Player.anim_cur*d*1),0,
+        -:  976:			d,d);
+        -:  977:		
+        -:  978:		//NPC chat box
+     3021:  979:		if (buttonVis >= 1) 
+        -:  980:		{
+        -:  981:			// Update the buttonRect using the chat box position and size
+      420:  982:			buttonRect.x = globalNpc->x + 60;
+      420:  983:			buttonRect.y = globalNpc->y - 120;
+      420:  984:			if(buttonRect.x>600)
+        -:  985:			{
+        -:  986:				//if np is on the right side of the map, place the chat box to the left of them
+      420:  987:				buttonRect.x-=200;
+      420:  988:				buttonRect.y-=20;
+        -:  989:			}
+        -:  990:			// Render the filled rectangle using the updated buttonRectPtr
+      420:  991:			SDL_SetRenderDrawColor(renderer, 245, 245, 200, 255);//chat box colour
+      420:  992:			SDL_RenderFillRect(renderer, buttonRectPtr);
+        -:  993:
+        -:  994:			//Render the lines to make it look chat box-like
+        -:  995:			// Draw a line from the player's mouth to the chat box
+      420:  996:			SDL_SetRenderDrawColor(renderer, 245, 245, 200, 255);//line colour
+        -:  997:			// SDL_RenderDrawLine(renderer, globalNpc->x+45, globalNpc->y-15, buttonRectPtr->x + buttonRectPtr->w*0.1, buttonRectPtr->y + buttonRectPtr->h / 4);//top line
+        -:  998:			// SDL_RenderDrawLine(renderer, globalNpc->x+45, globalNpc->y-15, buttonRectPtr->x + buttonRectPtr->w*0.3, buttonRectPtr->y + buttonRectPtr->h / 1);//bottom line
+        -:  999:			// Render text on the button (chat box)
+      420: 1000:			SDL_Color textColor = { 0, 0, 0 }; // black text color
+      420: 1001:			int maxTextWidth = buttonRectPtr->w - 10; // Adjust this value to leave some padding for the text
+        -: 1002:			// Use TTF_RenderText_Blended_Wrapped with error-checking
+      420: 1003:			SDL_Surface* textSurface = TTF_RenderText_Blended_Wrapped(font, buttonText, textColor, maxTextWidth);
+      420: 1004:			if (!textSurface) 
+        -: 1005:			{
+        -: 1006:				// Handle error: Unable to render text
+        -: 1007:
+    #####: 1008:				textSurface = TTF_RenderText_Solid(font, "Error: Text Rendering Failed", textColor);
+        -: 1009:			}
+        -: 1010:			// Calculate the actual text dimensions
+      420: 1011:			int textWidth = textSurface->w;
+      420: 1012:			int textHeight = textSurface->h;
+        -: 1013:			// Position the text in the center of the button (chat box)
+      420: 1014:			int textX = buttonRectPtr->x + (buttonRectPtr->w - textWidth) / 2;
+      420: 1015:			int textY = buttonRectPtr->y + (buttonRectPtr->h - textHeight) / 2;
+        -: 1016:			// Create the destination SDL_Rect for the text
+      420: 1017:			SDL_Rect textRect = { textX, textY, textWidth, textHeight };
+        -: 1018:			// Render the text on the button (chat box)
+      420: 1019:			SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+      420: 1020:			SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+        -: 1021:
+        -: 1022:			// Cleanup
+      420: 1023:			SDL_FreeSurface(textSurface);
+      420: 1024:			SDL_DestroyTexture(textTexture);
+        -: 1025:		}
+        -: 1026:		// Rendering the global enemy(use for boss fight?? keep code unless decided we do not need.)
+        -: 1027:
+        -: 1028:		// if (globalEnemy != NULL && globalEnemy->health > 0)
+        -: 1029:		// {
+        -: 1030:			
+        -: 1031:		// 	float directionX = Player.x - globalEnemy->x;
+        -: 1032:        // 	float directionY = Player.y - globalEnemy->y;
+        -: 1033:		// 	float distanceToPlayer = distance(Player.x, Player.y, globalEnemy->x, globalEnemy->y);
+        -: 1034:		// 	//stop the enemy when within the selected units (125)
+        -: 1035:		// 	if(distanceToPlayer > 110){
+        -: 1036:		// 		// Normalize the direction vector (make it a unit vector)
+        -: 1037:		// 		if (distanceToPlayer != 0) {
+        -: 1038:		// 			directionX /= distanceToPlayer;
+        -: 1039:		// 			directionY /= distanceToPlayer;
+        -: 1040:		// 		}
+        -: 1041:		// 		float enemySpeed = 2.0; //adjust this value to control the enemy's speed
+        -: 1042:		// 		globalEnemy->x += directionX * enemySpeed;
+        -: 1043:		// 		globalEnemy->y += directionY * enemySpeed;
+        -: 1044:		// 	}
+        -: 1045:		// 	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        -: 1046:		// 	SDL_Rect enemyRect = { globalEnemy->x, globalEnemy->y, globalEnemy->width, globalEnemy->height };
+        -: 1047:		// 	// SDL_RenderFillRect(renderer, &enemyRect);
+        -: 1048:		// 	draw_image(renderer, globalEnemy->x, globalEnemy->y, globalEnemy->x + globalEnemy->width, globalEnemy->y + globalEnemy->height, globalEnemy->texture);
+        -: 1049:		// 	if (checkCollision(playerHitbox, enemyRect)) {
+        -: 1050:        //     // If the player collides with the enemy, apply damage to the player
+        -: 1051:        //     printf("Player collided with enemy!\n");
+        -: 1052:        //     int enemyDamage = globalEnemy->dmg; // Adjust this value as needed
+        -: 1053:        //     damageMe(enemyDamage);
+        -: 1054:		// 	// Bump back the enemy when they run into us
+        -: 1055:        //     int bumpDistance = 50;
+        -: 1056:        //     float bumpDirectionX = directionX;
+        -: 1057:        //     float bumpDirectionY = directionY;
+        -: 1058:        //     if (distanceToPlayer != 0) {
+        -: 1059:        //         bumpDirectionX /= distanceToPlayer;
+        -: 1060:        //         bumpDirectionY /= distanceToPlayer;
+        -: 1061:        //     }
+        -: 1062:        //     globalEnemy->x -= bumpDirectionX * bumpDistance;
+        -: 1063:        //     globalEnemy->y -= bumpDirectionY * bumpDistance;
+        -: 1064:        // }
+        -: 1065:		// }
+        -: 1066:		//for all randomly spawned enemies.
+   758271: 1067:		for (int i = 0; i < MAX_ENEMIES; i++) 
+        -: 1068:		{
+   755250: 1069:			struct Enemy* currentEnemy = &enemies[i];
+   755250: 1070:			if (currentEnemy->health > 0 && currentEnemy->spawnLevel == level_cur)
+        -: 1071:			{
+        -: 1072:				// Enemy movement logic
+     1104: 1073:				float directionX = Player.x - currentEnemy->x;
+     1104: 1074:				float directionY = Player.y - currentEnemy->y;
+     1104: 1075:				float distanceToPlayer = distance(Player.x, Player.y, currentEnemy->x, currentEnemy->y);
+        -: 1076:
+        -: 1077:				// Stop the enemy when within the selected units (125)
+     1104: 1078:				if (distanceToPlayer > 110) 
+        -: 1079:				{
+        -: 1080:					// Normalize the direction vector (make it a unit vector)
+      903: 1081:					if (distanceToPlayer != 0) 
+        -: 1082:					{
+      903: 1083:						directionX /= distanceToPlayer;
+      903: 1084:						directionY /= distanceToPlayer;
+        -: 1085:					}
+      903: 1086:					if(quizOn==false)
+        -: 1087:					{
+        -: 1088:						//enemies won't move when quiz is active
+      903: 1089:						float enemySpeed = 2.0; // Adjust this value to control the enemy's speed
+      903: 1090:						currentEnemy->x += directionX * enemySpeed;
+      903: 1091:						currentEnemy->y += directionY * enemySpeed;
+        -: 1092:					}
+        -: 1093:				}
+        -: 1094:				
+        -: 1095:				// Rendering
+     1104: 1096:				SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+     1104: 1097:				SDL_Rect enemyRect = { currentEnemy->x, currentEnemy->y, currentEnemy->width, currentEnemy->height };
+     1104: 1098:				draw_image(renderer, currentEnemy->x, currentEnemy->y, currentEnemy->x + currentEnemy->width, currentEnemy->y + currentEnemy->height, currentEnemy->texture);
+        -: 1099:
+        -: 1100:				// Collision detection with the player
+     1104: 1101:				if (checkCollision(playerHitbox, enemyRect)) 
+        -: 1102:				{
+        -: 1103:					// If the player collides with the enemy, apply damage to the player
+       72: 1104:					printf("Player collided with enemy!\n");
+       72: 1105:					int enemyDamage = currentEnemy->dmg; // Adjust this value as needed
+       72: 1106:					damageMe(enemyDamage);
+        -: 1107:
+        -: 1108:					// Bump back the enemy when they run into the player
+       72: 1109:					int bumpDistance = 50;
+       72: 1110:					float bumpDirectionX = directionX;
+       72: 1111:					float bumpDirectionY = directionY;
+       72: 1112:					if (distanceToPlayer != 0)
+        -: 1113:					{
+       72: 1114:						bumpDirectionX /= distanceToPlayer;
+       72: 1115:						bumpDirectionY /= distanceToPlayer;
+        -: 1116:					}
+       72: 1117:					currentEnemy->x -= bumpDirectionX * bumpDistance;
+       72: 1118:					currentEnemy->y -= bumpDirectionY * bumpDistance;
+        -: 1119:				}
+        -: 1120:			}
+        -: 1121:		}
+        -: 1122:
+        -: 1123:		// Resetting the global enemy
+    3021*: 1124:		if (globalEnemy != NULL && globalEnemy->health <= 0)
+        -: 1125:		{
+    #####: 1126:    		resetEnemy(globalEnemy);
+        -: 1127:		}
+        -: 1128:		//first quiz. Rename variables for alpha.
+        -: 1129:
+        -: 1130:		//Second quiz used for testing purposes.
+        -: 1131:		// if(level_cur==2)
+        -: 1132:		// {
+        -: 1133:		// 	if(quiz2Called==false)
+        -: 1134:		// 	{
+        -: 1135:		// 		//boolean check so the quiz doesn't open every time they hit level 2.
+        -: 1136:		// 		quizQuestion="Greetings wanderer\nAnswer my riddle to pass through\n Which of these macronutrients contains the most calories per gram";answerA="1. Carbohydrate";answerB="2. Fat";answerC="3. Protein";
+        -: 1137:		// 		quiz2Called=true;
+        -: 1138:		// 		quizOn=true;
+        -: 1139:		// 		correctAnswer=2;
+        -: 1140:		// 		Player.move_spd=0;
+        -: 1141:		// 		quizLoopOn=true;								 
+        -: 1142:		// 	}
+        -: 1143:		// }
+        -: 1144:		//third quiz (currently used for testing, change for real game.) 
+        -: 1145:		//Quiz turns on once the player enters level_curr==3, for other quizzes just copy this code and change the trigger. 
+     3021: 1146:		if(level_cur==3)
+        -: 1147:		{
+    #####: 1148:			if(quiz3Called==false && quizTutorChatCompleted==1)
+        -: 1149:			{
+        -: 1150:				//boolean check so the quiz doesn't open every time they hit level 3.
+    #####: 1151:				quizQuestion="Answer my riddle to pass through\n Should this quiz work?";answerA="1. yes";answerB="2. no";answerC="3. definitely not";
+    #####: 1152:				quiz3Called=true;	quizOn=true;correctAnswer=1;Player.move_spd=0; quizLoopOn=true; quizInfo="";
+        -: 1153:			}
+        -: 1154:		}
+        -: 1155:		//loop to go through three questions relating to food data. (copy this but replace questions.txt with data from other dataset if we choose.)
+     3021: 1156:		if(quizLoopOn)
+        -: 1157:		{
+    #####: 1158:			if(quizQNum==1)
+        -: 1159:			{//if first question
+    #####: 1160:				if(userAnswer==0)
+        -: 1161:				{
+        -: 1162:					//keeps it from looping infinite
+        -: 1163:				}
+    #####: 1164:				else if(userAnswer==correctAnswer)
+        -: 1165:				{
+    #####: 1166:					quizInfo="Correct";
+    #####: 1167:					updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=500;
+        -: 1168:				}
+        -: 1169:				else
+        -: 1170:				{
+    #####: 1171:					quizInfo="false";
+    #####: 1172:					updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=0;
+        -: 1173:				}
+        -: 1174:			}
+    #####: 1175:			else if(quizQNum==2)
+        -: 1176:			{
+        -: 1177:				//if second question
+    #####: 1178:				if(userAnswer==0)
+        -: 1179:				{
+        -: 1180:					
+        -: 1181:				}
+    #####: 1182:				else if(userAnswer==correctAnswer)
+        -: 1183:				{
+    #####: 1184:					quizInfo="correct";
+    #####: 1185:					updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=500;
+        -: 1186:				}
+        -: 1187:				else
+        -: 1188:				{
+    #####: 1189:					quizInfo="false";
+    #####: 1190:					updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=0;
+        -: 1191:				}		
+        -: 1192:			}
+    #####: 1193:			else if(quizQNum==3)
+        -: 1194:			{
+        -: 1195:				//if third question
+    #####: 1196:				if(userAnswer==0)
+        -: 1197:				{
+        -: 1198:					
+        -: 1199:				}
+    #####: 1200:				else if(userAnswer==correctAnswer)
+        -: 1201:				{
+    #####: 1202:					quizInfo="correct";
+    #####: 1203:					updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=500;
+        -: 1204:				}
+        -: 1205:				else
+        -: 1206:				{
+    #####: 1207:					quizInfo="false";
+    #####: 1208:					updateQuizDataFromRandomLine("questions.txt", &quizQuestion, &answerA, &answerB, &answerC, &userAnswer, &correctAnswer, &quizInfoHolder);quizQNum++;score+=0;
+        -: 1209:				}		
+        -: 1210:			}
+        -: 1211:			//end quiz
+    #####: 1212:			else if(quizQNum=4)
+        -: 1213:			{
+    #####: 1214:				quizQuestion=" ";
+    #####: 1215:				answerA="press 1 2 or 3 to exit";
+    #####: 1216:				answerB="";
+    #####: 1217:				answerC="";//quiz finished
+    #####: 1218:				if(userAnswer==0)
+        -: 1219:				{
+        -: 1220:					
+        -: 1221:				}
+    #####: 1222:				else if(userAnswer==1||userAnswer==2||userAnswer==3)
+        -: 1223:				{
+    #####: 1224:					quizOn=false;Player.move_spd=3*4;quizQNum=1;quizInfo="";userAnswer=0;quizLoopOn=false;
+        -: 1225:				}
+        -: 1226:			}
+        -: 1227:		}	
+        -: 1228:		
+        -: 1229:		//render the quiz popup
+     3021: 1230:		if (quizOn) 
+        -: 1231:		{
+        -: 1232:			// Render the quiz popup with a beige square background
+    #####: 1233:			SDL_Color bgColor = { 200, 200, 200 }; // Beige color
+    #####: 1234:			SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, 255);
+    #####: 1235:			int popupWidth = 400; // Adjust this value to change the width of the popup
+    #####: 1236:			int popupHeight = 200; // Adjust this value to change the height of the popup
+    #####: 1237:			int popupX = (800 - popupWidth) / 2 + 300; // Center the popup horizontally and move it right by 300 pixels
+    #####: 1238:			int popupY = (600 - popupHeight) / 2;
+    #####: 1239:			SDL_Rect popupRect = { popupX, popupY, popupWidth, popupHeight };
+    #####: 1240:			SDL_RenderFillRect(renderer, &popupRect);
+        -: 1241:
+        -: 1242:			// Render the quiz header just above the quiz text
+    #####: 1243:			SDL_Color headerColor = { 0, 0, 255 }; // blue header color
+    #####: 1244:			int maxHeaderWidth = popupWidth - 20; // Adjust this value based on your desired maximum header width
+    #####: 1245:			SDL_Surface* headerSurface = TTF_RenderText_Blended_Wrapped(font, quizHeader, headerColor, maxHeaderWidth);
+    #####: 1246:			SDL_Texture* headerTexture = SDL_CreateTextureFromSurface(renderer, headerSurface);
+        -: 1247:			// Calculate the position to center the header inside the beige square background
+    #####: 1248:			int headerWidth = headerSurface->w;
+    #####: 1249:			int headerHeight = headerSurface->h;
+    #####: 1250:			int headerX = popupX + (popupWidth - headerWidth) / 2;
+    #####: 1251:			int headerY = popupY + 10; // Adjust the value 10 for the vertical position of the header
+        -: 1252:			// Render the header
+    #####: 1253:			SDL_Rect headerRect = { headerX, headerY, headerWidth, headerHeight };
+    #####: 1254:			SDL_RenderCopy(renderer, headerTexture, NULL, &headerRect);
+        -: 1255:			// Cleanup
+    #####: 1256:			SDL_FreeSurface(headerSurface);
+    #####: 1257:			SDL_DestroyTexture(headerTexture);
+        -: 1258:
+        -: 1259:			// Combine quizInfo and quizQuestion into one string separated by newline
+        -: 1260:			char combinedText[1024];
+    #####: 1261:			snprintf(combinedText, sizeof(combinedText), "\n%s\n%s\n%s\n%s\n%s", quizInfo, quizQuestion, answerA, answerB, answerC);
+        -: 1262:
+        -: 1263:			// Render the quiz text inside the beige square background
+    #####: 1264:			SDL_Color textColor = { 0, 0, 0 }; // black text color
+    #####: 1265:			int maxTextWidth = popupWidth - 20; // Adjust this value based on your desired maximum text width
+    #####: 1266:			SDL_Surface* textSurface = TTF_RenderText_Blended_Wrapped(font, combinedText, textColor, maxTextWidth);
+    #####: 1267:			if (textSurface == NULL) 
+        -: 1268:			{
+    #####: 1269:				printf("Error creating text surface: %s\n", TTF_GetError());
+    #####: 1270:				return;
+        -: 1271:			}
+        -: 1272:
+    #####: 1273:			SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    #####: 1274:			if (textTexture == NULL) 
+        -: 1275:			{
+    #####: 1276:				printf("Error creating text texture: %s\n", SDL_GetError());
+    #####: 1277:				SDL_FreeSurface(textSurface);
+    #####: 1278:				return;
+        -: 1279:			}
+        -: 1280:
+        -: 1281:			// Calculate the position to center the text inside the beige square background
+    #####: 1282:			int textWidth = textSurface->w;
+    #####: 1283:			int textHeight = textSurface->h;
+    #####: 1284:			int textX = popupX + (popupWidth - textWidth) / 2;
+    #####: 1285:			int textY = popupY + (popupHeight - textHeight) / 2;
+        -: 1286:			// Render the text
+    #####: 1287:			SDL_Rect textRect = { textX, textY, textWidth, textHeight };
+    #####: 1288:			SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+        -: 1289:			// Cleanup
+    #####: 1290:			SDL_FreeSurface(textSurface);
+    #####: 1291:			SDL_DestroyTexture(textTexture);
+        -: 1292:		}
+        -: 1293:		// Draw water particles
+   305121: 1294:		for (int i = 0; i < MAX_WATER_PARTICLES; i++) 
+        -: 1295:		{
+   302100: 1296:			if (waterParticles[i].active) 
+        -: 1297:			{
+   298800: 1298:				draw_image(renderer, waterParticles[i].x, waterParticles[i].y, waterParticles[i].x + 5, waterParticles[i].y + 15, spr_water);
+        -: 1299:			}
+        -: 1300:		}
+        -: 1301:		// Draw snow particles
+   305121: 1302:		for (int i = 0; i < MAX_SNOW_PARTICLES; i++) 
+        -: 1303:		{
+   302100: 1304:			if (snowParticles[i].active) 
+        -: 1305:			{
+   163800: 1306:				draw_image(renderer, snowParticles[i].x, snowParticles[i].y, snowParticles[i].x + 25, snowParticles[i].y + 25, snowflake);
+        -: 1307:			}
+        -: 1308:		}
+        -: 1309:		//npc stuff
+   758271: 1310:		for (int i = 0; i < MAX_NPCS; i++) 
+        -: 1311:		{
+   755250: 1312:    		struct NPC* currentNPC = &npcs[i];
+   755250: 1313:			if (currentNPC->appearsOnLevel == level_cur)
+        -: 1314:			{
+        -: 1315:				// Rendering
+   147723: 1316:				globalNpc = currentNPC;
+   147723: 1317:				SDL_Rect npcRect = { currentNPC->x, currentNPC->y, currentNPC->width, currentNPC->height };
+   147723: 1318:				SDL_RenderCopy(renderer, currentNPC->texture, NULL, &npcRect);
+        -: 1319:			}
+        -: 1320:		}
+     3021: 1321:		if(level_cur==1)
+        -: 1322:		{
+      459: 1323:			if(tutorlvl2ChatCompleted==0)
+        -: 1324:			{
+      234: 1325:				buttonVis=1;
+      234: 1326:				strcpy(buttonTexts, "Greetings, press 1 to continue npc dialogue");
+        -: 1327:			}
+      459: 1328:			if(nextChat==1)
+        -: 1329:			{
+       27: 1330:				strcpy(buttonTexts, "Following the path will provide safety");
+        -: 1331:			}
+      459: 1332:			if(nextChat==2)
+        -: 1333:			{
+       24: 1334:				strcpy(buttonTexts, "But exploring is more likely to be rewarded..");
+        -: 1335:			}
+      459: 1336:			if(nextChat==3)
+        -: 1337:			{
+        3: 1338:				buttonVis=0;
+        3: 1339:				nextChat=0;
+        3: 1340:				tutorlvl2ChatCompleted=1;
+        -: 1341:			}
+        -: 1342:		}
+        -: 1343:		//tutor on level 16 chat.
+     3021: 1344:		if(level_cur==16)
+        -: 1345:		{
+      264: 1346:			if(tutorChatCompleted==0)
+        -: 1347:			{
+      204: 1348:				buttonVis=1;
+      204: 1349:				strcpy(buttonTexts, "Greetings, press 1 to continue npc dialogue");
+        -: 1350:			}
+      264: 1351:			if(nextChat==1)
+        -: 1352:			{
+       24: 1353:				strcpy(buttonTexts, "Beware for this road is far more treacherous");
+        -: 1354:			}
+      264: 1355:			if(nextChat==2)
+        -: 1356:			{
+       21: 1357:				strcpy(buttonTexts, "Carry forward at your own risk..");
+        -: 1358:			}
+      264: 1359:			if(nextChat==3)
+        -: 1360:			{
+        3: 1361:				buttonVis=0;
+        3: 1362:				nextChat=0;
+        3: 1363:				tutorChatCompleted=1;
+        -: 1364:			}
+        -: 1365:		}
+     3021: 1366:		if(level_cur==110)
+        -: 1367:		{
+    #####: 1368:			if(penguinSamChatCompleted==0)
+        -: 1369:			{
+    #####: 1370:				buttonVis=1;
+    #####: 1371:				strcpy(buttonTexts, "Wow, you have made it so far!");
+        -: 1372:			}
+    #####: 1373:			if(nextChat==1)
+        -: 1374:			{
+    #####: 1375:				strcpy(buttonTexts, "Walk on further, you are almost done with your journey.");
+        -: 1376:			}
+    #####: 1377:			if(nextChat==2)
+        -: 1378:			{
+    #####: 1379:				strcpy(buttonTexts, "Beware though, for Andrew is heard to lurk here...");
+        -: 1380:			}
+    #####: 1381:			if(nextChat==3)
+        -: 1382:			{
+    #####: 1383:				buttonVis=0;
+    #####: 1384:				nextChat=0;
+    #####: 1385:				penguinSamChatCompleted=1;
+        -: 1386:			}
+        -: 1387:		}
+     3021: 1388:				if(level_cur==160)
+        -: 1389:		{
+    #####: 1390:			if(forestManChatCompleted==0)
+        -: 1391:			{
+    #####: 1392:				buttonVis=1;
+    #####: 1393:				strcpy(buttonTexts, "Hello wanderer, are you lost?");
+        -: 1394:			}
+    #####: 1395:			if(nextChat==1)
+        -: 1396:			{
+    #####: 1397:				strcpy(buttonTexts, "To the east from here you will seek what you find.");
+        -: 1398:			}
+    #####: 1399:			if(nextChat==2)
+        -: 1400:			{
+    #####: 1401:				strcpy(buttonTexts, "Follow the southern peninsula and you will be rewarded greatly.");
+        -: 1402:			}
+    #####: 1403:			if(nextChat==3)
+        -: 1404:			{
+    #####: 1405:				buttonVis=0;
+    #####: 1406:				nextChat=0;
+    #####: 1407:				forestManChatCompleted=1;
+        -: 1408:			}
+        -: 1409:		}
+     3021: 1410:		if(level_cur==3){
+    #####: 1411:			if(quizTutorChatCompleted==0)
+        -: 1412:			{
+    #####: 1413:				buttonVis=1;
+    #####: 1414:				strcpy(buttonTexts, "Hello wanderer");
+        -: 1415:			}
+    #####: 1416:			if(nextChat==1)
+        -: 1417:			{
+    #####: 1418:				strcpy(buttonTexts, "To learn more about the enemies you will face");
+        -: 1419:			}
+    #####: 1420:			if(nextChat==2)
+        -: 1421:			{
+    #####: 1422:				strcpy(buttonTexts, "You must learn about them.. complete quizzes to learn more");
+        -: 1423:			}
+    #####: 1424:			if(nextChat==3)
+        -: 1425:			{
+    #####: 1426:				buttonVis=0;
+    #####: 1427:				nextChat=0;
+    #####: 1428:				quizTutorChatCompleted=1;
+        -: 1429:			}
+        -: 1430:		}
+        -: 1431:		/*
+        -: 1432:		Overlay Drawing.
+        -: 1433:		*/
+        -: 1434:		//Splash intro screen.
+     3021: 1435:		if (splashintro_bool)
+        -: 1436:		{
+      156: 1437:			int off=64*gw;
+      156: 1438:			draw_rectangle_color(renderer,0,0,screen_w,screen_h,0);
+      156: 1439:			draw_image(renderer,win_game_x-off,win_game_y,win_game_x2+off,win_game_y2,splashintro_img1);
+        -: 1440:			//Visual effect.
+      156: 1441:			int imax=16;
+        -: 1442:			int xo,yo,cc;
+      156: 1443:			int dgc=draw_get_color();
+      156: 1444:			int timer=(int)get_timer();
+        -: 1445:			int ttx,tty,ttc;
+      156: 1446:			ttx=timer/10%360;
+      156: 1447:			tty=90+75*dcos(timer/10%360);
+      156: 1448:			ttc=timer/10%256;
+     2652: 1449:			for (int i=0; i<imax; i++)
+        -: 1450:			{
+     2496: 1451:				xo=-imax*gw*dcos(ttx)+i*gw*dcos(ttx);
+     2496: 1452:				yo=-imax*gh*dsin(tty)+i*gh*dsin(tty);
+        -: 1453:				//cc=(int)lerp(0.0,255.0,(double)((double)i/(double)(imax-1)));
+        -: 1454:				//draw_set_color(renderer,make_color_rgb(cc,cc,cc));
+     2496: 1455:				draw_set_color(renderer,make_color_hsv(ttc,32,(int)lerp(0.0,255.0,(double)i/(double)(imax-1))));
+     7488: 1456:				draw_image(renderer,
+     2496: 1457:					win_game_x-off+xo,win_game_y+yo,
+     2496: 1458:					win_game_x2+off+xo,win_game_y2+yo,
+        -: 1459:					splashintro_img2);
+        -: 1460:			}
+        -: 1461:			//Logo.
+      156: 1462:			draw_image(renderer,win_game_x-off,win_game_y,win_game_x2+off,win_game_y2,splashintro_img3);
+      156: 1463:			draw_set_color(renderer,dgc);
+        -: 1464:			//Press space to continue.
+        -: 1465:			int xx,yy;
+      156: 1466:			xx=384;
+      156: 1467:			yy=32;
+      156: 1468:			if (timer/60%8>=4)
+        -: 1469:			{
+       81: 1470:				draw_text_color(renderer,xx,yy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashintro_string,font_ascii_w,font_ascii_h,c_yellow);
+        -: 1471:			}
+        -: 1472:			//Copyright.
+      156: 1473:			xx=64;
+      156: 1474:			yy=8;
+        -: 1475:			int yoff;
+        -: 1476:			char ch[2];
+      156: 1477:			imax=splashintro_slen2;
+     8268: 1478:			for (int i=0; i<imax; i++)
+        -: 1479:			{
+     8112: 1480:				yoff=8*gh*dcos((timer/10%360)+lerp(0.0,720.0,(double)i/(double)(imax-1)));
+     8112: 1481:				ch[0]=splashintro_string_copyright[i];
+     8112: 1482:				draw_text_color(renderer,xx+font_ascii_w*gw*i,win_game_y+win_game_h-yy+yoff-font_ascii_h*gh,font_ascii_w*gw,font_ascii_h*gh,font_ascii,ch,font_ascii_w,font_ascii_h,c_white);
+        -: 1483:			}
+        -: 1484:			
+        -: 1485:		}
+        -: 1486:		
+        -: 1487:		// Clear the renderer
+     3021: 1488:        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        -: 1489:		// Render the score at the bottom left
+        -: 1490:        char scoreText[20];
+     3021: 1491:        snprintf(scoreText, sizeof(scoreText), "Score: %d", score);
+     3021: 1492:        SDL_Surface* surface = TTF_RenderText_Solid(font, scoreText, scoreColour);
+     3021: 1493:        SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+     3021: 1494:        SDL_Rect textRect = { 10, 720, surface->w, surface->h };
+     3021: 1495:        SDL_RenderCopy(renderer, texture, NULL, &textRect);
+     3021: 1496:        SDL_FreeSurface(surface);
+     3021: 1497:        SDL_DestroyTexture(texture);
+        -: 1498:		
+        -: 1499:		//Render to screen.
+     3021: 1500:		SDL_RenderPresent(renderer);
+     3021: 1501:		SDL_Delay(16);//60 fps.
+        -: 1502:		
+        -: 1503:		//End of main loop.
+        -: 1504:	}
+        3: 1505:	printf("...exited main loop.\n");
+        -: 1506:
+        -: 1507:	//Shut down SDL
+        3: 1508:	free(waterParticles);
+        3: 1509:	TTF_CloseFont(font);
+        3: 1510:	SDL_DestroyTexture(spr_grass);
+        3: 1511:	SDL_DestroyTexture(spr_sand);
+        3: 1512:	SDL_DestroyTexture(spr_water);
+        3: 1513:	SDL_DestroyTexture(spr_lava);
+        3: 1514:	SDL_DestroyTexture(spr_water_shallow);
+        3: 1515:	SDL_DestroyTexture(spr_lava_shallow);
+        3: 1516:	SDL_DestroyTexture(spr_tileset);
+        3: 1517:	SDL_DestroyTexture(spr_map);
+        3: 1518:	SDL_DestroyTexture(spr_mapicon_unknown);
+        3: 1519:	SDL_DestroyTexture(sprstrip_player);
+        3: 1520:	SDL_DestroyTexture(splashintro_img1);
+        3: 1521:	SDL_DestroyTexture(splashintro_img2);
+        3: 1522:	SDL_DestroyTexture(splashintro_img3);
+        3: 1523:	SDL_DestroyTexture(font_ascii);
+        3: 1524:	SDL_DestroyTexture(spr_clock_digital);
+        3: 1525:	SDL_DestroyTexture(spr_thermometer);
+        3: 1526:	SDL_DestroyTexture(spr_hudshade);
+        3: 1527:	SDL_DestroyTexture(spr_nutrients);
+        3: 1528:	SDL_DestroyTexture(spr_enemy1);
+        3: 1529:	IMG_Quit();
+        -: 1530:	
+        -: 1531:	//music_free();
+        -: 1532:	//SDL_FreeWAV(&audio_spec);
+        3: 1533:	SDL_CloseAudioDevice(deviceid);
+        3: 1534:    SDL_FreeWAV(wavbuffer);
+        -: 1535:	
+        3: 1536:	SDL_DestroyRenderer(renderer);
+        3: 1537:    SDL_DestroyWindow(window);
+        3: 1538:    SDL_Quit();
+        -: 1539:
+        -: 1540:    //Wait n milliseconds jic something went wrong (so that printfs can be read)
+        3: 1541:    SDL_Delay(500);
+        -: 1542:    
+        3: 1543:	return 0;
+        -: 1544:	
+        -: 1545:    /* Upon an error, print message and quit properly */
+    #####: 1546:error:
+    #####: 1547:    fprintf(stderr, "%s Error returned: %s\n", errmsg, SDL_GetError());
+    #####: 1548:    SDL_Quit();
+    #####: 1549:    exit(EXIT_FAILURE);
+        -: 1550:}

@@ -27,6 +27,7 @@ all-coverage:
 	mv -f *.gcov coverage
 	mv -f *.gcda coverage
 	mv -f *.gcno coverage
+	ren coverage\*.gcov *.txt
 	
 
 test:

@@ -1,0 +1,441 @@
+        -:    0:Source:src/game.c
+        -:    0:Programs:17
+        -:    1:#include "everything.h"
+        -:    2:
+        -:    3:
+        -:    4:
+        -:    5://initialize number of water particles wanted
+        -:    6:const int MAX_WATER_PARTICLES = 100;
+        -:    7:const int MAX_SNOW_PARTICLES = 100;
+        -:    8:
+        -:    9:struct WaterParticle* waterParticles;
+        -:   10:struct SnowParticle* snowParticles;
+        -:   11:int waterOn = 0; //decide if raining or not
+        -:   12:int waterSlow = 0;//turn on to have rain fade away instead of turning off instantly
+        -:   13://function to create water particle.
+     2038:   14:void createWaterParticle(int index, int window_width, int window_height)
+        -:   15:{
+     2038:   16:    waterParticles[index].x = rand() % (screen_w-596)+298;     // Random x position within window width
+     2038:   17:    waterParticles[index].y = -(rand() % window_height); // Random initial y position above the window
+     2038:   18:    waterParticles[index].speed = 10;        // Rain speed
+     2038:   19:    waterParticles[index].active = 1;                    // Set active to 1 (true)
+     2038:   20:}
+------------------
+createWaterParticle:
+     1019:   14:void createWaterParticle(int index, int window_width, int window_height)
+        -:   15:{
+     1019:   16:    waterParticles[index].x = rand() % (screen_w-596)+298;     // Random x position within window width
+     1019:   17:    waterParticles[index].y = -(rand() % window_height); // Random initial y position above the window
+     1019:   18:    waterParticles[index].speed = 10;        // Rain speed
+     1019:   19:    waterParticles[index].active = 1;                    // Set active to 1 (true)
+     1019:   20:}
+------------------
+createWaterParticle:
+     1019:   14:void createWaterParticle(int index, int window_width, int window_height)
+        -:   15:{
+     1019:   16:    waterParticles[index].x = rand() % (screen_w-596)+298;     // Random x position within window width
+     1019:   17:    waterParticles[index].y = -(rand() % window_height); // Random initial y position above the window
+     1019:   18:    waterParticles[index].speed = 10;        // Rain speed
+     1019:   19:    waterParticles[index].active = 1;                    // Set active to 1 (true)
+     1019:   20:}
+------------------
+        -:   21:// Function to initialize a snow particle
+        6:   22:void createSnowParticle(int index, int window_width, int window_height) {
+        6:   23:    snowParticles[index].x = rand() % (screen_w-596)+298;  
+        6:   24:    snowParticles[index].y = -(rand() % window_height); // Start above the screen
+        6:   25:    snowParticles[index].speed = 5;    // Adjust the falling speed as needed
+        6:   26:    snowParticles[index].active = 1;               // Set active to 1 (true)
+        6:   27:}
+------------------
+createSnowParticle:
+        3:   22:void createSnowParticle(int index, int window_width, int window_height) {
+        3:   23:    snowParticles[index].x = rand() % (screen_w-596)+298;  
+        3:   24:    snowParticles[index].y = -(rand() % window_height); // Start above the screen
+        3:   25:    snowParticles[index].speed = 5;    // Adjust the falling speed as needed
+        3:   26:    snowParticles[index].active = 1;               // Set active to 1 (true)
+        3:   27:}
+------------------
+createSnowParticle:
+        3:   22:void createSnowParticle(int index, int window_width, int window_height) {
+        3:   23:    snowParticles[index].x = rand() % (screen_w-596)+298;  
+        3:   24:    snowParticles[index].y = -(rand() % window_height); // Start above the screen
+        3:   25:    snowParticles[index].speed = 5;    // Adjust the falling speed as needed
+        3:   26:    snowParticles[index].active = 1;               // Set active to 1 (true)
+        3:   27:}
+------------------
+        -:   28://function to reactivate water particles
+        4:   29:void activateAllWaterParticles()
+        -:   30:{
+      404:   31:    for (int i = 0; i < MAX_WATER_PARTICLES; i++)
+        -:   32:	{
+      400:   33:        waterParticles[i].active = 1; // Set active to 1 (true)
+        -:   34:    }
+        4:   35:}
+------------------
+activateAllWaterParticles:
+        2:   29:void activateAllWaterParticles()
+        -:   30:{
+      202:   31:    for (int i = 0; i < MAX_WATER_PARTICLES; i++)
+        -:   32:	{
+      200:   33:        waterParticles[i].active = 1; // Set active to 1 (true)
+        -:   34:    }
+        2:   35:}
+------------------
+activateAllWaterParticles:
+        2:   29:void activateAllWaterParticles()
+        -:   30:{
+      202:   31:    for (int i = 0; i < MAX_WATER_PARTICLES; i++)
+        -:   32:	{
+      200:   33:        waterParticles[i].active = 1; // Set active to 1 (true)
+        -:   34:    }
+        2:   35:}
+------------------
+        -:   36://function to reactivate snow particles
+        4:   37:void activateAllSnowParticles()
+        -:   38:{
+      404:   39:    for (int i = 0; i < MAX_SNOW_PARTICLES; i++)
+        -:   40:	{
+      400:   41:        snowParticles[i].active = 1; // Set active to 1 (true)
+        -:   42:    }
+        4:   43:}
+------------------
+activateAllSnowParticles:
+        2:   37:void activateAllSnowParticles()
+        -:   38:{
+      202:   39:    for (int i = 0; i < MAX_SNOW_PARTICLES; i++)
+        -:   40:	{
+      200:   41:        snowParticles[i].active = 1; // Set active to 1 (true)
+        -:   42:    }
+        2:   43:}
+------------------
+activateAllSnowParticles:
+        2:   37:void activateAllSnowParticles()
+        -:   38:{
+      202:   39:    for (int i = 0; i < MAX_SNOW_PARTICLES; i++)
+        -:   40:	{
+      200:   41:        snowParticles[i].active = 1; // Set active to 1 (true)
+        -:   42:    }
+        2:   43:}
+------------------
+        -:   44://deactivate them all
+        2:   45:void deactivateAllWaterParticles()
+        -:   46:{
+      202:   47:    for (int i = 0; i < MAX_WATER_PARTICLES; i++)
+        -:   48:	{
+      200:   49:        waterParticles[i].active = 0; // Set active to 0 (false)
+        -:   50:    }
+        2:   51:}
+------------------
+deactivateAllWaterParticles:
+        1:   45:void deactivateAllWaterParticles()
+        -:   46:{
+      101:   47:    for (int i = 0; i < MAX_WATER_PARTICLES; i++)
+        -:   48:	{
+      100:   49:        waterParticles[i].active = 0; // Set active to 0 (false)
+        -:   50:    }
+        1:   51:}
+------------------
+deactivateAllWaterParticles:
+        1:   45:void deactivateAllWaterParticles()
+        -:   46:{
+      101:   47:    for (int i = 0; i < MAX_WATER_PARTICLES; i++)
+        -:   48:	{
+      100:   49:        waterParticles[i].active = 0; // Set active to 0 (false)
+        -:   50:    }
+        1:   51:}
+------------------
+        -:   52://deactivate them all
+        2:   53:void deactivateAllSnowParticles()
+        -:   54:{
+      202:   55:    for (int i = 0; i < MAX_SNOW_PARTICLES; i++)
+        -:   56:	{
+      200:   57:        snowParticles[i].active = 0; // Set active to 0 (false)
+        -:   58:    }
+        2:   59:}
+------------------
+deactivateAllSnowParticles:
+        1:   53:void deactivateAllSnowParticles()
+        -:   54:{
+      101:   55:    for (int i = 0; i < MAX_SNOW_PARTICLES; i++)
+        -:   56:	{
+      100:   57:        snowParticles[i].active = 0; // Set active to 0 (false)
+        -:   58:    }
+        1:   59:}
+------------------
+deactivateAllSnowParticles:
+        1:   53:void deactivateAllSnowParticles()
+        -:   54:{
+      101:   55:    for (int i = 0; i < MAX_SNOW_PARTICLES; i++)
+        -:   56:	{
+      100:   57:        snowParticles[i].active = 0; // Set active to 0 (false)
+        -:   58:    }
+        1:   59:}
+------------------
+        -:   60:
+        -:   61:
+        -:   62://Health System test
+        -:   63:int health = 100;
+        -:   64:int maxHealth=100;
+        -:   65:SDL_Rect playerHitbox;
+        -:   66:// Function to update the globalRect's position and size
+      934:   67:void updatePlayerHitbox(int x, int y, int width, int height)
+        -:   68:{
+      934:   69:    playerHitbox.x = x;
+      934:   70:    playerHitbox.y = y;
+      934:   71:    playerHitbox.w = width;
+      934:   72:    playerHitbox.h = height;
+      934:   73:}
+------------------
+updatePlayerHitbox:
+      467:   67:void updatePlayerHitbox(int x, int y, int width, int height)
+        -:   68:{
+      467:   69:    playerHitbox.x = x;
+      467:   70:    playerHitbox.y = y;
+      467:   71:    playerHitbox.w = width;
+      467:   72:    playerHitbox.h = height;
+      467:   73:}
+------------------
+updatePlayerHitbox:
+      467:   67:void updatePlayerHitbox(int x, int y, int width, int height)
+        -:   68:{
+      467:   69:    playerHitbox.x = x;
+      467:   70:    playerHitbox.y = y;
+      467:   71:    playerHitbox.w = width;
+      467:   72:    playerHitbox.h = height;
+      467:   73:}
+------------------
+        -:   74://damaging test
+       48:   75:void damageMe(int dmg)
+        -:   76:{
+       48:   77:	if(health-dmg<=0)
+        -:   78:	{
+       30:   79:		health=0;
+        -:   80:	}
+        -:   81:	else
+        -:   82:	{
+       18:   83:		health -= dmg;
+        -:   84:	}
+       48:   85:}
+------------------
+damageMe:
+       24:   75:void damageMe(int dmg)
+        -:   76:{
+       24:   77:	if(health-dmg<=0)
+        -:   78:	{
+       15:   79:		health=0;
+        -:   80:	}
+        -:   81:	else
+        -:   82:	{
+        9:   83:		health -= dmg;
+        -:   84:	}
+       24:   85:}
+------------------
+damageMe:
+       24:   75:void damageMe(int dmg)
+        -:   76:{
+       24:   77:	if(health-dmg<=0)
+        -:   78:	{
+       15:   79:		health=0;
+        -:   80:	}
+        -:   81:	else
+        -:   82:	{
+        9:   83:		health -= dmg;
+        -:   84:	}
+       24:   85:}
+------------------
+        -:   86://healing test
+    #####:   87:void healMe(int dmg)
+        -:   88:{
+    #####:   89:	if(health+dmg>=maxHealth)
+        -:   90:	{
+    #####:   91:		health=100;
+        -:   92:	}
+        -:   93:	else
+        -:   94:	{
+    #####:   95:		health += dmg;
+        -:   96:	}
+    #####:   97:}
+------------------
+healMe:
+    #####:   87:void healMe(int dmg)
+        -:   88:{
+    #####:   89:	if(health+dmg>=maxHealth)
+        -:   90:	{
+    #####:   91:		health=100;
+        -:   92:	}
+        -:   93:	else
+        -:   94:	{
+    #####:   95:		health += dmg;
+        -:   96:	}
+    #####:   97:}
+------------------
+healMe:
+    #####:   87:void healMe(int dmg)
+        -:   88:{
+    #####:   89:	if(health+dmg>=maxHealth)
+        -:   90:	{
+    #####:   91:		health=100;
+        -:   92:	}
+        -:   93:	else
+        -:   94:	{
+    #####:   95:		health += dmg;
+        -:   96:	}
+    #####:   97:}
+------------------
+        -:   98:
+        -:   99://Game clock. (HH:MM)
+    #####:  100:int clock_get_hour(int time)
+        -:  101:{
+    #####:  102:	return (time/60)%24;
+        -:  103:}
+------------------
+clock_get_hour:
+    #####:  100:int clock_get_hour(int time)
+        -:  101:{
+    #####:  102:	return (time/60)%24;
+        -:  103:}
+------------------
+clock_get_hour:
+    #####:  100:int clock_get_hour(int time)
+        -:  101:{
+    #####:  102:	return (time/60)%24;
+        -:  103:}
+------------------
+    #####:  104:int clock_get_minute(int time)
+        -:  105:{
+    #####:  106:	return time%60;
+        -:  107:}
+------------------
+clock_get_minute:
+    #####:  104:int clock_get_minute(int time)
+        -:  105:{
+    #####:  106:	return time%60;
+        -:  107:}
+------------------
+clock_get_minute:
+    #####:  104:int clock_get_minute(int time)
+        -:  105:{
+    #####:  106:	return time%60;
+        -:  107:}
+------------------
+     7640:  108:int clock_is_between(int time,int h1,int m1,int h2,int m2)
+        -:  109:{
+        -:  110:	int c1,c2;
+     7640:  111:	c1 = (h1%24)*60 + m1%60;
+     7640:  112:	c2 = (h2%24)*60 + m2%60;
+     7640:  113:	return ((time>=c1) && (time<=c2));
+        -:  114:}
+------------------
+clock_is_between:
+     3820:  108:int clock_is_between(int time,int h1,int m1,int h2,int m2)
+        -:  109:{
+        -:  110:	int c1,c2;
+     3820:  111:	c1 = (h1%24)*60 + m1%60;
+     3820:  112:	c2 = (h2%24)*60 + m2%60;
+     3820:  113:	return ((time>=c1) && (time<=c2));
+        -:  114:}
+------------------
+clock_is_between:
+     3820:  108:int clock_is_between(int time,int h1,int m1,int h2,int m2)
+        -:  109:{
+        -:  110:	int c1,c2;
+     3820:  111:	c1 = (h1%24)*60 + m1%60;
+     3820:  112:	c2 = (h2%24)*60 + m2%60;
+     3820:  113:	return ((time>=c1) && (time<=c2));
+        -:  114:}
+------------------
+        -:  115://Temperature.
+    #####:  116:double temp_ctof(int c)
+        -:  117:{
+        -:  118:	//Celsius to Fahrenheit.
+    #####:  119:	return (double)c * 1.8 + 32.0;
+        -:  120:}
+------------------
+temp_ctof:
+    #####:  116:double temp_ctof(int c)
+        -:  117:{
+        -:  118:	//Celsius to Fahrenheit.
+    #####:  119:	return (double)c * 1.8 + 32.0;
+        -:  120:}
+------------------
+temp_ctof:
+    #####:  116:double temp_ctof(int c)
+        -:  117:{
+        -:  118:	//Celsius to Fahrenheit.
+    #####:  119:	return (double)c * 1.8 + 32.0;
+        -:  120:}
+------------------
+        -:  121:
+        2:  122:void rain_create()
+        -:  123:{
+        -:  124:	//rain
+        -:  125:    // Allocate memory for water particles
+        2:  126:    waterParticles = malloc(MAX_WATER_PARTICLES * sizeof(struct WaterParticle));
+        2:  127:    if (waterParticles == NULL)
+        -:  128:	{
+        -:  129:        // Handle allocation failure
+    #####:  130:        fprintf(stderr, "Failed to allocate memory for water particles\n");
+    #####:  131:        return 1;
+        -:  132:    }
+        -:  133:    // Initialize water particles
+      202:  134:    for (int i = 0; i < MAX_WATER_PARTICLES; i++)
+        -:  135:	{
+      200:  136:        createWaterParticle(i, screen_w, screen_h);
+        -:  137:    }
+        -:  138:}
+------------------
+rain_create:
+        1:  122:void rain_create()
+        -:  123:{
+        -:  124:	//rain
+        -:  125:    // Allocate memory for water particles
+        1:  126:    waterParticles = malloc(MAX_WATER_PARTICLES * sizeof(struct WaterParticle));
+        1:  127:    if (waterParticles == NULL)
+        -:  128:	{
+        -:  129:        // Handle allocation failure
+    #####:  130:        fprintf(stderr, "Failed to allocate memory for water particles\n");
+    #####:  131:        return 1;
+        -:  132:    }
+        -:  133:    // Initialize water particles
+      101:  134:    for (int i = 0; i < MAX_WATER_PARTICLES; i++)
+        -:  135:	{
+      100:  136:        createWaterParticle(i, screen_w, screen_h);
+        -:  137:    }
+        -:  138:}
+------------------
+rain_create:
+        1:  122:void rain_create()
+        -:  123:{
+        -:  124:	//rain
+        -:  125:    // Allocate memory for water particles
+        1:  126:    waterParticles = malloc(MAX_WATER_PARTICLES * sizeof(struct WaterParticle));
+        1:  127:    if (waterParticles == NULL)
+        -:  128:	{
+        -:  129:        // Handle allocation failure
+    #####:  130:        fprintf(stderr, "Failed to allocate memory for water particles\n");
+    #####:  131:        return 1;
+        -:  132:    }
+        -:  133:    // Initialize water particles
+      101:  134:    for (int i = 0; i < MAX_WATER_PARTICLES; i++)
+        -:  135:	{
+      100:  136:        createWaterParticle(i, screen_w, screen_h);
+        -:  137:    }
+        -:  138:}
+------------------
+        2:  139:void snow_create()
+        -:  140:{
+        -:  141:	//rain
+        -:  142:    // Allocate memory for water particles
+        2:  143:    snowParticles = malloc(MAX_SNOW_PARTICLES * sizeof(struct SnowParticle));
+        2:  144:    if (snowParticles == NULL)
+        -:  145:	{
+        -:  146:        // Handle allocation failure
+    #####:  147:        fprintf(stderr, "Failed to allocate memory for snow particles\n");
+    #####:  148:        return 1;
+        -:  149:    }
+        -:  150:    // Initialize water particles
+      202:  151:    for (int i = 0; i < MAX_SNOW_PARTICLES; i++)
+        -:  152:	{
+      200:  153:        createWaterParticle(i, screen_w, screen_h);
+        -:  154:    }
+        -:  155:}
