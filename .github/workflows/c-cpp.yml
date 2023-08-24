@@ -37,9 +37,12 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Check Chocolatey Installation
+        run: choco --version
       - name: Install build tools and build
         run: |
           $current_dir = Get-Location
+          choco install make
           cd build-tools/strawberryperl/c/bin
           dir
           $env:PATH = "$pwd;$PATH"
