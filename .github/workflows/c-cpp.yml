@@ -43,9 +43,6 @@ jobs:
           dir
           $env:PATH = "$pwd;$PATH"
           $env:PATH
-          gcc --version
-          make -v
-          mingw32-make -v
           cd ../../../..
           make all
           make check
