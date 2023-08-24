@@ -32,6 +32,7 @@ jobs:
         echo "Loading environment variables from .env"
         # source .env
         $env:PATH="${{ runner.workspace }}/build-tools/strawberryperl/c/bin;" + $env:PATH
+        $env:PATH
     - name: install supplied build tools
       run: |
         cd build-tools/strawberryperl/c/bin
