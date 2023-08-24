@@ -40,17 +40,14 @@ jobs:
       - name: Check Chocolatey Installation
         run: choco --version
       - name: Install build tools and build
+        shell: bash
         run: |
-          $current_dir = Get-Location
           choco install make
-          $make_dir = (Get-Command make).Source
-          $env:PATH = "$make_dir;$env:PATH"
-          where.exe make
+          make --version
           cd build-tools/strawberryperl/c/bin
-          dir
-          $env:PATH = "$pwd;$PATH"
-          $env:PATH
-          cd $current_dir
+          export PATH="$PWD:$PATH"
+          echo "Updated PATH: $PATH"
+          cd $GITHUB_WORKSPACE
           make all
           make check
           make distcheck
