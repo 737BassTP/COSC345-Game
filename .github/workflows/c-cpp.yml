@@ -26,28 +26,23 @@ jobs:
   buildtools:
     runs-on: windows-latest
     env:
-      PATH: ${{ runner.workspace }}/build-tools/strawberryperl/c/bin;$${PATH}
+      PATH: ${{ env.RUNNER_WORKSPACE }}/build-tools/strawberryperl/c/bin;$${PATH}
     steps:
-    - uses: actions/checkout@v3
-    - name: Load environment variables from .env
-      run: |
-        Write-Host "Loading environment variables from .env"
-        Get-Content -Path .env | ForEach-Object {
-          if (-not $_.StartsWith("#")) {
-            $varName, $varValue = $_ -split "=", 2
-            $env:$varName = $varValue
-          }
-        }
-        Write-Host "Updated PATH: $env:PATH"
-    - name: install supplied build tools
-      run: |
-        cd build-tools/strawberryperl/c/bin
-        dir
-    - name: print build tools versions (1/2)
-      run: |
-        gcc --version
-        make -v
-        mingw32-make -v
+      - uses: actions/checkout@v3
+      - name: Load environment variables from .env
+        run: |
+          echo "Loading environment variables from .env"
+          echo "PATH=${{ env.GITHUB_WORKSPACE }}/build-tools/strawberryperl/c/bin:${{ env.PATH }}" >> $GITHUB_ENV
+
+      - name: install supplied build tools
+        run: |
+          cd build-tools/strawberryperl/c/bin
+          dir
+      - name: print build tools versions (1/2)
+        run: |
+          gcc --version
+          make -v
+          mingw32-make -v
         
   # Build job: Make executable from source using Makefile.
   build:
