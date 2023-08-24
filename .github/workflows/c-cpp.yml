@@ -39,12 +39,12 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install build tools and build
         run: |
-          current_dir=$(pwd)
+          $current_dir = Get-Location
           cd build-tools/strawberryperl/c/bin
           dir
           $env:PATH = "$pwd;$PATH"
           $env:PATH
-          cd "$current_dir"
+          cd $current_dir
           make all
           make check
           make distcheck
