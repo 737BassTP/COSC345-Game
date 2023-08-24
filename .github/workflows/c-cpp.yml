@@ -43,14 +43,19 @@ jobs:
           make check
           make distcheck
   
-  # Codecov job: Run CodeCov uploader.
-  codecov:
+  # Coverage job: Upload coverage reports somewhere.
+  coverage:
     #if: ${{ always() }} # always run this job even if previous jobs failed.
     #needs: build # run this job after "build" job has finished.
     runs-on: ubuntu-latest
     steps:
-    - name: Upload coverage reports to Codecov
+    - name: Coveralls
+      uses: coverallsapp/github-action@v2
+      env:
+        github-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
+    - name: Codecov (faulty)
       uses: codecov/codecov-action@v3
-      with:
+      env:
         token: ${{ secrets.CODECOV_TOKEN }}
-        files: ./coverage/*.txt
+        files: coverage/*.txt  
+    
