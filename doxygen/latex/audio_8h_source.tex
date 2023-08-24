@@ -1,0 +1,29 @@
+\doxysection{audio.\+h}
+\hypertarget{audio_8h_source}{}\label{audio_8h_source}\index{src/audio.h@{src/audio.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ audio\_h}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ audio\_h}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}everything.h"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{comment}{//Audio.}}
+\DoxyCodeLine{00007\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{00008\ \{}
+\DoxyCodeLine{00009\ \ \ \ \ Uint8*\ buffer;}
+\DoxyCodeLine{00010\ \ \ \ \ Uint32\ length;}
+\DoxyCodeLine{00011\ \ \ \ \ Uint32\ position;}
+\DoxyCodeLine{00012\ \}\ \mbox{\hyperlink{struct_audio_data}{AudioData}};\textcolor{comment}{//must\ be\ typedef'ed\ like\ this\ to\ fix\ compile\ bugs.}}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{keywordtype}{void}\ audioCallback(\textcolor{keywordtype}{void}*\ userdata,\ Uint8*\ stream,\ \textcolor{keywordtype}{int}\ len);}
+\DoxyCodeLine{00015\ \textcolor{keywordtype}{void}\ play\_WAV(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ wavfile,SDL\_AudioSpec\ spec,Uint8\ *wavbuffer,\textcolor{keywordtype}{int}\ wavlength);}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ SDL\_AudioDeviceID\ deviceid;}
+\DoxyCodeLine{00018\ Uint8\ *wavbuffer;\ \ \ }
+\DoxyCodeLine{00019\ \textcolor{keywordtype}{void}\ music\_bootup();}
+\DoxyCodeLine{00020\ \textcolor{keywordtype}{void}\ music\_free();}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

@@ -1,0 +1,81 @@
+\doxysection{game.\+h}
+\hypertarget{game_8h_source}{}\label{game_8h_source}\index{src/game.h@{src/game.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ game\_h}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ game\_h}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}everything.h"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{comment}{//Position.}}
+\DoxyCodeLine{00011\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structpos}{pos}}}
+\DoxyCodeLine{00012\ \{}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{int}\ x;}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{int}\ y;}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{int}\ xprevious;}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{int}\ yprevious;}
+\DoxyCodeLine{00017\ \};}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \textcolor{comment}{//rain\ struct}}
+\DoxyCodeLine{00020\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_water_particle}{WaterParticle}}}
+\DoxyCodeLine{00021\ \{}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{float}\ x;}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{float}\ y;}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{float}\ speed;}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{int}\ active;}
+\DoxyCodeLine{00026\ \};}
+\DoxyCodeLine{00027\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_snow_particle}{SnowParticle}}}
+\DoxyCodeLine{00028\ \{}
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keywordtype}{int}\ x;}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{int}\ y;}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordtype}{int}\ speed;}
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keywordtype}{int}\ active;}
+\DoxyCodeLine{00033\ \};\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{//Pushable\ block.}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structpushblock}{pushblock}}}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{int}\ x;}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{int}\ y;}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{char}\ pushmask;}
+\DoxyCodeLine{00040\ \};}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \textcolor{comment}{//initialize\ number\ of\ water\ particles\ wanted}}
+\DoxyCodeLine{00043\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ MAX\_WATER\_PARTICLES;}
+\DoxyCodeLine{00044\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ MAX\_SNOW\_PARTICLES;}
+\DoxyCodeLine{00045\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_water_particle}{WaterParticle}}*\ waterParticles;}
+\DoxyCodeLine{00046\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_snow_particle}{SnowParticle}}*\ snowParticles;}
+\DoxyCodeLine{00047\ \textcolor{keywordtype}{int}\ waterOn;\ \textcolor{comment}{//decide\ if\ raining\ or\ not}}
+\DoxyCodeLine{00048\ \textcolor{keywordtype}{int}\ waterSlow;\textcolor{comment}{//turn\ on\ to\ have\ rain\ fade\ away\ instead\ of\ turning\ off\ instantly}}
+\DoxyCodeLine{00049\ \textcolor{keywordtype}{int}\ snowSlow;}
+\DoxyCodeLine{00050\ \textcolor{keywordtype}{void}\ createWaterParticle(\textcolor{keywordtype}{int}\ index,\ \textcolor{keywordtype}{int}\ window\_width,\ \textcolor{keywordtype}{int}\ window\_height);\textcolor{comment}{//function\ to\ create\ water\ particle.}}
+\DoxyCodeLine{00051\ \textcolor{keywordtype}{void}\ activateAllWaterParticles();\textcolor{comment}{//function\ to\ reactivate\ water\ particles}}
+\DoxyCodeLine{00052\ \textcolor{keywordtype}{void}\ deactivateAllWaterParticles();\textcolor{comment}{//deactivate\ them\ all.\ To\ have\ the\ water\ slowly\ fade\ away\ instead\ of\ toggle\ off,\ toggle\ rainSlow\ to\ 1.}}
+\DoxyCodeLine{00053\ \textcolor{keywordtype}{void}\ createSnowParticle(\textcolor{keywordtype}{int}\ index,\ \textcolor{keywordtype}{int}\ window\_width,\ \textcolor{keywordtype}{int}\ window\_height);}
+\DoxyCodeLine{00054\ \textcolor{keywordtype}{void}\ activateAllSnowParticles();\textcolor{comment}{//activate\ all\ snow}}
+\DoxyCodeLine{00055\ \textcolor{keywordtype}{void}\ deactivateAllSnowParticles();\textcolor{comment}{//deactivate\ all\ snow.\ To\ have\ the\ snow\ slowly\ fade\ away\ instead\ of\ turn\ off,\ toggle\ snowSlow\ to\ 1.}}
+\DoxyCodeLine{00056\ \textcolor{comment}{//Health\ System\ test}}
+\DoxyCodeLine{00057\ \textcolor{keywordtype}{int}\ health;}
+\DoxyCodeLine{00058\ \textcolor{keywordtype}{int}\ maxHealth;}
+\DoxyCodeLine{00059\ SDL\_Rect\ playerHitbox;}
+\DoxyCodeLine{00060\ \textcolor{comment}{//\ Function\ to\ update\ the\ globalRect's\ position\ and\ size}}
+\DoxyCodeLine{00061\ \textcolor{keywordtype}{void}\ updatePlayerHitbox(\textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{int}\ y,\ \textcolor{keywordtype}{int}\ width,\ \textcolor{keywordtype}{int}\ height);}
+\DoxyCodeLine{00062\ \textcolor{keywordtype}{void}\ damageMe(\textcolor{keywordtype}{int}\ dmg);\textcolor{comment}{//damaging\ test}}
+\DoxyCodeLine{00063\ \textcolor{keywordtype}{void}\ healMe(\textcolor{keywordtype}{int}\ dmg);\textcolor{comment}{//healing\ test}}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \textcolor{comment}{//Game\ clock.\ (HH:MM)}}
+\DoxyCodeLine{00066\ \textcolor{keywordtype}{int}\ clock\_get\_hour(\textcolor{keywordtype}{int}\ time);}
+\DoxyCodeLine{00067\ \textcolor{keywordtype}{int}\ clock\_get\_minute(\textcolor{keywordtype}{int}\ time);}
+\DoxyCodeLine{00068\ \textcolor{keywordtype}{int}\ clock\_is\_between(\textcolor{keywordtype}{int}\ time,\textcolor{keywordtype}{int}\ h1,\textcolor{keywordtype}{int}\ m1,\textcolor{keywordtype}{int}\ h2,\textcolor{keywordtype}{int}\ m2);}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \textcolor{comment}{//Temperature.}}
+\DoxyCodeLine{00071\ \textcolor{keywordtype}{double}\ temp\_ctof(\textcolor{keywordtype}{int}\ c);\textcolor{comment}{//Celsius\ to\ Fahrenheit.}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \textcolor{keywordtype}{void}\ rain\_create();}
+\DoxyCodeLine{00074\ \textcolor{keywordtype}{void}\ snow\_create();}
+\DoxyCodeLine{00075\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

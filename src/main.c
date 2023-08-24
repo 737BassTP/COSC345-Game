@@ -60,6 +60,9 @@ int SDL_main(int argc, char *argv[])
 	*/
 	
 	//Handle command-line arguments.
+	//!
+	//! command line args
+	//!
 	if (argc >= 2)
 	{
 		//Unit testing with "unittest".

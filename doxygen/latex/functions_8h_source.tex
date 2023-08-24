@@ -1,0 +1,128 @@
+\doxysection{functions.\+h}
+\hypertarget{functions_8h_source}{}\label{functions_8h_source}\index{src/functions.h@{src/functions.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ functions\_h}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ functions\_h\ 1}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{comment}{//Typedef'ing.}}
+\DoxyCodeLine{00005\ \textcolor{keyword}{typedef}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{char}\ byte;\ \ \ \ \ \textcolor{comment}{//0-\/255\ \ \ ,\ 0x00\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ -\/0xFF\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\ \ 8-\/bit\ byte)\ \ \ \ \ \ .}}
+\DoxyCodeLine{00006\ \textcolor{keyword}{typedef}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ word;\ \ \ \ \textcolor{comment}{//0-\/65535\ ,\ 0x0000\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ -\/0xFFFF\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\ 16-\/bit\ word)\ \ \ \ \ \ .}}
+\DoxyCodeLine{00007\ \textcolor{keyword}{typedef}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ dword;\ \ \ \ \ \textcolor{comment}{//0-\/\ \ 4.3B,\ 0x00000000\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ -\/0xFFFFFFFF\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\ 32-\/bit\ doubleword).}}
+\DoxyCodeLine{00008\ \textcolor{keyword}{typedef}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{long}\ qword;\ \ \ \ \textcolor{comment}{//0-\/\ 18.4Q,\ 0x0000000000000000\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ -\/0xFFFFFFFFFFFFFFFF\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\ 64-\/bit\ quadword)\ \ .}}
+\DoxyCodeLine{00009\ \textcolor{keyword}{typedef}\ \textcolor{keywordtype}{unsigned}\ \_\_int128\ oword;\textcolor{comment}{//0-\/340.2U,\ 0x00000000000000000000000000000000-\/0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\ (128-\/bit\ octoword)\ \ .}}
+\DoxyCodeLine{00010\ \textcolor{comment}{//256-\/bit\ sedecword,\ 512-\/bit\ duotrigintiword,\ 1024-\/bit\ quadsexagintiword,\ 2048-\/bit\ octoviginticentiword,\ 4096-\/bit\ sexquinquagintiducentiword,\ ...}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ "{}everything.h"{}}}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <stdbool.h>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <stdio.h>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <math.h>}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <stdlib.h>}\ \textcolor{comment}{//\ for\ rand()\ and\ srand()}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <time.h>}\ \ \ \textcolor{comment}{//\ for\ time()}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <string.h>}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <stdarg.h>}\ \textcolor{comment}{//for\ variadic\ functions.}}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \textcolor{comment}{//Definitions.}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#define\ PI\ 3.1415926535897932}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{comment}{//Colors\ (BGR\ because\ Big-\/Endianness).}}
+\DoxyCodeLine{00026\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ c\_black;}
+\DoxyCodeLine{00027\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ c\_dkgray;}
+\DoxyCodeLine{00028\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ c\_gray;}
+\DoxyCodeLine{00029\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ c\_ltgray;}
+\DoxyCodeLine{00030\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ c\_white;}
+\DoxyCodeLine{00031\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ c\_red;}
+\DoxyCodeLine{00032\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ c\_orange;}
+\DoxyCodeLine{00033\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ c\_yellow;}
+\DoxyCodeLine{00034\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ c\_lime;}
+\DoxyCodeLine{00035\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ c\_green;}
+\DoxyCodeLine{00036\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ c\_slime;}
+\DoxyCodeLine{00037\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ c\_aqua;}
+\DoxyCodeLine{00038\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ c\_sky;}
+\DoxyCodeLine{00039\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ c\_blue;}
+\DoxyCodeLine{00040\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ c\_purple;}
+\DoxyCodeLine{00041\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ c\_fuchsia;}
+\DoxyCodeLine{00042\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ c\_rose;}
+\DoxyCodeLine{00043\ \textcolor{comment}{//extern\ const\ int\ c\_\ =\ 0x;}}
+\DoxyCodeLine{00044\ \textcolor{comment}{//extern\ const\ int\ c\_\ =\ 0x;}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \textcolor{comment}{//Global\ variables.}}
+\DoxyCodeLine{00047\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{int}\ glob\_draw\_alpha;}
+\DoxyCodeLine{00048\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{int}\ glob\_draw\_color;}
+\DoxyCodeLine{00049\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{int}\ glob\_vk\_right;}
+\DoxyCodeLine{00050\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{int}\ glob\_vk\_left;}
+\DoxyCodeLine{00051\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{int}\ glob\_vk\_up;}
+\DoxyCodeLine{00052\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{int}\ glob\_vk\_down;}
+\DoxyCodeLine{00053\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{int}\ glob\_vk\_space;}
+\DoxyCodeLine{00054\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{int}\ glob\_vk\_enter;}
+\DoxyCodeLine{00055\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{int}\ glob\_vk\_f2;}
+\DoxyCodeLine{00056\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{int}\ glob\_vk\_0;}
+\DoxyCodeLine{00057\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{int}\ glob\_vk\_1;}
+\DoxyCodeLine{00058\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{int}\ glob\_vk\_2;}
+\DoxyCodeLine{00059\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{int}\ glob\_vk\_3;}
+\DoxyCodeLine{00060\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{int}\ glob\_vk\_4;}
+\DoxyCodeLine{00061\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{int}\ glob\_vk\_5;}
+\DoxyCodeLine{00062\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{int}\ glob\_vk\_6;}
+\DoxyCodeLine{00063\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{int}\ glob\_vk\_7;}
+\DoxyCodeLine{00064\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{int}\ glob\_vk\_8;}
+\DoxyCodeLine{00065\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{int}\ glob\_vk\_9;}
+\DoxyCodeLine{00066\ \textcolor{comment}{//extern\ int\ glob\_vk\_;}}
+\DoxyCodeLine{00067\ \textcolor{comment}{//extern\ int\ glob\_vk\_;}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \textcolor{comment}{//Functions.}}
+\DoxyCodeLine{00070\ \textcolor{keywordtype}{void}\ clear\_screen(SDL\_Surface\ *surface);\textcolor{comment}{//Clear\ the\ surface\ by\ filling\ it\ with\ a\ colour.}}
+\DoxyCodeLine{00071\ \textcolor{keywordtype}{int}\ make\_color\_rgb(\textcolor{keywordtype}{int}\ r,\textcolor{keywordtype}{int}\ g,\textcolor{keywordtype}{int}\ b);}
+\DoxyCodeLine{00072\ \textcolor{keywordtype}{double}\ lerp(\textcolor{keywordtype}{double}\ from,\textcolor{keywordtype}{double}\ to,\textcolor{keywordtype}{double}\ percentage);}
+\DoxyCodeLine{00073\ \textcolor{keywordtype}{int}\ make\_color\_hsv(\textcolor{keywordtype}{int}\ h,\textcolor{keywordtype}{int}\ s,\textcolor{keywordtype}{int}\ v);}
+\DoxyCodeLine{00074\ \textcolor{keywordtype}{int}\ draw\_get\_alpha();}
+\DoxyCodeLine{00075\ \textcolor{keywordtype}{int}\ draw\_get\_color();}
+\DoxyCodeLine{00076\ \textcolor{keywordtype}{void}\ draw\_set\_color(SDL\_Renderer*\ renderer,\textcolor{keywordtype}{int}\ bgr);}
+\DoxyCodeLine{00077\ \textcolor{keywordtype}{void}\ draw\_set\_alpha(SDL\_Renderer*\ renderer,\textcolor{keywordtype}{int}\ alpha);}
+\DoxyCodeLine{00078\ \textcolor{keywordtype}{void}\ draw\_clear(SDL\_Renderer*\ renderer,\textcolor{keywordtype}{int}\ bgr);}
+\DoxyCodeLine{00079\ \textcolor{keywordtype}{void}\ draw\_clear\_alpha(SDL\_Renderer*\ renderer,\textcolor{keywordtype}{int}\ bgr,\textcolor{keywordtype}{int}\ alpha);}
+\DoxyCodeLine{00080\ \textcolor{keywordtype}{void}\ draw\_rectangle(SDL\_Renderer\ *renderer,\textcolor{keywordtype}{int}\ x1,\textcolor{keywordtype}{int}\ y1,\textcolor{keywordtype}{int}\ x2,\textcolor{keywordtype}{int}\ y2);}
+\DoxyCodeLine{00081\ \textcolor{keywordtype}{void}\ draw\_rectangle\_color(SDL\_Renderer\ *renderer,\textcolor{keywordtype}{int}\ x1,\textcolor{keywordtype}{int}\ y1,\textcolor{keywordtype}{int}\ x2,\textcolor{keywordtype}{int}\ y2,\textcolor{keywordtype}{int}\ bgr);}
+\DoxyCodeLine{00082\ \textcolor{keywordtype}{void}\ draw\_image(SDL\_Renderer\ *renderer,\textcolor{keywordtype}{int}\ x1,\textcolor{keywordtype}{int}\ y1,\textcolor{keywordtype}{int}\ x2,\textcolor{keywordtype}{int}\ y2,SDL\_Texture\ *texture);}
+\DoxyCodeLine{00083\ \textcolor{keywordtype}{void}\ draw\_image\_part(SDL\_Renderer\ *renderer,\textcolor{keywordtype}{int}\ x1,\textcolor{keywordtype}{int}\ y1,\textcolor{keywordtype}{int}\ x2,\textcolor{keywordtype}{int}\ y2,SDL\_Texture\ *texture,\textcolor{keywordtype}{int}\ left,\textcolor{keywordtype}{int}\ top,\textcolor{keywordtype}{int}\ width,\textcolor{keywordtype}{int}\ height);}
+\DoxyCodeLine{00084\ \textcolor{keywordtype}{void}\ draw\_text(SDL\_Renderer\ *renderer,\textcolor{keywordtype}{int}\ x,\textcolor{keywordtype}{int}\ y,\textcolor{keywordtype}{int}\ w,\textcolor{keywordtype}{int}\ h,SDL\_Texture\ *font,\textcolor{keywordtype}{char}*\ str,\textcolor{keywordtype}{int}\ fontw,\textcolor{keywordtype}{int}\ fonth);}
+\DoxyCodeLine{00085\ \textcolor{keywordtype}{void}\ draw\_text\_color(SDL\_Renderer\ *renderer,\textcolor{keywordtype}{int}\ x,\textcolor{keywordtype}{int}\ y,\textcolor{keywordtype}{int}\ w,\textcolor{keywordtype}{int}\ h,SDL\_Texture\ *font,\textcolor{keywordtype}{char}*\ str,\textcolor{keywordtype}{int}\ fontw,\textcolor{keywordtype}{int}\ fonth,\textcolor{keywordtype}{int}\ color);}
+\DoxyCodeLine{00086\ \textcolor{keywordtype}{int}\ keyboard\_check(\textcolor{keywordtype}{int}\ key);}
+\DoxyCodeLine{00087\ \textcolor{keywordtype}{int}\ keyboard\_check\_pressed(\textcolor{keywordtype}{int}\ key);}
+\DoxyCodeLine{00088\ \textcolor{keywordtype}{int}\ keyboard\_check\_released(\textcolor{keywordtype}{int}\ key);}
+\DoxyCodeLine{00089\ \textcolor{keywordtype}{int}\ mux\_int(\textcolor{keywordtype}{int}\ nth,...);}
+\DoxyCodeLine{00090\ \textcolor{keywordtype}{char}*\ mux\_str(\textcolor{keywordtype}{int}\ nth,...);}
+\DoxyCodeLine{00091\ SDL\_Texture*\ mux\_sdltex(\textcolor{keywordtype}{int}\ nth,...);}
+\DoxyCodeLine{00092\ \textcolor{keywordtype}{int}\ pos\_int(\textcolor{keywordtype}{int}\ num,\textcolor{keywordtype}{int}\ val,...);}
+\DoxyCodeLine{00093\ \textcolor{keywordtype}{int}\ BG(\textcolor{keywordtype}{int}\ val,\textcolor{keywordtype}{int}\ nth);}
+\DoxyCodeLine{00094\ \textcolor{keywordtype}{int}\ BGG(\textcolor{keywordtype}{int}\ val,\textcolor{keywordtype}{int}\ size,\textcolor{keywordtype}{int}\ nth);}
+\DoxyCodeLine{00095\ \textcolor{keywordtype}{int}\ sqr(\textcolor{keywordtype}{int}\ v);}
+\DoxyCodeLine{00096\ \textcolor{keywordtype}{double}\ degtorad(\textcolor{keywordtype}{double}\ deg);}
+\DoxyCodeLine{00097\ \textcolor{keywordtype}{double}\ radtodeg(\textcolor{keywordtype}{double}\ rad);}
+\DoxyCodeLine{00098\ \textcolor{keywordtype}{double}\ dcos(\textcolor{keywordtype}{double}\ deg);}
+\DoxyCodeLine{00099\ \textcolor{keywordtype}{double}\ dsin(\textcolor{keywordtype}{double}\ deg);}
+\DoxyCodeLine{00100\ Uint64\ get\_timer();}
+\DoxyCodeLine{00101\ \textcolor{keywordtype}{int}\ point\_in\_rectangle(\textcolor{keywordtype}{int}\ px,\textcolor{keywordtype}{int}\ py,\textcolor{keywordtype}{int}\ rx1,\textcolor{keywordtype}{int}\ ry1,\textcolor{keywordtype}{int}\ rx2,\textcolor{keywordtype}{int}\ ry2);}
+\DoxyCodeLine{00102\ \textcolor{keywordtype}{int}\ rectangle\_in\_rectangle(\textcolor{keywordtype}{int}\ sx1,\textcolor{keywordtype}{int}\ sy1,\textcolor{keywordtype}{int}\ sx2,\textcolor{keywordtype}{int}\ sy2,\textcolor{keywordtype}{int}\ dx1,\textcolor{keywordtype}{int}\ dy1,\textcolor{keywordtype}{int}\ dx2,\textcolor{keywordtype}{int}\ dy2);}
+\DoxyCodeLine{00103\ \textcolor{keywordtype}{int}\ string\_pos(\textcolor{keywordtype}{char}\ *substr,\textcolor{keywordtype}{char}\ *str);}
+\DoxyCodeLine{00104\ \textcolor{keywordtype}{double}\ darctan2(\textcolor{keywordtype}{int}\ y,\textcolor{keywordtype}{int}\ x);}
+\DoxyCodeLine{00105\ \textcolor{keywordtype}{double}\ cartodir(\textcolor{keywordtype}{int}\ x,\textcolor{keywordtype}{int}\ y);}
+\DoxyCodeLine{00106\ \textcolor{keywordtype}{void}\ game\_level\_load(\textcolor{keywordtype}{int}\ lvl,\textcolor{keywordtype}{int}\ lvlmax);}
+\DoxyCodeLine{00107\ \textcolor{keywordtype}{void}\ level\_load(\textcolor{keywordtype}{byte}\ arr[],\textcolor{keywordtype}{int}\ siz,\textcolor{keywordtype}{int}\ count,\textcolor{keywordtype}{int}\ layers);}
+\DoxyCodeLine{00108\ \textcolor{keywordtype}{void}\ dev\_tiled\_to\_leveldata(\textcolor{keywordtype}{byte}\ arr[]);}
+\DoxyCodeLine{00109\ \textcolor{keywordtype}{char}*\ level\_get\_name(\textcolor{keywordtype}{int}\ lvl,\textcolor{keywordtype}{char}*\ ret);}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \textcolor{keywordtype}{float}\ distance(\textcolor{keywordtype}{float}\ x1,\ \textcolor{keywordtype}{float}\ y1,\ \textcolor{keywordtype}{float}\ x2,\ \textcolor{keywordtype}{float}\ y2);\textcolor{comment}{//distance\ to\ player}}
+\DoxyCodeLine{00112\ \textcolor{keywordtype}{int}\ checkCollision(SDL\_Rect\ rect1,\ SDL\_Rect\ rect2);\textcolor{comment}{//\ Function\ to\ check\ for\ collision\ between\ two\ rectangles;\ returns\ true\ (non-\/zero)\ if\ the\ rectangles\ collide,\ false\ (0)\ otherwise}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}
