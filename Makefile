@@ -14,8 +14,20 @@ HEADERS = $(HEADERSb)
 
 all:
 	@echo $(WORKDIR)
-	$(CC) -std=c17 $(HEADERS) $(UNITTEST_HEADERS) $(SOURCES) $(UNITTEST_SOURCES) -I "$(SDL2)\include" -L "$(SDL2)\lib" $(CFLAGS) -o main
+	$(CC) -std=c17 $(HEADERS) $(SOURCES) -I "$(SDL2)\include" -L "$(SDL2)\lib" $(CFLAGS) -o main
 	@echo Build succeeded!
+	
+all-coverage:
+	@echo $(WORKDIR)
+	$(CC) -std=c17 $(HEADERS) $(SOURCES) -I "$(SDL2)\include" -L "$(SDL2)\lib" $(CFLAGS) -fprofile-arcs -ftest-coverage -o main
+	@echo Build succeeded!
+	./main.exe
+	gcov *
+	mkdir -p coverage
+	mv -f *.gcov coverage
+	mv -f *.gcda coverage
+	mv -f *.gcno coverage
+	
 
 test:
 	@echo Running unit tests...

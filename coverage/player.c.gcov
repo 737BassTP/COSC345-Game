@@ -1,0 +1,416 @@
+        -:    0:Source:src/player.c
+        -:    0:Programs:17
+        -:    1:#include "everything.h"
+        -:    2:
+       16:    3:void calculateAttackHitbox(struct player* player, SDL_Rect* attackHitbox)
+        -:    4:{
+        -:    5:    // Calculate the position of the attack hitbox based on player direction
+       16:    6:    int attackX = player->x;
+       16:    7:    int attackY = player->y;
+        -:    8:    // Adjust the position of the attack hitbox based on the player's direction
+       16:    9:    if (player->facedir == 1) 
+        -:   10:	{
+        -:   11:		// Up
+    #####:   12:        attackY -= player->attackRangeHeight;
+        -:   13:    } 
+       16:   14:	else if (player->facedir == 0)
+        -:   15:	{
+        -:   16:		// Right
+    #####:   17:        attackX += player->attackRangeWidth;
+        -:   18:    }
+       16:   19:	else if (player->facedir == 3)
+        -:   20:	{
+        -:   21:		// Down
+        2:   22:        attackY += player->attackRangeHeight;
+        -:   23:    } 
+       14:   24:	else if (player->facedir == 2)
+        -:   25:	{
+        -:   26:		// Left
+       14:   27:        attackX -= player->attackRangeWidth;
+        -:   28:    }
+        -:   29:
+        -:   30:    // Set the attack hitbox's position and size
+       16:   31:    attackHitbox->x = attackX;
+       16:   32:    attackHitbox->y = attackY;
+       16:   33:    attackHitbox->w = player->attackRangeWidth;
+       16:   34:    attackHitbox->h = player->attackRangeHeight;
+       16:   35:}
+------------------
+calculateAttackHitbox:
+        8:    3:void calculateAttackHitbox(struct player* player, SDL_Rect* attackHitbox)
+        -:    4:{
+        -:    5:    // Calculate the position of the attack hitbox based on player direction
+        8:    6:    int attackX = player->x;
+        8:    7:    int attackY = player->y;
+        -:    8:    // Adjust the position of the attack hitbox based on the player's direction
+        8:    9:    if (player->facedir == 1) 
+        -:   10:	{
+        -:   11:		// Up
+    #####:   12:        attackY -= player->attackRangeHeight;
+        -:   13:    } 
+        8:   14:	else if (player->facedir == 0)
+        -:   15:	{
+        -:   16:		// Right
+    #####:   17:        attackX += player->attackRangeWidth;
+        -:   18:    }
+        8:   19:	else if (player->facedir == 3)
+        -:   20:	{
+        -:   21:		// Down
+        1:   22:        attackY += player->attackRangeHeight;
+        -:   23:    } 
+        7:   24:	else if (player->facedir == 2)
+        -:   25:	{
+        -:   26:		// Left
+        7:   27:        attackX -= player->attackRangeWidth;
+        -:   28:    }
+        -:   29:
+        -:   30:    // Set the attack hitbox's position and size
+        8:   31:    attackHitbox->x = attackX;
+        8:   32:    attackHitbox->y = attackY;
+        8:   33:    attackHitbox->w = player->attackRangeWidth;
+        8:   34:    attackHitbox->h = player->attackRangeHeight;
+        8:   35:}
+------------------
+calculateAttackHitbox:
+        8:    3:void calculateAttackHitbox(struct player* player, SDL_Rect* attackHitbox)
+        -:    4:{
+        -:    5:    // Calculate the position of the attack hitbox based on player direction
+        8:    6:    int attackX = player->x;
+        8:    7:    int attackY = player->y;
+        -:    8:    // Adjust the position of the attack hitbox based on the player's direction
+        8:    9:    if (player->facedir == 1) 
+        -:   10:	{
+        -:   11:		// Up
+    #####:   12:        attackY -= player->attackRangeHeight;
+        -:   13:    } 
+        8:   14:	else if (player->facedir == 0)
+        -:   15:	{
+        -:   16:		// Right
+    #####:   17:        attackX += player->attackRangeWidth;
+        -:   18:    }
+        8:   19:	else if (player->facedir == 3)
+        -:   20:	{
+        -:   21:		// Down
+        1:   22:        attackY += player->attackRangeHeight;
+        -:   23:    } 
+        7:   24:	else if (player->facedir == 2)
+        -:   25:	{
+        -:   26:		// Left
+        7:   27:        attackX -= player->attackRangeWidth;
+        -:   28:    }
+        -:   29:
+        -:   30:    // Set the attack hitbox's position and size
+        8:   31:    attackHitbox->x = attackX;
+        8:   32:    attackHitbox->y = attackY;
+        8:   33:    attackHitbox->w = player->attackRangeWidth;
+        8:   34:    attackHitbox->h = player->attackRangeHeight;
+        8:   35:}
+------------------
+        -:   36:
+        -:   37:// Function to perform the player's attack
+       18:   38:void attack(struct player* player) 
+        -:   39:{
+     4518:   40:    for (int i = 0; i < MAX_ENEMIES; i++) 
+        -:   41:	{
+     4500:   42:        struct Enemy* currentEnemy = &enemies[i];
+        -:   43:
+     4500:   44:        if (currentEnemy->health > 0) 
+        -:   45:		{
+        -:   46:            // Create a rectangle representing the attack hitbox
+        -:   47:            SDL_Rect attackHitbox;
+       16:   48:            calculateAttackHitbox(player, &attackHitbox);
+        -:   49:
+        -:   50:            // Create a rectangle representing the enemy hitbox
+       16:   51:            SDL_Rect enemyHitbox = { currentEnemy->x, currentEnemy->y, currentEnemy->width, currentEnemy->height };
+        -:   52:
+        -:   53:            // Check for collision with the enemy
+       16:   54:            if (checkCollision(attackHitbox, enemyHitbox)) 
+        -:   55:			{
+        -:   56:                // If the attack hitbox collides with the enemy, apply damage to the enemy
+        4:   57:                printf("Hit enemy!\n");
+        4:   58:                currentEnemy->health -= player->damage;
+        -:   59:            }
+        -:   60:        }
+        -:   61:    }
+       18:   62:}
+------------------
+attack:
+        9:   38:void attack(struct player* player) 
+        -:   39:{
+     2259:   40:    for (int i = 0; i < MAX_ENEMIES; i++) 
+        -:   41:	{
+     2250:   42:        struct Enemy* currentEnemy = &enemies[i];
+        -:   43:
+     2250:   44:        if (currentEnemy->health > 0) 
+        -:   45:		{
+        -:   46:            // Create a rectangle representing the attack hitbox
+        -:   47:            SDL_Rect attackHitbox;
+        8:   48:            calculateAttackHitbox(player, &attackHitbox);
+        -:   49:
+        -:   50:            // Create a rectangle representing the enemy hitbox
+        8:   51:            SDL_Rect enemyHitbox = { currentEnemy->x, currentEnemy->y, currentEnemy->width, currentEnemy->height };
+        -:   52:
+        -:   53:            // Check for collision with the enemy
+        8:   54:            if (checkCollision(attackHitbox, enemyHitbox)) 
+        -:   55:			{
+        -:   56:                // If the attack hitbox collides with the enemy, apply damage to the enemy
+        2:   57:                printf("Hit enemy!\n");
+        2:   58:                currentEnemy->health -= player->damage;
+        -:   59:            }
+        -:   60:        }
+        -:   61:    }
+        9:   62:}
+------------------
+attack:
+        9:   38:void attack(struct player* player) 
+        -:   39:{
+     2259:   40:    for (int i = 0; i < MAX_ENEMIES; i++) 
+        -:   41:	{
+     2250:   42:        struct Enemy* currentEnemy = &enemies[i];
+        -:   43:
+     2250:   44:        if (currentEnemy->health > 0) 
+        -:   45:		{
+        -:   46:            // Create a rectangle representing the attack hitbox
+        -:   47:            SDL_Rect attackHitbox;
+        8:   48:            calculateAttackHitbox(player, &attackHitbox);
+        -:   49:
+        -:   50:            // Create a rectangle representing the enemy hitbox
+        8:   51:            SDL_Rect enemyHitbox = { currentEnemy->x, currentEnemy->y, currentEnemy->width, currentEnemy->height };
+        -:   52:
+        -:   53:            // Check for collision with the enemy
+        8:   54:            if (checkCollision(attackHitbox, enemyHitbox)) 
+        -:   55:			{
+        -:   56:                // If the attack hitbox collides with the enemy, apply damage to the enemy
+        2:   57:                printf("Hit enemy!\n");
+        2:   58:                currentEnemy->health -= player->damage;
+        -:   59:            }
+        -:   60:        }
+        -:   61:    }
+        9:   62:}
+------------------
+        -:   63:
+        -:   64:// Function to render the weapon swing animation
+       18:   65:void renderWeaponSwing(SDL_Renderer* renderer, SDL_Texture* weaponTexture, struct player* player)
+        -:   66:{
+        -:   67:    // Calculate the angle increment per frame
+       18:   68:    float angleIncrementPerFrame = ANGLE_INCREMENT;
+        -:   69:
+        -:   70:    // Calculate the initial angle based on the player's facing direction
+       18:   71:    float initialAngle = 0.0;
+       18:   72:    if (player->facedir == 0)
+        -:   73:	{	// Right
+    #####:   74:        initialAngle = 0.0; // Swing right (right of the player) when facing right
+        -:   75:    }
+       18:   76:	else if (player->facedir == 1)
+        -:   77:	{	// Up
+    #####:   78:        initialAngle = -90.0; // Swing up (above the player) when facing up
+        -:   79:    }
+       18:   80:	else if (player->facedir == 2)
+        -:   81:	{	// Left
+       16:   82:        initialAngle = 180.0; // Swing left (left of the player) when facing left
+        -:   83:    }
+        2:   84:	else if (player->facedir == 3)
+        -:   85:	{	// Down
+        2:   86:        initialAngle = 90.0; // Swing down (below the player) when facing down
+        -:   87:    }
+        -:   88:
+        -:   89:    // Calculate the center offset for the weapon texture
+        -:   90:    int weaponCenterX, weaponCenterY;
+       18:   91:    SDL_QueryTexture(weaponTexture, NULL, NULL, &weaponCenterX, &weaponCenterY);
+       18:   92:    weaponCenterX /= 2;
+       18:   93:    weaponCenterY /= 2;
+        -:   94:
+        -:   95:    // Define the scaling factor to make the weapon smaller
+       18:   96:    float scalingFactor = 0.2; // Adjust this value to control the size
+        -:   97:
+        -:   98:    // Define the offset distance from the player for the weapon to appear in front
+       18:   99:    int distanceFromPlayer = 20; // Adjust this value to control the distance
+        -:  100:
+        -:  101:    // Render the weapon swing animation
+      162:  102:    for (int i = 0; i < NUM_FRAMES; i++) 
+        -:  103:	{
+        -:  104:        // Calculate the angle for this frame
+      144:  105:        float currentAngle = initialAngle + (i * angleIncrementPerFrame);
+        -:  106:
+        -:  107:        // Calculate the position for the weapon's anchor point based on the current angle and facing direction
+      144:  108:        int anchorOffsetX = distanceFromPlayer * cosf(currentAngle * M_PI / 180.0);
+      144:  109:        int anchorOffsetY = distanceFromPlayer * sinf(currentAngle * M_PI / 180.0);
+        -:  110:
+        -:  111:        // Calculate the scaled size of the weapon texture
+      144:  112:        int scaledWidth = weaponCenterX * 2 * scalingFactor;
+      144:  113:        int scaledHeight = weaponCenterY * 2 * scalingFactor;
+        -:  114:
+        -:  115:        // Render the weapon texture at the current angle with the anchor offset and scaled size
+        -:  116:        SDL_Rect renderRect;
+      144:  117:        renderRect.w = scaledWidth;
+      144:  118:        renderRect.h = scaledHeight;
+        -:  119:        
+        -:  120:        // Position the weapon in front of the player (adjust the offsets as needed)
+      144:  121:        renderRect.x = player->x - weaponCenterX + anchorOffsetX+120;
+      144:  122:		if(player->facedir==0)
+        -:  123:		{
+    #####:  124:			renderRect.x+=20;
+    #####:  125:			renderRect.y+=5;
+        -:  126:		}
+      144:  127:        renderRect.y = player->y - weaponCenterY + anchorOffsetY +40;
+        -:  128:
+      144:  129:        SDL_RenderCopyEx(renderer, weaponTexture, NULL, &renderRect, currentAngle, NULL, SDL_FLIP_NONE);
+        -:  130:
+        -:  131:        // Update the screen
+      144:  132:        SDL_RenderPresent(renderer);
+        -:  133:
+        -:  134:        // Add a delay to control the animation speed (adjust as needed)
+      144:  135:        SDL_Delay(10);
+        -:  136:    }
+       18:  137:}
+------------------
+renderWeaponSwing:
+        9:   65:void renderWeaponSwing(SDL_Renderer* renderer, SDL_Texture* weaponTexture, struct player* player)
+        -:   66:{
+        -:   67:    // Calculate the angle increment per frame
+        9:   68:    float angleIncrementPerFrame = ANGLE_INCREMENT;
+        -:   69:
+        -:   70:    // Calculate the initial angle based on the player's facing direction
+        9:   71:    float initialAngle = 0.0;
+        9:   72:    if (player->facedir == 0)
+        -:   73:	{	// Right
+    #####:   74:        initialAngle = 0.0; // Swing right (right of the player) when facing right
+        -:   75:    }
+        9:   76:	else if (player->facedir == 1)
+        -:   77:	{	// Up
+    #####:   78:        initialAngle = -90.0; // Swing up (above the player) when facing up
+        -:   79:    }
+        9:   80:	else if (player->facedir == 2)
+        -:   81:	{	// Left
+        8:   82:        initialAngle = 180.0; // Swing left (left of the player) when facing left
+        -:   83:    }
+        1:   84:	else if (player->facedir == 3)
+        -:   85:	{	// Down
+        1:   86:        initialAngle = 90.0; // Swing down (below the player) when facing down
+        -:   87:    }
+        -:   88:
+        -:   89:    // Calculate the center offset for the weapon texture
+        -:   90:    int weaponCenterX, weaponCenterY;
+        9:   91:    SDL_QueryTexture(weaponTexture, NULL, NULL, &weaponCenterX, &weaponCenterY);
+        9:   92:    weaponCenterX /= 2;
+        9:   93:    weaponCenterY /= 2;
+        -:   94:
+        -:   95:    // Define the scaling factor to make the weapon smaller
+        9:   96:    float scalingFactor = 0.2; // Adjust this value to control the size
+        -:   97:
+        -:   98:    // Define the offset distance from the player for the weapon to appear in front
+        9:   99:    int distanceFromPlayer = 20; // Adjust this value to control the distance
+        -:  100:
+        -:  101:    // Render the weapon swing animation
+       81:  102:    for (int i = 0; i < NUM_FRAMES; i++) 
+        -:  103:	{
+        -:  104:        // Calculate the angle for this frame
+       72:  105:        float currentAngle = initialAngle + (i * angleIncrementPerFrame);
+        -:  106:
+        -:  107:        // Calculate the position for the weapon's anchor point based on the current angle and facing direction
+       72:  108:        int anchorOffsetX = distanceFromPlayer * cosf(currentAngle * M_PI / 180.0);
+       72:  109:        int anchorOffsetY = distanceFromPlayer * sinf(currentAngle * M_PI / 180.0);
+        -:  110:
+        -:  111:        // Calculate the scaled size of the weapon texture
+       72:  112:        int scaledWidth = weaponCenterX * 2 * scalingFactor;
+       72:  113:        int scaledHeight = weaponCenterY * 2 * scalingFactor;
+        -:  114:
+        -:  115:        // Render the weapon texture at the current angle with the anchor offset and scaled size
+        -:  116:        SDL_Rect renderRect;
+       72:  117:        renderRect.w = scaledWidth;
+       72:  118:        renderRect.h = scaledHeight;
+        -:  119:        
+        -:  120:        // Position the weapon in front of the player (adjust the offsets as needed)
+       72:  121:        renderRect.x = player->x - weaponCenterX + anchorOffsetX+120;
+       72:  122:		if(player->facedir==0)
+        -:  123:		{
+    #####:  124:			renderRect.x+=20;
+    #####:  125:			renderRect.y+=5;
+        -:  126:		}
+       72:  127:        renderRect.y = player->y - weaponCenterY + anchorOffsetY +40;
+        -:  128:
+       72:  129:        SDL_RenderCopyEx(renderer, weaponTexture, NULL, &renderRect, currentAngle, NULL, SDL_FLIP_NONE);
+        -:  130:
+        -:  131:        // Update the screen
+       72:  132:        SDL_RenderPresent(renderer);
+        -:  133:
+        -:  134:        // Add a delay to control the animation speed (adjust as needed)
+       72:  135:        SDL_Delay(10);
+        -:  136:    }
+        9:  137:}
+------------------
+renderWeaponSwing:
+        9:   65:void renderWeaponSwing(SDL_Renderer* renderer, SDL_Texture* weaponTexture, struct player* player)
+        -:   66:{
+        -:   67:    // Calculate the angle increment per frame
+        9:   68:    float angleIncrementPerFrame = ANGLE_INCREMENT;
+        -:   69:
+        -:   70:    // Calculate the initial angle based on the player's facing direction
+        9:   71:    float initialAngle = 0.0;
+        9:   72:    if (player->facedir == 0)
+        -:   73:	{	// Right
+    #####:   74:        initialAngle = 0.0; // Swing right (right of the player) when facing right
+        -:   75:    }
+        9:   76:	else if (player->facedir == 1)
+        -:   77:	{	// Up
+    #####:   78:        initialAngle = -90.0; // Swing up (above the player) when facing up
+        -:   79:    }
+        9:   80:	else if (player->facedir == 2)
+        -:   81:	{	// Left
+        8:   82:        initialAngle = 180.0; // Swing left (left of the player) when facing left
+        -:   83:    }
+        1:   84:	else if (player->facedir == 3)
+        -:   85:	{	// Down
+        1:   86:        initialAngle = 90.0; // Swing down (below the player) when facing down
+        -:   87:    }
+        -:   88:
+        -:   89:    // Calculate the center offset for the weapon texture
+        -:   90:    int weaponCenterX, weaponCenterY;
+        9:   91:    SDL_QueryTexture(weaponTexture, NULL, NULL, &weaponCenterX, &weaponCenterY);
+        9:   92:    weaponCenterX /= 2;
+        9:   93:    weaponCenterY /= 2;
+        -:   94:
+        -:   95:    // Define the scaling factor to make the weapon smaller
+        9:   96:    float scalingFactor = 0.2; // Adjust this value to control the size
+        -:   97:
+        -:   98:    // Define the offset distance from the player for the weapon to appear in front
+        9:   99:    int distanceFromPlayer = 20; // Adjust this value to control the distance
+        -:  100:
+        -:  101:    // Render the weapon swing animation
+       81:  102:    for (int i = 0; i < NUM_FRAMES; i++) 
+        -:  103:	{
+        -:  104:        // Calculate the angle for this frame
+       72:  105:        float currentAngle = initialAngle + (i * angleIncrementPerFrame);
+        -:  106:
+        -:  107:        // Calculate the position for the weapon's anchor point based on the current angle and facing direction
+       72:  108:        int anchorOffsetX = distanceFromPlayer * cosf(currentAngle * M_PI / 180.0);
+       72:  109:        int anchorOffsetY = distanceFromPlayer * sinf(currentAngle * M_PI / 180.0);
+        -:  110:
+        -:  111:        // Calculate the scaled size of the weapon texture
+       72:  112:        int scaledWidth = weaponCenterX * 2 * scalingFactor;
+       72:  113:        int scaledHeight = weaponCenterY * 2 * scalingFactor;
+        -:  114:
+        -:  115:        // Render the weapon texture at the current angle with the anchor offset and scaled size
+        -:  116:        SDL_Rect renderRect;
+       72:  117:        renderRect.w = scaledWidth;
+       72:  118:        renderRect.h = scaledHeight;
+        -:  119:        
+        -:  120:        // Position the weapon in front of the player (adjust the offsets as needed)
+       72:  121:        renderRect.x = player->x - weaponCenterX + anchorOffsetX+120;
+       72:  122:		if(player->facedir==0)
+        -:  123:		{
+    #####:  124:			renderRect.x+=20;
+    #####:  125:			renderRect.y+=5;
+        -:  126:		}
+       72:  127:        renderRect.y = player->y - weaponCenterY + anchorOffsetY +40;
+        -:  128:
+       72:  129:        SDL_RenderCopyEx(renderer, weaponTexture, NULL, &renderRect, currentAngle, NULL, SDL_FLIP_NONE);
+        -:  130:
+        -:  131:        // Update the screen
+       72:  132:        SDL_RenderPresent(renderer);
+        -:  133:
+        -:  134:        // Add a delay to control the animation speed (adjust as needed)
+       72:  135:        SDL_Delay(10);
+        -:  136:    }
+        9:  137:}
+------------------
