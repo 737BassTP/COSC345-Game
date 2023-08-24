@@ -7,6 +7,19 @@ on:
     branches: [ "main" ]
 
 jobs:
+  cache-build-tools:
+    runs-on: windows-latest
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+    - name: Cache build tools
+      uses: actions/cache@v2
+      with:
+        path: |
+          build-tools/strawberryperl
+          build-tools/other_dependency_directory
+        key: ${{ runner.os }}-build-tools-${{ hashFiles('**/build-tools-lock.json') }}
+
   # Doxygen job: Extract documentation from source files.
   job-doxygen:
     runs-on: windows-latest
@@ -25,6 +38,8 @@ jobs:
   # Install build tools.
   buildtools:
     runs-on: windows-latest
+    env:
+      PATH: ${{ runner.workspace }}/build-tools/strawberryperl/c/bin;$${PATH}
     steps:
     - uses: actions/checkout@v3
     - name: install supplied build tools
