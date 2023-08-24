@@ -36,21 +36,33 @@ jobs:
         
   # Build job: Make executable from source using Makefile.
   build:
-    needs: buildtools # important!
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Print build tool versions (2/2)
-      run: |
-        gcc --version
-        make -v
-        mingw32-make -v
-    - name: Run make.
-      run: make all
-    - name: Run tests (make check).
-      run: make check
-    - name: Run ? (make distcheck).
-      run: make distcheck
+      - uses: actions/checkout@v3
+      - name: Install build tools
+        run: |
+          cd build-tools/strawberryperl/c/bin
+          dir
+          $env:PATH = "$pwd;$PATH"
+          $env:PATH
+      - name: Print build tools versions (1/2)
+        run: |
+          gcc --version
+          make -v
+          mingw32-make -v
+      - name: Navigate back to root directory
+        run: cd ../../../..
+      - name: Print build tool versions (2/2)
+        run: |
+          gcc --version
+          make -v
+          mingw32-make -v
+      - name: Run make.
+        run: make all
+      - name: Run tests (make check).
+        run: make check
+      - name: Run ? (make distcheck).
+        run: make distcheck
   
   # Codecov job: Run CodeCov.
   codecov:
