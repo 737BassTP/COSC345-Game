@@ -1,0 +1,43 @@
+\doxysection{player.\+h}
+\hypertarget{player_8h_source}{}\label{player_8h_source}\index{src/player.h@{src/player.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ player\_h}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ player\_h}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}everything.h"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{comment}{//Player.}}
+\DoxyCodeLine{00007\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structplayer}{player}}}
+\DoxyCodeLine{00008\ \{}
+\DoxyCodeLine{00009\ \ \ \ \ \textcolor{comment}{//pos\ Pos;}}
+\DoxyCodeLine{00010\ \ \ \ \ \textcolor{keywordtype}{int}\ x;}
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keywordtype}{int}\ y;}
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{int}\ xprevious;}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{int}\ yprevious;}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{byte}\ facedir;}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{byte}\ anim\_spd\_cur;\textcolor{comment}{//counter.}}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{byte}\ anim\_spd\_spd;\textcolor{comment}{//inc\ counter\ by\ spd\ per\ frame.}}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{byte}\ anim\_spd\_wrap;\textcolor{comment}{//inc\ sprite\ frame\ when\ counter\ exceeds\ this\ value.}}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{byte}\ anim\_cur;\textcolor{comment}{//current\ sprite\ frame.}}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{byte}\ anim\_max;\textcolor{comment}{//max\ sprite\ frame\ before\ rollover.}}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{byte}\ move\_spd;\textcolor{comment}{//moving\ speed\ of\ player.}}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{byte}\ can\_move;\textcolor{comment}{//bit-\/flag\ to\ be\ set\ while\ displaying\ map,\ questions,\ etc...,\ to\ prevent\ the\ player\ from\ moving.}}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{comment}{//\ Attack\ attributes}}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{int}\ damage;}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{int}\ attackRangeWidth;}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{int}\ attackRangeHeight;}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{int}\ width;}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{int}\ height;}
+\DoxyCodeLine{00028\ \};}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keywordtype}{void}\ calculateAttackHitbox(\textcolor{keyword}{struct}\ \mbox{\hyperlink{structplayer}{player}}*\ \mbox{\hyperlink{structplayer}{player}},\ SDL\_Rect*\ attackHitbox);}
+\DoxyCodeLine{00031\ \textcolor{keywordtype}{void}\ attack(\textcolor{keyword}{struct}\ \mbox{\hyperlink{structplayer}{player}}*\ \mbox{\hyperlink{structplayer}{player}});\textcolor{comment}{//\ Function\ to\ perform\ the\ player's\ attack}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#define\ NUM\_FRAMES\ 8}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#define\ ANGLE\_INCREMENT\ 5.625}}
+\DoxyCodeLine{00035\ \textcolor{keywordtype}{void}\ renderWeaponSwing(SDL\_Renderer*\ renderer,\ SDL\_Texture*\ weaponTexture,\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structplayer}{player}}*\ \mbox{\hyperlink{structplayer}{player}});\textcolor{comment}{//\ Function\ to\ render\ the\ weapon\ swing\ animation}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

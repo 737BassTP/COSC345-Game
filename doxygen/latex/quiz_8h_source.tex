@@ -1,0 +1,41 @@
+\doxysection{quiz.\+h}
+\hypertarget{quiz_8h_source}{}\label{quiz_8h_source}\index{src/quiz.h@{src/quiz.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ quiz\_h}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ quiz\_h}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}everything.h"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <stdbool.h>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{comment}{//quiz}}
+\DoxyCodeLine{00010\ \textcolor{comment}{//\ Define\ the\ quiz\ question\ and\ answers}}
+\DoxyCodeLine{00011\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ quizHeader;\textcolor{comment}{//Name\ of\ person\ we\ are\ talking\ to}}
+\DoxyCodeLine{00012\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ quizInfo;\textcolor{comment}{//"{}correct\ or\ false"{}}}
+\DoxyCodeLine{00013\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ quizInfoHolder;\textcolor{comment}{//does\ nothing\ currently}}
+\DoxyCodeLine{00014\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ quizQuestion;\textcolor{comment}{//default\ question}}
+\DoxyCodeLine{00015\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ answerA;\textcolor{comment}{//default\ answer\ a}}
+\DoxyCodeLine{00016\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ answerB;\textcolor{comment}{//default\ answer\ b}}
+\DoxyCodeLine{00017\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ answerC;\textcolor{comment}{//default\ answer\ c}}
+\DoxyCodeLine{00018\ \textcolor{keywordtype}{int}\ correctAnswer;\textcolor{comment}{//current\ number\ relating\ to\ the\ correct\ answer.}}
+\DoxyCodeLine{00019\ \textcolor{keywordtype}{int}\ userAnswer;\textcolor{comment}{//user\ input\ for\ the\ quiz\ (1,2,3),\ 0\ is\ default.}}
+\DoxyCodeLine{00020\ \textcolor{keywordtype}{bool}\ quizOn;\textcolor{comment}{//if\ a\ quiz\ is\ active\ (rendering)}}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \textcolor{keywordtype}{int}\ quizQNum;\textcolor{comment}{//question\ counter\ for\ quiz\ (ends\ at\ 4\ for\ three\ question\ quiz)}}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{keywordtype}{bool}\ quiz2Called;\textcolor{comment}{//boolean\ to\ see\ if\ the\ player\ has\ completed\ quiz\ 2\ etc}}
+\DoxyCodeLine{00025\ \textcolor{keywordtype}{bool}\ quiz3Called;}
+\DoxyCodeLine{00026\ \textcolor{keywordtype}{bool}\ quizLoopOn;\textcolor{comment}{//are\ we\ going\ through\ the\ quiz\ loop\ in\ main}}
+\DoxyCodeLine{00027\ \textcolor{keywordtype}{int}\ usedQuestions[100];\ \textcolor{comment}{//\ Array\ to\ keep\ track\ of\ used\ question\ numbers\ (for\ random\ question)}}
+\DoxyCodeLine{00028\ \textcolor{keywordtype}{int}\ usedQuestionCount;\ \ \ \ \textcolor{comment}{//\ Variable\ to\ keep\ track\ of\ the\ number\ of\ used\ questions\ (so\ we\ dont\ get\ the\ same\ random\ question)}}
+\DoxyCodeLine{00029\ \textcolor{comment}{//\ Function\ to\ check\ if\ a\ question\ number\ has\ been\ used\ before}}
+\DoxyCodeLine{00030\ \textcolor{keywordtype}{int}\ isQuestionUsed(\textcolor{keywordtype}{int}\ questionNumber);}
+\DoxyCodeLine{00031\ \textcolor{keywordtype}{void}\ updateQuizDataFromRandomLine(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *filename,\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ **quizQuestion,\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ **answerA,\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ **answerB,\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ **answerC,\textcolor{keywordtype}{int}\ *userAnswer,\textcolor{keywordtype}{int}\ *correctAnswer,\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ **quizInfoHolder);}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

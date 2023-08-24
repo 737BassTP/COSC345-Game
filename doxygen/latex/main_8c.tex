@@ -1,0 +1,52 @@
+\doxysection{src/main.c File Reference}
+\hypertarget{main_8c}{}\label{main_8c}\index{src/main.c@{src/main.c}}
+{\ttfamily \#include \"{}everything.\+h\"{}}\newline
+{\ttfamily \#include $<$math.\+h$>$}\newline
+{\ttfamily \#include $<$stdarg.\+h$>$}\newline
+{\ttfamily \#include $<$stdbool.\+h$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$time.\+h$>$}\newline
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{main_8c_a72f001c27e3237d2c96f247bcd6bdb3a}\label{main_8c_a72f001c27e3237d2c96f247bcd6bdb3a} 
+const int {\bfseries screen\+\_\+w} = 1366
+\item 
+\Hypertarget{main_8c_a6458eab34c4a2992d7183c39f06e3e30}\label{main_8c_a6458eab34c4a2992d7183c39f06e3e30} 
+const int {\bfseries screen\+\_\+h} = 768
+\item 
+\Hypertarget{main_8c_a50884034080811fc1d008d841f79fafa}\label{main_8c_a50884034080811fc1d008d841f79fafa} 
+const int {\bfseries win\+\_\+game\+\_\+x} = (screen\+\_\+w-\/screen\+\_\+h)/2
+\item 
+\Hypertarget{main_8c_acdd48362ae4f00e81a69c072d8b60b41}\label{main_8c_acdd48362ae4f00e81a69c072d8b60b41} 
+const int {\bfseries win\+\_\+game\+\_\+y} = 0
+\item 
+\Hypertarget{main_8c_a067e11c1c388ee11f120b11ae2d1bbb6}\label{main_8c_a067e11c1c388ee11f120b11ae2d1bbb6} 
+const int {\bfseries win\+\_\+game\+\_\+w} = screen\+\_\+h
+\item 
+\Hypertarget{main_8c_a992c1e55949c623136f77ecb7efd4131}\label{main_8c_a992c1e55949c623136f77ecb7efd4131} 
+const int {\bfseries win\+\_\+game\+\_\+h} = screen\+\_\+h
+\item 
+\Hypertarget{main_8c_aaa5f527ca50c2dc917e3cfab40f60444}\label{main_8c_aaa5f527ca50c2dc917e3cfab40f60444} 
+const int {\bfseries win\+\_\+game\+\_\+x2} = win\+\_\+game\+\_\+x+win\+\_\+game\+\_\+w
+\item 
+\Hypertarget{main_8c_af4273befab0d6a39f27f79c8a2c72238}\label{main_8c_af4273befab0d6a39f27f79c8a2c72238} 
+const int {\bfseries win\+\_\+game\+\_\+y2} = win\+\_\+game\+\_\+y+win\+\_\+game\+\_\+h
+\item 
+\Hypertarget{main_8c_a29ac3ddd24d1b2a71df6d5664b509173}\label{main_8c_a29ac3ddd24d1b2a71df6d5664b509173} 
+const int {\bfseries win\+\_\+game\+\_\+tile\+\_\+num} = 16
+\item 
+\Hypertarget{main_8c_a05080153373421a99994373f220a87f4}\label{main_8c_a05080153373421a99994373f220a87f4} 
+const int {\bfseries win\+\_\+game\+\_\+tile\+\_\+dim} = 16
+\item 
+\Hypertarget{main_8c_a8148466515f4418346eb3193873d840b}\label{main_8c_a8148466515f4418346eb3193873d840b} 
+int {\bfseries gw}
+\item 
+\Hypertarget{main_8c_a7510b52898bb20da271fc2e085ca856c}\label{main_8c_a7510b52898bb20da271fc2e085ca856c} 
+int {\bfseries gh}
+\item 
+\Hypertarget{main_8c_a4b8b24b73b2d0d4b0d6decac2fbec98e}\label{main_8c_a4b8b24b73b2d0d4b0d6decac2fbec98e} 
+struct \mbox{\hyperlink{struct_enemy}{Enemy}} \texorpdfstring{$\ast$}{*} {\bfseries global\+Enemy} = NULL
+\end{DoxyCompactItemize}
