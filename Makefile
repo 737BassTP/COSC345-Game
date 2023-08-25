@@ -28,7 +28,10 @@ all-coverage:
 	mv -f *.gcda coverage
 	mv -f *.gcno coverage
 	ren coverage\*.gcov *.txt
-	
+
+make all-run:
+	make all
+	make run
 
 test:
 	@echo Running unit tests...
