@@ -29,7 +29,7 @@ all-coverage:
 	mv -f *.gcno coverage
 	ren coverage\*.gcov *.txt
 
-make all-run:
+all-run:
 	make all
 	make run
 
