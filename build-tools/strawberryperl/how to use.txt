@@ -1,11 +1,10 @@
 how to use (for COSC345-Game)
 
-1: Unzipping
-	1a: Unzip strawberryperl.zip to e.g "C:\Strawberry"
-	1b: Navigate to the "C:\Strawberry\c\bin" folder.
-	1c: Copy this path to the clipboard.
+1: Navigating.
+	1a: Navigate to the "\c\bin" folder in this folder.
+	1b: Copy this path to the clipboard.
 
-2: Update Environment Variable (system, not user)
+2: Update Environment Variable (system, not user).
 	2a: On the keyboard, hold the Windows-button and press Pause/Break (near PrintScreen and ScrollLock).
 	2b: On the right side, click "Advanced system settings".
 	2c: Near the bottom, click "Environment Variables".
