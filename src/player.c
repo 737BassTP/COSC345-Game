@@ -135,3 +135,9 @@ void renderWeaponSwing(SDL_Renderer* renderer, SDL_Texture* weaponTexture, struc
         SDL_Delay(10);
     }
 }
+
+void player_movement()
+{
+	//Player movement.
+	
+}

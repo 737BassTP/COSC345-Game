@@ -38,6 +38,31 @@ struct pushblock
 	int y;
 	char pushmask;
 };
+//Solid block.
+struct solidblock
+{
+	int x;
+	int y;
+};
+//Door.
+struct doorlink
+{
+	int x;
+	int y;
+	int link;
+};
+//Generic object.
+struct gameobject
+{
+	int tileid;
+	int x;
+	int y;
+	int bbox_L;
+	int bbox_R;
+	int bbox_T;
+	int bbox_B;
+	SDL_Texture *img;
+};
 
 //initialize number of water particles wanted
 const int MAX_WATER_PARTICLES;

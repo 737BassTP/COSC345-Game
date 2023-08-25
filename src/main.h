@@ -20,7 +20,9 @@ const int win_game_tile_dim;
 //Scaling.
 int gw,gh;
 
-
+//Level.
+int lvl_off_obj;
+int level_cur;
 
 
 

@@ -370,6 +370,15 @@ void game_level_load(int lvl,int lvlmax)
 {
 	//done below.
 }
+void level_load_objects(byte arr[],int level,int siz)
+{
+	for (int i=0; i<siz; i++)
+	{
+		//objects[i] = arr[lvl_off_obj+level*siz+i];
+		//gameobject[i]->id = arr[lvl_off_obj+level*siz+i];
+		
+	}
+}
 void level_load(byte arr[],int siz,int count,int layers)
 {
 	FILE *fil = fopen("level.dat","rb");
@@ -379,6 +388,7 @@ void level_load(byte arr[],int siz,int count,int layers)
 	}
 	fread(arr,siz*count*layers,1,fil);
 	fclose(fil);
+	//level_load_objects(arr,gameobject,level_cur,siz);
 }
 void dev_tiled_to_leveldata(byte arr[])
 {
@@ -395,7 +405,7 @@ void dev_tiled_to_leveldata(byte arr[])
 	int arrsiz=sizeof(array);
 	for (long i=0; i<maxsize; i++) {array[i] = 0;}
 	//Discard input header.
-	fseek(filin,(long int)0x23D-0,SEEK_SET);//hardcoded; may bug out in future, so avoid renaming or resizing in Tiled project file.
+	fseek(filin,(long int)0x231-0,SEEK_SET);//hardcoded; may bug out in future, so avoid renaming or resizing in Tiled project file.
 	//Read Tiles and Objects.
 	byte comma=","[0];
 	int ch=0;

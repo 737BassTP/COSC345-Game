@@ -210,9 +210,28 @@ int SDL_main(int argc, char *argv[])
 	int level_cur=0;//256 = 16*16 
 	byte level_data[262144];//static; can not be free'd.
 	//262144 = 256*512*2 (level size * level count * level layers)
-	level_load(level_data,level_size,level_count,level_layers);
+	//Objects.
+	//struct gameobject Objects = calloc(256,sizeof(gameobject));
+	/*
+	gameobject Objects[256];
+	//byte level_objects[0x100];
+	for (int i=0; i<0x100; i++)
+	{
+		//level_objects[i] = (byte)0xFF;
+		Objects[i].id = 0xFF;
+		Objects[i].x = (i%16)*16;
+		Objects[i].y = (i/16)*16;
+		Objects[i].bbox_L = Objects.x;
+		Objects[i].bbox_T = Objects.y;
+		Objects[i].bbox_R = Objects.bbox_L+16;
+		Objects[i].bbox_B = Objects.bbox_T+16;
+		Objects[i].img = spr_sand;
+	}
+	/**/
+	//Load Level.
 	int lvl_off_obj=0x20000;
 	int lvl_yoff=(int)sqrt(level_count/level_realms);
+	level_load(level_data,level_size,level_count,level_layers);
 	
 	//Map.
 	SDL_Texture *spr_map = IMG_LoadTexture(renderer,"img/dunedin-map.png");
@@ -242,7 +261,7 @@ int SDL_main(int argc, char *argv[])
 	Player.anim_spd_wrap = 12;//inc sprite frame when counter exceeds this value.
 	Player.anim_cur = 0;//current sprite frame.
 	Player.anim_max = 2;//max sprite frame before rollover.
-	Player.move_spd = 3*4;
+	Player.move_spd = 3*2;
 	//damage stats
 	Player.attackRangeHeight=50;
 	Player.attackRangeWidth=15;
@@ -522,27 +541,27 @@ int SDL_main(int argc, char *argv[])
 			healMe(10);
 		}		
 		
-		
 		//Player movement.
+		int mvspd = Player.move_spd;
 		if (glob_vk_right)
 		{
 			Player.facedir=0;
-			Player.x += Player.move_spd;
+			Player.x += mvspd;
 		}
 		if (glob_vk_up)
 		{
 			Player.facedir=1;
-			Player.y -= Player.move_spd;
+			Player.y -= mvspd;
 		}
 		if (glob_vk_left)
 		{
 			Player.facedir=2;
-			Player.x -= Player.move_spd;
+			Player.x -= mvspd;
 		}
 		if (glob_vk_down)
 		{
 			Player.facedir=3;
-			Player.y += Player.move_spd;
+			Player.y += mvspd;
 		}
 		if (glob_vk_right|glob_vk_left|glob_vk_up|glob_vk_down)
 		{
@@ -595,7 +614,7 @@ int SDL_main(int argc, char *argv[])
 				level_cur %= level_count;//prevents overflow.
 				printf("lvl=%i\n",level_cur);
 				level_get_name(level_cur,mapstr_location);
-				
+				level_load_objects(level_data,level_cur,256);
 				mapvisit[level_cur/32] |= (Uint32)(1<<level_cur%32);
 			}
 		}
@@ -604,6 +623,7 @@ int SDL_main(int argc, char *argv[])
 			Player.anim_spd_cur = 0;
 			Player.anim_cur = 0;
 		}
+		
 		if (glob_vk_space|glob_vk_enter)
 		{
 			splashintro_bool=0;
@@ -918,6 +938,7 @@ int SDL_main(int argc, char *argv[])
 		int defcol=make_color_hsv(0,0,((int)(get_timer()))/16);
 		for (int k=0; k<level_layers; k++)
 		{
+			//if (k!=0) {break;}
 			for (int j=0; j<win_game_tile_num; j++)
 			{
 				for (int i=0; i<win_game_tile_num; i++)
@@ -929,12 +950,11 @@ int SDL_main(int argc, char *argv[])
 					x2 = win_game_x + (i+1)*gw*win_game_tile_dim;
 					y2 = win_game_y + (j+1)*gh*win_game_tile_dim;
 					
-					//int defcol = mux_int(ij%3,c_red,c_green,c_blue);
-					
 					int off = ij + level_size*level_cur;
 					int tex = level_data[off];
 					if (k==0)
 					{
+						int defcol = mux_int(ij%3,c_red,c_green,c_blue);
 						draw_rectangle_color(renderer,x1,y1,x2,y2,defcol);//will show if image drawing below fails.
 						draw_image_part(renderer,x1,y1,x2,y2,spr_tileset,d*(tex%win_game_tile_num),d*(tex/win_game_tile_num),d,d);
 					}
@@ -957,7 +977,7 @@ int SDL_main(int argc, char *argv[])
 						//unhandled.
 						else
 						{
-							if (tex!=0)//lazy hack.
+							if ((tex!=0) && (tex!=0xFF))//lazy hack.
 							{
 								tex+=0x100;
 								draw_image_part(renderer,x1,y1,x2,y2,spr_tileset,d*(tex%win_game_tile_num),d*(tex/win_game_tile_num),d,d);

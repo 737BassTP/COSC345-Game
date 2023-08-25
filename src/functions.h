@@ -104,6 +104,7 @@ int string_pos(char *substr,char *str);
 double darctan2(int y,int x);
 double cartodir(int x,int y);
 void game_level_load(int lvl,int lvlmax);
+void level_load_objects(byte arr[],int level,int siz);
 void level_load(byte arr[],int siz,int count,int layers);
 void dev_tiled_to_leveldata(byte arr[]);
 char* level_get_name(int lvl,char* ret);

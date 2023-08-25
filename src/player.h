@@ -34,4 +34,6 @@ void attack(struct player* player);// Function to perform the player's attack
 #define ANGLE_INCREMENT 5.625
 void renderWeaponSwing(SDL_Renderer* renderer, SDL_Texture* weaponTexture, struct player* player);// Function to render the weapon swing animation
 
+void player_movement();
+
 #endif
