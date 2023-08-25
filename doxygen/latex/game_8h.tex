@@ -1,0 +1,109 @@
+\doxysection{src/game.h File Reference}
+\hypertarget{game_8h}{}\label{game_8h}\index{src/game.h@{src/game.h}}
+
+
+Defines game-\/specific stuff.  
+
+
+{\ttfamily \#include \"{}everything.\+h\"{}}\newline
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structpos}{pos}}
+\item 
+struct \mbox{\hyperlink{struct_water_particle}{Water\+Particle}}
+\item 
+struct \mbox{\hyperlink{struct_snow_particle}{Snow\+Particle}}
+\item 
+struct \mbox{\hyperlink{structpushblock}{pushblock}}
+\item 
+struct \mbox{\hyperlink{structsolidblock}{solidblock}}
+\item 
+struct \mbox{\hyperlink{structdoorlink}{doorlink}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{game_8h_a8ecec3e9aeb4dbe6dfcfa78a904f6cc3}\label{game_8h_a8ecec3e9aeb4dbe6dfcfa78a904f6cc3} 
+void {\bfseries create\+Water\+Particle} (int index, int window\+\_\+width, int window\+\_\+height)
+\item 
+\Hypertarget{game_8h_a378ae6a45aba8ea06492d7f15668e73d}\label{game_8h_a378ae6a45aba8ea06492d7f15668e73d} 
+void {\bfseries activate\+All\+Water\+Particles} ()
+\item 
+\Hypertarget{game_8h_ac2f989df84aaf2dccbdc5f32b855e0bb}\label{game_8h_ac2f989df84aaf2dccbdc5f32b855e0bb} 
+void {\bfseries deactivate\+All\+Water\+Particles} ()
+\item 
+\Hypertarget{game_8h_a2e581e7cea505360d03de6f54fb5681b}\label{game_8h_a2e581e7cea505360d03de6f54fb5681b} 
+void {\bfseries create\+Snow\+Particle} (int index, int window\+\_\+width, int window\+\_\+height)
+\item 
+\Hypertarget{game_8h_a4a265a851fa6ebc795b2e0a3c02dacff}\label{game_8h_a4a265a851fa6ebc795b2e0a3c02dacff} 
+void {\bfseries activate\+All\+Snow\+Particles} ()
+\item 
+\Hypertarget{game_8h_adc2e32dfb77eb023f19a03032b09eb62}\label{game_8h_adc2e32dfb77eb023f19a03032b09eb62} 
+void {\bfseries deactivate\+All\+Snow\+Particles} ()
+\item 
+\Hypertarget{game_8h_a7ba4c4f4d7a44c1a289bdba8e9d7b744}\label{game_8h_a7ba4c4f4d7a44c1a289bdba8e9d7b744} 
+void {\bfseries update\+Player\+Hitbox} (int x, int y, int width, int height)
+\item 
+\Hypertarget{game_8h_a5876fe99d1eb6ff45f3f8993c720cf90}\label{game_8h_a5876fe99d1eb6ff45f3f8993c720cf90} 
+void {\bfseries damage\+Me} (int dmg)
+\item 
+\Hypertarget{game_8h_a2c7a29c3669dfb060137e4e0c478ed79}\label{game_8h_a2c7a29c3669dfb060137e4e0c478ed79} 
+void {\bfseries heal\+Me} (int dmg)
+\item 
+\Hypertarget{game_8h_a3b23dcc5ccbf0023fb28466d7b1a3d45}\label{game_8h_a3b23dcc5ccbf0023fb28466d7b1a3d45} 
+int {\bfseries clock\+\_\+get\+\_\+hour} (int time)
+\item 
+\Hypertarget{game_8h_a59ebf94d256da1a7838591ceb53edb09}\label{game_8h_a59ebf94d256da1a7838591ceb53edb09} 
+int {\bfseries clock\+\_\+get\+\_\+minute} (int time)
+\item 
+\Hypertarget{game_8h_a8a08afcafd9411d6a72178025aec4141}\label{game_8h_a8a08afcafd9411d6a72178025aec4141} 
+int {\bfseries clock\+\_\+is\+\_\+between} (int time, int h1, int m1, int h2, int m2)
+\item 
+\Hypertarget{game_8h_ab7e2da23a19716754e9364262535dc9a}\label{game_8h_ab7e2da23a19716754e9364262535dc9a} 
+double {\bfseries temp\+\_\+ctof} (int c)
+\item 
+\Hypertarget{game_8h_a7596231695106c6e34a63e7aca93a485}\label{game_8h_a7596231695106c6e34a63e7aca93a485} 
+void {\bfseries rain\+\_\+create} ()
+\item 
+\Hypertarget{game_8h_a28c2438a3d999b095e2914573f1966c2}\label{game_8h_a28c2438a3d999b095e2914573f1966c2} 
+void {\bfseries snow\+\_\+create} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{game_8h_ac109e752a45bce378402f91f883974d3}\label{game_8h_ac109e752a45bce378402f91f883974d3} 
+const int {\bfseries MAX\+\_\+\+WATER\+\_\+\+PARTICLES}
+\item 
+\Hypertarget{game_8h_ab58bc0d4d48aca96d448a17dcafd1b84}\label{game_8h_ab58bc0d4d48aca96d448a17dcafd1b84} 
+const int {\bfseries MAX\+\_\+\+SNOW\+\_\+\+PARTICLES}
+\item 
+\Hypertarget{game_8h_a9d84df1e0231ae2d885b57c483f0f127}\label{game_8h_a9d84df1e0231ae2d885b57c483f0f127} 
+struct \mbox{\hyperlink{struct_water_particle}{Water\+Particle}} \texorpdfstring{$\ast$}{*} {\bfseries water\+Particles}
+\item 
+\Hypertarget{game_8h_ac75939cc2b433d47df5a26e0de364b8e}\label{game_8h_ac75939cc2b433d47df5a26e0de364b8e} 
+struct \mbox{\hyperlink{struct_snow_particle}{Snow\+Particle}} \texorpdfstring{$\ast$}{*} {\bfseries snow\+Particles}
+\item 
+\Hypertarget{game_8h_a2ad5e0a3cbf9c6ba743feb0a12cd0cc9}\label{game_8h_a2ad5e0a3cbf9c6ba743feb0a12cd0cc9} 
+int {\bfseries water\+On}
+\item 
+\Hypertarget{game_8h_a35279456ec2aa51d43670f12aca1ae1b}\label{game_8h_a35279456ec2aa51d43670f12aca1ae1b} 
+int {\bfseries water\+Slow}
+\item 
+\Hypertarget{game_8h_a18a969d815c9590f07390f0c0d559bf4}\label{game_8h_a18a969d815c9590f07390f0c0d559bf4} 
+int {\bfseries snow\+Slow}
+\item 
+\Hypertarget{game_8h_ae448fb16f537982185a0c5e8db56bdc6}\label{game_8h_ae448fb16f537982185a0c5e8db56bdc6} 
+int {\bfseries health}
+\item 
+\Hypertarget{game_8h_afa3c4cbe95c95ff9cd8bdc9e4cec4a5f}\label{game_8h_afa3c4cbe95c95ff9cd8bdc9e4cec4a5f} 
+int {\bfseries max\+Health}
+\item 
+\Hypertarget{game_8h_a1057fbbe250a63b9fb46f1c2e14358f3}\label{game_8h_a1057fbbe250a63b9fb46f1c2e14358f3} 
+SDL\+\_\+\+Rect {\bfseries player\+Hitbox}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Defines game-\/specific stuff. 
+

@@ -1,15 +1,23 @@
+/**
+* @file game.h
+* @brief Defines game-specific stuff.
+*/
+
 #ifndef game_h
 #define game_h
 
 #include "everything.h"
 
-
-
-
-
 //Position.
 struct pos
 {
+	/**
+	* @brief pos
+	* @param x
+	* @param y
+	* @param xprevious
+	* @param yprevious
+	*/
 	int x;
 	int y;
 	int xprevious;
@@ -51,18 +59,7 @@ struct doorlink
 	int y;
 	int link;
 };
-//Generic object.
-struct gameobject
-{
-	int tileid;
-	int x;
-	int y;
-	int bbox_L;
-	int bbox_R;
-	int bbox_T;
-	int bbox_B;
-	SDL_Texture *img;
-};
+
 
 //initialize number of water particles wanted
 const int MAX_WATER_PARTICLES;

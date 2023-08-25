@@ -26,6 +26,23 @@ var menudata={children:[
 {text:"Main Page",url:"index.html"},
 {text:"Data Structures",url:"annotated.html",children:[
 {text:"Data Structures",url:"annotated.html"},
-{text:"Data Structure Index",url:"classes.html"}]},
+{text:"Data Structure Index",url:"classes.html"},
+{text:"Data Fields",url:"functions.html",children:[
+{text:"All",url:"functions.html"},
+{text:"Variables",url:"functions_vars.html"}]}]},
 {text:"Files",url:"files.html",children:[
-{text:"File List",url:"files.html"}]}]}
+{text:"File List",url:"files.html"},
+{text:"Globals",url:"globals.html",children:[
+{text:"All",url:"globals.html",children:[
+{text:"c",url:"globals.html#index_c"},
+{text:"g",url:"globals.html#index_g"},
+{text:"l",url:"globals.html#index_l"},
+{text:"s",url:"globals.html#index_s"},
+{text:"w",url:"globals.html#index_w"}]},
+{text:"Variables",url:"globals_vars.html",children:[
+{text:"c",url:"globals_vars.html#index_c"},
+{text:"g",url:"globals_vars.html#index_g"},
+{text:"l",url:"globals_vars.html#index_l"},
+{text:"s",url:"globals_vars.html#index_s"},
+{text:"w",url:"globals_vars.html#index_w"}]}]}]},
+{text:"Examples",url:"examples.html"}]}

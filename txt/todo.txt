@@ -1,6 +1,6 @@
 To do:
 
-2023-08-18
+2023-08-26
 	audio sfx (play once)
 	keyboard functions (hold, press, release)
 	compress leveldata
@@ -9,6 +9,70 @@ To do:
 
 ----------------
 Finished:
+
+2023-08-25
+	Thomas:
+		Updated instructions for installing the build tools (Strawberry Perl).
+		Added Makefile rule that builds and runs the game in one go.
+		Added a batch script that enables running the above Makefile rule by double-clicking on it in Windows Explorer.
+		Added badge from Codecov, after manually uploading the coverage files.
+		Added more doxygen documentation.
+		Added a splash photo screen (press TAB to toggle).
+			Added pngcrush batch script to minimize the size of these photos.
+		Added door link functionality, to link between the overworld and underworld (albeit buggy).
+		Added a help menu (press F1 to toggle).
+		Added codecov.io uploader batch script (requires the secret token).
+2023-08-24
+	Matthew:
+		Some edits in the questionnaire document.
+	Sean:
+		Successful in getting the CI/CD pipeline to use the supplied local build tools.
+	Thomas:
+		Finished adding unit testing support.
+		Co-operated with Sean to get the CI/CD pipeline to build from source.
+		Added the first version of doxygen-extracted documentation.
+		Added badge from Github Actions (running CI/CD pipeline).
+		Added Makefile support for generating coverage file with gcov.
+		Unsuccessful attempts at getting the CI/CD pipeline to upload the coverage reports to Codecov and Coveralls.
+
+2023-08-23
+	Sean:
+		Started working on unit testing support.
+	Thomas:
+		Added local build tools (StrawberryPerl on GCC 8.3.0).
+		Added a badge from Codacy to the README.md-file.
+
+2023-08-22
+	Matthew:
+		Unsuccessful attempts at adding doxygen support.
+		Added first draft of questionnaire for user testing.
+	Thomas:
+		Added codedocs to the CI/CD pipeline.
+		Unsuccessful attempts at setting up doxygen in the CI/CD pipeline.
+		Added codecov.io support in the CI/CD pipeline.
+
+2023-08-21
+	Matthew:
+		Improved documentation clarity in the Weather Data .rmd-file.
+
+2023-08-20
+	Matthew:
+		Improved on the Weather Data set.
+		Added 10 years of data as CSV.
+	Sean:
+		Added more NPC's and chats/quizzes.
+		Added snow weather effect.
+
+2023-08-19
+	Sean:
+		Halved enemy spawn rate.
+		Added more NPC's and related chats.
+
+2023-08-18
+	Sean:
+		Added tiles to the Tiled project file.
+	Thomas:
+		Various unsuccessful attempts to get GitHub Actions to compile using StrawberryPerl's GCC 8.3.0. version.
 
 2023-08-17
 	Matthew:

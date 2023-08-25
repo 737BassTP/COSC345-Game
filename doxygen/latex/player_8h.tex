@@ -1,0 +1,42 @@
+\doxysection{src/player.h File Reference}
+\hypertarget{player_8h}{}\label{player_8h}\index{src/player.h@{src/player.h}}
+
+
+Defines player behaviour.  
+
+
+{\ttfamily \#include \"{}everything.\+h\"{}}\newline
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structplayer}{player}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{player_8h_a966cb2eed4436763c207af4b32b08f53}\label{player_8h_a966cb2eed4436763c207af4b32b08f53} 
+\#define {\bfseries NUM\+\_\+\+FRAMES}~8
+\item 
+\Hypertarget{player_8h_afe56aa8ea978926b735c1efbe7151989}\label{player_8h_afe56aa8ea978926b735c1efbe7151989} 
+\#define {\bfseries ANGLE\+\_\+\+INCREMENT}~5.\+625
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{player_8h_ad12645bfa40424fc2fa06eb2ddaa80d9}\label{player_8h_ad12645bfa40424fc2fa06eb2ddaa80d9} 
+void {\bfseries calculate\+Attack\+Hitbox} (struct \mbox{\hyperlink{structplayer}{player}} \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{structplayer}{player}}, SDL\+\_\+\+Rect \texorpdfstring{$\ast$}{*}attack\+Hitbox)
+\item 
+\Hypertarget{player_8h_aa3442f8a19ff809d1de42a0319960160}\label{player_8h_aa3442f8a19ff809d1de42a0319960160} 
+void {\bfseries attack} (struct \mbox{\hyperlink{structplayer}{player}} \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{structplayer}{player}})
+\item 
+\Hypertarget{player_8h_aa18fb5b567c5ec5ccc9809d472d889af}\label{player_8h_aa18fb5b567c5ec5ccc9809d472d889af} 
+void {\bfseries render\+Weapon\+Swing} (SDL\+\_\+\+Renderer \texorpdfstring{$\ast$}{*}renderer, SDL\+\_\+\+Texture \texorpdfstring{$\ast$}{*}weapon\+Texture, struct \mbox{\hyperlink{structplayer}{player}} \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{structplayer}{player}})
+\item 
+\Hypertarget{player_8h_af85fe2301066a4e7705c8a43049478c9}\label{player_8h_af85fe2301066a4e7705c8a43049478c9} 
+void {\bfseries player\+\_\+movement} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Defines player behaviour. 
+

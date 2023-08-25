@@ -1,6 +1,9 @@
+/**
+* @file game.c
+* @brief Implements game.h
+*/
+
 #include "everything.h"
-
-
 
 //initialize number of water particles wanted
 const int MAX_WATER_PARTICLES = 100;

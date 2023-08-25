@@ -12,6 +12,11 @@ https://wiki.libsdl.org/SDL2/APIByCategory
 
 */
 
+/**
+* @file main.c
+* @brief Implements main.h
+*/
+
 //Includes.
 #include "everything.h"
 
@@ -167,7 +172,7 @@ int SDL_main(int argc, char *argv[])
 	
 	//Images.
 	IMG_Init(IMG_INIT_PNG);
-	//SDL_Texture *spr_grass = IMG_LoadTexture(renderer,"image-test.png");
+	SDL_Texture *spr_error = IMG_LoadTexture(renderer,"img/spr_error.png");
 	SDL_Texture *spr_grass = IMG_LoadTexture(renderer,"img/spr_grass.png");
 	SDL_Texture *spr_sand  = IMG_LoadTexture(renderer,"img/spr_sand.png");
 	SDL_Texture *spr_water = IMG_LoadTexture(renderer,"img/spr_water_strip16.png");
@@ -179,6 +184,8 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *spr_enemy1 = IMG_LoadTexture(renderer,"img/spr_enemy1.png");
 	SDL_Texture *penguinSamImg = IMG_LoadTexture(renderer,"img/sammy.png");
 	SDL_Texture *snowflake = IMG_LoadTexture(renderer,"img/snowflake.png");
+	//SDL_Texture *spr_ = IMG_LoadTexture(renderer,"img/spr_.png");
+	//SDL_Texture *spr_ = IMG_LoadTexture(renderer,"img/spr_.png");
 	//Player.
 	SDL_Texture *sprstrip_player = IMG_LoadTexture(renderer,"img/player_strip8.png");
 	//Text.
@@ -211,27 +218,23 @@ int SDL_main(int argc, char *argv[])
 	byte level_data[262144];//static; can not be free'd.
 	//262144 = 256*512*2 (level size * level count * level layers)
 	//Objects.
-	//struct gameobject Objects = calloc(256,sizeof(gameobject));
-	/*
-	gameobject Objects[256];
-	//byte level_objects[0x100];
+	struct gameobject Objects[256];
 	for (int i=0; i<0x100; i++)
 	{
-		//level_objects[i] = (byte)0xFF;
-		Objects[i].id = 0xFF;
+		Objects[i].tileid = 0xFF;
+		Objects[i].img = spr_error;
 		Objects[i].x = (i%16)*16;
 		Objects[i].y = (i/16)*16;
-		Objects[i].bbox_L = Objects.x;
-		Objects[i].bbox_T = Objects.y;
-		Objects[i].bbox_R = Objects.bbox_L+16;
-		Objects[i].bbox_B = Objects.bbox_T+16;
-		Objects[i].img = spr_sand;
+		Objects[i].bbox_L = win_game_x + Objects[i].x * gw;
+		Objects[i].bbox_T = win_game_y + Objects[i].y * gh;
+		Objects[i].bbox_R = Objects[i].bbox_L + 16*gw;
+		Objects[i].bbox_B = Objects[i].bbox_T + 16*gh;
 	}
-	/**/
 	//Load Level.
 	int lvl_off_obj=0x20000;
 	int lvl_yoff=(int)sqrt(level_count/level_realms);
 	level_load(level_data,level_size,level_count,level_layers);
+	level_load_objects(level_data,Objects,level_cur,level_size);
 	
 	//Map.
 	SDL_Texture *spr_map = IMG_LoadTexture(renderer,"img/dunedin-map.png");
@@ -336,6 +339,20 @@ int SDL_main(int argc, char *argv[])
 	int splashintro_slen1=strlen(splashintro_string);
 	int splashintro_slen2=strlen(splashintro_string_copyright);
 	
+	//Splash photo screen.
+	int splashphoto_bool=0;
+	SDL_Texture *splashphoto_img_signalhill = IMG_LoadTexture(renderer,"img/photo/signalhill.png");
+	char* splashphoto_str_continue = "Press TAB to continue.";
+	char* splashphoto_str_found = "Found: 01/32";//make changeable.
+	char* splashphoto_str_name = "Signal Hill Lookout";//make changeable.
+	int splashphoto_slen_tab=strlen(splashphoto_str_continue);
+	int splashphoto_slen_found=strlen(splashphoto_str_found);
+	int splashphoto_slen_name=strlen(splashphoto_str_name);
+	
+	//Help menu.
+	int helpmenu_bool=0;
+	char* helpmenu_str="Player Controls: Inspect source code.";
+	
 	//pop up window test
 	//int option = 0;
     //char optionText[2] = "0";
@@ -355,13 +372,48 @@ int SDL_main(int argc, char *argv[])
 	//score display
 	int score = 0; //initial score
 	SDL_Color scoreColour = { 0, 0, 0, 255 };
-    
+	
+	//Tests.
+	//none
 	
 	//Mainloop here.
 	int running=1;
 	printf("Entering main loop...\n");
 	while (running)
 	{
+		//Update previous key presses.
+		keyboard_set_old(&glob_vk_right);
+		keyboard_set_old(&glob_vk_left);
+		keyboard_set_old(&glob_vk_up);
+		keyboard_set_old(&glob_vk_down);
+		keyboard_set_old(&glob_vk_space);
+		keyboard_set_old(&glob_vk_enter);
+		keyboard_set_old(&glob_vk_tab);
+		keyboard_set_old(&glob_vk_f1);
+		keyboard_set_old(&glob_vk_f2);
+		keyboard_set_old(&glob_vk_f3);
+		keyboard_set_old(&glob_vk_f4);
+		keyboard_set_old(&glob_vk_f5);
+		keyboard_set_old(&glob_vk_f6);
+		keyboard_set_old(&glob_vk_f7);
+		keyboard_set_old(&glob_vk_f8);
+		keyboard_set_old(&glob_vk_f9);
+		keyboard_set_old(&glob_vk_f10);
+		keyboard_set_old(&glob_vk_f11);
+		keyboard_set_old(&glob_vk_f12);
+		keyboard_set_old(&glob_vk_0);
+		keyboard_set_old(&glob_vk_1);
+		keyboard_set_old(&glob_vk_2);
+		keyboard_set_old(&glob_vk_3);
+		keyboard_set_old(&glob_vk_4);
+		keyboard_set_old(&glob_vk_5);
+		keyboard_set_old(&glob_vk_6);
+		keyboard_set_old(&glob_vk_7);
+		keyboard_set_old(&glob_vk_8);
+		keyboard_set_old(&glob_vk_9);
+		//keyboard_set_old(&glob_vk_);
+		//keyboard_set_old(&glob_vk_);
+		
 		//Organize SDL Polls.
         while (SDL_PollEvent(&event))
         {
@@ -379,25 +431,38 @@ int SDL_main(int argc, char *argv[])
 					int v=1;
 					switch (event.key.keysym.sym)
 					{
-						case SDLK_ESCAPE:{running=0;} break;//escape quits game.
-						case SDLK_RIGHT: {glob_vk_right	=v;} break;
-						case SDLK_LEFT:  {glob_vk_left	=v;} break;
-						case SDLK_UP:    {glob_vk_up	=v;} break;
-						case SDLK_DOWN:  {glob_vk_down	=v;} break;
-						case SDLK_SPACE: {glob_vk_space	=v;} break;
-						case SDLK_KP_ENTER: {glob_vk_enter	=v;} break;//seems broken.
-						case SDLK_F2:  {glob_vk_f2	=v;} break;
-						case SDLK_0:  {glob_vk_0=v;} break;
-						case SDLK_1:  {glob_vk_1=v;} break;
-						case SDLK_2:  {glob_vk_2=v;} break;
-						case SDLK_3:  {glob_vk_3=v;} break;
-						case SDLK_4:  {glob_vk_4=v;} break;
-						case SDLK_5:  {glob_vk_5=v;} break;
-						case SDLK_6:  {glob_vk_6=v;} break;
-						case SDLK_7:  {glob_vk_7=v;} break;
-						case SDLK_8:  {glob_vk_8=v;} break;
-						case SDLK_9:  {glob_vk_9=v;} break;
-						//case SDLK_:  {glob_vk_	=v;} break;
+						case SDLK_ESCAPE:   {running=0;} break;//escape quits game.
+						case SDLK_RIGHT:    {keyboard_set_new(&glob_vk_right,v);} break;
+						case SDLK_LEFT:     {keyboard_set_new(&glob_vk_left,v);} break;
+						case SDLK_UP:       {keyboard_set_new(&glob_vk_up,v);} break;
+						case SDLK_DOWN:     {keyboard_set_new(&glob_vk_down,v);} break;
+						case SDLK_SPACE:    {keyboard_set_new(&glob_vk_space,v);} break;
+						case SDLK_RETURN:   {keyboard_set_new(&glob_vk_enter,v);} break;
+						case SDLK_TAB:      {keyboard_set_new(&glob_vk_tab,v);} break;
+						case SDLK_F1:       {keyboard_set_new(&glob_vk_f1,v);} break;
+						case SDLK_F2:       {keyboard_set_new(&glob_vk_f2,v);} break;
+						case SDLK_F3:       {keyboard_set_new(&glob_vk_f3,v);} break;
+						case SDLK_F4:       {keyboard_set_new(&glob_vk_f4,v);} break;
+						case SDLK_F5:       {keyboard_set_new(&glob_vk_f5,v);} break;
+						case SDLK_F6:       {keyboard_set_new(&glob_vk_f6,v);} break;
+						case SDLK_F7:       {keyboard_set_new(&glob_vk_f7,v);} break;
+						case SDLK_F8:       {keyboard_set_new(&glob_vk_f8,v);} break;
+						case SDLK_F9:       {keyboard_set_new(&glob_vk_f9,v);} break;
+						case SDLK_F10:      {keyboard_set_new(&glob_vk_f10,v);} break;
+						case SDLK_F11:      {keyboard_set_new(&glob_vk_f11,v);} break;
+						case SDLK_F12:      {keyboard_set_new(&glob_vk_f12,v);} break;
+						case SDLK_0:        {keyboard_set_new(&glob_vk_0,v);} break;
+						case SDLK_1:        {keyboard_set_new(&glob_vk_1,v);} break;
+						case SDLK_2:        {keyboard_set_new(&glob_vk_2,v);} break;
+						case SDLK_3:        {keyboard_set_new(&glob_vk_3,v);} break;
+						case SDLK_4:        {keyboard_set_new(&glob_vk_4,v);} break;
+						case SDLK_5:        {keyboard_set_new(&glob_vk_5,v);} break;
+						case SDLK_6:        {keyboard_set_new(&glob_vk_6,v);} break;
+						case SDLK_7:        {keyboard_set_new(&glob_vk_7,v);} break;
+						case SDLK_8:        {keyboard_set_new(&glob_vk_8,v);} break;
+						case SDLK_9:        {keyboard_set_new(&glob_vk_9,v);} break;
+						//case SDLK_:        {keyboard_set_new(&glob_vk_,v);} break;
+						//case SDLK_:        {keyboard_set_new(&glob_vk_,v);} break;
 						
 					}
 					break;
@@ -408,24 +473,37 @@ int SDL_main(int argc, char *argv[])
 					int v=0;
 					switch (event.key.keysym.sym)
 					{
-						case SDLK_RIGHT: {glob_vk_right	=v;} break;
-						case SDLK_LEFT:  {glob_vk_left	=v;} break;
-						case SDLK_UP:    {glob_vk_up	=v;} break;
-						case SDLK_DOWN:  {glob_vk_down	=v;} break;
-						case SDLK_SPACE: {glob_vk_space	=v;} break;
-						case SDLK_KP_ENTER: {glob_vk_enter	=v;} break;
-						case SDLK_F2:  {glob_vk_f2	=v;} break;
-						case SDLK_0:  {glob_vk_0=v;} break;
-						case SDLK_1:  {glob_vk_1=v;} break;
-						case SDLK_2:  {glob_vk_2=v;} break;
-						case SDLK_3:  {glob_vk_3=v;} break;
-						case SDLK_4:  {glob_vk_4=v;} break;
-						case SDLK_5:  {glob_vk_5=v;} break;
-						case SDLK_6:  {glob_vk_6=v;} break;
-						case SDLK_7:  {glob_vk_7=v;} break;
-						case SDLK_8:  {glob_vk_8=v;} break;
-						case SDLK_9:  {glob_vk_9=v;} break;
-						//case SDLK_:  {glob_vk_	=v;} break;
+						case SDLK_RIGHT:    {keyboard_set_new(&glob_vk_right,v);} break;
+						case SDLK_LEFT:     {keyboard_set_new(&glob_vk_left,v);} break;
+						case SDLK_UP:       {keyboard_set_new(&glob_vk_up,v);} break;
+						case SDLK_DOWN:     {keyboard_set_new(&glob_vk_down,v);} break;
+						case SDLK_SPACE:    {keyboard_set_new(&glob_vk_space,v);} break;
+						case SDLK_RETURN:   {keyboard_set_new(&glob_vk_enter,v);} break;
+						case SDLK_TAB:      {keyboard_set_new(&glob_vk_tab,v);} break;
+						case SDLK_F1:       {keyboard_set_new(&glob_vk_f1,v);} break;
+						case SDLK_F2:       {keyboard_set_new(&glob_vk_f2,v);} break;
+						case SDLK_F3:       {keyboard_set_new(&glob_vk_f3,v);} break;
+						case SDLK_F4:       {keyboard_set_new(&glob_vk_f4,v);} break;
+						case SDLK_F5:       {keyboard_set_new(&glob_vk_f5,v);} break;
+						case SDLK_F6:       {keyboard_set_new(&glob_vk_f6,v);} break;
+						case SDLK_F7:       {keyboard_set_new(&glob_vk_f7,v);} break;
+						case SDLK_F8:       {keyboard_set_new(&glob_vk_f8,v);} break;
+						case SDLK_F9:       {keyboard_set_new(&glob_vk_f9,v);} break;
+						case SDLK_F10:      {keyboard_set_new(&glob_vk_f10,v);} break;
+						case SDLK_F11:      {keyboard_set_new(&glob_vk_f11,v);} break;
+						case SDLK_F12:      {keyboard_set_new(&glob_vk_f12,v);} break;
+						case SDLK_0:        {keyboard_set_new(&glob_vk_0,v);} break;
+						case SDLK_1:        {keyboard_set_new(&glob_vk_1,v);} break;
+						case SDLK_2:        {keyboard_set_new(&glob_vk_2,v);} break;
+						case SDLK_3:        {keyboard_set_new(&glob_vk_3,v);} break;
+						case SDLK_4:        {keyboard_set_new(&glob_vk_4,v);} break;
+						case SDLK_5:        {keyboard_set_new(&glob_vk_5,v);} break;
+						case SDLK_6:        {keyboard_set_new(&glob_vk_6,v);} break;
+						case SDLK_7:        {keyboard_set_new(&glob_vk_7,v);} break;
+						case SDLK_8:        {keyboard_set_new(&glob_vk_8,v);} break;
+						case SDLK_9:        {keyboard_set_new(&glob_vk_9,v);} break;
+						//case SDLK_:        {keyboard_set_new(&glob_vk_,v);} break;
+						//case SDLK_:        {keyboard_set_new(&glob_vk_,v);} break;
 						
 					}
 					break;
@@ -437,43 +515,57 @@ int SDL_main(int argc, char *argv[])
 		/*
 		Process inputs.
 		*/
-		//Debug input:
-		if (glob_vk_f2)
+		//Help menu.
+		if (keyboard_check_pressed(glob_vk_f1))
+		{
+			helpmenu_bool ^= 1;
+		}
+		//Development input.
+		if (keyboard_check_pressed(glob_vk_f2))
 		{
 			printf("F2 started!\n");	
 			dev_tiled_to_leveldata(level_data);
+			level_load_objects(level_data,Objects,level_cur,level_size);
 			printf("F2 finished!\n");	
 		}
-		if(glob_vk_7)
+		//Debug input.
+		if (keyboard_check_pressed(glob_vk_f3))
 		{
-			glob_vk_7=0;
+			int off=0x96;
+			struct gameobject objid = Objects[off];//level 16.
+			printf("px=%i\npy=%i\nmean(px)=%i\nmean(py)=%i\nrx1=%i\nry1=%i\nrx2=%i\nry2=%i\n\n",
+				Player.x,Player.y,
+				mean_int(2,Player.x,Player.x+16*gw),mean_int(2,Player.y,Player.y+16*gh),
+				objid.bbox_L,objid.bbox_T,objid.bbox_R,objid.bbox_B);
+			
+		}
+		
+		if (keyboard_check_pressed(glob_vk_7))
+		{
 			attack(&Player);//calls attack function
 			renderWeaponSwing(renderer, spr_water, &Player);//renders the swing
 		}
 
 		//Rain toggle.
-		if (glob_vk_0)
+		if (keyboard_check_pressed(glob_vk_0))
 		{
-			glob_vk_0=0;
 			//turn water on and off for testing
 			// waterSlow=1; //testing waterSlow function
-			if(waterOn==0)
+			waterOn ^= 1;
+			if (waterOn==1)
 			{
-				waterOn=1;
 				activateAllWaterParticles();
 				activateAllSnowParticles();
 			}
 			else
 			{
-				waterOn=0;
 				deactivateAllWaterParticles();
 				deactivateAllSnowParticles();
 			}
 		}
 		//Popup window.
-		if (glob_vk_9)
+		if (keyboard_check_pressed(glob_vk_9))
 		{
-			glob_vk_9=0;//press, not hold.
 			//pressing 9 resets chat with npc if you have already completed the dialogue
 			if(buttonVis==0)
 			{
@@ -485,9 +577,8 @@ int SDL_main(int argc, char *argv[])
 			}
 		}
 		//pressing 1 changes text inside test box.
-		if (glob_vk_1)
+		if (keyboard_check_pressed(glob_vk_1))
 		{
-			glob_vk_1=0;
 			if(buttonVis==1)
 			{
 				// chatBoxMod(buttonRectPtr, 100, 200, 300, 400); //testing function to see if it works.
@@ -498,9 +589,8 @@ int SDL_main(int argc, char *argv[])
 				userAnswer=1;
 			}
 		}
-		if (glob_vk_2)
+		if (keyboard_check_pressed(glob_vk_2))
 		{
-			glob_vk_2=0;
 			if(buttonVis==1)
 			{
 				//functionality to be added
@@ -510,9 +600,8 @@ int SDL_main(int argc, char *argv[])
 				userAnswer=2;
 			}
 		}
-		if (glob_vk_3)
+		if (keyboard_check_pressed(glob_vk_3))
 		{
-			glob_vk_3=0;
 			if(buttonVis==1)
 			{
 				//functionality to be added
@@ -522,51 +611,89 @@ int SDL_main(int argc, char *argv[])
 				userAnswer=3;
 			}
 		}
-		if (glob_vk_4)
+		if (keyboard_check_pressed(glob_vk_4))
 		{
-			glob_vk_4=0;
 			if(buttonVis==1)
 			{
 				//functionality to be added
 			}
 		}
-		if (glob_vk_5)
+		if (keyboard_check_pressed(glob_vk_5))
 		{
-			glob_vk_5=0;
 			damageMe(10);
 		}
-		if (glob_vk_6)
+		if (keyboard_check_pressed(glob_vk_6))
 		{
-			glob_vk_6=0;
 			healMe(10);
 		}		
 		
 		//Player movement.
 		int mvspd = Player.move_spd;
-		if (glob_vk_right)
+		int khr,khl,khu,khd;
+		khr = keyboard_check(glob_vk_right);
+		khl = keyboard_check(glob_vk_left);
+		khu = keyboard_check(glob_vk_up);
+		khd = keyboard_check(glob_vk_down);
+		int khrl,khud,khrlud;
+		khrl = khr-khl;
+		khud = khd-khu;
+		khrlud = ((khrl!=0)|(khud!=0));
+		if (khrlud)
 		{
-			Player.facedir=0;
-			Player.x += mvspd;
-		}
-		if (glob_vk_up)
-		{
-			Player.facedir=1;
-			Player.y -= mvspd;
-		}
-		if (glob_vk_left)
-		{
-			Player.facedir=2;
-			Player.x -= mvspd;
-		}
-		if (glob_vk_down)
-		{
-			Player.facedir=3;
-			Player.y += mvspd;
-		}
-		if (glob_vk_right|glob_vk_left|glob_vk_up|glob_vk_down)
-		{
-			updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
+			//Facing direction.
+			if (khr) {Player.facedir=0;}
+			if (khu) {Player.facedir=1;}
+			if (khl) {Player.facedir=2;}
+			if (khd) {Player.facedir=3;}
+			
 			//Position.
+			if (khrl!=0)
+			{
+				Player.x += mvspd*khrl;
+			}
+			if (khud!=0)
+			{
+				Player.y += mvspd*khud;
+			}
+			
+			//Hitbox.
+			updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
+			
+			//Object collision.
+			for (int i=0; i<256; i++)//can be improved upon.
+			{
+				if (point_in_rectangle(
+					mean_int(2,Player.x,Player.x+win_game_tile_dim*gw),mean_int(2,Player.y,Player.y+win_game_tile_dim*gh),
+					Objects[i].bbox_L,Objects[i].bbox_T,Objects[i].bbox_R,Objects[i].bbox_B))
+				{
+					int objid = Objects[i].tileid;
+					switch (objid)
+					{
+						//Door object.
+						case 0x116:
+						{
+							//printf("door\n");
+							int door=level_load_door(level_cur,i);
+							if (door != 0x1FFFF)
+							{
+								printf("door (0x%X, 0x%X)\n",door&0x1FF,(door>>9)&0xFF);//lvl,pos
+								level_cur = (door&0x1FF);
+								level_load_objects(level_data,Objects,level_cur,level_size);
+								//incomplete level load; call a level loading function.
+								//todo: stop rain/snow in underworld.
+								int npos = (door>>9)&0xFF;
+								Player.x = win_game_x + gw*win_game_tile_dim*BGG(npos,4,0);
+								Player.y = win_game_y + gh*win_game_tile_dim*BGG(npos,4,1);
+							}
+							else
+							{
+								printf("door has no link\n");
+							}
+						} break;
+					}
+					
+				}
+			}
 			
 			//Animation.
 			Player.anim_spd_cur += Player.anim_spd_spd;
@@ -614,7 +741,7 @@ int SDL_main(int argc, char *argv[])
 				level_cur %= level_count;//prevents overflow.
 				printf("lvl=%i\n",level_cur);
 				level_get_name(level_cur,mapstr_location);
-				level_load_objects(level_data,level_cur,256);
+				level_load_objects(level_data,Objects,level_cur,level_size);
 				mapvisit[level_cur/32] |= (Uint32)(1<<level_cur%32);
 			}
 		}
@@ -623,15 +750,22 @@ int SDL_main(int argc, char *argv[])
 			Player.anim_spd_cur = 0;
 			Player.anim_cur = 0;
 		}
-		
-		if (glob_vk_space|glob_vk_enter)
+		//Go from splashinto screen to main game.
+		if (keyboard_check_pressed(glob_vk_space)|keyboard_check_pressed(glob_vk_enter))
 		{
 			splashintro_bool=0;
 		}
+		//Show splash photo.
+		if (keyboard_check_pressed(glob_vk_tab))
+		{
+			splashphoto_bool ^= 1;
+		}
+		
 
 		/*
 		Post-update of inputs.
 		*/
+		//If buggy, move to before updating inputs.
 		Player.xprevious = Player.x;
 		Player.yprevious = Player.y;
 		
@@ -943,14 +1077,15 @@ int SDL_main(int argc, char *argv[])
 			{
 				for (int i=0; i<win_game_tile_num; i++)
 				{
-					int ij = i+j*win_game_tile_num+k*lvl_off_obj;
+					int ij = i+j*win_game_tile_num;
+					int ijk = ij+k*lvl_off_obj;
 					int x1,y1,x2,y2;
 					x1 = win_game_x + (i+0)*gw*win_game_tile_dim;
 					y1 = win_game_y + (j+0)*gh*win_game_tile_dim;
 					x2 = win_game_x + (i+1)*gw*win_game_tile_dim;
 					y2 = win_game_y + (j+1)*gh*win_game_tile_dim;
 					
-					int off = ij + level_size*level_cur;
+					int off = ijk + level_size*level_cur;
 					int tex = level_data[off];
 					if (k==0)
 					{
@@ -975,6 +1110,7 @@ int SDL_main(int argc, char *argv[])
 							draw_image_part(renderer,x1,y1,x2,y2,spr,d*((at/di)%fr),0,d,d);
 						}
 						//unhandled.
+						/*
 						else
 						{
 							if ((tex!=0) && (tex!=0xFF))//lazy hack.
@@ -982,6 +1118,22 @@ int SDL_main(int argc, char *argv[])
 								tex+=0x100;
 								draw_image_part(renderer,x1,y1,x2,y2,spr_tileset,d*(tex%win_game_tile_num),d*(tex/win_game_tile_num),d,d);
 							}
+						}
+						/**/
+						//Static object.
+						int oti=Objects[ij].tileid;
+						int skipoti=0;
+						skipoti |= (oti == 0xFF);//undefined object.
+						skipoti |= ((oti >= 0x10) && (oti <= 0x13));//animated water/lava
+						if (!skipoti)
+						{
+							oti += 0x100*(oti<0x100);
+							draw_image_part(renderer,
+								x1,//win_game_x+Objects[ij].bbox_L,
+								y1,//win_game_y+Objects[ij].bbox_T,
+								x2,//win_game_x+Objects[ij].bbox_R,
+								y2,//win_game_y+Objects[ij].bbox_B,
+								spr_tileset,d*(oti%win_game_tile_num),d*(oti/win_game_tile_num),d,d);
 						}
 					}
 				}
@@ -1405,7 +1557,7 @@ int SDL_main(int argc, char *argv[])
 				penguinSamChatCompleted=1;
 			}
 		}
-				if(level_cur==160)
+		if(level_cur==160)
 		{
 			if(forestManChatCompleted==0)
 			{
@@ -1451,6 +1603,28 @@ int SDL_main(int argc, char *argv[])
 		/*
 		Overlay Drawing.
 		*/
+		//Splash photo screen.
+		if (splashphoto_bool)
+		{
+			draw_image(renderer,0,0,screen_w,screen_h,splashphoto_img_signalhill);
+			int xx,yy;
+			//Press TAB to continue.
+			int timer=(int)get_timer();
+			if (timer/60%8>=4)
+			{
+				xx=384;
+				yy=screen_h-font_ascii_h*gh;
+				draw_text_color(renderer,xx,yy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashphoto_str_continue,font_ascii_w,font_ascii_h,c_yellow);
+			}
+			//Location name.
+			xx=0;
+			yy=0;
+			draw_text_color(renderer,xx,yy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashphoto_str_name,font_ascii_w,font_ascii_h,c_yellow);
+			//Found locations.
+			xx=screen_w-splashphoto_slen_found*font_ascii_w*gw;
+			yy=0;
+			draw_text_color(renderer,xx,yy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashphoto_str_found,font_ascii_w,font_ascii_h,c_yellow);
+		}
 		//Splash intro screen.
 		if (splashintro_bool)
 		{
@@ -1503,6 +1677,15 @@ int SDL_main(int argc, char *argv[])
 			}
 			
 		}
+		//Help menu.
+		if (helpmenu_bool)
+		{
+			draw_rectangle_color(renderer,0,0,screen_w,screen_h,c_black);
+			int xx,yy;
+			xx=0;
+			yy=0;
+			draw_text_color(renderer,xx,yy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,helpmenu_str,font_ascii_w,font_ascii_h,c_red);
+		}
 		
 		// Clear the renderer
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -1527,6 +1710,7 @@ int SDL_main(int argc, char *argv[])
 	//Shut down SDL
 	free(waterParticles);
 	TTF_CloseFont(font);
+	SDL_DestroyTexture(spr_error);
 	SDL_DestroyTexture(spr_grass);
 	SDL_DestroyTexture(spr_sand);
 	SDL_DestroyTexture(spr_water);
@@ -1540,6 +1724,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_DestroyTexture(splashintro_img1);
 	SDL_DestroyTexture(splashintro_img2);
 	SDL_DestroyTexture(splashintro_img3);
+	SDL_DestroyTexture(splashphoto_img_signalhill);
 	SDL_DestroyTexture(font_ascii);
 	SDL_DestroyTexture(spr_clock_digital);
 	SDL_DestroyTexture(spr_thermometer);

@@ -1,3 +1,8 @@
+/**
+* @file enemy.h
+* @brief Defines enemy-related behaviour.
+*/
+
 #ifndef enemy_h
 #define enemy_h
 

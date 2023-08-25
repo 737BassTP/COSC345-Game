@@ -1,3 +1,8 @@
+/**
+* @file audio.h
+* @brief Defines behaviour for sound, audio, and music.
+*/
+
 #ifndef audio_h
 #define audio_h
 

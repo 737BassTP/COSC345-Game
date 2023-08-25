@@ -1,3 +1,8 @@
+/**
+* @file audio.c
+* @brief Implements audio.h
+*/
+
 #include "everything.h"
 
 void audioCallback(void* userdata, Uint8* stream, int len)

@@ -1,3 +1,8 @@
+/**
+* @file quiz.h
+* @brief Defines quiz behaviour.
+*/
+
 #ifndef quiz_h
 #define quiz_h
 

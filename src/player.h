@@ -1,3 +1,8 @@
+/**
+* @file player.h
+* @brief Defines player behaviour.
+*/
+
 #ifndef player_h
 #define player_h
 

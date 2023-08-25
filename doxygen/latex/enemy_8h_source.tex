@@ -1,59 +1,60 @@
 \doxysection{enemy.\+h}
 \hypertarget{enemy_8h_source}{}\label{enemy_8h_source}\index{src/enemy.h@{src/enemy.h}}
-
+\mbox{\hyperlink{enemy_8h}{Go to the documentation of this file.}}
 \begin{DoxyCode}{0}
-\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ enemy\_h}}
-\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ enemy\_h}}
-\DoxyCodeLine{00003\ }
-\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}everything.h"{}}}
-\DoxyCodeLine{00005\ }
-\DoxyCodeLine{00006\ \textcolor{comment}{//enemy\ struct}}
-\DoxyCodeLine{00007\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_enemy}{Enemy}}\ }
-\DoxyCodeLine{00008\ \{}
-\DoxyCodeLine{00009\ \ \ \ \ \textcolor{keywordtype}{int}\ x;\textcolor{comment}{//position\ x}}
-\DoxyCodeLine{00010\ \ \ \ \ \textcolor{keywordtype}{int}\ y;\textcolor{comment}{//position\ y}}
-\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keywordtype}{int}\ width;\textcolor{comment}{//hit\ box\ stats}}
-\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keywordtype}{int}\ height;}
-\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{int}\ health;}
-\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{int}\ dmg;\textcolor{comment}{//damage\ it\ deals}}
-\DoxyCodeLine{00015\ \ \ \ \ SDL\_Texture*\ texture;}
-\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{int}\ spawnLevel;}
-\DoxyCodeLine{00017\ \ \ \ \ \textcolor{comment}{//\ Add\ more\ enemy-\/related\ attributes\ as\ needed}}
-\DoxyCodeLine{00018\ \};}
-\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#define\ MAX\_ENEMIES\ 250}}
-\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#define\ MAX\_NPCS\ 250}}
-\DoxyCodeLine{00021\ }
-\DoxyCodeLine{00022\ \textcolor{comment}{//NPC.}}
-\DoxyCodeLine{00023\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_n_p_c}{NPC}}}
-\DoxyCodeLine{00024\ \{}
-\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{int}\ x;}
-\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{int}\ y;}
-\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{int}\ width;}
-\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{int}\ height;}
-\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keywordtype}{int}\ xprevious;}
-\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{int}\ yprevious;}
-\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordtype}{byte}\ face\_dir;}
-\DoxyCodeLine{00032\ \ \ \ \ SDL\_Texture*\ texture;}
-\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordtype}{int}\ appearsOnLevel;}
-\DoxyCodeLine{00034\ \};}
-\DoxyCodeLine{00035\ }
-\DoxyCodeLine{00036\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_n_p_c}{NPC}}\ npcs[MAX\_NPCS];}
-\DoxyCodeLine{00037\ \textcolor{comment}{//\ Function\ to\ initialize\ an\ enemy\ with\ position\ and\ size}}
-\DoxyCodeLine{00038\ \textcolor{keywordtype}{void}\ initEnemy(\textcolor{keyword}{struct}\ \mbox{\hyperlink{struct_enemy}{Enemy}}*\ enemy,\ \textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{int}\ y,\ \textcolor{keywordtype}{int}\ width,\ \textcolor{keywordtype}{int}\ height,\ \textcolor{keywordtype}{int}\ health,\ \textcolor{keywordtype}{int}\ dmg,\ SDL\_Texture*\ texture,\textcolor{keywordtype}{int}\ spawnLevel);}
-\DoxyCodeLine{00039\ \textcolor{comment}{//initialize\ an\ npc}}
-\DoxyCodeLine{00040\ \textcolor{keywordtype}{void}\ initNPC(\textcolor{keyword}{struct}\ \mbox{\hyperlink{struct_n_p_c}{NPC}}*\ npc,\ \textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{int}\ y,\textcolor{keywordtype}{int}\ width,\textcolor{keywordtype}{int}\ height,\ \textcolor{keywordtype}{int}\ xprevious,\ \textcolor{keywordtype}{int}\ yprevious,\ uint8\_t\ face\_dir,\ SDL\_Texture*\ texture,\ \textcolor{keywordtype}{int}\ appearsOnLevel);}
-\DoxyCodeLine{00041\ \textcolor{comment}{//\ add\ an\ NPC\ reference\ to\ the\ npcs\ array}}
-\DoxyCodeLine{00042\ \textcolor{keywordtype}{void}\ addNPC(\textcolor{keyword}{struct}\ \mbox{\hyperlink{struct_n_p_c}{NPC}}*\ npc);}
-\DoxyCodeLine{00043\ \textcolor{comment}{//\ Function\ to\ reset\ an\ enemy\ to\ its\ default\ state}}
-\DoxyCodeLine{00044\ \textcolor{keywordtype}{void}\ resetEnemy(\textcolor{keyword}{struct}\ \mbox{\hyperlink{struct_enemy}{Enemy}}*\ enemy)\ ;}
-\DoxyCodeLine{00045\ \textcolor{comment}{//\ Function\ to\ add\ an\ enemy\ to\ the\ array}}
-\DoxyCodeLine{00046\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_enemy}{Enemy}}\ enemies[MAX\_ENEMIES];}
-\DoxyCodeLine{00047\ \textcolor{keywordtype}{void}\ addEnemy(\textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{int}\ y,\ \textcolor{keywordtype}{int}\ width,\ \textcolor{keywordtype}{int}\ height,\ \textcolor{keywordtype}{int}\ health,\ \textcolor{keywordtype}{int}\ dmg,\ SDL\_Texture*\ texture,\ \textcolor{keywordtype}{int}\ level);}
-\DoxyCodeLine{00048\ \textcolor{keywordtype}{void}\ randomSpawnEnemy(\textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{int}\ y,\ \textcolor{keywordtype}{int}\ width,\ \textcolor{keywordtype}{int}\ height,\ \textcolor{keywordtype}{int}\ health,\ \textcolor{keywordtype}{int}\ dmg,\ SDL\_Texture*\ texture,\ \textcolor{keywordtype}{int}\ level);}
-\DoxyCodeLine{00049\ }
-\DoxyCodeLine{00050\ }
-\DoxyCodeLine{00051\ }
-\DoxyCodeLine{00052\ }
-\DoxyCodeLine{00053\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#ifndef\ enemy\_h}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#define\ enemy\_h}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{everything_8h}{everything.h}}"{}}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{comment}{//enemy\ struct}}
+\DoxyCodeLine{00012\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_enemy}{Enemy}}\ }
+\DoxyCodeLine{00013\ \{}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{int}\ x;\textcolor{comment}{//position\ x}}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{int}\ y;\textcolor{comment}{//position\ y}}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{int}\ width;\textcolor{comment}{//hit\ box\ stats}}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{int}\ height;}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{int}\ health;}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{int}\ dmg;\textcolor{comment}{//damage\ it\ deals}}
+\DoxyCodeLine{00020\ \ \ \ \ SDL\_Texture*\ texture;}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{int}\ spawnLevel;}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{comment}{//\ Add\ more\ enemy-\/related\ attributes\ as\ needed}}
+\DoxyCodeLine{00023\ \};}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#define\ MAX\_ENEMIES\ 250}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#define\ MAX\_NPCS\ 250}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{comment}{//NPC.}}
+\DoxyCodeLine{00028\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_n_p_c}{NPC}}}
+\DoxyCodeLine{00029\ \{}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{int}\ x;}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordtype}{int}\ y;}
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keywordtype}{int}\ width;}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordtype}{int}\ height;}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{int}\ xprevious;}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{int}\ yprevious;}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{byte}\ face\_dir;}
+\DoxyCodeLine{00037\ \ \ \ \ SDL\_Texture*\ texture;}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{int}\ appearsOnLevel;}
+\DoxyCodeLine{00039\ \};}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_n_p_c}{NPC}}\ npcs[MAX\_NPCS];}
+\DoxyCodeLine{00042\ \textcolor{comment}{//\ Function\ to\ initialize\ an\ enemy\ with\ position\ and\ size}}
+\DoxyCodeLine{00043\ \textcolor{keywordtype}{void}\ initEnemy(\textcolor{keyword}{struct}\ \mbox{\hyperlink{struct_enemy}{Enemy}}*\ enemy,\ \textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{int}\ y,\ \textcolor{keywordtype}{int}\ width,\ \textcolor{keywordtype}{int}\ height,\ \textcolor{keywordtype}{int}\ health,\ \textcolor{keywordtype}{int}\ dmg,\ SDL\_Texture*\ texture,\textcolor{keywordtype}{int}\ spawnLevel);}
+\DoxyCodeLine{00044\ \textcolor{comment}{//initialize\ an\ npc}}
+\DoxyCodeLine{00045\ \textcolor{keywordtype}{void}\ initNPC(\textcolor{keyword}{struct}\ \mbox{\hyperlink{struct_n_p_c}{NPC}}*\ npc,\ \textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{int}\ y,\textcolor{keywordtype}{int}\ width,\textcolor{keywordtype}{int}\ height,\ \textcolor{keywordtype}{int}\ xprevious,\ \textcolor{keywordtype}{int}\ yprevious,\ uint8\_t\ face\_dir,\ SDL\_Texture*\ texture,\ \textcolor{keywordtype}{int}\ appearsOnLevel);}
+\DoxyCodeLine{00046\ \textcolor{comment}{//\ add\ an\ NPC\ reference\ to\ the\ npcs\ array}}
+\DoxyCodeLine{00047\ \textcolor{keywordtype}{void}\ addNPC(\textcolor{keyword}{struct}\ \mbox{\hyperlink{struct_n_p_c}{NPC}}*\ npc);}
+\DoxyCodeLine{00048\ \textcolor{comment}{//\ Function\ to\ reset\ an\ enemy\ to\ its\ default\ state}}
+\DoxyCodeLine{00049\ \textcolor{keywordtype}{void}\ resetEnemy(\textcolor{keyword}{struct}\ \mbox{\hyperlink{struct_enemy}{Enemy}}*\ enemy)\ ;}
+\DoxyCodeLine{00050\ \textcolor{comment}{//\ Function\ to\ add\ an\ enemy\ to\ the\ array}}
+\DoxyCodeLine{00051\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_enemy}{Enemy}}\ enemies[MAX\_ENEMIES];}
+\DoxyCodeLine{00052\ \textcolor{keywordtype}{void}\ addEnemy(\textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{int}\ y,\ \textcolor{keywordtype}{int}\ width,\ \textcolor{keywordtype}{int}\ height,\ \textcolor{keywordtype}{int}\ health,\ \textcolor{keywordtype}{int}\ dmg,\ SDL\_Texture*\ texture,\ \textcolor{keywordtype}{int}\ level);}
+\DoxyCodeLine{00053\ \textcolor{keywordtype}{void}\ randomSpawnEnemy(\textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{int}\ y,\ \textcolor{keywordtype}{int}\ width,\ \textcolor{keywordtype}{int}\ height,\ \textcolor{keywordtype}{int}\ health,\ \textcolor{keywordtype}{int}\ dmg,\ SDL\_Texture*\ texture,\ \textcolor{keywordtype}{int}\ level);}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \textcolor{preprocessor}{\#endif}}
 
 \end{DoxyCode}

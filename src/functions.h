@@ -1,3 +1,8 @@
+/**
+* @file functions.h
+* @brief Defines abstract functions not related to game-specific stuff.
+*/
+
 #ifndef functions_h
 #define functions_h 1
 
@@ -23,51 +28,76 @@ typedef unsigned __int128 oword;//0-340.2U, 0x00000000000000000000000000000000-0
 #define PI 3.1415926535897932
 
 //Colors (BGR because Big-Endianness).
-extern const int c_black;
-extern const int c_dkgray;
-extern const int c_gray;
-extern const int c_ltgray;
-extern const int c_white;
-extern const int c_red;
-extern const int c_orange;
-extern const int c_yellow;
-extern const int c_lime;
-extern const int c_green;
-extern const int c_slime;
-extern const int c_aqua;
-extern const int c_sky;
-extern const int c_blue;
-extern const int c_purple;
-extern const int c_fuchsia;
-extern const int c_rose;
+const int c_black;
+const int c_dkgray;
+const int c_gray;
+const int c_ltgray;
+const int c_white;
+const int c_red;
+const int c_orange;
+const int c_yellow;
+const int c_lime;
+const int c_green;
+const int c_slime;
+const int c_aqua;
+const int c_sky;
+const int c_blue;
+const int c_purple;
+const int c_fuchsia;
+const int c_rose;
 //extern const int c_ = 0x;
 //extern const int c_ = 0x;
 
 //Global variables.
-extern int glob_draw_alpha;
-extern int glob_draw_color;
-extern int glob_vk_right;
-extern int glob_vk_left;
-extern int glob_vk_up;
-extern int glob_vk_down;
-extern int glob_vk_space;
-extern int glob_vk_enter;
-extern int glob_vk_f2;
-extern int glob_vk_0;
-extern int glob_vk_1;
-extern int glob_vk_2;
-extern int glob_vk_3;
-extern int glob_vk_4;
-extern int glob_vk_5;
-extern int glob_vk_6;
-extern int glob_vk_7;
-extern int glob_vk_8;
-extern int glob_vk_9;
-//extern int glob_vk_;
-//extern int glob_vk_;
+int glob_draw_alpha;
+int glob_draw_color;
+//Keyboard variables.
+int glob_vk_right;
+int glob_vk_left;
+int glob_vk_up;
+int glob_vk_down;
+int glob_vk_space;
+int glob_vk_enter;
+int glob_vk_tab;
+int glob_vk_f1;
+int glob_vk_f2;
+int glob_vk_f3;
+int glob_vk_f4;
+int glob_vk_f5;
+int glob_vk_f6;
+int glob_vk_f7;
+int glob_vk_f8;
+int glob_vk_f9;
+int glob_vk_f10;
+int glob_vk_f11;
+int glob_vk_f12;
+int glob_vk_0;
+int glob_vk_1;
+int glob_vk_2;
+int glob_vk_3;
+int glob_vk_4;
+int glob_vk_5;
+int glob_vk_6;
+int glob_vk_7;
+int glob_vk_8;
+int glob_vk_9;
+//int glob_vk_;
+//int glob_vk_;
+
+//Generic object.
+struct gameobject
+{
+	int tileid;
+	int x;
+	int y;
+	int bbox_L;
+	int bbox_R;
+	int bbox_T;
+	int bbox_B;
+	SDL_Texture *img;
+};
 
 //Functions.
-void clear_screen(SDL_Surface *surface);//Clear the surface by filling it with a colour.
 int make_color_rgb(int r,int g,int b);
 double lerp(double from,double to,double percentage);
 int make_color_hsv(int h,int s,int v);
@@ -83,6 +113,9 @@ void draw_image(SDL_Renderer *renderer,int x1,int y1,int x2,int y2,SDL_Texture *
 void draw_image_part(SDL_Renderer *renderer,int x1,int y1,int x2,int y2,SDL_Texture *texture,int left,int top,int width,int height);
 void draw_text(SDL_Renderer *renderer,int x,int y,int w,int h,SDL_Texture *font,char* str,int fontw,int fonth);
 void draw_text_color(SDL_Renderer *renderer,int x,int y,int w,int h,SDL_Texture *font,char* str,int fontw,int fonth,int color);
+long int file_get_size(FILE* fil);
+int keyboard_set_new(int *keyid,int keyval);
+int keyboard_set_old(int *keyid);
 int keyboard_check(int key);
 int keyboard_check_pressed(int key);
 int keyboard_check_released(int key);
@@ -93,6 +126,7 @@ int pos_int(int num,int val,...);
 int BG(int val,int nth);
 int BGG(int val,int size,int nth);
 int sqr(int v);
+int mean_int(int num,...);
 double degtorad(double deg);
 double radtodeg(double rad);
 double dcos(double deg);
@@ -104,8 +138,9 @@ int string_pos(char *substr,char *str);
 double darctan2(int y,int x);
 double cartodir(int x,int y);
 void game_level_load(int lvl,int lvlmax);
-void level_load_objects(byte arr[],int level,int siz);
+void level_load_objects(byte arr[],struct gameobject Objects[],int level,int siz);
 void level_load(byte arr[],int siz,int count,int layers);
+int level_load_door(int pos,int level);
 void dev_tiled_to_leveldata(byte arr[]);
 char* level_get_name(int lvl,char* ret);
 

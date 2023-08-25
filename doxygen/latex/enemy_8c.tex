@@ -1,0 +1,34 @@
+\doxysection{src/enemy.c File Reference}
+\hypertarget{enemy_8c}{}\label{enemy_8c}\index{src/enemy.c@{src/enemy.c}}
+
+
+Implements \doxylink{enemy_8h}{enemy.\+h}.  
+
+
+{\ttfamily \#include \"{}everything.\+h\"{}}\newline
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{enemy_8c_aea12b2129bc7eeb794fc8c9d145c54a5}\label{enemy_8c_aea12b2129bc7eeb794fc8c9d145c54a5} 
+void {\bfseries init\+Enemy} (struct \mbox{\hyperlink{struct_enemy}{Enemy}} \texorpdfstring{$\ast$}{*}enemy, int x, int y, int width, int height, int health, int dmg, SDL\+\_\+\+Texture \texorpdfstring{$\ast$}{*}texture, int spawn\+Level)
+\item 
+\Hypertarget{enemy_8c_a23e56d2936c78a558ffafb085233b0cf}\label{enemy_8c_a23e56d2936c78a558ffafb085233b0cf} 
+void {\bfseries init\+NPC} (struct \mbox{\hyperlink{struct_n_p_c}{NPC}} \texorpdfstring{$\ast$}{*}npc, int x, int y, int width, int height, int xprevious, int yprevious, uint8\+\_\+t face\+\_\+dir, SDL\+\_\+\+Texture \texorpdfstring{$\ast$}{*}texture, int appears\+On\+Level)
+\item 
+\Hypertarget{enemy_8c_a1f909a69f1087c0e31d6d8f79c3f110a}\label{enemy_8c_a1f909a69f1087c0e31d6d8f79c3f110a} 
+void {\bfseries add\+NPC} (struct \mbox{\hyperlink{struct_n_p_c}{NPC}} \texorpdfstring{$\ast$}{*}npc)
+\item 
+\Hypertarget{enemy_8c_a919eadad24dd95e12e8f6d89cb52bc43}\label{enemy_8c_a919eadad24dd95e12e8f6d89cb52bc43} 
+void {\bfseries reset\+Enemy} (struct \mbox{\hyperlink{struct_enemy}{Enemy}} \texorpdfstring{$\ast$}{*}enemy)
+\item 
+\Hypertarget{enemy_8c_a0854a439d437f75754dce9099a5aae42}\label{enemy_8c_a0854a439d437f75754dce9099a5aae42} 
+void {\bfseries add\+Enemy} (int x, int y, int width, int height, int health, int dmg, SDL\+\_\+\+Texture \texorpdfstring{$\ast$}{*}texture, int level)
+\item 
+\Hypertarget{enemy_8c_ab67068f22179c2e50a2d24a07d796632}\label{enemy_8c_ab67068f22179c2e50a2d24a07d796632} 
+void {\bfseries random\+Spawn\+Enemy} (int x, int y, int width, int height, int health, int dmg, SDL\+\_\+\+Texture \texorpdfstring{$\ast$}{*}texture, int level)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implements \doxylink{enemy_8h}{enemy.\+h}. 
+

@@ -1,0 +1,59 @@
+\doxysection{src/enemy.h File Reference}
+\hypertarget{enemy_8h}{}\label{enemy_8h}\index{src/enemy.h@{src/enemy.h}}
+
+
+Defines enemy-\/related behaviour.  
+
+
+{\ttfamily \#include \"{}everything.\+h\"{}}\newline
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_enemy}{Enemy}}
+\item 
+struct \mbox{\hyperlink{struct_n_p_c}{NPC}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{enemy_8h_a544651f3405cff79c40d898a8e54f507}\label{enemy_8h_a544651f3405cff79c40d898a8e54f507} 
+\#define {\bfseries MAX\+\_\+\+ENEMIES}~250
+\item 
+\Hypertarget{enemy_8h_ac90bac744ea01849c510a99ae2dade51}\label{enemy_8h_ac90bac744ea01849c510a99ae2dade51} 
+\#define {\bfseries MAX\+\_\+\+NPCS}~250
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{enemy_8h_aea12b2129bc7eeb794fc8c9d145c54a5}\label{enemy_8h_aea12b2129bc7eeb794fc8c9d145c54a5} 
+void {\bfseries init\+Enemy} (struct \mbox{\hyperlink{struct_enemy}{Enemy}} \texorpdfstring{$\ast$}{*}enemy, int x, int y, int width, int height, int health, int dmg, SDL\+\_\+\+Texture \texorpdfstring{$\ast$}{*}texture, int spawn\+Level)
+\item 
+\Hypertarget{enemy_8h_a23e56d2936c78a558ffafb085233b0cf}\label{enemy_8h_a23e56d2936c78a558ffafb085233b0cf} 
+void {\bfseries init\+NPC} (struct \mbox{\hyperlink{struct_n_p_c}{NPC}} \texorpdfstring{$\ast$}{*}npc, int x, int y, int width, int height, int xprevious, int yprevious, uint8\+\_\+t face\+\_\+dir, SDL\+\_\+\+Texture \texorpdfstring{$\ast$}{*}texture, int appears\+On\+Level)
+\item 
+\Hypertarget{enemy_8h_a1f909a69f1087c0e31d6d8f79c3f110a}\label{enemy_8h_a1f909a69f1087c0e31d6d8f79c3f110a} 
+void {\bfseries add\+NPC} (struct \mbox{\hyperlink{struct_n_p_c}{NPC}} \texorpdfstring{$\ast$}{*}npc)
+\item 
+\Hypertarget{enemy_8h_a919eadad24dd95e12e8f6d89cb52bc43}\label{enemy_8h_a919eadad24dd95e12e8f6d89cb52bc43} 
+void {\bfseries reset\+Enemy} (struct \mbox{\hyperlink{struct_enemy}{Enemy}} \texorpdfstring{$\ast$}{*}enemy)
+\item 
+\Hypertarget{enemy_8h_a0854a439d437f75754dce9099a5aae42}\label{enemy_8h_a0854a439d437f75754dce9099a5aae42} 
+void {\bfseries add\+Enemy} (int x, int y, int width, int height, int health, int dmg, SDL\+\_\+\+Texture \texorpdfstring{$\ast$}{*}texture, int level)
+\item 
+\Hypertarget{enemy_8h_ab67068f22179c2e50a2d24a07d796632}\label{enemy_8h_ab67068f22179c2e50a2d24a07d796632} 
+void {\bfseries random\+Spawn\+Enemy} (int x, int y, int width, int height, int health, int dmg, SDL\+\_\+\+Texture \texorpdfstring{$\ast$}{*}texture, int level)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{enemy_8h_a5e2282cd5acc2f3f0acf7798220c88db}\label{enemy_8h_a5e2282cd5acc2f3f0acf7798220c88db} 
+struct \mbox{\hyperlink{struct_n_p_c}{NPC}} {\bfseries npcs} \mbox{[}MAX\+\_\+\+NPCS\mbox{]}
+\item 
+\Hypertarget{enemy_8h_a95b9992bd39f44bdc63379d01054a689}\label{enemy_8h_a95b9992bd39f44bdc63379d01054a689} 
+struct \mbox{\hyperlink{struct_enemy}{Enemy}} {\bfseries enemies} \mbox{[}MAX\+\_\+\+ENEMIES\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Defines enemy-\/related behaviour. 
+

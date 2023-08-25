@@ -1,3 +1,8 @@
+/**
+* @file unittest.c
+* @brief Implements unittest.h
+*/
+
 #include <stdio.h>
 #include "main.h"
 #include "everything.h"

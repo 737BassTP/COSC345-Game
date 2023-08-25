@@ -1,0 +1,340 @@
+\doxysection{src/functions.h File Reference}
+\hypertarget{functions_8h}{}\label{functions_8h}\index{src/functions.h@{src/functions.h}}
+
+
+Defines abstract functions not related to game-\/specific stuff.  
+
+
+{\ttfamily \#include \"{}everything.\+h\"{}}\newline
+{\ttfamily \#include $<$stdbool.\+h$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$math.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$time.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$stdarg.\+h$>$}\newline
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structgameobject}{gameobject}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{functions_8h_a598a3330b3c21701223ee0ca14316eca}\label{functions_8h_a598a3330b3c21701223ee0ca14316eca} 
+\#define {\bfseries PI}~3.\+1415926535897932
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{functions_8h_a0c8186d9b9b7880309c27230bbb5e69d}\label{functions_8h_a0c8186d9b9b7880309c27230bbb5e69d} 
+typedef unsigned char {\bfseries byte}
+\item 
+\Hypertarget{functions_8h_a285e72252c100e2508e4e933a0738f2b}\label{functions_8h_a285e72252c100e2508e4e933a0738f2b} 
+typedef unsigned short {\bfseries word}
+\item 
+\Hypertarget{functions_8h_a855ebb1284efb85f8be57d819efa519a}\label{functions_8h_a855ebb1284efb85f8be57d819efa519a} 
+typedef unsigned int {\bfseries dword}
+\item 
+\Hypertarget{functions_8h_a0f7a3527423c82e55e2d1856a72857dd}\label{functions_8h_a0f7a3527423c82e55e2d1856a72857dd} 
+typedef unsigned long {\bfseries qword}
+\item 
+\Hypertarget{functions_8h_a0a62238a5f8b9ec548b22fa28f9fe694}\label{functions_8h_a0a62238a5f8b9ec548b22fa28f9fe694} 
+typedef unsigned \+\_\+\+\_\+int128 {\bfseries oword}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{functions_8h_acec8f812e19d90072c479ef7664522bb}\label{functions_8h_acec8f812e19d90072c479ef7664522bb} 
+int {\bfseries make\+\_\+color\+\_\+rgb} (int r, int g, int b)
+\item 
+\Hypertarget{functions_8h_aacddfe014cc62a2c32e457899f71b49e}\label{functions_8h_aacddfe014cc62a2c32e457899f71b49e} 
+double {\bfseries lerp} (double from, double to, double percentage)
+\item 
+\Hypertarget{functions_8h_a6e2cd2b5748030daf07eba20beaa1e5f}\label{functions_8h_a6e2cd2b5748030daf07eba20beaa1e5f} 
+int {\bfseries make\+\_\+color\+\_\+hsv} (int h, int s, int v)
+\item 
+\Hypertarget{functions_8h_af7fd9642c0a8937b05fd6ae2bd82f0e4}\label{functions_8h_af7fd9642c0a8937b05fd6ae2bd82f0e4} 
+int {\bfseries draw\+\_\+get\+\_\+alpha} ()
+\item 
+\Hypertarget{functions_8h_aa3eb32df21119966fb18970674204f5b}\label{functions_8h_aa3eb32df21119966fb18970674204f5b} 
+int {\bfseries draw\+\_\+get\+\_\+color} ()
+\item 
+\Hypertarget{functions_8h_a2fe31ede7a718c154fdf974ad1262f78}\label{functions_8h_a2fe31ede7a718c154fdf974ad1262f78} 
+void {\bfseries draw\+\_\+set\+\_\+color} (SDL\+\_\+\+Renderer \texorpdfstring{$\ast$}{*}renderer, int bgr)
+\item 
+\Hypertarget{functions_8h_aca2fd125384e7288321567f5596f44f2}\label{functions_8h_aca2fd125384e7288321567f5596f44f2} 
+void {\bfseries draw\+\_\+set\+\_\+alpha} (SDL\+\_\+\+Renderer \texorpdfstring{$\ast$}{*}renderer, int alpha)
+\item 
+\Hypertarget{functions_8h_a15bae1a80597baeb239097ea6b329cc8}\label{functions_8h_a15bae1a80597baeb239097ea6b329cc8} 
+void {\bfseries draw\+\_\+clear} (SDL\+\_\+\+Renderer \texorpdfstring{$\ast$}{*}renderer, int bgr)
+\item 
+\Hypertarget{functions_8h_a58b7ad5f2e5380d827f4b10dfe3a8fbe}\label{functions_8h_a58b7ad5f2e5380d827f4b10dfe3a8fbe} 
+void {\bfseries draw\+\_\+clear\+\_\+alpha} (SDL\+\_\+\+Renderer \texorpdfstring{$\ast$}{*}renderer, int bgr, int alpha)
+\item 
+\Hypertarget{functions_8h_aff3319de3a7c9f69bd65c46c69535de0}\label{functions_8h_aff3319de3a7c9f69bd65c46c69535de0} 
+void {\bfseries draw\+\_\+rectangle} (SDL\+\_\+\+Renderer \texorpdfstring{$\ast$}{*}renderer, int x1, int y1, int x2, int y2)
+\item 
+\Hypertarget{functions_8h_a1cc73d51e4eb8df980dacbbd21ac9e40}\label{functions_8h_a1cc73d51e4eb8df980dacbbd21ac9e40} 
+void {\bfseries draw\+\_\+rectangle\+\_\+color} (SDL\+\_\+\+Renderer \texorpdfstring{$\ast$}{*}renderer, int x1, int y1, int x2, int y2, int bgr)
+\item 
+\Hypertarget{functions_8h_af12d2f3e60015c8e8ad0cab2942496d4}\label{functions_8h_af12d2f3e60015c8e8ad0cab2942496d4} 
+void {\bfseries draw\+\_\+image} (SDL\+\_\+\+Renderer \texorpdfstring{$\ast$}{*}renderer, int x1, int y1, int x2, int y2, SDL\+\_\+\+Texture \texorpdfstring{$\ast$}{*}texture)
+\item 
+\Hypertarget{functions_8h_aa7ea7d98435fb7eef9ac7e7cc191e192}\label{functions_8h_aa7ea7d98435fb7eef9ac7e7cc191e192} 
+void {\bfseries draw\+\_\+image\+\_\+part} (SDL\+\_\+\+Renderer \texorpdfstring{$\ast$}{*}renderer, int x1, int y1, int x2, int y2, SDL\+\_\+\+Texture \texorpdfstring{$\ast$}{*}texture, int left, int top, int width, int height)
+\item 
+\Hypertarget{functions_8h_a270d17b6edb0c9da4c35575c3b27aee4}\label{functions_8h_a270d17b6edb0c9da4c35575c3b27aee4} 
+void {\bfseries draw\+\_\+text} (SDL\+\_\+\+Renderer \texorpdfstring{$\ast$}{*}renderer, int x, int y, int w, int h, SDL\+\_\+\+Texture \texorpdfstring{$\ast$}{*}font, char \texorpdfstring{$\ast$}{*}str, int fontw, int fonth)
+\item 
+\Hypertarget{functions_8h_a699507ee21768d6d7632df0eabfbc277}\label{functions_8h_a699507ee21768d6d7632df0eabfbc277} 
+void {\bfseries draw\+\_\+text\+\_\+color} (SDL\+\_\+\+Renderer \texorpdfstring{$\ast$}{*}renderer, int x, int y, int w, int h, SDL\+\_\+\+Texture \texorpdfstring{$\ast$}{*}font, char \texorpdfstring{$\ast$}{*}str, int fontw, int fonth, int color)
+\item 
+\Hypertarget{functions_8h_a09d56011242acb31f89d97821c78a2fd}\label{functions_8h_a09d56011242acb31f89d97821c78a2fd} 
+long int {\bfseries file\+\_\+get\+\_\+size} (FILE \texorpdfstring{$\ast$}{*}fil)
+\item 
+\Hypertarget{functions_8h_a983637dc20d440d2f24d7fb5fd0bef61}\label{functions_8h_a983637dc20d440d2f24d7fb5fd0bef61} 
+int {\bfseries keyboard\+\_\+set\+\_\+new} (int \texorpdfstring{$\ast$}{*}keyid, int keyval)
+\item 
+\Hypertarget{functions_8h_a111928fc86e888fd88c91c3c701caecf}\label{functions_8h_a111928fc86e888fd88c91c3c701caecf} 
+int {\bfseries keyboard\+\_\+set\+\_\+old} (int \texorpdfstring{$\ast$}{*}keyid)
+\item 
+\Hypertarget{functions_8h_aa424254d61d28571dc94f178f1b3372f}\label{functions_8h_aa424254d61d28571dc94f178f1b3372f} 
+int {\bfseries keyboard\+\_\+check} (int key)
+\item 
+\Hypertarget{functions_8h_ae8b8e56bf0992e1390e82affe6a023d7}\label{functions_8h_ae8b8e56bf0992e1390e82affe6a023d7} 
+int {\bfseries keyboard\+\_\+check\+\_\+pressed} (int key)
+\item 
+\Hypertarget{functions_8h_a61e365fb951f4ce075cb43d401077569}\label{functions_8h_a61e365fb951f4ce075cb43d401077569} 
+int {\bfseries keyboard\+\_\+check\+\_\+released} (int key)
+\item 
+\Hypertarget{functions_8h_a6792484b5bceec3ed2732af422a7c908}\label{functions_8h_a6792484b5bceec3ed2732af422a7c908} 
+int {\bfseries mux\+\_\+int} (int nth,...)
+\item 
+\Hypertarget{functions_8h_a90f746883d009b148f7471366f65b8b4}\label{functions_8h_a90f746883d009b148f7471366f65b8b4} 
+char \texorpdfstring{$\ast$}{*} {\bfseries mux\+\_\+str} (int nth,...)
+\item 
+\Hypertarget{functions_8h_aac43b6dddb58376e6691b806727f73b2}\label{functions_8h_aac43b6dddb58376e6691b806727f73b2} 
+SDL\+\_\+\+Texture \texorpdfstring{$\ast$}{*} {\bfseries mux\+\_\+sdltex} (int nth,...)
+\item 
+\Hypertarget{functions_8h_a26c7759ad9ab29c3f4571ec194c84229}\label{functions_8h_a26c7759ad9ab29c3f4571ec194c84229} 
+int {\bfseries pos\+\_\+int} (int num, int val,...)
+\item 
+\Hypertarget{functions_8h_a19c8d76082b750c2117043a74bf32d0c}\label{functions_8h_a19c8d76082b750c2117043a74bf32d0c} 
+int {\bfseries BG} (int val, int nth)
+\item 
+\Hypertarget{functions_8h_a6807c1a5051fe62e40ce81414fe58b25}\label{functions_8h_a6807c1a5051fe62e40ce81414fe58b25} 
+int {\bfseries BGG} (int val, int size, int nth)
+\item 
+\Hypertarget{functions_8h_a826a8eddf11b90cac1d340e8fae97034}\label{functions_8h_a826a8eddf11b90cac1d340e8fae97034} 
+int {\bfseries sqr} (int v)
+\item 
+\Hypertarget{functions_8h_ac6887a1020775f21e5b41cbc1dfb9226}\label{functions_8h_ac6887a1020775f21e5b41cbc1dfb9226} 
+int {\bfseries mean\+\_\+int} (int num,...)
+\item 
+\Hypertarget{functions_8h_ad91715b8309d8fa59bf54c4dbac5b827}\label{functions_8h_ad91715b8309d8fa59bf54c4dbac5b827} 
+double {\bfseries degtorad} (double deg)
+\item 
+\Hypertarget{functions_8h_aa2701c66334654ab4a5e6790d776586f}\label{functions_8h_aa2701c66334654ab4a5e6790d776586f} 
+double {\bfseries radtodeg} (double rad)
+\item 
+\Hypertarget{functions_8h_a5c4a5f3081f64a5e54a565fd81e8a190}\label{functions_8h_a5c4a5f3081f64a5e54a565fd81e8a190} 
+double {\bfseries dcos} (double deg)
+\item 
+\Hypertarget{functions_8h_af4618c6cdde3df021574c1fe9d59af28}\label{functions_8h_af4618c6cdde3df021574c1fe9d59af28} 
+double {\bfseries dsin} (double deg)
+\item 
+\Hypertarget{functions_8h_aaf250bf132a44f70de98f0a03b2c13c0}\label{functions_8h_aaf250bf132a44f70de98f0a03b2c13c0} 
+Uint64 {\bfseries get\+\_\+timer} ()
+\item 
+\Hypertarget{functions_8h_a3771381bad766c389ef9507e53088a88}\label{functions_8h_a3771381bad766c389ef9507e53088a88} 
+int {\bfseries point\+\_\+in\+\_\+rectangle} (int px, int py, int rx1, int ry1, int rx2, int ry2)
+\item 
+\Hypertarget{functions_8h_a067b3ac7bdc50a3e4dc2053ae9a0d251}\label{functions_8h_a067b3ac7bdc50a3e4dc2053ae9a0d251} 
+int {\bfseries rectangle\+\_\+in\+\_\+rectangle} (int sx1, int sy1, int sx2, int sy2, int dx1, int dy1, int dx2, int dy2)
+\item 
+\Hypertarget{functions_8h_afee92afb6ce1b51ec57de55defd9c663}\label{functions_8h_afee92afb6ce1b51ec57de55defd9c663} 
+int {\bfseries string\+\_\+pos} (char \texorpdfstring{$\ast$}{*}substr, char \texorpdfstring{$\ast$}{*}str)
+\item 
+\Hypertarget{functions_8h_acdbb796a2e9cbc593059ed2feeccee82}\label{functions_8h_acdbb796a2e9cbc593059ed2feeccee82} 
+double {\bfseries darctan2} (int y, int x)
+\item 
+\Hypertarget{functions_8h_a7a98c60da64eb8e15e9e5d9482881169}\label{functions_8h_a7a98c60da64eb8e15e9e5d9482881169} 
+double {\bfseries cartodir} (int x, int y)
+\item 
+\Hypertarget{functions_8h_a330067b161dd43154ec30f87cba60f08}\label{functions_8h_a330067b161dd43154ec30f87cba60f08} 
+void {\bfseries game\+\_\+level\+\_\+load} (int lvl, int lvlmax)
+\item 
+\Hypertarget{functions_8h_a99cec8b2d41703b7ddfda34351af45d4}\label{functions_8h_a99cec8b2d41703b7ddfda34351af45d4} 
+void {\bfseries level\+\_\+load\+\_\+objects} (byte arr\mbox{[}$\,$\mbox{]}, struct \mbox{\hyperlink{structgameobject}{gameobject}} Objects\mbox{[}$\,$\mbox{]}, int level, int siz)
+\item 
+\Hypertarget{functions_8h_a321c439dac0f12271c1eb487becde240}\label{functions_8h_a321c439dac0f12271c1eb487becde240} 
+void {\bfseries level\+\_\+load} (byte arr\mbox{[}$\,$\mbox{]}, int siz, int count, int layers)
+\item 
+\Hypertarget{functions_8h_a9db21a8dfa103f470e1414cbc0b00f8e}\label{functions_8h_a9db21a8dfa103f470e1414cbc0b00f8e} 
+int {\bfseries level\+\_\+load\+\_\+door} (int \mbox{\hyperlink{structpos}{pos}}, int level)
+\item 
+\Hypertarget{functions_8h_ae039a5cb79d158aacc3a89e6bb107a80}\label{functions_8h_ae039a5cb79d158aacc3a89e6bb107a80} 
+void {\bfseries dev\+\_\+tiled\+\_\+to\+\_\+leveldata} (byte arr\mbox{[}$\,$\mbox{]})
+\item 
+\Hypertarget{functions_8h_a9b2c08c3b0dac0fd7a19f89a8cc47c3a}\label{functions_8h_a9b2c08c3b0dac0fd7a19f89a8cc47c3a} 
+char \texorpdfstring{$\ast$}{*} {\bfseries level\+\_\+get\+\_\+name} (int lvl, char \texorpdfstring{$\ast$}{*}ret)
+\item 
+\Hypertarget{functions_8h_ae72fd948c7dd0050845bbd1b349c14c5}\label{functions_8h_ae72fd948c7dd0050845bbd1b349c14c5} 
+float {\bfseries distance} (float x1, float y1, float x2, float y2)
+\item 
+\Hypertarget{functions_8h_aa55d00001f2576a671e0f30be3d100c3}\label{functions_8h_aa55d00001f2576a671e0f30be3d100c3} 
+int {\bfseries check\+Collision} (SDL\+\_\+\+Rect rect1, SDL\+\_\+\+Rect rect2)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{functions_8h_a2bc445621515c3edd3aa01f023d5a15c}\label{functions_8h_a2bc445621515c3edd3aa01f023d5a15c} 
+const int {\bfseries c\+\_\+black}
+\item 
+\Hypertarget{functions_8h_ae5a5030b6c78b9544caf3dcfbd26023a}\label{functions_8h_ae5a5030b6c78b9544caf3dcfbd26023a} 
+const int {\bfseries c\+\_\+dkgray}
+\item 
+\Hypertarget{functions_8h_a90ad9227d7072aaf1b855ffdb4dc01a6}\label{functions_8h_a90ad9227d7072aaf1b855ffdb4dc01a6} 
+const int {\bfseries c\+\_\+gray}
+\item 
+\Hypertarget{functions_8h_a468968cf154024937d5f36779286f558}\label{functions_8h_a468968cf154024937d5f36779286f558} 
+const int {\bfseries c\+\_\+ltgray}
+\item 
+\Hypertarget{functions_8h_a649d15d4686b993d6f1142a6ace52266}\label{functions_8h_a649d15d4686b993d6f1142a6ace52266} 
+const int {\bfseries c\+\_\+white}
+\item 
+\Hypertarget{functions_8h_a09ff29b2d0a25d0c2cfb4debfe5f5b3a}\label{functions_8h_a09ff29b2d0a25d0c2cfb4debfe5f5b3a} 
+const int {\bfseries c\+\_\+red}
+\item 
+\Hypertarget{functions_8h_ac93d38cf76f93d9e7947dec7b5f470df}\label{functions_8h_ac93d38cf76f93d9e7947dec7b5f470df} 
+const int {\bfseries c\+\_\+orange}
+\item 
+\Hypertarget{functions_8h_a56c89e9b555459afb7896ed95a0fe41b}\label{functions_8h_a56c89e9b555459afb7896ed95a0fe41b} 
+const int {\bfseries c\+\_\+yellow}
+\item 
+\Hypertarget{functions_8h_a39db11414824e2311b6e560fae9b8bcb}\label{functions_8h_a39db11414824e2311b6e560fae9b8bcb} 
+const int {\bfseries c\+\_\+lime}
+\item 
+\Hypertarget{functions_8h_afc62e0948dd285c99eb010ad6b2601e2}\label{functions_8h_afc62e0948dd285c99eb010ad6b2601e2} 
+const int {\bfseries c\+\_\+green}
+\item 
+\Hypertarget{functions_8h_aea7daa825467d50e1dca6e8bd704015b}\label{functions_8h_aea7daa825467d50e1dca6e8bd704015b} 
+const int {\bfseries c\+\_\+slime}
+\item 
+\Hypertarget{functions_8h_a4e46865ad8b1a4741a98e83fa11bf926}\label{functions_8h_a4e46865ad8b1a4741a98e83fa11bf926} 
+const int {\bfseries c\+\_\+aqua}
+\item 
+\Hypertarget{functions_8h_ade48cb7d5afd9d751d3babdd1813709c}\label{functions_8h_ade48cb7d5afd9d751d3babdd1813709c} 
+const int {\bfseries c\+\_\+sky}
+\item 
+\Hypertarget{functions_8h_ae9147742f44422af4c036fe6952f03c2}\label{functions_8h_ae9147742f44422af4c036fe6952f03c2} 
+const int {\bfseries c\+\_\+blue}
+\item 
+\Hypertarget{functions_8h_afd76f727b5e9dd912b2122ffffb67f72}\label{functions_8h_afd76f727b5e9dd912b2122ffffb67f72} 
+const int {\bfseries c\+\_\+purple}
+\item 
+\Hypertarget{functions_8h_aeeb5ffa2cd437d29c0070db2d33a1434}\label{functions_8h_aeeb5ffa2cd437d29c0070db2d33a1434} 
+const int {\bfseries c\+\_\+fuchsia}
+\item 
+\Hypertarget{functions_8h_a6c164d5f3241355a79ee6d9afce0abec}\label{functions_8h_a6c164d5f3241355a79ee6d9afce0abec} 
+const int {\bfseries c\+\_\+rose}
+\item 
+\Hypertarget{functions_8h_a499d35628f4241f7bd00b724fbcf69bf}\label{functions_8h_a499d35628f4241f7bd00b724fbcf69bf} 
+int {\bfseries glob\+\_\+draw\+\_\+alpha}
+\item 
+\Hypertarget{functions_8h_a6f9ce2c2d880c0a53259201b5a16c0d0}\label{functions_8h_a6f9ce2c2d880c0a53259201b5a16c0d0} 
+int {\bfseries glob\+\_\+draw\+\_\+color}
+\item 
+\Hypertarget{functions_8h_a605d112fcd6529f2db4576ed7707f1f1}\label{functions_8h_a605d112fcd6529f2db4576ed7707f1f1} 
+int {\bfseries glob\+\_\+vk\+\_\+right}
+\item 
+\Hypertarget{functions_8h_a165aef91eda89c0ddf1b2f7b291da584}\label{functions_8h_a165aef91eda89c0ddf1b2f7b291da584} 
+int {\bfseries glob\+\_\+vk\+\_\+left}
+\item 
+\Hypertarget{functions_8h_a07381b55fd7eaac7ecb8f35881eef9a7}\label{functions_8h_a07381b55fd7eaac7ecb8f35881eef9a7} 
+int {\bfseries glob\+\_\+vk\+\_\+up}
+\item 
+\Hypertarget{functions_8h_a99cf60cf513ab0d41f6852b31cb426b7}\label{functions_8h_a99cf60cf513ab0d41f6852b31cb426b7} 
+int {\bfseries glob\+\_\+vk\+\_\+down}
+\item 
+\Hypertarget{functions_8h_a7dc6b7f0290422a5ecf55906f38922f3}\label{functions_8h_a7dc6b7f0290422a5ecf55906f38922f3} 
+int {\bfseries glob\+\_\+vk\+\_\+space}
+\item 
+\Hypertarget{functions_8h_a60eed15f8c917a758189862ea624b49a}\label{functions_8h_a60eed15f8c917a758189862ea624b49a} 
+int {\bfseries glob\+\_\+vk\+\_\+enter}
+\item 
+\Hypertarget{functions_8h_aef05caaa824ba142529149f540523291}\label{functions_8h_aef05caaa824ba142529149f540523291} 
+int {\bfseries glob\+\_\+vk\+\_\+tab}
+\item 
+\Hypertarget{functions_8h_a47e828a5e981f398572cc3340e036936}\label{functions_8h_a47e828a5e981f398572cc3340e036936} 
+int {\bfseries glob\+\_\+vk\+\_\+f1}
+\item 
+\Hypertarget{functions_8h_a1c1972fa8bb4ed8afc11b3191a6ff82a}\label{functions_8h_a1c1972fa8bb4ed8afc11b3191a6ff82a} 
+int {\bfseries glob\+\_\+vk\+\_\+f2}
+\item 
+\Hypertarget{functions_8h_a8cb9955c7a5a03a7991bb6ffeebba921}\label{functions_8h_a8cb9955c7a5a03a7991bb6ffeebba921} 
+int {\bfseries glob\+\_\+vk\+\_\+f3}
+\item 
+\Hypertarget{functions_8h_a54268ff189ced146ffb6601c88ca29b7}\label{functions_8h_a54268ff189ced146ffb6601c88ca29b7} 
+int {\bfseries glob\+\_\+vk\+\_\+f4}
+\item 
+\Hypertarget{functions_8h_a5b2dd690510f233fefece43aa3a7a699}\label{functions_8h_a5b2dd690510f233fefece43aa3a7a699} 
+int {\bfseries glob\+\_\+vk\+\_\+f5}
+\item 
+\Hypertarget{functions_8h_aeb984fbf97b77291faf74fb3c7bf77a6}\label{functions_8h_aeb984fbf97b77291faf74fb3c7bf77a6} 
+int {\bfseries glob\+\_\+vk\+\_\+f6}
+\item 
+\Hypertarget{functions_8h_ae8eb2bb28a450a8e97b3934fd3a9c636}\label{functions_8h_ae8eb2bb28a450a8e97b3934fd3a9c636} 
+int {\bfseries glob\+\_\+vk\+\_\+f7}
+\item 
+\Hypertarget{functions_8h_a38197da504e6aac85983b8de964d903a}\label{functions_8h_a38197da504e6aac85983b8de964d903a} 
+int {\bfseries glob\+\_\+vk\+\_\+f8}
+\item 
+\Hypertarget{functions_8h_ae39265e9f8dcabdaa7f758c12f7197dc}\label{functions_8h_ae39265e9f8dcabdaa7f758c12f7197dc} 
+int {\bfseries glob\+\_\+vk\+\_\+f9}
+\item 
+\Hypertarget{functions_8h_a8c81e4a35b8c4d58eadb8eff4df9c5a1}\label{functions_8h_a8c81e4a35b8c4d58eadb8eff4df9c5a1} 
+int {\bfseries glob\+\_\+vk\+\_\+f10}
+\item 
+\Hypertarget{functions_8h_a034a28488b510a85976f6c3e0f0f0fce}\label{functions_8h_a034a28488b510a85976f6c3e0f0f0fce} 
+int {\bfseries glob\+\_\+vk\+\_\+f11}
+\item 
+\Hypertarget{functions_8h_a2e70d8495c903cd21b04eb2da2fa26e2}\label{functions_8h_a2e70d8495c903cd21b04eb2da2fa26e2} 
+int {\bfseries glob\+\_\+vk\+\_\+f12}
+\item 
+\Hypertarget{functions_8h_a5cf5a65eb15fbc5b8ef255d55193097e}\label{functions_8h_a5cf5a65eb15fbc5b8ef255d55193097e} 
+int {\bfseries glob\+\_\+vk\+\_\+0}
+\item 
+\Hypertarget{functions_8h_abb49a6c581ad5f80b12dfb48dff4f3d4}\label{functions_8h_abb49a6c581ad5f80b12dfb48dff4f3d4} 
+int {\bfseries glob\+\_\+vk\+\_\+1}
+\item 
+\Hypertarget{functions_8h_a5be5c27a0eb9e5ef46208305c3dbfd9a}\label{functions_8h_a5be5c27a0eb9e5ef46208305c3dbfd9a} 
+int {\bfseries glob\+\_\+vk\+\_\+2}
+\item 
+\Hypertarget{functions_8h_ab1064f904e0ac057ae11fbcad529d964}\label{functions_8h_ab1064f904e0ac057ae11fbcad529d964} 
+int {\bfseries glob\+\_\+vk\+\_\+3}
+\item 
+\Hypertarget{functions_8h_aff57a1c4816c9181ce1effd0d60404e8}\label{functions_8h_aff57a1c4816c9181ce1effd0d60404e8} 
+int {\bfseries glob\+\_\+vk\+\_\+4}
+\item 
+\Hypertarget{functions_8h_ae7bb63472d6dc4e84319a369149c333f}\label{functions_8h_ae7bb63472d6dc4e84319a369149c333f} 
+int {\bfseries glob\+\_\+vk\+\_\+5}
+\item 
+\Hypertarget{functions_8h_adf53148eb36e51c62bb2f0507717ee38}\label{functions_8h_adf53148eb36e51c62bb2f0507717ee38} 
+int {\bfseries glob\+\_\+vk\+\_\+6}
+\item 
+\Hypertarget{functions_8h_ae22d2ae339b9d76baf87161419dec0cc}\label{functions_8h_ae22d2ae339b9d76baf87161419dec0cc} 
+int {\bfseries glob\+\_\+vk\+\_\+7}
+\item 
+\Hypertarget{functions_8h_a45de9f9a71ded66be5196dd44794d0ef}\label{functions_8h_a45de9f9a71ded66be5196dd44794d0ef} 
+int {\bfseries glob\+\_\+vk\+\_\+8}
+\item 
+\Hypertarget{functions_8h_a928d3afb72cb3ba0906246b5cb380e35}\label{functions_8h_a928d3afb72cb3ba0906246b5cb380e35} 
+int {\bfseries glob\+\_\+vk\+\_\+9}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Defines abstract functions not related to game-\/specific stuff. 
+

@@ -1,0 +1,74 @@
+\doxysection{src/quiz.h File Reference}
+\hypertarget{quiz_8h}{}\label{quiz_8h}\index{src/quiz.h@{src/quiz.h}}
+
+
+Defines quiz behaviour.  
+
+
+{\ttfamily \#include \"{}everything.\+h\"{}}\newline
+{\ttfamily \#include $<$stdbool.\+h$>$}\newline
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{quiz_8h_a33e6327f34efe1b598025df2a3360f61}\label{quiz_8h_a33e6327f34efe1b598025df2a3360f61} 
+int {\bfseries is\+Question\+Used} (int question\+Number)
+\item 
+\Hypertarget{quiz_8h_af2a6bbb4392e95f3e2a4393ed799ee33}\label{quiz_8h_af2a6bbb4392e95f3e2a4393ed799ee33} 
+void {\bfseries update\+Quiz\+Data\+From\+Random\+Line} (const char \texorpdfstring{$\ast$}{*}filename, const char \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}quiz\+Question, const char \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}answerA, const char \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}answerB, const char \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}answerC, int \texorpdfstring{$\ast$}{*}user\+Answer, int \texorpdfstring{$\ast$}{*}correct\+Answer, const char \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}quiz\+Info\+Holder)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{quiz_8h_a81ac20b2be135fa37a1c776dd2f9f63b}\label{quiz_8h_a81ac20b2be135fa37a1c776dd2f9f63b} 
+const char \texorpdfstring{$\ast$}{*} {\bfseries quiz\+Header}
+\item 
+\Hypertarget{quiz_8h_a475b8c4103918b75ee8d2645a8ff59e2}\label{quiz_8h_a475b8c4103918b75ee8d2645a8ff59e2} 
+const char \texorpdfstring{$\ast$}{*} {\bfseries quiz\+Info}
+\item 
+\Hypertarget{quiz_8h_a65c5d0605fb686450eca70da3fbae751}\label{quiz_8h_a65c5d0605fb686450eca70da3fbae751} 
+const char \texorpdfstring{$\ast$}{*} {\bfseries quiz\+Info\+Holder}
+\item 
+\Hypertarget{quiz_8h_a0b110a02cca93cd3569fb600d6152d50}\label{quiz_8h_a0b110a02cca93cd3569fb600d6152d50} 
+const char \texorpdfstring{$\ast$}{*} {\bfseries quiz\+Question}
+\item 
+\Hypertarget{quiz_8h_a1521a9b148797b2af782da3a4fad901e}\label{quiz_8h_a1521a9b148797b2af782da3a4fad901e} 
+const char \texorpdfstring{$\ast$}{*} {\bfseries answerA}
+\item 
+\Hypertarget{quiz_8h_a08b39e319d0b039cd09d98a374109b58}\label{quiz_8h_a08b39e319d0b039cd09d98a374109b58} 
+const char \texorpdfstring{$\ast$}{*} {\bfseries answerB}
+\item 
+\Hypertarget{quiz_8h_aabd30c9d442a2f7919cde26a9013ab75}\label{quiz_8h_aabd30c9d442a2f7919cde26a9013ab75} 
+const char \texorpdfstring{$\ast$}{*} {\bfseries answerC}
+\item 
+\Hypertarget{quiz_8h_af8a4a4c7e30a4d5db1a9bf9519dac428}\label{quiz_8h_af8a4a4c7e30a4d5db1a9bf9519dac428} 
+int {\bfseries correct\+Answer}
+\item 
+\Hypertarget{quiz_8h_a1c8547b651a52c73509117ce76ecfef6}\label{quiz_8h_a1c8547b651a52c73509117ce76ecfef6} 
+int {\bfseries user\+Answer}
+\item 
+\Hypertarget{quiz_8h_a4de9930d94775f32423266c0eb75b5e7}\label{quiz_8h_a4de9930d94775f32423266c0eb75b5e7} 
+bool {\bfseries quiz\+On}
+\item 
+\Hypertarget{quiz_8h_aee559b0e4e9773b2a1826870fff9f8f5}\label{quiz_8h_aee559b0e4e9773b2a1826870fff9f8f5} 
+int {\bfseries quiz\+QNum}
+\item 
+\Hypertarget{quiz_8h_af39ab23a9b391c45d9779db3049a4f71}\label{quiz_8h_af39ab23a9b391c45d9779db3049a4f71} 
+bool {\bfseries quiz2\+Called}
+\item 
+\Hypertarget{quiz_8h_a8deb06b43198293e9f2253bf18c6d1fd}\label{quiz_8h_a8deb06b43198293e9f2253bf18c6d1fd} 
+bool {\bfseries quiz3\+Called}
+\item 
+\Hypertarget{quiz_8h_a7a3c118cae32985c68c0b9a3945f7bce}\label{quiz_8h_a7a3c118cae32985c68c0b9a3945f7bce} 
+bool {\bfseries quiz\+Loop\+On}
+\item 
+\Hypertarget{quiz_8h_a0ee3f831f986623a595813cff1ce6bbf}\label{quiz_8h_a0ee3f831f986623a595813cff1ce6bbf} 
+int {\bfseries used\+Questions} \mbox{[}100\mbox{]}
+\item 
+\Hypertarget{quiz_8h_a4713366524ac5045124d5b23515ef103}\label{quiz_8h_a4713366524ac5045124d5b23515ef103} 
+int {\bfseries used\+Question\+Count}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Defines quiz behaviour. 
+

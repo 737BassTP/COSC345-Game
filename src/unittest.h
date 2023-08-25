@@ -1,3 +1,8 @@
+/**
+* @file unittest.h
+* @brief Defines functions used in unit testing.
+*/
+
 #ifndef unittest_h
 #define unittest_h
 

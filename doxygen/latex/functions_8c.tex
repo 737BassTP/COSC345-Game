@@ -1,0 +1,160 @@
+\doxysection{src/functions.c File Reference}
+\hypertarget{functions_8c}{}\label{functions_8c}\index{src/functions.c@{src/functions.c}}
+
+
+Implements \doxylink{functions_8h}{functions.\+h}.  
+
+
+{\ttfamily \#include \"{}everything.\+h\"{}}\newline
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{functions_8c_a2bc445621515c3edd3aa01f023d5a15c}\label{functions_8c_a2bc445621515c3edd3aa01f023d5a15c} 
+const int {\bfseries c\+\_\+black} = 0x000000
+\begin{DoxyCompactList}\small\item\em color\+: black \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_ae5a5030b6c78b9544caf3dcfbd26023a}\label{functions_8c_ae5a5030b6c78b9544caf3dcfbd26023a} 
+const int {\bfseries c\+\_\+dkgray} = 0x404040
+\begin{DoxyCompactList}\small\item\em color\+: dark gray \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a90ad9227d7072aaf1b855ffdb4dc01a6}\label{functions_8c_a90ad9227d7072aaf1b855ffdb4dc01a6} 
+const int {\bfseries c\+\_\+gray} = 0x808080
+\begin{DoxyCompactList}\small\item\em color\+: gray \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a468968cf154024937d5f36779286f558}\label{functions_8c_a468968cf154024937d5f36779286f558} 
+const int {\bfseries c\+\_\+ltgray} = 0x\+C0\+C0\+C0
+\begin{DoxyCompactList}\small\item\em color\+: light gray \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a649d15d4686b993d6f1142a6ace52266}\label{functions_8c_a649d15d4686b993d6f1142a6ace52266} 
+const int {\bfseries c\+\_\+white} = 0x\+FFFFFF
+\begin{DoxyCompactList}\small\item\em color\+: white \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a09ff29b2d0a25d0c2cfb4debfe5f5b3a}\label{functions_8c_a09ff29b2d0a25d0c2cfb4debfe5f5b3a} 
+const int {\bfseries c\+\_\+red} = 0x0000\+FF
+\begin{DoxyCompactList}\small\item\em color\+: red \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_ac93d38cf76f93d9e7947dec7b5f470df}\label{functions_8c_ac93d38cf76f93d9e7947dec7b5f470df} 
+const int {\bfseries c\+\_\+orange} = 0x0080\+FF
+\begin{DoxyCompactList}\small\item\em color\+: orange \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a56c89e9b555459afb7896ed95a0fe41b}\label{functions_8c_a56c89e9b555459afb7896ed95a0fe41b} 
+const int {\bfseries c\+\_\+yellow} = 0x00\+FFFF
+\begin{DoxyCompactList}\small\item\em color\+: yellow \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a39db11414824e2311b6e560fae9b8bcb}\label{functions_8c_a39db11414824e2311b6e560fae9b8bcb} 
+const int {\bfseries c\+\_\+lime} = 0x00\+FF80
+\begin{DoxyCompactList}\small\item\em color\+: lime \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_afc62e0948dd285c99eb010ad6b2601e2}\label{functions_8c_afc62e0948dd285c99eb010ad6b2601e2} 
+const int {\bfseries c\+\_\+green} = 0x00\+FF00
+\begin{DoxyCompactList}\small\item\em color\+: green \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_aea7daa825467d50e1dca6e8bd704015b}\label{functions_8c_aea7daa825467d50e1dca6e8bd704015b} 
+const int {\bfseries c\+\_\+slime} = 0x80\+FF00
+\begin{DoxyCompactList}\small\item\em color\+: slime \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a4e46865ad8b1a4741a98e83fa11bf926}\label{functions_8c_a4e46865ad8b1a4741a98e83fa11bf926} 
+const int {\bfseries c\+\_\+aqua} = 0x\+FFFF00
+\begin{DoxyCompactList}\small\item\em color\+: turquoise \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_ade48cb7d5afd9d751d3babdd1813709c}\label{functions_8c_ade48cb7d5afd9d751d3babdd1813709c} 
+const int {\bfseries c\+\_\+sky} = 0x\+FF8000
+\begin{DoxyCompactList}\small\item\em color\+: sky \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_ae9147742f44422af4c036fe6952f03c2}\label{functions_8c_ae9147742f44422af4c036fe6952f03c2} 
+const int {\bfseries c\+\_\+blue} = 0x\+FF0000
+\begin{DoxyCompactList}\small\item\em color\+: blue \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_afd76f727b5e9dd912b2122ffffb67f72}\label{functions_8c_afd76f727b5e9dd912b2122ffffb67f72} 
+const int {\bfseries c\+\_\+purple} = 0x\+FF0080
+\begin{DoxyCompactList}\small\item\em color\+: purple \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_aeeb5ffa2cd437d29c0070db2d33a1434}\label{functions_8c_aeeb5ffa2cd437d29c0070db2d33a1434} 
+const int {\bfseries c\+\_\+fuchsia} = 0x\+FF00\+FF
+\begin{DoxyCompactList}\small\item\em color\+: fuchsia \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a6c164d5f3241355a79ee6d9afce0abec}\label{functions_8c_a6c164d5f3241355a79ee6d9afce0abec} 
+const int {\bfseries c\+\_\+rose} = 0x8000\+FF
+\begin{DoxyCompactList}\small\item\em color\+: rose \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a499d35628f4241f7bd00b724fbcf69bf}\label{functions_8c_a499d35628f4241f7bd00b724fbcf69bf} 
+int {\bfseries glob\+\_\+draw\+\_\+alpha} = 255
+\item 
+\Hypertarget{functions_8c_a6f9ce2c2d880c0a53259201b5a16c0d0}\label{functions_8c_a6f9ce2c2d880c0a53259201b5a16c0d0} 
+int {\bfseries glob\+\_\+draw\+\_\+color} = \mbox{\hyperlink{functions_8c_a649d15d4686b993d6f1142a6ace52266}{c\+\_\+white}}
+\item 
+\Hypertarget{functions_8c_a605d112fcd6529f2db4576ed7707f1f1}\label{functions_8c_a605d112fcd6529f2db4576ed7707f1f1} 
+int {\bfseries glob\+\_\+vk\+\_\+right} = 0
+\begin{DoxyCompactList}\small\item\em key\+: right \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a165aef91eda89c0ddf1b2f7b291da584}\label{functions_8c_a165aef91eda89c0ddf1b2f7b291da584} 
+int {\bfseries glob\+\_\+vk\+\_\+left} = 0
+\begin{DoxyCompactList}\small\item\em key\+: left \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a07381b55fd7eaac7ecb8f35881eef9a7}\label{functions_8c_a07381b55fd7eaac7ecb8f35881eef9a7} 
+int {\bfseries glob\+\_\+vk\+\_\+up} = 0
+\begin{DoxyCompactList}\small\item\em key\+: up \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a99cf60cf513ab0d41f6852b31cb426b7}\label{functions_8c_a99cf60cf513ab0d41f6852b31cb426b7} 
+int {\bfseries glob\+\_\+vk\+\_\+down} = 0
+\begin{DoxyCompactList}\small\item\em key\+: down \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a7dc6b7f0290422a5ecf55906f38922f3}\label{functions_8c_a7dc6b7f0290422a5ecf55906f38922f3} 
+int {\bfseries glob\+\_\+vk\+\_\+space} = 0
+\begin{DoxyCompactList}\small\item\em key\+: space \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a60eed15f8c917a758189862ea624b49a}\label{functions_8c_a60eed15f8c917a758189862ea624b49a} 
+int {\bfseries glob\+\_\+vk\+\_\+enter} = 0
+\begin{DoxyCompactList}\small\item\em key\+: enter \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_aef05caaa824ba142529149f540523291}\label{functions_8c_aef05caaa824ba142529149f540523291} 
+int {\bfseries glob\+\_\+vk\+\_\+tab} = 0
+\begin{DoxyCompactList}\small\item\em key\+: tab \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a47e828a5e981f398572cc3340e036936}\label{functions_8c_a47e828a5e981f398572cc3340e036936} 
+int {\bfseries glob\+\_\+vk\+\_\+f1} = 0
+\begin{DoxyCompactList}\small\item\em key\+: F2 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a1c1972fa8bb4ed8afc11b3191a6ff82a}\label{functions_8c_a1c1972fa8bb4ed8afc11b3191a6ff82a} 
+int {\bfseries glob\+\_\+vk\+\_\+f2} = 0
+\begin{DoxyCompactList}\small\item\em key\+: F2 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a8cb9955c7a5a03a7991bb6ffeebba921}\label{functions_8c_a8cb9955c7a5a03a7991bb6ffeebba921} 
+int {\bfseries glob\+\_\+vk\+\_\+f3} = 0
+\begin{DoxyCompactList}\small\item\em key\+: F3 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a54268ff189ced146ffb6601c88ca29b7}\label{functions_8c_a54268ff189ced146ffb6601c88ca29b7} 
+int {\bfseries glob\+\_\+vk\+\_\+f4} = 0
+\begin{DoxyCompactList}\small\item\em key\+: F4 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a5b2dd690510f233fefece43aa3a7a699}\label{functions_8c_a5b2dd690510f233fefece43aa3a7a699} 
+int {\bfseries glob\+\_\+vk\+\_\+f5} = 0
+\begin{DoxyCompactList}\small\item\em key\+: F5 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_aeb984fbf97b77291faf74fb3c7bf77a6}\label{functions_8c_aeb984fbf97b77291faf74fb3c7bf77a6} 
+int {\bfseries glob\+\_\+vk\+\_\+f6} = 0
+\begin{DoxyCompactList}\small\item\em key\+: F6 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_ae8eb2bb28a450a8e97b3934fd3a9c636}\label{functions_8c_ae8eb2bb28a450a8e97b3934fd3a9c636} 
+int {\bfseries glob\+\_\+vk\+\_\+f7} = 0
+\begin{DoxyCompactList}\small\item\em key\+: F7 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a38197da504e6aac85983b8de964d903a}\label{functions_8c_a38197da504e6aac85983b8de964d903a} 
+int {\bfseries glob\+\_\+vk\+\_\+f8} = 0
+\begin{DoxyCompactList}\small\item\em key\+: F8 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_ae39265e9f8dcabdaa7f758c12f7197dc}\label{functions_8c_ae39265e9f8dcabdaa7f758c12f7197dc} 
+int {\bfseries glob\+\_\+vk\+\_\+f9} = 0
+\begin{DoxyCompactList}\small\item\em key\+: F9 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a8c81e4a35b8c4d58eadb8eff4df9c5a1}\label{functions_8c_a8c81e4a35b8c4d58eadb8eff4df9c5a1} 
+int {\bfseries glob\+\_\+vk\+\_\+f10} = 0
+\begin{DoxyCompactList}\small\item\em key\+: F10 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a034a28488b510a85976f6c3e0f0f0fce}\label{functions_8c_a034a28488b510a85976f6c3e0f0f0fce} 
+int {\bfseries glob\+\_\+vk\+\_\+f11} = 0
+\begin{DoxyCompactList}\small\item\em key\+: F11 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a2e70d8495c903cd21b04eb2da2fa26e2}\label{functions_8c_a2e70d8495c903cd21b04eb2da2fa26e2} 
+int {\bfseries glob\+\_\+vk\+\_\+f12} = 0
+\begin{DoxyCompactList}\small\item\em key\+: F12 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a5cf5a65eb15fbc5b8ef255d55193097e}\label{functions_8c_a5cf5a65eb15fbc5b8ef255d55193097e} 
+int {\bfseries glob\+\_\+vk\+\_\+0} = 0
+\begin{DoxyCompactList}\small\item\em key\+: 0 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_abb49a6c581ad5f80b12dfb48dff4f3d4}\label{functions_8c_abb49a6c581ad5f80b12dfb48dff4f3d4} 
+int {\bfseries glob\+\_\+vk\+\_\+1} = 0
+\begin{DoxyCompactList}\small\item\em key\+: 1 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a5be5c27a0eb9e5ef46208305c3dbfd9a}\label{functions_8c_a5be5c27a0eb9e5ef46208305c3dbfd9a} 
+int {\bfseries glob\+\_\+vk\+\_\+2} = 0
+\begin{DoxyCompactList}\small\item\em key\+: 2 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_ab1064f904e0ac057ae11fbcad529d964}\label{functions_8c_ab1064f904e0ac057ae11fbcad529d964} 
+int {\bfseries glob\+\_\+vk\+\_\+3} = 0
+\begin{DoxyCompactList}\small\item\em key\+: 3 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_aff57a1c4816c9181ce1effd0d60404e8}\label{functions_8c_aff57a1c4816c9181ce1effd0d60404e8} 
+int {\bfseries glob\+\_\+vk\+\_\+4} = 0
+\begin{DoxyCompactList}\small\item\em key\+: 4 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_ae7bb63472d6dc4e84319a369149c333f}\label{functions_8c_ae7bb63472d6dc4e84319a369149c333f} 
+int {\bfseries glob\+\_\+vk\+\_\+5} = 0
+\begin{DoxyCompactList}\small\item\em key\+: 5 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_adf53148eb36e51c62bb2f0507717ee38}\label{functions_8c_adf53148eb36e51c62bb2f0507717ee38} 
+int {\bfseries glob\+\_\+vk\+\_\+6} = 0
+\begin{DoxyCompactList}\small\item\em key\+: 6 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_ae22d2ae339b9d76baf87161419dec0cc}\label{functions_8c_ae22d2ae339b9d76baf87161419dec0cc} 
+int {\bfseries glob\+\_\+vk\+\_\+7} = 0
+\begin{DoxyCompactList}\small\item\em key\+: 7 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a45de9f9a71ded66be5196dd44794d0ef}\label{functions_8c_a45de9f9a71ded66be5196dd44794d0ef} 
+int {\bfseries glob\+\_\+vk\+\_\+8} = 0
+\begin{DoxyCompactList}\small\item\em key\+: 8 \end{DoxyCompactList}\item 
+\Hypertarget{functions_8c_a928d3afb72cb3ba0906246b5cb380e35}\label{functions_8c_a928d3afb72cb3ba0906246b5cb380e35} 
+int {\bfseries glob\+\_\+vk\+\_\+9} = 0
+\begin{DoxyCompactList}\small\item\em key\+: 9 \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implements \doxylink{functions_8h}{functions.\+h}. 
+

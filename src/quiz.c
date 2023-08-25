@@ -1,3 +1,8 @@
+/**
+* @file quiz.c
+* @brief Implements quiz.h
+*/
+
 #include "everything.h"
 
 #include <stdbool.h>

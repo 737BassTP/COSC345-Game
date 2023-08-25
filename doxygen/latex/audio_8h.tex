@@ -1,0 +1,42 @@
+\doxysection{src/audio.h File Reference}
+\hypertarget{audio_8h}{}\label{audio_8h}\index{src/audio.h@{src/audio.h}}
+
+
+Defines behaviour for sound, audio, and music.  
+
+
+{\ttfamily \#include \"{}everything.\+h\"{}}\newline
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_audio_data}{Audio\+Data}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{audio_8h_a38cb37369ef016074c5222bb8216d0db}\label{audio_8h_a38cb37369ef016074c5222bb8216d0db} 
+void {\bfseries audio\+Callback} (void \texorpdfstring{$\ast$}{*}userdata, Uint8 \texorpdfstring{$\ast$}{*}stream, int len)
+\item 
+\Hypertarget{audio_8h_aad984e901d74f180478837383063e640}\label{audio_8h_aad984e901d74f180478837383063e640} 
+void {\bfseries play\+\_\+\+WAV} (const char \texorpdfstring{$\ast$}{*}wavfile, SDL\+\_\+\+Audio\+Spec spec, Uint8 \texorpdfstring{$\ast$}{*}wavbuffer, int wavlength)
+\item 
+\Hypertarget{audio_8h_a38ff4d012a3a9ded1bfae5125cdb5862}\label{audio_8h_a38ff4d012a3a9ded1bfae5125cdb5862} 
+void {\bfseries music\+\_\+bootup} ()
+\item 
+\Hypertarget{audio_8h_a61bbbf7d557463c5d887477cd6544255}\label{audio_8h_a61bbbf7d557463c5d887477cd6544255} 
+void {\bfseries music\+\_\+free} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{audio_8h_a9f4b9aa1e7c75638a8dd30c209bf3ae6}\label{audio_8h_a9f4b9aa1e7c75638a8dd30c209bf3ae6} 
+SDL\+\_\+\+Audio\+Device\+ID {\bfseries deviceid}
+\item 
+\Hypertarget{audio_8h_a25ce4a6efa662d6423c28f0e10086fe2}\label{audio_8h_a25ce4a6efa662d6423c28f0e10086fe2} 
+Uint8 \texorpdfstring{$\ast$}{*} {\bfseries wavbuffer}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Defines behaviour for sound, audio, and music. 
+

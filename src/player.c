@@ -1,3 +1,8 @@
+/**
+* @file player.c
+* @brief Implements player.h
+*/
+
 #include "everything.h"
 
 void calculateAttackHitbox(struct player* player, SDL_Rect* attackHitbox)

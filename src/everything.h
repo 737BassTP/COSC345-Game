@@ -1,3 +1,7 @@
+/**
+* @file everything.h
+* @brief Defines all headers in a single call.
+*/
 #ifndef everything_h
 #define everything_h
 

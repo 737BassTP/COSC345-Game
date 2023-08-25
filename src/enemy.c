@@ -1,3 +1,8 @@
+/**
+* @file enemy.c
+* @brief Implements enemy.h
+*/
+
 #include "everything.h"
 
 
