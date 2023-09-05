@@ -117,7 +117,97 @@ int SDL_main(int argc, char *argv[])
 	
 	//initialize random number generator seed
 	srand(time(NULL));
-	
+	//read weatherdata and save it into an array called records
+	FILE *weatherdata = fopen("data/weather_10yrs.csv", "r");
+    if (weatherdata == NULL) {
+        perror("Error opening file");
+        return 1;
+    }
+
+	char line[MAX_LINE_LENGTH];
+    fgets(line, sizeof(line), weatherdata);
+
+    CSVRecord *records = NULL;
+	int recordCount = 0;
+    int maxRecords = 80642; 
+	records = (CSVRecord *)malloc(maxRecords * sizeof(CSVRecord));
+	if (records == NULL) {
+        perror("Memory allocation failed");
+        fclose(weatherdata);
+        return 1;
+    }
+    while (fgets(line, sizeof(line), weatherdata)) {
+        char *token;
+        char *rest = line;
+        int fieldCount = 0;
+
+        while ((token = strtok_r(rest, ",", &rest)) != NULL && fieldCount < 17) {
+            switch (fieldCount) {
+                case 1:
+                    strncpy(records[recordCount].day, token + 1, sizeof(records[recordCount].day) - 1);
+                    break;
+                case 2:
+                    strncpy(records[recordCount].season, token + 1, sizeof(records[recordCount].season) - 1);
+                    break;
+                case 3:
+                    strncpy(records[recordCount].source_date, token, sizeof(records[recordCount].source_date) - 1);
+                    break;
+                case 5:
+                    records[recordCount].temp = atof(token);
+                    break;
+                case 6:
+                    records[recordCount].rh = atoi(token);
+                    break;
+                case 7:
+                    records[recordCount].windspd = atof(token);
+                    break;
+                case 8:
+                    records[recordCount].windir = atoi(token);
+                    break;
+                case 9:
+                    records[recordCount].global = atof(token);
+                    break;
+                case 10:
+                    records[recordCount].uva = atof(token);
+                    break;
+                case 11:
+                    records[recordCount].uvb = atof(token);
+                    break;
+                case 12:
+                    records[recordCount].visible = atoi(token);
+                    break;
+                case 13:
+                    records[recordCount].rain = atof(token);
+                    break;
+                case 14:
+                    records[recordCount].press = atoi(token);
+                    break;
+                case 15:
+                    records[recordCount].maxgust = atof(token);
+                    break;
+                case 16:
+                    records[recordCount].gustime = atoi(token);
+                    break;
+            }
+            fieldCount++;
+        }
+
+        if (fieldCount == 17) {
+            recordCount++;
+            if (recordCount >= maxRecords) {
+                printf("Warning: Too many records. Increase maxRecords.\n");
+                break;
+            }
+        } else {
+            // Handle the case when not all fields are parsed
+            printf("Warning: Skipping record %d due to incomplete data.\n", recordCount + 1);
+        }
+    }
+    printf("Day: %s\n", records[0].day[0] != '\0' ? records[0].day : "N/A");
+    printf("Season: %s\n", records[0].season[0] != '\0' ? records[0].season : "N/A");
+    printf("Source Date: %s\n", records[0].source_date[0] != '\0' ? records[0].source_date : "N/A");
+    printf("Temp: %lf\n", records[0].temp);
+    printf("RH: %d\n", records[0].rh);
 	//rain
 	rain_create();
 	snow_create();
@@ -1534,6 +1624,7 @@ int SDL_main(int argc, char *argv[])
 			}
 			
 		}
+
 		//Help menu.
 		if (helpmenu_bool)
 		{
@@ -1598,7 +1689,8 @@ int SDL_main(int argc, char *argv[])
 	SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
-
+	fclose(weatherdata);
+	free(records);
     //Wait n milliseconds jic something went wrong (so that printfs can be read)
     SDL_Delay(500);
     

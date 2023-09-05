@@ -59,7 +59,24 @@ struct doorlink
 	int y;
 	int link;
 };
-
+#define MAX_LINE_LENGTH 1024
+typedef struct {
+    char day[20];
+    char season[20];
+    char source_date[11];
+    double temp;
+    int rh;
+    double windspd;
+    int windir;
+    double global;
+    double uva;
+    double uvb;
+    int visible;
+    double rain;
+    int press;
+    double maxgust;
+    int gustime;
+} CSVRecord;
 
 //initialize number of water particles wanted
 const int MAX_WATER_PARTICLES;
@@ -88,7 +105,7 @@ void healMe(int dmg);//healing test
 int clock_get_hour(int time);
 int clock_get_minute(int time);
 int clock_is_between(int time,int h1,int m1,int h2,int m2);
-
+void parseTime(const char *input, int *minutes, int *seconds);
 //Temperature.
 double temp_ctof(int c);//Celsius to Fahrenheit.
 
