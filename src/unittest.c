@@ -56,7 +56,8 @@ int test_WaterParticles()
 	free(waterParticles);
 	return ret;
 }
-int testHealth(){
+int testHealth()
+{
 	int ret = 0;
 	health = 100;
 	damageMe(10);
@@ -65,24 +66,28 @@ int testHealth(){
 	ret=assert_equal(100,health, "healMe 10");
 	return ret;
 }
-int testUpdatePlayerHitbox(){
+int testUpdatePlayerHitbox()
+{
 	int ret = 0;
 	playerHitbox.x = 10;
     playerHitbox.y = 10;
     playerHitbox.w = 100;
     playerHitbox.h = 100;
 	updatePlayerHitbox(11, 11, 101, 101);
-	if(playerHitbox.x==11 && playerHitbox.y==11 && playerHitbox.w==101 && playerHitbox.h==101){
+	if(playerHitbox.x==11 && playerHitbox.y==11 && playerHitbox.w==101 && playerHitbox.h==101)
+	{
 		printf("Test Passed: updatePlayerHitbox \n");
 		ret=0;
 	}
-	else{
+	else
+	{
 		printf("Test Failed: updatePlayerHitbox \n");
 		ret=1;
 	}
 	return ret;
 }
-int testInitEnemy(){
+int testInitEnemy()
+{
 	int ret = 0;
 	struct Enemy enemy1;
 	SDL_Texture *spr_enemy1 = IMG_LoadTexture(renderer,"img/spr_enemy1.png");
@@ -93,15 +98,18 @@ int testInitEnemy(){
 	ret=(enemy1.height!=100);
 	ret=(enemy1.dmg!=100);
 	ret=(enemy1.spawnLevel!=1);
-	if(ret==1){
+	if(ret==1)
+	{
 		printf("Test Failed: testInitEnemy\n");
 	}
-	else{
+	else
+	{
 		printf("Test passed: testInitEnemy\n");
 	}
 	return ret;
 }
-int testResetEnemy(){
+int testResetEnemy()
+{
 	int ret = 0;
 	struct Enemy enemy1;
 	SDL_Texture *spr_enemy1 = IMG_LoadTexture(renderer,"img/spr_enemy1.png");
@@ -112,10 +120,12 @@ int testResetEnemy(){
 	ret=(enemy1.width!=0);
 	ret=(enemy1.height!=0);
 	ret=(enemy1.dmg!=0);
-	if(ret==1){
+	if(ret==1)
+	{
 		printf("Test Failed: resetEnemy\n");
 	}
-	else{
+	else
+	{
 		printf("Test passed: resetEnemy\n");
 	}
 	return ret;

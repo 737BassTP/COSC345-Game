@@ -28,8 +28,10 @@ int gw,gh;///< scaling variables.
 //Level.
 int lvl_off_obj;///< object-offset in level.dat
 int level_cur;///< current level (out of 512 levels)
+int level_prev;///< previous level.
 
-
+//Main loop.
+int running;
 
 
 

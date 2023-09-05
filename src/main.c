@@ -51,6 +51,8 @@ int gw,gh;
 //Structs.
 struct Enemy* globalEnemy = NULL; // Initialize the global pointer to NULL initially
 
+//Main loop.
+int running=1;
 
 /*
 Entry point.
@@ -215,6 +217,7 @@ int SDL_main(int argc, char *argv[])
 	int level_count = 256*level_realms;
 	int level_layers = 2;
 	int level_cur=0;//256 = 16*16 
+	int level_prev=level_cur;
 	byte level_data[262144];//static; can not be free'd.
 	//262144 = 256*512*2 (level size * level count * level layers)
 	//Objects.
@@ -297,37 +300,10 @@ int SDL_main(int argc, char *argv[])
 	//Nutrients.
 	SDL_Texture *spr_nutrients = IMG_LoadTexture(renderer,"img/spr_nutrients_strip4.png");
 	
-	//Music.
-	//music_bootup();
-	const char *wavfile="music.wav";
-	SDL_AudioSpec wavspec;
-	Uint8 *wavbuffer;
-	Uint32 wavlength;
-	if (SDL_LoadWAV(wavfile, &wavspec, &wavbuffer, &wavlength) == NULL) 
-	{
-        printf("Failed to load WAV file: %s\n", SDL_GetError());
-        return;
-    }
-	AudioData audiodata;
-    audiodata.buffer = wavbuffer;
-    audiodata.length = wavlength;
-    audiodata.position = 0;
-	wavspec.callback = audioCallback;
-    wavspec.userdata = &audiodata;
-	
-	SDL_AudioDeviceID deviceid;
-	deviceid = SDL_OpenAudioDevice(NULL,0,&wavspec,NULL,0);
-	if (deviceid == 0)
-	{
-        printf("Failed to open audio device: %s\n", SDL_GetError());
-        SDL_FreeWAV(wavbuffer);
-        return;
-    }
-	SDL_QueueAudio(deviceid,wavbuffer,wavlength);
-	SDL_PauseAudioDevice(deviceid,0);//0 is unpause
-	//SDL_MixAudioFormat(wavbuffer,wavbuffer,AUDIO_S16,wavlength,32);
-	//play_WAV(wavfile,&wavspec,&wavbuffer,&wavlength);
-	
+	//Audio (Music + SFX).
+	audio_init();
+	audio_music_play("audio/overworld.wav");
+	audio_music_volume((double)0.75);
 	
 	//Splash intro screen.
 	int splashintro_bool=1;
@@ -377,140 +353,14 @@ int SDL_main(int argc, char *argv[])
 	//none
 	
 	//Mainloop here.
-	int running=1;
 	printf("Entering main loop...\n");
 	while (running)
 	{
 		//Update previous key presses.
-		keyboard_set_old(&glob_vk_right);
-		keyboard_set_old(&glob_vk_left);
-		keyboard_set_old(&glob_vk_up);
-		keyboard_set_old(&glob_vk_down);
-		keyboard_set_old(&glob_vk_space);
-		keyboard_set_old(&glob_vk_enter);
-		keyboard_set_old(&glob_vk_tab);
-		keyboard_set_old(&glob_vk_f1);
-		keyboard_set_old(&glob_vk_f2);
-		keyboard_set_old(&glob_vk_f3);
-		keyboard_set_old(&glob_vk_f4);
-		keyboard_set_old(&glob_vk_f5);
-		keyboard_set_old(&glob_vk_f6);
-		keyboard_set_old(&glob_vk_f7);
-		keyboard_set_old(&glob_vk_f8);
-		keyboard_set_old(&glob_vk_f9);
-		keyboard_set_old(&glob_vk_f10);
-		keyboard_set_old(&glob_vk_f11);
-		keyboard_set_old(&glob_vk_f12);
-		keyboard_set_old(&glob_vk_0);
-		keyboard_set_old(&glob_vk_1);
-		keyboard_set_old(&glob_vk_2);
-		keyboard_set_old(&glob_vk_3);
-		keyboard_set_old(&glob_vk_4);
-		keyboard_set_old(&glob_vk_5);
-		keyboard_set_old(&glob_vk_6);
-		keyboard_set_old(&glob_vk_7);
-		keyboard_set_old(&glob_vk_8);
-		keyboard_set_old(&glob_vk_9);
-		//keyboard_set_old(&glob_vk_);
-		//keyboard_set_old(&glob_vk_);
+		keyboard_update_previous();
 		
 		//Organize SDL Polls.
-        while (SDL_PollEvent(&event))
-        {
-            switch (event.type)
-            {
-                case SDL_QUIT:
-                {
-					//close using red cross or ALT+F4.
-                    running = 0;
-                    break;
-                }
-				case SDL_KEYDOWN:
-				{
-					//key held down or pressed
-					int v=1;
-					switch (event.key.keysym.sym)
-					{
-						case SDLK_ESCAPE:   {running=0;} break;//escape quits game.
-						case SDLK_RIGHT:    {keyboard_set_new(&glob_vk_right,v);} break;
-						case SDLK_LEFT:     {keyboard_set_new(&glob_vk_left,v);} break;
-						case SDLK_UP:       {keyboard_set_new(&glob_vk_up,v);} break;
-						case SDLK_DOWN:     {keyboard_set_new(&glob_vk_down,v);} break;
-						case SDLK_SPACE:    {keyboard_set_new(&glob_vk_space,v);} break;
-						case SDLK_RETURN:   {keyboard_set_new(&glob_vk_enter,v);} break;
-						case SDLK_TAB:      {keyboard_set_new(&glob_vk_tab,v);} break;
-						case SDLK_F1:       {keyboard_set_new(&glob_vk_f1,v);} break;
-						case SDLK_F2:       {keyboard_set_new(&glob_vk_f2,v);} break;
-						case SDLK_F3:       {keyboard_set_new(&glob_vk_f3,v);} break;
-						case SDLK_F4:       {keyboard_set_new(&glob_vk_f4,v);} break;
-						case SDLK_F5:       {keyboard_set_new(&glob_vk_f5,v);} break;
-						case SDLK_F6:       {keyboard_set_new(&glob_vk_f6,v);} break;
-						case SDLK_F7:       {keyboard_set_new(&glob_vk_f7,v);} break;
-						case SDLK_F8:       {keyboard_set_new(&glob_vk_f8,v);} break;
-						case SDLK_F9:       {keyboard_set_new(&glob_vk_f9,v);} break;
-						case SDLK_F10:      {keyboard_set_new(&glob_vk_f10,v);} break;
-						case SDLK_F11:      {keyboard_set_new(&glob_vk_f11,v);} break;
-						case SDLK_F12:      {keyboard_set_new(&glob_vk_f12,v);} break;
-						case SDLK_0:        {keyboard_set_new(&glob_vk_0,v);} break;
-						case SDLK_1:        {keyboard_set_new(&glob_vk_1,v);} break;
-						case SDLK_2:        {keyboard_set_new(&glob_vk_2,v);} break;
-						case SDLK_3:        {keyboard_set_new(&glob_vk_3,v);} break;
-						case SDLK_4:        {keyboard_set_new(&glob_vk_4,v);} break;
-						case SDLK_5:        {keyboard_set_new(&glob_vk_5,v);} break;
-						case SDLK_6:        {keyboard_set_new(&glob_vk_6,v);} break;
-						case SDLK_7:        {keyboard_set_new(&glob_vk_7,v);} break;
-						case SDLK_8:        {keyboard_set_new(&glob_vk_8,v);} break;
-						case SDLK_9:        {keyboard_set_new(&glob_vk_9,v);} break;
-						//case SDLK_:        {keyboard_set_new(&glob_vk_,v);} break;
-						//case SDLK_:        {keyboard_set_new(&glob_vk_,v);} break;
-						
-					}
-					break;
-				}
-				case SDL_KEYUP:
-				{
-					//key released
-					int v=0;
-					switch (event.key.keysym.sym)
-					{
-						case SDLK_RIGHT:    {keyboard_set_new(&glob_vk_right,v);} break;
-						case SDLK_LEFT:     {keyboard_set_new(&glob_vk_left,v);} break;
-						case SDLK_UP:       {keyboard_set_new(&glob_vk_up,v);} break;
-						case SDLK_DOWN:     {keyboard_set_new(&glob_vk_down,v);} break;
-						case SDLK_SPACE:    {keyboard_set_new(&glob_vk_space,v);} break;
-						case SDLK_RETURN:   {keyboard_set_new(&glob_vk_enter,v);} break;
-						case SDLK_TAB:      {keyboard_set_new(&glob_vk_tab,v);} break;
-						case SDLK_F1:       {keyboard_set_new(&glob_vk_f1,v);} break;
-						case SDLK_F2:       {keyboard_set_new(&glob_vk_f2,v);} break;
-						case SDLK_F3:       {keyboard_set_new(&glob_vk_f3,v);} break;
-						case SDLK_F4:       {keyboard_set_new(&glob_vk_f4,v);} break;
-						case SDLK_F5:       {keyboard_set_new(&glob_vk_f5,v);} break;
-						case SDLK_F6:       {keyboard_set_new(&glob_vk_f6,v);} break;
-						case SDLK_F7:       {keyboard_set_new(&glob_vk_f7,v);} break;
-						case SDLK_F8:       {keyboard_set_new(&glob_vk_f8,v);} break;
-						case SDLK_F9:       {keyboard_set_new(&glob_vk_f9,v);} break;
-						case SDLK_F10:      {keyboard_set_new(&glob_vk_f10,v);} break;
-						case SDLK_F11:      {keyboard_set_new(&glob_vk_f11,v);} break;
-						case SDLK_F12:      {keyboard_set_new(&glob_vk_f12,v);} break;
-						case SDLK_0:        {keyboard_set_new(&glob_vk_0,v);} break;
-						case SDLK_1:        {keyboard_set_new(&glob_vk_1,v);} break;
-						case SDLK_2:        {keyboard_set_new(&glob_vk_2,v);} break;
-						case SDLK_3:        {keyboard_set_new(&glob_vk_3,v);} break;
-						case SDLK_4:        {keyboard_set_new(&glob_vk_4,v);} break;
-						case SDLK_5:        {keyboard_set_new(&glob_vk_5,v);} break;
-						case SDLK_6:        {keyboard_set_new(&glob_vk_6,v);} break;
-						case SDLK_7:        {keyboard_set_new(&glob_vk_7,v);} break;
-						case SDLK_8:        {keyboard_set_new(&glob_vk_8,v);} break;
-						case SDLK_9:        {keyboard_set_new(&glob_vk_9,v);} break;
-						//case SDLK_:        {keyboard_set_new(&glob_vk_,v);} break;
-						//case SDLK_:        {keyboard_set_new(&glob_vk_,v);} break;
-						
-					}
-					break;
-				}
-				
-            }
-        }
+        keyboard_sdl_polls(event);
 		
 		/*
 		Process inputs.
@@ -679,15 +529,23 @@ int SDL_main(int argc, char *argv[])
 								printf("door (0x%X, 0x%X)\n",door&0x1FF,(door>>9)&0xFF);//lvl,pos
 								level_cur = (door&0x1FF);
 								level_load_objects(level_data,Objects,level_cur,level_size);
+								audio_music_level(level_cur,level_prev);
 								//incomplete level load; call a level loading function.
 								//todo: stop rain/snow in underworld.
 								int npos = (door>>9)&0xFF;
 								Player.x = win_game_x + gw*win_game_tile_dim*BGG(npos,4,0);
 								Player.y = win_game_y + gh*win_game_tile_dim*BGG(npos,4,1);
+								level_prev = level_cur;//important!
+								keyboard_reset(glob_vk_left);
+								keyboard_reset(glob_vk_right);
+								keyboard_reset(glob_vk_up);
+								keyboard_reset(glob_vk_down);
 							}
 							else
 							{
 								printf("door has no link\n");
+								Player.x = Player.xprevious;
+								Player.y = Player.yprevious;
 							}
 						} break;
 					}
@@ -743,6 +601,9 @@ int SDL_main(int argc, char *argv[])
 				level_get_name(level_cur,mapstr_location);
 				level_load_objects(level_data,Objects,level_cur,level_size);
 				mapvisit[level_cur/32] |= (Uint32)(1<<level_cur%32);
+				audio_music_level(level_cur,level_prev);
+				
+				level_prev = level_cur;//finished handling level loading.
 			}
 		}
 		else
@@ -908,9 +769,8 @@ int SDL_main(int argc, char *argv[])
 			nd=32;
 			for (int i=0; i<4; i++)
 			{
-				//placeholder 2/2
 				draw_image_part(renderer,uix,uiy+nx,uix+nd*gw,uiy+nx+nd*gh,spr_nutrients,i*nd,0,nd,nd);
-				draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Vitamin"),font_ascii_w,font_ascii_h,tc);
+				draw_text_color(renderer,uix+nd*gw,uiy+nx+nd/2,font_ascii_w*gw,font_ascii_h*gh,font_ascii,mux_str(i,"Fat","Carbs","Protein","Alcohol"),font_ascii_w,font_ascii_h,tc);
 				nx += nd*gw;
 			}
 			// SDL_RenderPresent(renderer);
@@ -1044,14 +904,11 @@ int SDL_main(int argc, char *argv[])
 			if (clock_is_between(time_clock, 6,0,11,59)) {ct=1;}
 			if (clock_is_between(time_clock,12,0,17,59)) {ct=2;}
 			if (clock_is_between(time_clock,18,0,23,59)) {ct=3;}
-			//placeholder 1/2
-			/**/
 			draw_text_color(renderer,
 				uix,uiy,
 				font_ascii_w*gw,font_ascii_h*gh,
 				font_ascii,mux_str(ct,timestr_a,timestr_b,timestr_c,timestr_d),
 				font_ascii_w,font_ascii_h,tc);
-			/**/
 			uiy += font_ascii_h*gh;
 			
 			//Temperature.
@@ -1733,10 +1590,10 @@ int SDL_main(int argc, char *argv[])
 	SDL_DestroyTexture(spr_enemy1);
 	IMG_Quit();
 	
-	//music_free();
+	audio_free();
 	//SDL_FreeWAV(&audio_spec);
-	SDL_CloseAudioDevice(deviceid);
-    SDL_FreeWAV(wavbuffer);
+	//SDL_CloseAudioDevice(deviceid);
+    //SDL_FreeWAV(wavbuffer);
 	
 	SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);

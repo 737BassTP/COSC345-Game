@@ -30,37 +30,7 @@ const int c_rose     = 0x8000FF;///< color: rose
 //Global variables.
 int glob_draw_alpha = 255;///< 
 int glob_draw_color = c_white;///< 
-int glob_vk_right   = 0;///< key: right
-int glob_vk_left    = 0;///< key: left
-int glob_vk_up 	    = 0;///< key: up
-int glob_vk_down    = 0;///< key: down
-int glob_vk_space   = 0;///< key: space
-int glob_vk_enter   = 0;///< key: enter
-int glob_vk_tab     = 0;///< key: tab
-int glob_vk_f1      = 0;///< key: F2
-int glob_vk_f2      = 0;///< key: F2
-int glob_vk_f3      = 0;///< key: F3
-int glob_vk_f4      = 0;///< key: F4
-int glob_vk_f5      = 0;///< key: F5
-int glob_vk_f6      = 0;///< key: F6
-int glob_vk_f7      = 0;///< key: F7
-int glob_vk_f8      = 0;///< key: F8
-int glob_vk_f9      = 0;///< key: F9
-int glob_vk_f10     = 0;///< key: F10
-int glob_vk_f11     = 0;///< key: F11
-int glob_vk_f12     = 0;///< key: F12
-int glob_vk_0       = 0;///< key: 0
-int glob_vk_1       = 0;///< key: 1
-int glob_vk_2       = 0;///< key: 2
-int glob_vk_3       = 0;///< key: 3
-int glob_vk_4       = 0;///< key: 4
-int glob_vk_5       = 0;///< key: 5
-int glob_vk_6       = 0;///< key: 6
-int glob_vk_7       = 0;///< key: 7
-int glob_vk_8       = 0;///< key: 8
-int glob_vk_9       = 0;///< key: 9
-//int glob_vk_ = 0;///< key: 
-//int glob_vk_ = 0;///< key: 
+int glob_alarm_ids[ALARM_ID_MAX];
 
 double lerp(double from,double to,double percentage)
 {
@@ -383,66 +353,6 @@ long int file_get_size(FILE* fil)
 	fseek(fil,tellcur,SEEK_SET);
 	return ret;
 }
-int keyboard_set_new(int *keyid,int keyval)
-{
-	/**
-	* @brief Actively update a keyboard variable.
-	* @param keyid pointer to a keyboard variable
-	* @param keyval new state of the keyboard variable
-	* @return The updated keyboard variable
-	* @example keyboard_set_new
-	*/
-	
-	*keyid &= ~1;
-	*keyid |= keyval&1;
-	return *keyid;
-}
-int keyboard_set_old(int *keyid)
-{
-	/**
-	* @brief Passively update a keyboard variable.
-	* @param keyid pointer to a keyboard variable
-	* @return The updated keyboard variable
-	* @example keyboard_set_old
-	*/
-	
-	*keyid &= ~2;
-	*keyid |= (*keyid&1)<<1;
-	return *keyid;
-}
-int keyboard_check(int key)
-{
-	/**
-	* @brief Check if a keyboard key is held.
-	* @param key Keyboard variable
-	* @return int 
-	* @example keyboard_check
-	*/
-	
-	return (key&1);
-}
-int keyboard_check_pressed(int key)
-{
-	/**
-	* @brief Check if a keyboard key is pressed.
-	* @param key Keyboard variable
-	* @return int 
-	* @example keyboard_check_pressed
-	*/
-	
-	return (key&1) && (!(key>>1));
-}
-int keyboard_check_released(int key)
-{
-	/**
-	* @brief Check if a keyboard key is released.
-	* @param key Keyboard variable
-	* @return int 
-	* @example keyboard_check_released
-	*/
-	
-	return (!(key&1)) && (key>>1);
-}
 int mux_int(int nth,...)
 {
 	/**
@@ -598,6 +508,34 @@ int mean_int(int num,...)
 	ret /= num;
 	return ret;
 }
+int min_int(int num,...)
+{
+	va_list args;
+	va_start(args,num);
+	int ret = va_arg(args,int);
+	int tmp;
+	for (int i=1; i<num; i++)
+	{
+		tmp = va_arg(args,int);
+		ret = (ret>tmp)?(tmp):(ret);
+	}
+	va_end(args);
+	return ret;
+}
+int max_int(int num,...)
+{
+	va_list args;
+	va_start(args,num);
+	int ret = va_arg(args,int);
+	int tmp;
+	for (int i=1; i<num; i++)
+	{
+		tmp = va_arg(args,int);
+		ret = (ret<tmp)?(tmp):(ret);
+	}
+	va_end(args);
+	return ret;
+}
 double degtorad(double deg)
 {
 	/**
@@ -651,6 +589,31 @@ Uint64 get_timer()
 	*/
 	
 	return SDL_GetTicks64();
+}
+void alarm_set(int aid,int val)
+{
+	aid %= ALARM_ID_MAX;
+	glob_alarm_ids[aid]=val;
+}
+int alarm_get(int aid)
+{
+	aid %= ALARM_ID_MAX;
+	return glob_alarm_ids[aid];
+}
+void alarm_update()
+{
+	for (int i=0; i<ALARM_ID_MAX; i++)
+	{
+		if (glob_alarm_ids[i] > -1)
+		{
+			glob_alarm_ids[i]--;
+		}
+	}
+}
+int alarm_trigger(int aid)
+{
+	aid %= ALARM_ID_MAX;
+	return (alarm_get(aid) == 0);
 }
 int point_in_rectangle(int px,int py,int rx1,int ry1,int rx2,int ry2)
 {
@@ -880,6 +843,7 @@ void dev_tiled_to_leveldata(byte arr[])
 	glob_vk_f2=0;//fakes a keyboard press event (fails if held).
 	FILE *filin = fopen("tiled/cosc345-game.tmx","rb");
 	FILE *filout = fopen("level.dat","wb");
+	FILE *filoff = fopen("devtools/OFFSET","rb");
 	int layers=2;
 	int layersize=131072;
 	//layersize=512;//debug only
@@ -888,7 +852,7 @@ void dev_tiled_to_leveldata(byte arr[])
 	int arrsiz=sizeof(array);
 	for (long i=0; i<maxsize; i++) {array[i] = 0;}
 	//Discard input header.
-	fseek(filin,(long int)0x231-0,SEEK_SET);//hardcoded; may bug out in future, so avoid renaming or resizing in Tiled project file.
+	fseek(filin,(long int)0x23D-0,SEEK_SET);//hardcoded; may bug out in future, so avoid renaming or resizing in Tiled project file.
 	//Read Tiles and Objects.
 	byte comma=","[0];
 	int ch=0;
@@ -920,21 +884,28 @@ void dev_tiled_to_leveldata(byte arr[])
 		}
 		val^=val;
 		for (int j=0; j<3; j++) {val+=(entry[j]-48)*(byte)pow((double)10,(double)(2-j));}
-		printf("i=%i/%i (v=%i)\n",i,layersize,val);//comment out to speed up.
+		printf("i=%i/%i (v=%i)\n",i,arrsiz,val);//comment out to speed up.
 		val-=(val==0)?(-0xFF):(1)&0xFF;
 		array[(((1<<(1<<1))<<1)<<((1|(1<<1)|(1<<(1<<1)))<<1))*(val>=(((1<<1)<<1)<<((1+1+1)<<1)))+(1<<(3<<(1<<1)))*(i>>(3<<(1<<1)))+(1<<(1<<3))*((i>>(1<<(1<<1)))&(3*(1<<(1<<1)|1)))+(1<<(1<<(1<<1)))*((i>>(1<<3))&(3*(1<<(1<<1)|1)))+(i&(3*(1<<(1<<1)|1)))]=val;//security through obscurity, or what? (it crashes the compiler...)
+		//array[i] = fgetc(filoff)+256*fgetc(filoff);
+		//if ((i%layersize) == (layersize-1)) {fseek(filoff,0,SEEK_SET);}
 	}
 	//Compress.
 	val^=val;
 	counter=0;
+	int cv=0xC0;
+	int ct=0;
 	for (int i=0; i<layersize; i++)
 	{
 		break;
+		
+		ct++;
 	}
 	//Write to file.
 	fwrite(array,maxsize,1,filout);
 	fclose(filin);
 	fclose(filout);
+	fclose(filoff);
 	//Re-load in-game.
 	level_load(arr,256,512,2);
 }

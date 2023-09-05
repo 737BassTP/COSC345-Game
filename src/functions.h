@@ -26,6 +26,7 @@ typedef unsigned __int128 oword;//0-340.2U, 0x00000000000000000000000000000000-0
 
 //Definitions.
 #define PI 3.1415926535897932
+#define ALARM_ID_MAX 16
 
 //Colors (BGR because Big-Endianness).
 const int c_black;
@@ -51,38 +52,7 @@ const int c_rose;
 //Global variables.
 int glob_draw_alpha;
 int glob_draw_color;
-//Keyboard variables.
-int glob_vk_right;
-int glob_vk_left;
-int glob_vk_up;
-int glob_vk_down;
-int glob_vk_space;
-int glob_vk_enter;
-int glob_vk_tab;
-int glob_vk_f1;
-int glob_vk_f2;
-int glob_vk_f3;
-int glob_vk_f4;
-int glob_vk_f5;
-int glob_vk_f6;
-int glob_vk_f7;
-int glob_vk_f8;
-int glob_vk_f9;
-int glob_vk_f10;
-int glob_vk_f11;
-int glob_vk_f12;
-int glob_vk_0;
-int glob_vk_1;
-int glob_vk_2;
-int glob_vk_3;
-int glob_vk_4;
-int glob_vk_5;
-int glob_vk_6;
-int glob_vk_7;
-int glob_vk_8;
-int glob_vk_9;
-//int glob_vk_;
-//int glob_vk_;
+int glob_alarm_ids[ALARM_ID_MAX];
 
 //Generic object.
 struct gameobject
@@ -114,11 +84,6 @@ void draw_image_part(SDL_Renderer *renderer,int x1,int y1,int x2,int y2,SDL_Text
 void draw_text(SDL_Renderer *renderer,int x,int y,int w,int h,SDL_Texture *font,char* str,int fontw,int fonth);
 void draw_text_color(SDL_Renderer *renderer,int x,int y,int w,int h,SDL_Texture *font,char* str,int fontw,int fonth,int color);
 long int file_get_size(FILE* fil);
-int keyboard_set_new(int *keyid,int keyval);
-int keyboard_set_old(int *keyid);
-int keyboard_check(int key);
-int keyboard_check_pressed(int key);
-int keyboard_check_released(int key);
 int mux_int(int nth,...);
 char* mux_str(int nth,...);
 SDL_Texture* mux_sdltex(int nth,...);
@@ -127,11 +92,17 @@ int BG(int val,int nth);
 int BGG(int val,int size,int nth);
 int sqr(int v);
 int mean_int(int num,...);
+int min_int(int num,...);
+int max_int(int num,...);
 double degtorad(double deg);
 double radtodeg(double rad);
 double dcos(double deg);
 double dsin(double deg);
 Uint64 get_timer();
+void alarm_set(int aid,int val);
+int alarm_get(int aid);
+void alarm_update();
+int alarm_trigger(int aid);
 int point_in_rectangle(int px,int py,int rx1,int ry1,int rx2,int ry2);
 int rectangle_in_rectangle(int sx1,int sy1,int sx2,int sy2,int dx1,int dy1,int dx2,int dy2);
 int string_pos(char *substr,char *str);
