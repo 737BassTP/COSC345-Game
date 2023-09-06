@@ -91,7 +91,7 @@ int testInitEnemy()
 	int ret = 0;
 	struct Enemy enemy1;
 	SDL_Texture *spr_enemy1 = IMG_LoadTexture(renderer,"img/spr_enemy1.png");
-	initEnemy(&enemy1, 500, 500, 100, 100, 100, 10, spr_enemy1, 1);
+	initEnemy(&enemy1, 500, 500, 100, 100, 100, 10,10,10,10,10, spr_enemy1, 1);
 	ret=(enemy1.x!=500);
 	ret=(enemy1.y!=500);
 	ret=(enemy1.width!=100);
@@ -113,7 +113,7 @@ int testResetEnemy()
 	int ret = 0;
 	struct Enemy enemy1;
 	SDL_Texture *spr_enemy1 = IMG_LoadTexture(renderer,"img/spr_enemy1.png");
-	initEnemy(&enemy1, 500, 500, 100, 100, 100, 10, spr_enemy1, 1);
+	initEnemy(&enemy1, 500, 500, 100, 100, 100, 10, 10, 10, 10, 10, spr_enemy1, 1);
 	resetEnemy(&enemy1);
 	ret=(enemy1.x!=0);
 	ret=(enemy1.y!=0);

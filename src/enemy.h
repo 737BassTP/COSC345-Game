@@ -17,6 +17,10 @@ struct Enemy
     int height;
     int health;
 	int dmg;//damage it deals
+	int fat;
+	int carb;
+	int protein;
+	int alcohol;
 	SDL_Texture* texture;
 	int spawnLevel;
     // Add more enemy-related attributes as needed
@@ -40,7 +44,7 @@ struct NPC
 
 struct NPC npcs[MAX_NPCS];
 // Function to initialize an enemy with position and size
-void initEnemy(struct Enemy* enemy, int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture,int spawnLevel);
+void initEnemy(struct Enemy* enemy, int x, int y, int width, int height, int health, int dmg, int fat, int carb, int protein, int alcohol, SDL_Texture* texture,int spawnLevel);
 //initialize an npc
 void initNPC(struct NPC* npc, int x, int y,int width,int height, int xprevious, int yprevious, uint8_t face_dir, SDL_Texture* texture, int appearsOnLevel);
 // add an NPC reference to the npcs array
@@ -49,8 +53,8 @@ void addNPC(struct NPC* npc);
 void resetEnemy(struct Enemy* enemy) ;
 // Function to add an enemy to the array
 struct Enemy enemies[MAX_ENEMIES];
-void addEnemy(int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture, int level);
-void randomSpawnEnemy(int x, int y, int width, int height, int health, int dmg, SDL_Texture* texture, int level);
+void addEnemy(int x, int y, int width, int height, int health, int dmg, int fat, int carb, int protein, int alcohol,SDL_Texture* texture, int level);
+void randomSpawnEnemy(int x, int y, int width, int height, int health, int dmg, int fat, int carb, int protein, int alcohol,SDL_Texture* texture, int level);
 
 
 
