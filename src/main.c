@@ -274,6 +274,18 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *spr_tileset = IMG_LoadTexture(renderer,"tiled/tileset.png");
 	SDL_Texture *spr_hudshade = IMG_LoadTexture(renderer,"img/hudshade.png");
 	SDL_Texture *spr_enemy1 = IMG_LoadTexture(renderer,"img/spr_enemy1.png");
+	SDL_Texture *burger = IMG_LoadTexture(renderer,"img/burger.png");
+	SDL_Texture *bread = IMG_LoadTexture(renderer,"img/bread.png");
+	SDL_Texture *avo = IMG_LoadTexture(renderer,"img/avo.png");
+	SDL_Texture *boiledEgg = IMG_LoadTexture(renderer,"img/boiled-egg.png");
+	SDL_Texture *carrot = IMG_LoadTexture(renderer,"img/carrot.png");
+	SDL_Texture *friedEgg = IMG_LoadTexture(renderer,"img/fried-egg.png");
+	SDL_Texture *fries = IMG_LoadTexture(renderer,"img/fries.png");
+	SDL_Texture *mushroom = IMG_LoadTexture(renderer,"img/mushroom.png");
+	SDL_Texture *pizza = IMG_LoadTexture(renderer,"img/pizza.png");
+	SDL_Texture *potato = IMG_LoadTexture(renderer,"img/potato.png");
+	SDL_Texture *tomato = IMG_LoadTexture(renderer,"img/tomato.png");
+
 	SDL_Texture *penguinSamImg = IMG_LoadTexture(renderer,"img/sammy.png");
 	SDL_Texture *snowflake = IMG_LoadTexture(renderer,"img/snowflake.png");
 	//SDL_Texture *spr_ = IMG_LoadTexture(renderer,"img/spr_.png");
@@ -284,7 +296,10 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *font_ascii = IMG_LoadTexture(renderer,"img/ascii_strip96.png");
 	int font_ascii_w = 8;
 	int font_ascii_h = 24;
-	
+	SDL_Texture *enemySprites[] = {
+    burger, bread, avo, boiledEgg, carrot,
+    friedEgg, fries, mushroom, pizza, potato, tomato
+	};//enemy sprites to be used for random spawning.
 	//Clock (digital).
 	SDL_Texture *spr_clock_digital = IMG_LoadTexture(renderer,"img/clock1_strip10.png");
 	int time_clock_max=1440;
@@ -682,7 +697,9 @@ int SDL_main(int argc, char *argv[])
 			}
 			if (lvlbool)//has changed level
 			{
-				randomSpawnEnemy(500, 500, 100, 100, 100, 10, spr_enemy1, level_cur);//random spawn an enemy with these stats
+				int randomIndex = rand() % (sizeof(enemySprites) / sizeof(enemySprites[0]));
+				SDL_Texture *enemyTexture = enemySprites[randomIndex];
+				randomSpawnEnemy(500, 500, 100, 100, 100, 10, enemyTexture, level_cur);//random spawn an enemy with these stats
 				buttonVis=0;//remove npc chatbox if you walk away
 				
 				level_cur += level_count;//allows negative wrap.
