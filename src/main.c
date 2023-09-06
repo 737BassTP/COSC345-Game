@@ -3,7 +3,7 @@ COSC345 - Game
 
 Authors: (sorted alphabetically)
 	Matthew Yi
-	Nicholas Campbell
+	Campbell Nicholas
 	Sven Russell
 	Thomas Pedersen
 
@@ -274,7 +274,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *spr_tileset = IMG_LoadTexture(renderer,"tiled/tileset.png");
 	SDL_Texture *spr_hudshade = IMG_LoadTexture(renderer,"img/hudshade.png");
 	SDL_Texture *spr_enemy1 = IMG_LoadTexture(renderer,"img/spr_enemy1.png");
-	SDL_Texture *burger = IMG_LoadTexture(renderer,"img/burger.png");
+SDL_Texture *burger = IMG_LoadTexture(renderer,"img/burger.png");
 	SDL_Texture *bread = IMG_LoadTexture(renderer,"img/bread.png");
 	SDL_Texture *avo = IMG_LoadTexture(renderer,"img/avo.png");
 	SDL_Texture *boiledEgg = IMG_LoadTexture(renderer,"img/boiled-egg.png");
@@ -296,10 +296,18 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *font_ascii = IMG_LoadTexture(renderer,"img/ascii_strip96.png");
 	int font_ascii_w = 8;
 	int font_ascii_h = 24;
+
 	SDL_Texture *enemySprites[] = {
     burger, bread, avo, boiledEgg, carrot,
     friedEgg, fries, mushroom, pizza, potato, tomato
 	};//enemy sprites to be used for random spawning.
+
+	int fat[] = {9.6, 2.9, 19.6, 10.5, 0.2, 16.5, 16.9, 0.1, 5.5, 0.1, 0.2};
+	int carb[] = {17, 46.6, 0.4, 0.3, 4.6, 0.3, 39.9, 0.1, 25.7, 11.2, 1.2};
+	int protein[] = {12.8, 9.4, 1.8, 12.9, 0.9, 13.4, 3, 2.3, 7.3, 1.5, 0.9};
+	int alcohol[] = {0,0,0,0,0,0,0,0,0,0,0};
+	
+
 	//Clock (digital).
 	SDL_Texture *spr_clock_digital = IMG_LoadTexture(renderer,"img/clock1_strip10.png");
 	int time_clock_max=1440;
@@ -416,7 +424,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *splashintro_img2 = IMG_LoadTexture(renderer,"img/logo1b.png");
 	SDL_Texture *splashintro_img3 = IMG_LoadTexture(renderer,"img/logo1c.png");
 	char* splashintro_string = "Press SPACE to continue.";
-	char* splashintro_string_copyright = "(C) 2023 - Thomas, Sean, Matthew, Nicholas - COSC345";
+	char* splashintro_string_copyright = "(C) 2023 - Thomas, Sean, Matthew, Campbell - COSC345";
 	int splashintro_slen1=strlen(splashintro_string);
 	int splashintro_slen2=strlen(splashintro_string_copyright);
 	
@@ -453,7 +461,7 @@ int SDL_main(int argc, char *argv[])
 	//score display
 	int score = 0; //initial score
 	SDL_Color scoreColour = { 0, 0, 0, 255 };
-	
+
 	//Tests.
 	//none
 	
@@ -698,8 +706,10 @@ int SDL_main(int argc, char *argv[])
 			if (lvlbool)//has changed level
 			{
 				int randomIndex = rand() % (sizeof(enemySprites) / sizeof(enemySprites[0]));
+				
 				SDL_Texture *enemyTexture = enemySprites[randomIndex];
-				randomSpawnEnemy(500, 500, 100, 100, 100, 10, enemyTexture, level_cur);//random spawn an enemy with these stats
+
+				randomSpawnEnemy(500, 500, 100, 100, 100, 10, fat[randomIndex], carb[randomIndex], protein[randomIndex], alcohol[randomIndex],enemyTexture, level_cur);//random spawn an enemy with these stats
 				buttonVis=0;//remove npc chatbox if you walk away
 				
 				level_cur += level_count;//allows negative wrap.
@@ -1205,6 +1215,7 @@ int SDL_main(int argc, char *argv[])
 			struct Enemy* currentEnemy = &enemies[i];
 			if (currentEnemy->health > 0 && currentEnemy->spawnLevel == level_cur)
 			{
+
 				// Enemy movement logic
 				float directionX = Player.x - currentEnemy->x;
 				float directionY = Player.y - currentEnemy->y;
