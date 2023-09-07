@@ -80,6 +80,7 @@ void damageMe(int dmg)
 	if(health-dmg<=0)
 	{
 		health=0;
+		audio_sfx_play_id(1,1);//player died.
 	}
 	else
 	{

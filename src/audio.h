@@ -14,25 +14,12 @@ Mix_Chunk *sfx0;
 void audio_init();
 void audio_free();
 void audio_music_volume(double vol);
-int audio_music_strtoid(char* str);
-void audio_music_play(char *file);
+int audio_music_idtostr(int id);
+void audio_music_play_string(char *file);
+void audio_music_play_id(int id);
 void audio_music_level(int lc,int lp);
+char* audio_sfx_idtostr(int id);
+//void audio_sfx_play_string(char *file,int chn);
+void audio_sfx_play_id(int id,int chn);
 
 #endif
-
-/*
-//Audio.
-typedef struct
-{
-    Uint8* buffer;
-    Uint32 length;
-    Uint32 position;
-} AudioData;//must be typedef'ed like this to fix compile bugs.
-
-void audioCallback(void* userdata, Uint8* stream, int len);
-void play_WAV(const char* wavfile,SDL_AudioSpec spec,Uint8 *wavbuffer,int wavlength);
-
-SDL_AudioDeviceID deviceid;
-Uint8 *wavbuffer;
-
-*/

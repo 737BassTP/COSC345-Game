@@ -17,6 +17,8 @@ https://wiki.libsdl.org/SDL2/APIByCategory
 * @brief Implements main.h
 */
 
+#define WEATHERDATA_ENTRIES 80640
+
 //Includes.
 #include "everything.h"
 
@@ -131,18 +133,22 @@ int SDL_main(int argc, char *argv[])
 	int recordCount = 0;
     int maxRecords = 80642; 
 	records = (CSVRecord *)malloc(maxRecords * sizeof(CSVRecord));
-	if (records == NULL) {
+	if (records == NULL)
+	{
         perror("Memory allocation failed");
         fclose(weatherdata);
         return 1;
     }
-    while (fgets(line, sizeof(line), weatherdata)) {
+    while (fgets(line, sizeof(line), weatherdata))
+	{
         char *token;
         char *rest = line;
         int fieldCount = 0;
 
-        while ((token = strtok_r(rest, ",", &rest)) != NULL && fieldCount < 17) {
-            switch (fieldCount) {
+        while ((token = strtok_r(rest, ",", &rest)) != NULL && fieldCount < 17)
+		{
+            switch (fieldCount)
+			{
                 case 1:
                     strncpy(records[recordCount].day, token + 1, sizeof(records[recordCount].day) - 1);
                     break;
@@ -154,6 +160,7 @@ int SDL_main(int argc, char *argv[])
                     break;
                 case 5:
                     records[recordCount].temp = atof(token);
+					//strncpy(records[recordCount].temp, token, sizeof(records[recordCount].temp) - 1);
                     break;
                 case 6:
                     records[recordCount].rh = atoi(token);
@@ -192,22 +199,40 @@ int SDL_main(int argc, char *argv[])
             fieldCount++;
         }
 
-        if (fieldCount == 17) {
+        if (fieldCount == 17)
+		{
             recordCount++;
-            if (recordCount >= maxRecords) {
+            if (recordCount >= maxRecords)
+			{
                 printf("Warning: Too many records. Increase maxRecords.\n");
                 break;
             }
-        } else {
+        }
+		else
+		{
             // Handle the case when not all fields are parsed
             printf("Warning: Skipping record %d due to incomplete data.\n", recordCount + 1);
         }
     }
-    printf("Day: %s\n", records[0].day[0] != '\0' ? records[0].day : "N/A");
-    printf("Season: %s\n", records[0].season[0] != '\0' ? records[0].season : "N/A");
+    printf("Day: %s\n"        , records[0].day[0]         != '\0' ? records[0].day         : "N/A");
+    printf("Season: %s\n"     , records[0].season[0]      != '\0' ? records[0].season      : "N/A");
     printf("Source Date: %s\n", records[0].source_date[0] != '\0' ? records[0].source_date : "N/A");
-    printf("Temp: %lf\n", records[0].temp);
-    printf("RH: %d\n", records[0].rh);
+    printf("Temp: %lf\n"      , records[0].temp);//[0]        != '\0' ? records[0].temp        : "N/A");
+    printf("RH: %d\n"         , records[0].rh);
+	
+	//Weather data: Temperature.
+	int WeatherData_NumEntries = WEATHERDATA_ENTRIES;
+	byte WeatherData_Array_Temperature[WEATHERDATA_ENTRIES];
+	char* WeatherData_File_Temperature = "data/weather_temperature.dat";
+	FILE *wdfil = fopen(WeatherData_File_Temperature,"rb");
+	
+	for (int i=0; i<WeatherData_NumEntries; i++)
+	{
+		WeatherData_Array_Temperature[i] = fgetc(wdfil);
+	}
+	fclose(wdfil);
+	//records = (CSVRecord *)malloc(maxRecords * sizeof(CSVRecord));
+	
 	//rain
 	rain_create();
 	snow_create();
@@ -274,17 +299,17 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *spr_tileset = IMG_LoadTexture(renderer,"tiled/tileset.png");
 	SDL_Texture *spr_hudshade = IMG_LoadTexture(renderer,"img/hudshade.png");
 	SDL_Texture *spr_enemy1 = IMG_LoadTexture(renderer,"img/spr_enemy1.png");
-SDL_Texture *burger = IMG_LoadTexture(renderer,"img/burger.png");
-	SDL_Texture *bread = IMG_LoadTexture(renderer,"img/bread.png");
-	SDL_Texture *avo = IMG_LoadTexture(renderer,"img/avo.png");
-	SDL_Texture *boiledEgg = IMG_LoadTexture(renderer,"img/boiled-egg.png");
-	SDL_Texture *carrot = IMG_LoadTexture(renderer,"img/carrot.png");
-	SDL_Texture *friedEgg = IMG_LoadTexture(renderer,"img/fried-egg.png");
-	SDL_Texture *fries = IMG_LoadTexture(renderer,"img/fries.png");
-	SDL_Texture *mushroom = IMG_LoadTexture(renderer,"img/mushroom.png");
-	SDL_Texture *pizza = IMG_LoadTexture(renderer,"img/pizza.png");
-	SDL_Texture *potato = IMG_LoadTexture(renderer,"img/potato.png");
-	SDL_Texture *tomato = IMG_LoadTexture(renderer,"img/tomato.png");
+	SDL_Texture *spr_burger = IMG_LoadTexture(renderer,"img/burger.png");
+	SDL_Texture *spr_bread = IMG_LoadTexture(renderer,"img/bread.png");
+	SDL_Texture *spr_avo = IMG_LoadTexture(renderer,"img/avo.png");
+	SDL_Texture *spr_boiledEgg = IMG_LoadTexture(renderer,"img/boiled-egg.png");
+	SDL_Texture *spr_carrot = IMG_LoadTexture(renderer,"img/carrot.png");
+	SDL_Texture *spr_friedEgg = IMG_LoadTexture(renderer,"img/fried-egg.png");
+	SDL_Texture *spr_fries = IMG_LoadTexture(renderer,"img/fries.png");
+	SDL_Texture *spr_mushroom = IMG_LoadTexture(renderer,"img/mushroom.png");
+	SDL_Texture *spr_pizza = IMG_LoadTexture(renderer,"img/pizza.png");
+	SDL_Texture *spr_potato = IMG_LoadTexture(renderer,"img/potato.png");
+	SDL_Texture *spr_tomato = IMG_LoadTexture(renderer,"img/tomato.png");
 
 	SDL_Texture *penguinSamImg = IMG_LoadTexture(renderer,"img/sammy.png");
 	SDL_Texture *snowflake = IMG_LoadTexture(renderer,"img/snowflake.png");
@@ -297,9 +322,10 @@ SDL_Texture *burger = IMG_LoadTexture(renderer,"img/burger.png");
 	int font_ascii_w = 8;
 	int font_ascii_h = 24;
 
-	SDL_Texture *enemySprites[] = {
-    burger, bread, avo, boiledEgg, carrot,
-    friedEgg, fries, mushroom, pizza, potato, tomato
+	SDL_Texture *enemySprites[] = 
+	{
+		spr_burger, spr_bread, spr_avo, spr_boiledEgg, spr_carrot,
+		spr_friedEgg, spr_fries, spr_mushroom, spr_pizza, spr_potato, spr_tomato
 	};//enemy sprites to be used for random spawning.
 
 	int fat[] = {9.6, 2.9, 19.6, 10.5, 0.2, 16.5, 16.9, 0.1, 5.5, 0.1, 0.2};
@@ -314,7 +340,9 @@ SDL_Texture *burger = IMG_LoadTexture(renderer,"img/burger.png");
 	int time_clock = 0;//range: 0-1439 = 00:00-23:59
 	int time_clock_fps=0;//rapidly emulate sub-seconds.
 	int time_clock_fps_max=57;//below 60 to accommodate for delays.
-	int time_clock_fps_multiplier=60;//1=1/1 second, 4=1/4 second.
+	int time_clock_fps_multiplier_dev = 60;//60=(1 in-game-day = 24 IRL-seconds)
+	int time_clock_fps_multiplier_release = 3;//3=(1 in-game-day = 8 IRL-minutes); 2=12, 3=8, 4=6, 5=4:48, 6=4, ...
+	int time_clock_fps_multiplier=time_clock_fps_multiplier_dev;
 	char *timestr_a="Night";
 	char *timestr_b="Morning";
 	char *timestr_c="Day";
@@ -323,6 +351,7 @@ SDL_Texture *burger = IMG_LoadTexture(renderer,"img/burger.png");
 	char *weekday_string="MTWTFSS";
 	int monthday=0;//4 weeks=28 days.
 	char month_str[5];//e.g "21stNULL"
+	int year=0;
 	
 	//Game Level.
 	int level_size = sqr(win_game_tile_num);//16*16=256
@@ -415,7 +444,7 @@ SDL_Texture *burger = IMG_LoadTexture(renderer,"img/burger.png");
 	
 	//Audio (Music + SFX).
 	audio_init();
-	audio_music_play("audio/overworld.wav");
+	audio_music_play_id(0);
 	audio_music_volume((double)0.75);
 	
 	//Splash intro screen.
@@ -814,11 +843,14 @@ SDL_Texture *burger = IMG_LoadTexture(renderer,"img/burger.png");
 			time_clock_fps-=time_clock_fps_max;
 		}
 		weekday = (weekday+(time_clock>=time_clock_max))%7;
+		year += ((monthday==27) && (weekday==6) && (time_clock==(time_clock_max-1)));
 		monthday = (monthday+(time_clock>=time_clock_max))%28;
 		time_clock %= time_clock_max;
 		time_clock_fps %= time_clock_fps_max;
 		
 		//Temperature.
+		int temp_off = 2*((time_clock % time_clock_max) + (time_clock_max * monthday) + (year%2));
+		temp_cur = (int)WeatherData_Array_Temperature[temp_off];
 		char newtempstr[6];//[5]=NULL
 		strcpy(newtempstr,temp_str);
 		newtempstr[0] = (char)(temp_cur>=0)?("+"[0]):("-"[0]);
@@ -1263,6 +1295,7 @@ SDL_Texture *burger = IMG_LoadTexture(renderer,"img/burger.png");
 					}
 					currentEnemy->x -= bumpDirectionX * bumpDistance;
 					currentEnemy->y -= bumpDirectionY * bumpDistance;
+					audio_sfx_play_id(0,0);//explosion sound.
 				}
 			}
 		}
@@ -1707,6 +1740,18 @@ SDL_Texture *burger = IMG_LoadTexture(renderer,"img/burger.png");
 	SDL_DestroyTexture(spr_hudshade);
 	SDL_DestroyTexture(spr_nutrients);
 	SDL_DestroyTexture(spr_enemy1);
+	
+	SDL_DestroyTexture(spr_burger);
+	SDL_DestroyTexture(spr_bread);
+	SDL_DestroyTexture(spr_avo);
+	SDL_DestroyTexture(spr_boiledEgg);
+	SDL_DestroyTexture(spr_carrot);
+	SDL_DestroyTexture(spr_friedEgg);
+	SDL_DestroyTexture(spr_fries);
+	SDL_DestroyTexture(spr_mushroom);
+	SDL_DestroyTexture(spr_pizza);
+	SDL_DestroyTexture(spr_potato);
+	SDL_DestroyTexture(spr_tomato);
 	IMG_Quit();
 	
 	audio_free();
