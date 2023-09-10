@@ -429,6 +429,7 @@ int SDL_main(int argc, char *argv[])
 	struct NPC forestMan;
 	struct NPC Tutorlvl2;
 	struct NPC quizTutor;
+	struct NPC seanBoss;
 	initNPC(&Tutor, 900, 700,50, 50, 400, 400, 2, spr_enemy1, 16);//init tutor
 	addNPC(&Tutor);//add tutor to NPC array
 	initNPC(&Tutorlvl2, 900, 400,50, 50, 400, 400, 2, spr_enemy1, 1);//init tutor2
@@ -439,6 +440,9 @@ int SDL_main(int argc, char *argv[])
 	addNPC(&forestMan);
 	initNPC(&quizTutor, 850, 520,50, 50, 400, 400, 2, spr_enemy1, 3);//init forestMan
 	addNPC(&quizTutor);
+	initNPC(&seanBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 2);//init tutor
+	struct Enemy seanBossEnemy;
+	addNPC(&seanBoss); int seanBossChatDone = 0;
 	//Nutrients.
 	SDL_Texture *spr_nutrients = IMG_LoadTexture(renderer,"img/spr_nutrients_strip4.png");
 	
@@ -1273,7 +1277,7 @@ int SDL_main(int argc, char *argv[])
 				
 				// Rendering
 				SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-				SDL_Rect enemyRect = { currentEnemy->x, currentEnemy->y, currentEnemy->width, currentEnemy->height };
+				SDL_Rect enemyRect = { currentEnemy->x-5, currentEnemy->y-5, currentEnemy->width+5, currentEnemy->height+5 };
 				draw_image(renderer, currentEnemy->x, currentEnemy->y, currentEnemy->x + currentEnemy->width, currentEnemy->y + currentEnemy->height, currentEnemy->texture);
 
 				// Collision detection with the player
@@ -1486,12 +1490,10 @@ int SDL_main(int argc, char *argv[])
 				draw_image(renderer, snowParticles[i].x, snowParticles[i].y, snowParticles[i].x + 25, snowParticles[i].y + 25, snowflake);
 			}
 		}
-		//npc stuff
-		for (int i = 0; i < MAX_NPCS; i++) 
-		{
-    		struct NPC* currentNPC = &npcs[i];
-			if (currentNPC->appearsOnLevel == level_cur)
-			{
+		//npc rendering stuff
+		for (int i = 0; i < MAX_NPCS; i++) {
+			struct NPC* currentNPC = &npcs[i];
+			if (currentNPC->appearsOnLevel == level_cur && currentNPC->destroyed!=1) {
 				// Rendering
 				globalNpc = currentNPC;
 				SDL_Rect npcRect = { currentNPC->x, currentNPC->y, currentNPC->width, currentNPC->height };
@@ -1607,6 +1609,29 @@ int SDL_main(int argc, char *argv[])
 				nextChat=0;
 				quizTutorChatCompleted=1;
 			}
+		}
+			if(level_cur==2){
+			if(seanBossChatDone==0)
+			{
+				buttonVis=1;
+				strcpy(buttonTexts, "Greetings fool");
+			}
+			if(nextChat==1)
+			{
+				strcpy(buttonTexts, "I am Sean");
+			}
+			if(nextChat==2)
+			{
+				strcpy(buttonTexts, "You think you can face me? you are mistaken.");
+			}
+			if(nextChat==3)
+			{
+				buttonVis=0;
+				nextChat=0;
+				seanBossChatDone=1;
+				addEnemy(900, 300, 150, 150, 100, 10, 0,0,200,0, spr_enemy1,2);
+				seanBoss.destroyed=1;
+						}
 		}
 		/*
 		Overlay Drawing.

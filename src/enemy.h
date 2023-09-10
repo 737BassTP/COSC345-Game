@@ -40,6 +40,8 @@ struct NPC
 	byte face_dir;
 	SDL_Texture* texture;
 	int appearsOnLevel;
+	int isRanged;
+	int destroyed;
 };
 
 struct NPC npcs[MAX_NPCS];

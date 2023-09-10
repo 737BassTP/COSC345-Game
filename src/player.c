@@ -35,8 +35,8 @@ void calculateAttackHitbox(struct player* player, SDL_Rect* attackHitbox)
     // Set the attack hitbox's position and size
     attackHitbox->x = attackX;
     attackHitbox->y = attackY;
-    attackHitbox->w = player->attackRangeWidth;
-    attackHitbox->h = player->attackRangeHeight;
+    attackHitbox->w = player->attackRangeWidth+10;
+    attackHitbox->h = player->attackRangeHeight+10;
 }
 
 // Function to perform the player's attack
@@ -53,7 +53,7 @@ void attack(struct player* player)
             calculateAttackHitbox(player, &attackHitbox);
 
             // Create a rectangle representing the enemy hitbox
-            SDL_Rect enemyHitbox = { currentEnemy->x, currentEnemy->y, currentEnemy->width, currentEnemy->height };
+            SDL_Rect enemyHitbox = { currentEnemy->x-10, currentEnemy->y-10, currentEnemy->width+20, currentEnemy->height+20 };
 
             // Check for collision with the enemy
             if (checkCollision(attackHitbox, enemyHitbox)) 
