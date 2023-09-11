@@ -14,7 +14,7 @@ Mix_Chunk *sfx0;
 void audio_init();
 void audio_free();
 void audio_music_volume(double vol);
-int audio_music_idtostr(int id);
+char* audio_music_idtostr(int id);
 void audio_music_play_string(char *file);
 void audio_music_play_id(int id);
 void audio_music_level(int lc,int lp);

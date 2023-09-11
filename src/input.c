@@ -13,6 +13,12 @@ int glob_vk_down    = 0;///< key: down
 int glob_vk_space   = 0;///< key: space
 int glob_vk_enter   = 0;///< key: enter
 int glob_vk_tab     = 0;///< key: tab
+int glob_vk_pagedown= 0;///< key: page down
+int glob_vk_pageup  = 0;///< key: page up
+int glob_vk_home    = 0;///< key: home
+int glob_vk_end     = 0;///< key: end
+int glob_vk_insert  = 0;///< key: insert
+int glob_vk_delete  = 0;///< key: delete
 int glob_vk_f1      = 0;///< key: F2
 int glob_vk_f2      = 0;///< key: F2
 int glob_vk_f3      = 0;///< key: F3
@@ -113,6 +119,12 @@ void keyboard_update_previous()
 	keyboard_set_old(&glob_vk_space);
 	keyboard_set_old(&glob_vk_enter);
 	keyboard_set_old(&glob_vk_tab);
+	keyboard_set_old(&glob_vk_pageup);
+	keyboard_set_old(&glob_vk_pagedown);
+	keyboard_set_old(&glob_vk_home);
+	keyboard_set_old(&glob_vk_end);
+	keyboard_set_old(&glob_vk_insert);
+	keyboard_set_old(&glob_vk_delete);
 	keyboard_set_old(&glob_vk_f1);
 	keyboard_set_old(&glob_vk_f2);
 	keyboard_set_old(&glob_vk_f3);
@@ -164,6 +176,12 @@ void keyboard_sdl_polls(SDL_Event event)
 					case SDLK_SPACE:    {keyboard_set_new(&glob_vk_space,v);} break;
 					case SDLK_RETURN:   {keyboard_set_new(&glob_vk_enter,v);} break;
 					case SDLK_TAB:      {keyboard_set_new(&glob_vk_tab,v);} break;
+					case SDLK_PAGEUP:   {keyboard_set_new(&glob_vk_pageup,v);} break;
+					case SDLK_PAGEDOWN: {keyboard_set_new(&glob_vk_pagedown,v);} break;
+					case SDLK_HOME:     {keyboard_set_new(&glob_vk_home,v);} break;
+					case SDLK_END:      {keyboard_set_new(&glob_vk_end,v);} break;
+					case SDLK_INSERT:   {keyboard_set_new(&glob_vk_insert,v);} break;
+					case SDLK_DELETE:   {keyboard_set_new(&glob_vk_delete,v);} break;
 					case SDLK_F1:       {keyboard_set_new(&glob_vk_f1,v);} break;
 					case SDLK_F2:       {keyboard_set_new(&glob_vk_f2,v);} break;
 					case SDLK_F3:       {keyboard_set_new(&glob_vk_f3,v);} break;
@@ -205,6 +223,12 @@ void keyboard_sdl_polls(SDL_Event event)
 					case SDLK_SPACE:    {keyboard_set_new(&glob_vk_space,v);} break;
 					case SDLK_RETURN:   {keyboard_set_new(&glob_vk_enter,v);} break;
 					case SDLK_TAB:      {keyboard_set_new(&glob_vk_tab,v);} break;
+					case SDLK_PAGEUP:   {keyboard_set_new(&glob_vk_pageup,v);} break;
+					case SDLK_PAGEDOWN: {keyboard_set_new(&glob_vk_pagedown,v);} break;
+					case SDLK_HOME:     {keyboard_set_new(&glob_vk_home,v);} break;
+					case SDLK_END:      {keyboard_set_new(&glob_vk_end,v);} break;
+					case SDLK_INSERT:   {keyboard_set_new(&glob_vk_insert,v);} break;
+					case SDLK_DELETE:   {keyboard_set_new(&glob_vk_delete,v);} break;
 					case SDLK_F1:       {keyboard_set_new(&glob_vk_f1,v);} break;
 					case SDLK_F2:       {keyboard_set_new(&glob_vk_f2,v);} break;
 					case SDLK_F3:       {keyboard_set_new(&glob_vk_f3,v);} break;

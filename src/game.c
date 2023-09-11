@@ -22,7 +22,8 @@ void createWaterParticle(int index, int window_width, int window_height)
     waterParticles[index].active = 1;                    // Set active to 1 (true)
 }
 // Function to initialize a snow particle
-void createSnowParticle(int index, int window_width, int window_height) {
+void createSnowParticle(int index, int window_width, int window_height)
+{
     snowParticles[index].x = rand() % (screen_w-596)+298;  
     snowParticles[index].y = -(rand() % window_height); // Start above the screen
     snowParticles[index].speed = 5;    // Adjust the falling speed as needed

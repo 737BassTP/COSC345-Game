@@ -2,8 +2,9 @@ REM To install pngcrush, download executable version 1.8.11 and place its residi
 REM https://sourceforge.net/projects/pmt/files/pngcrush-executables/1.8.11/pngcrush_1_8_11_w64.exe/download
 
 REM "Signal Hill Lookout"
-pngcrush signalhill.png signalhill2.png
-del signalhill.png
-ren signalhill2.png signalhill.png
+pngcrush photographies.png photographies2.png
+REM pngcrush -brute photographies.png photographies2.png
+del photographies.png
+ren photographies2.png photographies.png
 
 REM "?"
