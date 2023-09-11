@@ -4,7 +4,8 @@
 */
 
 #include "everything.h"
-
+#include "main.c"
+struct player Player;
 void calculateAttackHitbox(struct player* player, SDL_Rect* attackHitbox)
 {
     // Calculate the position of the attack hitbox based on player direction
@@ -65,7 +66,20 @@ void attack(struct player* player)
         }
     }
 }
+void enemyAttack(struct Enemy* enemy, struct Player* player) {
+    // Calculate the position of the attack hitbox based on the enemy's position and direction
+    SDL_Rect attackHitbox;
+    calculateAttackHitbox(enemy, &attackHitbox);
 
+    // Create a rectangle representing the player's hitbox
+    SDL_Rect playerHitbox = { Player.x, Player.y, Player.width, Player.height };
+    // Check for collision with the player
+    if (checkCollision(attackHitbox, playerHitbox)) {
+        // If the attack hitbox collides with the player, apply damage to the player
+        printf("Enemy attacked player!\n");
+        damageMe(enemy->dmg);
+    }
+}
 // Function to render the weapon swing animation
 void renderWeaponSwing(SDL_Renderer* renderer, SDL_Texture* weaponTexture, struct player* player)
 {

@@ -416,6 +416,7 @@ int SDL_main(int argc, char *argv[])
 	Player.damage=50;
 	Player.width=15;
 	Player.height=15;
+	// Player.health=100;
 	updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
 
 	//test enemy
@@ -430,6 +431,9 @@ int SDL_main(int argc, char *argv[])
 	struct NPC Tutorlvl2;
 	struct NPC quizTutor;
 	struct NPC seanBoss;
+	struct NPC campbellBoss;
+	struct NPC thomasBoss;
+	struct NPC matthewBoss;
 	initNPC(&Tutor, 900, 700,50, 50, 400, 400, 2, spr_enemy1, 16);//init tutor
 	addNPC(&Tutor);//add tutor to NPC array
 	initNPC(&Tutorlvl2, 900, 400,50, 50, 400, 400, 2, spr_enemy1, 1);//init tutor2
@@ -440,9 +444,14 @@ int SDL_main(int argc, char *argv[])
 	addNPC(&forestMan);
 	initNPC(&quizTutor, 850, 520,50, 50, 400, 400, 2, spr_enemy1, 3);//init forestMan
 	addNPC(&quizTutor);
-	initNPC(&seanBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 2);//init tutor
-	struct Enemy seanBossEnemy;
+	initNPC(&seanBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 75);//init protein boss on level 75
 	addNPC(&seanBoss); int seanBossChatDone = 0;
+	initNPC(&campbellBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 80);//init  boss on level 80
+	addNPC(&campbellBoss); int campbellBossChatDone = 0;
+	initNPC(&matthewBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 179);//init  boss on level 179 (octagon)
+	addNPC(&matthewBoss); int matthewBossChatDone = 0;
+	initNPC(&thomasBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 202);//init  boss at level 202 (sandymount)
+	addNPC(&thomasBoss); int thomasBossChatDone = 0;
 	//Nutrients.
 	SDL_Texture *spr_nutrients = IMG_LoadTexture(renderer,"img/spr_nutrients_strip4.png");
 	
@@ -1499,6 +1508,7 @@ int SDL_main(int argc, char *argv[])
 				SDL_Rect npcRect = { currentNPC->x, currentNPC->y, currentNPC->width, currentNPC->height };
 				SDL_RenderCopy(renderer, currentNPC->texture, NULL, &npcRect);
 			}
+
 		}
 		if(level_cur==1)
 		{
@@ -1610,7 +1620,7 @@ int SDL_main(int argc, char *argv[])
 				quizTutorChatCompleted=1;
 			}
 		}
-			if(level_cur==2){
+			if(level_cur==75){
 			if(seanBossChatDone==0)
 			{
 				buttonVis=1;
@@ -1629,8 +1639,81 @@ int SDL_main(int argc, char *argv[])
 				buttonVis=0;
 				nextChat=0;
 				seanBossChatDone=1;
-				addEnemy(900, 300, 150, 150, 100, 10, 0,0,200,0, spr_enemy1,2);
+				addEnemy(900, 300, 150, 150, 400, 10, 0,0,200,0, spr_enemy1,75);
 				seanBoss.destroyed=1;
+				globalNpc->destroyed=1;
+						}
+		}
+			if(level_cur==80){
+				if(campbellBossChatDone==0)
+			{
+				buttonVis=1;
+				strcpy(buttonTexts, "You have finally found me");
+			}
+			if(nextChat==1)
+			{
+				strcpy(buttonTexts, "I am Campbell");
+			}
+			if(nextChat==2)
+			{
+				strcpy(buttonTexts, "Prepare to face your doom");
+			}
+			if(nextChat==3)
+			{
+				buttonVis=0;
+				nextChat=0;
+				campbellBossChatDone=1;
+				addEnemy(900, 300, 150, 150, 400, 10, 0,0,200,0, spr_enemy1,80);
+				campbellBoss.destroyed=1;
+				globalNpc->destroyed=1;
+						}
+		}
+			if(level_cur==179){
+				if(matthewBossChatDone==0)
+			{
+				buttonVis=1;
+				strcpy(buttonTexts, "What a surprise");
+			}
+			if(nextChat==1)
+			{
+				strcpy(buttonTexts, "I am Matthew");
+			}
+			if(nextChat==2)
+			{
+				strcpy(buttonTexts, "it is too late to run");
+			}
+			if(nextChat==3)
+			{
+				buttonVis=0;
+				nextChat=0;
+				matthewBossChatDone=1;
+				addEnemy(900, 300, 150, 150, 400, 10, 0,0,200,0, spr_enemy1,179);
+				matthewBoss.destroyed=1;
+				globalNpc->destroyed=1;
+						}
+		}
+			if(level_cur==202){
+				if(thomasBossChatDone==0)
+			{
+				buttonVis=1;
+				strcpy(buttonTexts, "What a surprise");
+			}
+			if(nextChat==1)
+			{
+				strcpy(buttonTexts, "I am Thomas");
+			}
+			if(nextChat==2)
+			{
+				strcpy(buttonTexts, "sorry to have to do this to you.");
+			}
+			if(nextChat==3)
+			{
+				buttonVis=0;
+				nextChat=0;
+				thomasBossChatDone=1;
+				addEnemy(900, 300, 150, 150, 400, 10, 0,0,200,0, spr_enemy1,202);
+				thomasBoss.destroyed=1;
+				globalNpc->destroyed=1;
 						}
 		}
 		/*

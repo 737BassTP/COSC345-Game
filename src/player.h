@@ -7,7 +7,7 @@
 #define player_h
 
 #include "everything.h"
-
+#include "main.c"
 //Player.
 struct player
 {
@@ -30,6 +30,7 @@ struct player
     int attackRangeHeight;
 	int width;
 	int height;
+	int health;
 };
 
 void calculateAttackHitbox(struct player* player, SDL_Rect* attackHitbox);
