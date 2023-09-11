@@ -7,7 +7,6 @@
 #define player_h
 
 #include "everything.h"
-#include "main.c"
 //Player.
 struct player
 {
@@ -35,7 +34,7 @@ struct player
 
 void calculateAttackHitbox(struct player* player, SDL_Rect* attackHitbox);
 void attack(struct player* player);// Function to perform the player's attack
-
+void enemyAttack(struct Enemy* enemy, struct player* Player); 
 #define NUM_FRAMES 8
 #define ANGLE_INCREMENT 5.625
 void renderWeaponSwing(SDL_Renderer* renderer, SDL_Texture* weaponTexture, struct player* player);// Function to render the weapon swing animation

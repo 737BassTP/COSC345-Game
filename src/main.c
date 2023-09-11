@@ -550,7 +550,10 @@ int SDL_main(int argc, char *argv[])
 			attack(&Player);//calls attack function
 			renderWeaponSwing(renderer, spr_water, &Player);//renders the swing
 		}
-
+			if (keyboard_check_pressed(glob_vk_8))
+		{
+			enemyAttack(&enemies[0], &Player);
+			}
 		//Rain toggle.
 		if (keyboard_check_pressed(glob_vk_0))
 		{
@@ -1274,6 +1277,26 @@ int SDL_main(int argc, char *argv[])
 					{
 						directionX /= distanceToPlayer;
 						directionY /= distanceToPlayer;
+					}
+					    // Calculate the angle in radians
+					float angle = atan2(directionY, directionX);
+
+					// Convert the angle to degrees
+					float degrees = angle * (180.0 / M_PI);
+
+					// Determine the enemy's facedir based on the angle
+					if (degrees >= -45 && degrees < 45) {
+						// Right
+						currentEnemy->facedir = 0;
+					} else if (degrees >= 45 && degrees < 135) {
+						// Up
+						currentEnemy->facedir = 1;
+					} else if ((degrees >= 135 && degrees <= 180) || (degrees >= -180 && degrees < -135)) {
+						// Left
+						currentEnemy->facedir = 2;
+					} else {
+						// Down
+						currentEnemy->facedir = 3;
 					}
 					if(quizOn==false)
 					{

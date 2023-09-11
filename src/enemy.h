@@ -23,6 +23,9 @@ struct Enemy
 	int alcohol;
 	SDL_Texture* texture;
 	int spawnLevel;
+	int attackRangeWidth;
+    int attackRangeHeight;
+	int facedir;
     // Add more enemy-related attributes as needed
 };
 #define MAX_ENEMIES 250
@@ -42,6 +45,7 @@ struct NPC
 	int appearsOnLevel;
 	int isRanged;
 	int destroyed;
+	
 };
 
 struct NPC npcs[MAX_NPCS];

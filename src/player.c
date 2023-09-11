@@ -4,7 +4,6 @@
 */
 
 #include "everything.h"
-#include "main.c"
 struct player Player;
 void calculateAttackHitbox(struct player* player, SDL_Rect* attackHitbox)
 {
@@ -39,7 +38,34 @@ void calculateAttackHitbox(struct player* player, SDL_Rect* attackHitbox)
     attackHitbox->w = player->attackRangeWidth+10;
     attackHitbox->h = player->attackRangeHeight+10;
 }
+void calculateEnemyAttackHitbox(struct Enemy* enemy, SDL_Rect* attackHitbox) {
+    // Calculate the position of the attack hitbox based on enemy direction
+    int attackX = enemy->x;
+    int attackY = enemy->y;
 
+    // Adjust the position of the attack hitbox based on the enemy's direction
+    switch (enemy->facedir) {
+        case 0: // Right
+            attackX += enemy->attackRangeWidth;
+            break;
+        case 1: // Up
+            attackY -= enemy->attackRangeHeight;
+            break;
+        case 2: // Left
+            attackX -= enemy->attackRangeWidth;
+            break;
+        case 3: // Down
+            attackY += enemy->attackRangeHeight;
+            break;
+        // Add more cases if needed for other directions
+    }
+
+    // Set the attack hitbox's position and size
+    attackHitbox->x = attackX;
+    attackHitbox->y = attackY;
+    attackHitbox->w = enemy->attackRangeWidth + 10; // Adjust as needed
+    attackHitbox->h = enemy->attackRangeHeight + 10; // Adjust as needed
+}
 // Function to perform the player's attack
 void attack(struct player* player) 
 {
@@ -66,14 +92,16 @@ void attack(struct player* player)
         }
     }
 }
-void enemyAttack(struct Enemy* enemy, struct Player* player) {
+void enemyAttack(struct Enemy* enemy, struct player* Player) {
     // Calculate the position of the attack hitbox based on the enemy's position and direction
     SDL_Rect attackHitbox;
-    calculateAttackHitbox(enemy, &attackHitbox);
+    calculateEnemyAttackHitbox(enemy, &attackHitbox);
 
     // Create a rectangle representing the player's hitbox
-    SDL_Rect playerHitbox = { Player.x, Player.y, Player.width, Player.height };
+    SDL_Rect playerHitbox = { Player->x, Player->y, Player->width, Player->height };
     // Check for collision with the player
+    printf("Player Hitbox: x=%d, y=%d, width=%d, height=%d\n", playerHitbox.x, playerHitbox.y, playerHitbox.w, playerHitbox.h);
+    printf("Attack Hitbox: x=%d, y=%d, width=%d, height=%d\n", attackHitbox.x, attackHitbox.y, attackHitbox.w, attackHitbox.h);
     if (checkCollision(attackHitbox, playerHitbox)) {
         // If the attack hitbox collides with the player, apply damage to the player
         printf("Enemy attacked player!\n");
