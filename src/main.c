@@ -1507,7 +1507,7 @@ int SDL_main(int argc, char *argv[])
 				}
 				else if(userAnswer==1||userAnswer==2||userAnswer==3)
 				{
-					quizOn=false;Player.move_spd=3*4;quizQNum=1;quizInfo="";userAnswer=0;quizLoopOn=false;
+					quizOn=false;Player.move_spd=3*2;quizQNum=1;quizInfo="";userAnswer=0;quizLoopOn=false;
 				}
 			}
 		}	
@@ -1579,8 +1579,7 @@ int SDL_main(int argc, char *argv[])
 		// Draw water particles
 		for (int i = 0; i < MAX_WATER_PARTICLES; i++) 
 		{
-			if (waterParticles[i].active) 
-			{
+			if (waterParticles[i].active) {
 				draw_image(renderer, waterParticles[i].x, waterParticles[i].y, waterParticles[i].x + 5, waterParticles[i].y + 15, spr_water);
 			}
 		}
