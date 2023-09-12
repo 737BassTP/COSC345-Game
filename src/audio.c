@@ -23,10 +23,10 @@ void audio_music_volume(double vol)
 {
 	Mix_VolumeMusic((int)lerp((double)0,(double)MIX_MAX_VOLUME,(double)vol));
 }
-int audio_music_idtostr(int id)
+char* audio_music_idtostr(int id)
 {
 	//TODO: Fix compiler bug that converts const char* to int without error.
-	int ret=-1;
+	char *ret="";
 	//if (strcmp(str,"audio/overworld.wav")==0) {ret=0;}
 	switch (id)
 	{

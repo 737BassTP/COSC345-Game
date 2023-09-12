@@ -11,7 +11,8 @@ Savegame format:
 	$00-$3F: Levels visited (by ID; 512)
 	$40-$5F: Quizzes won (by ID; 256)
 	$60-$6F: Chats read (by ID; 128)
-	$70-$7F: Quests done (by ID; 128)
+	$70-$7B: Quests done (by ID; 96)
+	$7C-$7F: Photographies unlocked (by ID; 32)
 	$80-$8F: Player variables.
 		$80    : x
 		$81    : y
@@ -23,8 +24,10 @@ Savegame format:
 		$85    : health
 		$86-$8F: ?
 	$90-$9F: Statistics.
-		$90-$91: Enemies killed.
-		$92-$9F: ?
+		$90-$91: Enemies killed (total).
+		$92-$9D: ?
+		$9E-$9F: Seconds in-game; story (stop counter after defeating final boss).
+		$9E-$9F: Seconds in-game; 100% (stop counter after unlocking everything).
 	$A0-$AF: Player name (16 characters)
 	$B0-$BF: Inventory (16x items; max 255 since 0 is valid)
 	$C0-$CF: ?

@@ -934,6 +934,10 @@ char* level_get_name(int lvl,char* ret)
 	fclose(fil);
 	return ret;
 }
+int brl(int v,int a,int b)
+{
+	return (int)(((v<<a)&((1<<b)-1))|(v>>(b-a)));
+}
 
 //distance to player
 float distance(float x1, float y1, float x2, float y2)

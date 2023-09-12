@@ -121,7 +121,8 @@ int SDL_main(int argc, char *argv[])
 	srand(time(NULL));
 	//read weatherdata and save it into an array called records
 	FILE *weatherdata = fopen("data/weather_10yrs.csv", "r");
-    if (weatherdata == NULL) {
+    if (weatherdata == NULL)
+	{
         perror("Error opening file");
         return 1;
     }
@@ -450,7 +451,7 @@ int SDL_main(int argc, char *argv[])
 	addNPC(&campbellBoss); int campbellBossChatDone = 0;
 	initNPC(&matthewBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 179);//init  boss on level 179 (octagon)
 	addNPC(&matthewBoss); int matthewBossChatDone = 0;
-	initNPC(&thomasBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 202);//init  boss at level 202 (sandymount)
+	initNPC(&thomasBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 202);//init fat boss at level 202 (sandymount)
 	addNPC(&thomasBoss); int thomasBossChatDone = 0;
 	//Nutrients.
 	SDL_Texture *spr_nutrients = IMG_LoadTexture(renderer,"img/spr_nutrients_strip4.png");
@@ -472,13 +473,59 @@ int SDL_main(int argc, char *argv[])
 	
 	//Splash photo screen.
 	int splashphoto_bool=0;
-	SDL_Texture *splashphoto_img_signalhill = IMG_LoadTexture(renderer,"img/photo/signalhill.png");
+	SDL_Texture *splashphoto_img_signalhill = IMG_LoadTexture(renderer,"img/photo/photographies.png");
 	char* splashphoto_str_continue = "Press TAB to continue.";
+	//char* splashphoto_str_name = "Signal Hill Lookout";//make changeable.
+	char splashphoto_str_name[40] = "Signal Hill Lookout";//make changeable.
 	char* splashphoto_str_found = "Found: 01/32";//make changeable.
-	char* splashphoto_str_name = "Signal Hill Lookout";//make changeable.
 	int splashphoto_slen_tab=strlen(splashphoto_str_continue);
 	int splashphoto_slen_found=strlen(splashphoto_str_found);
 	int splashphoto_slen_name=strlen(splashphoto_str_name);
+	byte splashphoto_cur=0;
+	int splashphoto_w=455;//todo: auto-detect.
+	int splashphoto_h=256;
+	int splashphoto_max=32;
+	//csv to mem (todo: move to a function).
+	FILE* spf = fopen("img/photo/photographies.txt","rb");
+	char *splashphoto_names[32];
+	char splashphoto_tmp[1024];
+	fread(splashphoto_tmp,1024,1,spf);
+	char *spd=",";
+	char *token;	
+	for (int i=0; i<splashphoto_max; i++)
+	{
+		if (i==0)
+		{
+			token = strtok(splashphoto_tmp,spd);
+		}
+		else
+		{
+			token = strtok(NULL,spd);
+		}
+		splashphoto_names[i] = token;
+	}
+	fclose(spf);
+	//free(splashphoto_tmp);//only for heap.
+	
+	//Splash bustimes screen.
+	int splashbustimes_bool=0;
+	char splashbustimes_arr[1024];
+	char* splashbustimes_route=15;
+	char splashbustimes_txt_routename[32];
+	char *splashbustimes_infostr="Bus Timetable Fast Travel";
+	FILE *sbf = fopen("data/bustimes-15a.dat","rb");
+	splashbustimes_route=fgetc(sbf);
+	for (int i=0; i<32; i++)
+	{
+		char b = fgetc(sbf);
+		if (b == NULL)
+		{
+			break;
+		}
+		splashbustimes_txt_routename[i] = b;
+	}
+	//unfinished.
+	fclose(sbf);
 	
 	//Help menu.
 	int helpmenu_bool=0;
@@ -550,10 +597,10 @@ int SDL_main(int argc, char *argv[])
 			attack(&Player);//calls attack function
 			renderWeaponSwing(renderer, spr_water, &Player);//renders the swing
 		}
-			if (keyboard_check_pressed(glob_vk_8))
+		if (keyboard_check_pressed(glob_vk_8))
 		{
 			enemyAttack(&enemies[0], &Player);
-			}
+		}
 		//Rain toggle.
 		if (keyboard_check_pressed(glob_vk_0))
 		{
@@ -633,7 +680,36 @@ int SDL_main(int argc, char *argv[])
 		if (keyboard_check_pressed(glob_vk_6))
 		{
 			healMe(10);
-		}		
+		}
+		//Debug: Change photograph.
+		if (splashphoto_bool)
+		{
+			if (keyboard_check_pressed(glob_vk_pageup))
+			{
+				splashphoto_cur = (++splashphoto_cur)%splashphoto_max;
+			}
+			if (keyboard_check_pressed(glob_vk_pagedown))
+			{
+				splashphoto_cur = (--splashphoto_cur)%splashphoto_max;
+			}
+			
+			strcpy(splashphoto_str_name,splashphoto_names[splashphoto_cur]);
+		}
+		//Go from splashinto screen to main game.
+		if (keyboard_check_pressed(glob_vk_space)|keyboard_check_pressed(glob_vk_enter))
+		{
+			splashintro_bool=0;
+		}
+		//Show splash photo.
+		if (keyboard_check_pressed(glob_vk_tab))
+		{
+			splashphoto_bool ^= 1;
+		}
+		//Show bus times.
+		if (keyboard_check_pressed(glob_vk_home))
+		{
+			splashbustimes_bool ^= 1;
+		}
 		
 		//Player movement.
 		int mvspd = Player.move_spd;
@@ -773,17 +849,6 @@ int SDL_main(int argc, char *argv[])
 			Player.anim_spd_cur = 0;
 			Player.anim_cur = 0;
 		}
-		//Go from splashinto screen to main game.
-		if (keyboard_check_pressed(glob_vk_space)|keyboard_check_pressed(glob_vk_enter))
-		{
-			splashintro_bool=0;
-		}
-		//Show splash photo.
-		if (keyboard_check_pressed(glob_vk_tab))
-		{
-			splashphoto_bool ^= 1;
-		}
-		
 
 		/*
 		Post-update of inputs.
@@ -1285,16 +1350,21 @@ int SDL_main(int argc, char *argv[])
 					float degrees = angle * (180.0 / M_PI);
 
 					// Determine the enemy's facedir based on the angle
-					if (degrees >= -45 && degrees < 45) {
+					if (degrees >= -45 && degrees < 45)
+					{
 						// Right
 						currentEnemy->facedir = 0;
-					} else if (degrees >= 45 && degrees < 135) {
+					} else if (degrees >= 45 && degrees < 135)
+					{
 						// Up
 						currentEnemy->facedir = 1;
-					} else if ((degrees >= 135 && degrees <= 180) || (degrees >= -180 && degrees < -135)) {
+					} else if ((degrees >= 135 && degrees <= 180) || (degrees >= -180 && degrees < -135))
+					{
 						// Left
 						currentEnemy->facedir = 2;
-					} else {
+					}
+					else
+					{
 						// Down
 						currentEnemy->facedir = 3;
 					}
@@ -1523,9 +1593,11 @@ int SDL_main(int argc, char *argv[])
 			}
 		}
 		//npc rendering stuff
-		for (int i = 0; i < MAX_NPCS; i++) {
+		for (int i = 0; i < MAX_NPCS; i++)
+		{
 			struct NPC* currentNPC = &npcs[i];
-			if (currentNPC->appearsOnLevel == level_cur && currentNPC->destroyed!=1) {
+			if (currentNPC->appearsOnLevel == level_cur && currentNPC->destroyed!=1)
+			{
 				// Rendering
 				globalNpc = currentNPC;
 				SDL_Rect npcRect = { currentNPC->x, currentNPC->y, currentNPC->width, currentNPC->height };
@@ -1622,7 +1694,8 @@ int SDL_main(int argc, char *argv[])
 				forestManChatCompleted=1;
 			}
 		}
-		if(level_cur==3){
+		if(level_cur==3)
+		{
 			if(quizTutorChatCompleted==0)
 			{
 				buttonVis=1;
@@ -1643,7 +1716,8 @@ int SDL_main(int argc, char *argv[])
 				quizTutorChatCompleted=1;
 			}
 		}
-			if(level_cur==75){
+		if(level_cur==75)
+		{
 			if(seanBossChatDone==0)
 			{
 				buttonVis=1;
@@ -1665,10 +1739,11 @@ int SDL_main(int argc, char *argv[])
 				addEnemy(900, 300, 150, 150, 400, 10, 0,0,200,0, spr_enemy1,75);
 				seanBoss.destroyed=1;
 				globalNpc->destroyed=1;
-						}
+			}
 		}
-			if(level_cur==80){
-				if(campbellBossChatDone==0)
+		if(level_cur==80)
+		{
+			if(campbellBossChatDone==0)
 			{
 				buttonVis=1;
 				strcpy(buttonTexts, "You have finally found me");
@@ -1689,10 +1764,11 @@ int SDL_main(int argc, char *argv[])
 				addEnemy(900, 300, 150, 150, 400, 10, 0,0,200,0, spr_enemy1,80);
 				campbellBoss.destroyed=1;
 				globalNpc->destroyed=1;
-						}
+			}
 		}
-			if(level_cur==179){
-				if(matthewBossChatDone==0)
+		if(level_cur==179)
+		{
+			if(matthewBossChatDone==0)
 			{
 				buttonVis=1;
 				strcpy(buttonTexts, "What a surprise");
@@ -1713,10 +1789,11 @@ int SDL_main(int argc, char *argv[])
 				addEnemy(900, 300, 150, 150, 400, 10, 0,0,200,0, spr_enemy1,179);
 				matthewBoss.destroyed=1;
 				globalNpc->destroyed=1;
-						}
+			}
 		}
-			if(level_cur==202){
-				if(thomasBossChatDone==0)
+		if(level_cur==202)
+		{
+			if(thomasBossChatDone==0)
 			{
 				buttonVis=1;
 				strcpy(buttonTexts, "What a surprise");
@@ -1737,15 +1814,30 @@ int SDL_main(int argc, char *argv[])
 				addEnemy(900, 300, 150, 150, 400, 10, 0,0,200,0, spr_enemy1,202);
 				thomasBoss.destroyed=1;
 				globalNpc->destroyed=1;
-						}
+			}
 		}
 		/*
 		Overlay Drawing.
 		*/
+		//Splash bustimes screen.
+		if (splashbustimes_bool)
+		{
+			draw_rectangle_color(renderer,0,0,screen_w,screen_h,c_black);
+			int xx,yy;
+			xx=0;
+			yy=0;
+			draw_text_color(renderer,xx,yy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashbustimes_infostr,font_ascii_w,font_ascii_h,c_green);
+			yy += gh*font_ascii_h*2;
+			draw_text_color(renderer,xx,yy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashbustimes_txt_routename,font_ascii_w,font_ascii_h,c_green);
+			
+		}
+		
 		//Splash photo screen.
 		if (splashphoto_bool)
 		{
-			draw_image(renderer,0,0,screen_w,screen_h,splashphoto_img_signalhill);
+			//draw_image(renderer,0,0,screen_w,screen_h,splashphoto_img_signalhill);
+			draw_image_part(renderer,0,0,screen_w,screen_h,splashphoto_img_signalhill,
+				splashphoto_w*(splashphoto_cur%4),splashphoto_h*(splashphoto_cur/4),splashphoto_w,splashphoto_h);
 			int xx,yy;
 			//Press TAB to continue.
 			int timer=(int)get_timer();
@@ -1756,12 +1848,14 @@ int SDL_main(int argc, char *argv[])
 				draw_text_color(renderer,xx,yy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashphoto_str_continue,font_ascii_w,font_ascii_h,c_yellow);
 			}
 			//Location name.
-			xx=0;
-			yy=0;
+			xx=gw;
+			yy=gh;
+			draw_rectangle_color(renderer,xx,yy,xx+gw*font_ascii_w*strlen(splashphoto_str_name),yy+gh*font_ascii_h,0);
 			draw_text_color(renderer,xx,yy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashphoto_str_name,font_ascii_w,font_ascii_h,c_yellow);
 			//Found locations.
 			xx=screen_w-splashphoto_slen_found*font_ascii_w*gw;
 			yy=0;
+			draw_rectangle_color(renderer,xx,yy,xx+gw*font_ascii_w*strlen(splashphoto_str_found),yy+gh*font_ascii_h,0);
 			draw_text_color(renderer,xx,yy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashphoto_str_found,font_ascii_w,font_ascii_h,c_yellow);
 		}
 		//Splash intro screen.

@@ -114,6 +114,7 @@ void level_load(byte arr[],int siz,int count,int layers);
 int level_load_door(int pos,int level);
 void dev_tiled_to_leveldata(byte arr[]);
 char* level_get_name(int lvl,char* ret);
+int brl(int v,int a,int b);
 
 float distance(float x1, float y1, float x2, float y2);//distance to player
 int checkCollision(SDL_Rect rect1, SDL_Rect rect2);// Function to check for collision between two rectangles; returns true (non-zero) if the rectangles collide, false (0) otherwise
