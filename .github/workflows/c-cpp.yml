@@ -42,6 +42,7 @@ jobs:
           make all
           make check
           make distcheck
+          make test
   
   # Coverage job: Upload coverage reports somewhere.
   coverage:
