@@ -22,6 +22,7 @@ struct player
 	byte anim_cur;//current sprite frame.
 	byte anim_max;//max sprite frame before rollover.
 	byte move_spd;//moving speed of player.
+	byte move_spd_orig;//lazy bugfix since two programmers have a hard time communicating with each other. (hint: see codeline below) :-)
 	byte can_move;//bit-flag to be set while displaying map, questions, etc..., to prevent the player from moving.
 	// Attack attributes
 	int damage;

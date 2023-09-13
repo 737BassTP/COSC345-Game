@@ -92,6 +92,25 @@ void attack(struct player* player)
                 // If the attack hitbox collides with the enemy, apply damage to the enemy
                 printf("Hit enemy!\n");
                 currentEnemy->health -= player->damage;
+                
+                // When enemy dies, increase players stats
+                if (currentEnemy->health <= 0){
+                    printf("killed enemy!\n");
+
+                    //Protein --> damage
+                    printf("Player damage increased from %d", player->damage);
+                    player->damage += currentEnemy->protein;
+                    printf("to %d\n", player->damage);
+
+                    //Fat --> heal
+                    healMe(currentEnemy->fat);
+
+                    //Carb --> move speed (NEED TO CHANGE A BIT)
+                    printf("Move speed increased from %d", player->move_spd);
+                    player->move_spd += 0.1 * currentEnemy->carb;
+                    printf("to %d\n", player->move_spd);
+                    
+                }
             }
         }
     }
