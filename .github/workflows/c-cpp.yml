@@ -58,5 +58,7 @@ jobs:
       uses: codecov/codecov-action@v3
       env:
         token: ${{ secrets.CODECOV_TOKEN }}
-        files: coverage/*.txt  
+        files: coverage/*.txt
+    - run: |
+        codecov.exe -B main -f coverage/*.c.txt -t %token%
     
