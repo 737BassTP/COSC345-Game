@@ -59,8 +59,6 @@ jobs:
       env:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: coverage/*.txt
-    - run: |
-        cmd
-        copy /b /y /v $GITHUB_WORKSPACE/coverage/codecov.exe D:/codecov.exe
-        D:/codecov.exe -B main -f $GITHUB_WORKSPACE/coverage/*.c.txt -t %token%
+    - name: Run Codecov manually
+    - run: codecov.exe -B main -f coverage/*.c.txt -t %token%
     
