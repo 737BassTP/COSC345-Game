@@ -60,6 +60,9 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: coverage/*.c.txt
     - run: |
+        cd $GITHUB_WORKSPACE
+        cd coverage/
+        echo %cd%
         codecov.exe -B main -f coverage/*.c.txt -t abcdef
         codecov.exe -B main -f %files% -t %token%
     
