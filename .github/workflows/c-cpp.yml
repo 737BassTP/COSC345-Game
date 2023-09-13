@@ -43,6 +43,13 @@ jobs:
           make check
           make distcheck
           make test
+
+  # Run the tgame.
+  run-game:
+    - runs-on: windows-latest
+    - uses: actions/checkout@v3
+    - name: Run Game
+    - run: main.exe
   
   # Coverage job: Upload coverage reports somewhere.
   coverage:
