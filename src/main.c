@@ -410,7 +410,8 @@ int SDL_main(int argc, char *argv[])
 	Player.anim_spd_wrap = 12;//inc sprite frame when counter exceeds this value.
 	Player.anim_cur = 0;//current sprite frame.
 	Player.anim_max = 2;//max sprite frame before rollover.
-	Player.move_spd = 3*2;
+	Player.move_spd_orig = 3*2;
+	Player.move_spd = Player.move_spd_orig;
 	//damage stats
 	Player.attackRangeHeight=50;
 	Player.attackRangeWidth=15;
@@ -1507,7 +1508,7 @@ int SDL_main(int argc, char *argv[])
 				}
 				else if(userAnswer==1||userAnswer==2||userAnswer==3)
 				{
-					quizOn=false;Player.move_spd=3*2;quizQNum=1;quizInfo="";userAnswer=0;quizLoopOn=false;
+					quizOn=false;Player.move_spd=Player.move_spd_orig;quizQNum=1;quizInfo="";userAnswer=0;quizLoopOn=false;
 				}
 			}
 		}	
