@@ -45,6 +45,7 @@ Savegame format:
 
 byte savegame_data[256];
 
+int savegame_exists(char *fpath);
 void savegame_new();
 void savegame_load();
 void savegame_save();

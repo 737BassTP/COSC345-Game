@@ -22,6 +22,17 @@ int off_C0         = 0xC0;
 byte savegame_data[256];
 
 //Functions.
+int savegame_exists(char *fpath)
+{
+	int ret=0;
+	FILE *fil = fopen(fpath,"rb");
+	if (fil)
+	{
+		ret=1;
+	}
+	fclose(fil);
+	return ret;
+}
 void savegame_new()
 {
 	FILE* fil = fopen(SAVEGAME_NAME,"wb");
@@ -33,6 +44,11 @@ void savegame_new()
 }
 void savegame_load()
 {
+	//TODO: Add check if file does not exist.
+	if (!savegame_exists(SAVEGAME_NAME))
+	{
+		savegame_new();
+	}
 	FILE* fil = fopen(SAVEGAME_NAME,"rb");
 	for (int i=0; i<SAVEGAME_SIZE; i++)
 	{
