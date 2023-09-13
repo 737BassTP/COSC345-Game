@@ -216,3 +216,53 @@ no
 - On a scale of 1 to 5, how likely are you to recommend this game to a friend or colleague?
 2. Maybe when it is finished.
 - Do you have any additional comments?
+
+Markko Sutherland
+# User Testing Questionnaire
+
+Thank you for participating in the user testing for our game. Your feedback is invaluable in helping us improve. Please take a moment to provide your thoughts and opinions on various aspects of the game.
+
+## General Feedback
+- On a scale of 1 to 5, how much did you enjoy playing this game?
+3
+- What aspects of the game did you enjoy the most?
+The enemies look cool
+## Gameplay and Mechanics
+- On a scale of 1 to 5, how well balanced did you find the combat?
+3
+- Do you have any additional comments?
+it's kind of easy but the enemies can kill you fast if you run into them
+## Narrative and Storytelling
+- On a scale of 1 to 5, how enjoyable did you find the game's storyline and narrative elements?
+I didnt know there was a story apart from Sean telling me
+- Do you have any additional comments?
+
+## Educational Aspect
+- Did you learn anything about nutrition or NZ birds? If so, please provide details.
+I learned about food 
+- On a scale of 1 to 5, how well do you think the game balanced entertainment and education?
+3
+- Do you have any additional comments?
+
+## Graphics and Visuals
+- On a scale of 1 to 5, how would you rate the visual design and overall aesthetics of the game?
+4
+- Do you have any additional comments?
+it looks cool
+## Trivia Questions
+- How did you feel about the inclusion of the trivia questions? Did it add to your enjoyment of the game?
+I liked them
+- On a scale of 1 to 5,  how difficult did you find the trivia questions?
+4 because I don't know anything about nutrition like that
+- Do you have any additional comments?
+
+## Suggestion for Improvement
+- Are there any other aspects of the game which could be improved? If so, please provide details.
+I think adding more questions
+- Were there any technical issues or bugs that you encountered while playng the game?
+
+## Overall Impressions
+- On a scale of 1 to 5, how likely are you to recommend this game to a friend or colleague?
+3
+- Do you have any additional comments?
+
