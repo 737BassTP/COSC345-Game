@@ -33,6 +33,7 @@ int level_prev;///< previous level.
 //Main loop.
 int running;
 
-
+//Splash screens.
+int splashintro_bool;
 
 #endif

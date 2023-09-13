@@ -56,6 +56,9 @@ struct Enemy* globalEnemy = NULL; // Initialize the global pointer to NULL initi
 //Main loop.
 int running=1;
 
+//Splash screens.
+int splashintro_bool=1;
+
 /*
 Entry point.
 */
@@ -463,7 +466,7 @@ int SDL_main(int argc, char *argv[])
 	audio_music_volume((double)0.75);
 	
 	//Splash intro screen.
-	int splashintro_bool=1;
+	//int splashintro_bool=1;//moved.
 	SDL_Texture *splashintro_img1 = IMG_LoadTexture(renderer,"img/logo1a.png");
 	SDL_Texture *splashintro_img2 = IMG_LoadTexture(renderer,"img/logo1b.png");
 	SDL_Texture *splashintro_img3 = IMG_LoadTexture(renderer,"img/logo1c.png");
@@ -471,6 +474,11 @@ int SDL_main(int argc, char *argv[])
 	char* splashintro_string_copyright = "(C) 2023 - Thomas, Sean, Matthew, Campbell - COSC345";
 	int splashintro_slen1=strlen(splashintro_string);
 	int splashintro_slen2=strlen(splashintro_string_copyright);
+	char* splashintro_txt_option[4];
+	splashintro_txt_option[0] = "Continue";
+	splashintro_txt_option[1] = "New Game";
+	splashintro_txt_option[2] = "Settings";
+	splashintro_txt_option[3] = "Exit";
 	
 	//Splash photo screen.
 	int splashphoto_bool=0;
@@ -696,11 +704,9 @@ int SDL_main(int argc, char *argv[])
 			
 			strcpy(splashphoto_str_name,splashphoto_names[splashphoto_cur]);
 		}
-		//Go from splashinto screen to main game.
-		if (keyboard_check_pressed(glob_vk_space)|keyboard_check_pressed(glob_vk_enter))
-		{
-			splashintro_bool=0;
-		}
+		//Menu input.
+		menu_input();
+		
 		//Show splash photo.
 		if (keyboard_check_pressed(glob_vk_tab))
 		{
@@ -740,6 +746,8 @@ int SDL_main(int argc, char *argv[])
 			{
 				Player.y += mvspd*khud;
 			}
+			savegame_set_pos((byte)Player.x,(byte)Player.y);
+			savegame_set_lvl((word)level_cur);
 			
 			//Hitbox.
 			updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
@@ -1908,7 +1916,15 @@ int SDL_main(int argc, char *argv[])
 				ch[0]=splashintro_string_copyright[i];
 				draw_text_color(renderer,xx+font_ascii_w*gw*i,win_game_y+win_game_h-yy+yoff-font_ascii_h*gh,font_ascii_w*gw,font_ascii_h*gh,font_ascii,ch,font_ascii_w,font_ascii_h,c_white);
 			}
-			
+			//Options.
+			for (int i=0; i<menucursor_max; i++)
+			{
+				int tv = (i==menucursor_cur);
+				int cc = (tv)?(c_green):(c_orange);
+				int yo = (tv)?(font_ascii_h*gh):(0);
+				draw_text_color(renderer,(int)lerp((double)0,(double)screen_w,(double)(i+0.5)/menucursor_max),(int)(screen_h/1.5)+yo,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashintro_txt_option[i],font_ascii_w,font_ascii_h,cc);
+				
+			}
 		}
 
 		//Help menu.
@@ -1940,6 +1956,9 @@ int SDL_main(int argc, char *argv[])
 		//End of main loop.
 	}
 	printf("...exited main loop.\n");
+	
+	//Save progress.
+	savegame_save();
 
 	//Shut down SDL
 	free(waterParticles);

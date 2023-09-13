@@ -18,6 +18,10 @@ int off_username   = 0xA0;
 int off_inventory  = 0xB0;
 int off_C0         = 0xC0;
 
+//Savegame array.
+byte savegame_data[256];
+
+//Functions.
 void savegame_new()
 {
 	FILE* fil = fopen(SAVEGAME_NAME,"wb");
@@ -27,6 +31,29 @@ void savegame_new()
 	}
 	fclose(fil);
 }
+void savegame_load()
+{
+	FILE* fil = fopen(SAVEGAME_NAME,"rb");
+	for (int i=0; i<SAVEGAME_SIZE; i++)
+	{
+		savegame_data[i] = fgetc(fil);
+	}
+	fclose(fil);
+	//TODO: Update variables with loaded data, e.g player position and level.
+	level_cur = (int)savegame_data[off_player+2];
+}
+void savegame_save()
+{
+	FILE* fil = fopen(SAVEGAME_NAME,"wb");
+	for (int i=0; i<SAVEGAME_SIZE; i++)
+	{
+		fputc(savegame_data[i],fil);
+	}
+	fclose(fil);
+}
+/*
+TODO: Rewrite functions below from FILE to byte array (remove laziness).
+*/
 void savegame_quiz_write(int quizid)
 {
 	quizid &= 0xFF;
@@ -37,6 +64,7 @@ void savegame_quiz_write(int quizid)
 	val |= quizid%8;
 	fputc(val,fil);
 	fclose(fil);
+	savegame_load();//lazy
 }
 int savegame_quiz_read(int quizid)
 {
@@ -46,6 +74,7 @@ int savegame_quiz_read(int quizid)
 	fseek(fil,(long int)(off_quizzes+quizid/8),SEEK_SET);
 	ret = (fgetc(fil)>>(quizid%8))&1;
 	fclose(fil);
+	savegame_load();//lazy
 	return ret;
 }
 void savegame_username_write(char *name)
@@ -58,6 +87,7 @@ void savegame_username_write(char *name)
 		fputc(name[i],fil);
 	}
 	fclose(fil);
+	savegame_load();//lazy
 }
 char* savegame_username_read(char *name)
 {
@@ -69,6 +99,7 @@ char* savegame_username_read(char *name)
 		ret[i]=fgetc(fil);
 	}
 	fclose(fil);
+	savegame_load();//lazy
 	return *ret;
 }
 void savegame_checksum_write()
@@ -81,6 +112,7 @@ void savegame_checksum_write()
 	}
 	fputc(tmp&0xFF,fil);
 	fclose(fil);
+	savegame_load();//lazy
 }
 int savegame_checksum_read()
 {
@@ -94,5 +126,15 @@ int savegame_checksum_read()
 	tmp&=0xFF;
 	int cs = fgetc(fil);
 	fclose(fil);
+	savegame_load();//lazy
 	return (int)(tmp==cs);
+}
+void savegame_set_pos(byte x,byte y)
+{
+	savegame_data[off_player+0] = x;
+	savegame_data[off_player+1] = y;
+}
+void savegame_set_lvl(word lvl)
+{
+	savegame_data[off_player+2] = lvl;
 }

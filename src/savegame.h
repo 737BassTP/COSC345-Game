@@ -25,8 +25,8 @@ Savegame format:
 		$86-$8F: ?
 	$90-$9F: Statistics.
 		$90-$91: Enemies killed (total).
-		$92-$9D: ?
-		$9E-$9F: Seconds in-game; story (stop counter after defeating final boss).
+		$92-$9B: ?
+		$9C-$9D: Seconds in-game; story (stop counter after defeating final boss).
 		$9E-$9F: Seconds in-game; 100% (stop counter after unlocking everything).
 	$A0-$AF: Player name (16 characters)
 	$B0-$BF: Inventory (16x items; max 255 since 0 is valid)
@@ -43,12 +43,18 @@ Savegame format:
 
 #include "everything.h"
 
+byte savegame_data[256];
+
 void savegame_new();
+void savegame_load();
+void savegame_save();
 void savegame_quiz_write(int quizid);
 int savegame_quiz_read(int quizid);
 void savegame_username_write(char *name);
 char* savegame_username_read(char *name);
 void savegame_checksum_write();
 int savegame_checksum_read();
+void savegame_set_pos(byte x,byte y);
+void savegame_set_lvl(word lvl);
 
 #endif
