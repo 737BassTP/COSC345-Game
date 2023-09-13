@@ -74,42 +74,66 @@ void calculateEnemyAttackHitbox(struct Enemy* enemy, SDL_Rect* attackHitbox)
 void attack(struct player* player) 
 {
     for (int i = 0; i < MAX_ENEMIES; i++) 
-	{
+    {
         struct Enemy* currentEnemy = &enemies[i];
 
         if (currentEnemy->health > 0) 
-		{
+        {
             // Create a rectangle representing the attack hitbox
             SDL_Rect attackHitbox;
             calculateAttackHitbox(player, &attackHitbox);
 
             // Create a rectangle representing the enemy hitbox
-            SDL_Rect enemyHitbox = { currentEnemy->x-10, currentEnemy->y-10, currentEnemy->width+20, currentEnemy->height+20 };
+            SDL_Rect enemyHitbox = { currentEnemy->x, currentEnemy->y, currentEnemy->width, currentEnemy->height };
 
             // Check for collision with the enemy
             if (checkCollision(attackHitbox, enemyHitbox)) 
-			{
-                // If the attack hitbox collides with the enemy, apply damage to the enemy
+            {
+                // Calculate the direction to push the enemy based on the player's facedir
+                int pushDirectionX = 0;
+                int pushDirectionY = 0;
+
+                switch (player->facedir) 
+                {
+                    case 0: // Right
+                        pushDirectionX = 1;
+                        break;
+                    case 1: // Up
+                        pushDirectionY = -1;
+                        break;
+                    case 2: // Left
+                        pushDirectionX = -1;
+                        break;
+                    case 3: // Down
+                        pushDirectionY = 1;
+                        break;
+                }
+
+                // Apply the push to the enemy's position
+                currentEnemy->x += pushDirectionX * 100; //distance the enemy gets pushed (change if you think it is too much)
+                currentEnemy->y += pushDirectionY * 100;
+
+                // Apply damage to the enemy
                 printf("Hit enemy!\n");
                 currentEnemy->health -= player->damage;
-                
-                // When enemy dies, increase players stats
-                if (currentEnemy->health <= 0){
-                    printf("killed enemy!\n");
 
-                    //Protein --> damage
+                // When the enemy dies, increase player's stats
+                if (currentEnemy->health <= 0) 
+                {
+                    printf("Killed enemy!\n");
+
+                    // Protein --> damage
                     printf("Player damage increased from %d", player->damage);
                     player->damage += currentEnemy->protein;
-                    printf("to %d\n", player->damage);
+                    printf(" to %d\n", player->damage);
 
-                    //Fat --> heal
+                    // Fat --> heal
                     healMe(currentEnemy->fat);
 
-                    //Carb --> move speed (NEED TO CHANGE A BIT)
+                    // Carb --> move speed (NEED TO CHANGE A BIT)
                     printf("Move speed increased from %d", player->move_spd);
                     player->move_spd += 0.1 * currentEnemy->carb;
-                    printf("to %d\n", player->move_spd);
-                    
+                    printf(" to %d\n", player->move_spd);
                 }
             }
         }
