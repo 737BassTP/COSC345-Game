@@ -10,10 +10,10 @@ Greetings, adventurer! Welcome to Dunedin, where the food is plenty and we are n
 
 *Dr Trotman appears*
 
-Not if I have anything to say about that! This is now Duneatin'! I have brought all the food to life! Now all I need is an albatross egg to make the spell permanent, then with my army, I will take over the world!
+Not if I have anything to say about that! I declare this city Duneatin'! I have brought all the food to life! Now all I need is an albatross egg to make the spell permanent, then with my army, I will take over the world!
 
-You there! WHat are you looking at? [insert food pun name], attack!
+You there! What are you looking at? Super Nefarious Appetiser Contingent, attack!
 
-*Combat tutorial with an easy encounter*
+*Combat tutorial with an easy encounter, including one of each food that are high in carbs, proteins, and fats*
 
-Gah, you demolished my Super Nefarious Attack Contingent! I'll be back!
+Gah, you demolished my S.N.A.C! I'll be back!
