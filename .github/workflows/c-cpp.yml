@@ -43,12 +43,19 @@ jobs:
           make check
           make distcheck
           make test
+
+  # Run the tgame.
+  run-game:
+    - runs-on: windows-latest
+    - uses: actions/checkout@v3
+    - name: Run Game
+    - run: main.exe
   
   # Coverage job: Upload coverage reports somewhere.
   coverage:
     #if: ${{ always() }} # always run this job even if previous jobs failed.
     #needs: build # run this job after "build" job has finished.
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     #- name: Coveralls
     #  uses: coverallsapp/github-action@v2
@@ -58,5 +65,11 @@ jobs:
       uses: codecov/codecov-action@v3
       env:
         token: ${{ secrets.CODECOV_TOKEN }}
-        files: coverage/*.txt  
+        files: coverage/*.c.txt
+    - run: |
+        cd $GITHUB_WORKSPACE
+        cd coverage/
+        echo %cd%
+        codecov.exe -B main -f coverage/*.c.txt -t abcdef
+        codecov.exe -B main -f %files% -t %token%
     
