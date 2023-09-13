@@ -44,29 +44,31 @@ void calculateEnemyAttackHitbox(struct Enemy* enemy, SDL_Rect* attackHitbox)
     int attackX = enemy->x;
     int attackY = enemy->y;
 
+    // Set the size of the attack hitbox
+    attackHitbox->w = 50; // Width of the attack hitbox
+    attackHitbox->h = 50; // Height of the attack hitbox
+
     // Adjust the position of the attack hitbox based on the enemy's direction
     switch (enemy->facedir)
-	{
-        case 0: // Right
-            attackX += enemy->attackRangeWidth;
-            break;
+    {
         case 1: // Up
-            attackY -= enemy->attackRangeHeight;
+            attackY -= attackHitbox->h;
             break;
-        case 2: // Left
-            attackX -= enemy->attackRangeWidth;
+        case 0: // Right
+            attackX += enemy->width;
             break;
         case 3: // Down
-            attackY += enemy->attackRangeHeight;
+            attackY += enemy->height;
+            break;
+        case 2: // Left
+            attackX -= attackHitbox->w;
             break;
         // Add more cases if needed for other directions
     }
 
-    // Set the attack hitbox's position and size
+    // Set the attack hitbox's position
     attackHitbox->x = attackX;
     attackHitbox->y = attackY;
-    attackHitbox->w = enemy->attackRangeWidth + 10; // Adjust as needed
-    attackHitbox->h = enemy->attackRangeHeight + 10; // Adjust as needed
 }
 // Function to perform the player's attack
 void attack(struct player* player) 

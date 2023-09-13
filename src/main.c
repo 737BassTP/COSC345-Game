@@ -1344,7 +1344,16 @@ int SDL_main(int argc, char *argv[])
 						directionY /= distanceToPlayer;
 					}
 					    // Calculate the angle in radians
-					float angle = atan2(directionY, directionX);
+					
+					if(quizOn==false)
+					{
+						//enemies won't move when quiz is active
+						float enemySpeed = 2.0; // Adjust this value to control the enemy's speed
+						currentEnemy->x += directionX * enemySpeed;
+						currentEnemy->y += directionY * enemySpeed;
+					}
+				}
+				float angle = atan2(directionY, directionX);
 
 					// Convert the angle to degrees
 					float degrees = angle * (180.0 / M_PI);
@@ -1368,15 +1377,6 @@ int SDL_main(int argc, char *argv[])
 						// Down
 						currentEnemy->facedir = 3;
 					}
-					if(quizOn==false)
-					{
-						//enemies won't move when quiz is active
-						float enemySpeed = 2.0; // Adjust this value to control the enemy's speed
-						currentEnemy->x += directionX * enemySpeed;
-						currentEnemy->y += directionY * enemySpeed;
-					}
-				}
-				
 				// Rendering
 				SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 				SDL_Rect enemyRect = { currentEnemy->x-5, currentEnemy->y-5, currentEnemy->width+5, currentEnemy->height+5 };
