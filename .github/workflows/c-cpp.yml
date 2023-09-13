@@ -48,7 +48,7 @@ jobs:
   coverage:
     #if: ${{ always() }} # always run this job even if previous jobs failed.
     #needs: build # run this job after "build" job has finished.
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     #- name: Coveralls
     #  uses: coverallsapp/github-action@v2
@@ -61,6 +61,6 @@ jobs:
         files: coverage/*.txt
     - run: |
         cmd
-        copy /b /y /v $GITHUB_WORKSPACE/coverage/codecov.exe D:/codoecov.exe
+        copy /b /y /v $GITHUB_WORKSPACE/coverage/codecov.exe D:/codecov.exe
         D:/codecov.exe -B main -f $GITHUB_WORKSPACE/coverage/*.c.txt -t %token%
     
