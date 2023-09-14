@@ -49,10 +49,10 @@ jobs:
   rungame:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Run Game
-    - run: |
-        main.exe
+      - uses: actions/checkout@v3
+      - name: Run Game
+        run: |
+          main.exe
   
   # Coverage job: Upload coverage reports somewhere.
   coverage:
