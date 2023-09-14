@@ -71,7 +71,10 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: coverage/*.c.txt
     - run: |
+        cmd
         echo %cd%
+        cd ..
+        dir
         cd coverage/
         ./codecov.exe -B main -f %files% -t "$token"
         ./codecov.exe -B main -f coverage/*.c.txt -t ""
