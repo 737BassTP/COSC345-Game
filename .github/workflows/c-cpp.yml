@@ -66,25 +66,19 @@ jobs:
     #  env:
     #    github-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
     - name: Codecov (faulty)
-      uses: codecov/codecov-action@v3
+      #uses: codecov/codecov-action@v3
+      uses: actions/checkout@v3
       env:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: coverage/*.c.txt
     - run: |
         cmd
 
-        echo 1/4
         dir
+        ls
         cd COSC345-Game/
-        echo 2/4
         dir
-        cd COSC345-Game/
-        echo 3/4
-        dir
-        cd COSC345-Game/
-        echo 4/4
-        dir
-        cd COSC345-Game/
+        ls
         
         cd coverage/
         ./codecov.exe -B main -f %files% -t "$token"
