@@ -73,14 +73,13 @@ jobs:
         files: coverage/*.c.txt
     - run: |
         cmd
-
         dir
         ls
         cd coverage/
         dir
         ls
-        
-        ./codecov.exe -B main -f %files% -t "$token"
-        ./codecov.exe -B main -f coverage/*.c.txt -t ""
+        ./codecov.exe -B main -f "$files" -t "$token"
+        REM ./codecov.exe -B main -f %files% -t "$token"
+        REM ./codecov.exe -B main -f coverage/*.c.txt -t ""
         
     
