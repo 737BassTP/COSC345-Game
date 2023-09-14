@@ -11,6 +11,9 @@ COSC345 at University of Otago, a game in C using SDL2.
 3. Success!
 
 ## Source code documentation.
-1. Go to doxygen/html/index.html
-2. Have a read.
+1. There are two options:  
+1a. Either go to "https://737basstp.github.io/COSC345-Game/index.html" on the web;  
+1b. Or navigate to "docs/index.html" in this repository.  
+1c. Both should redirect you into the source code documentation extracted by doxygen from this repository.  
+3. Have a read.  
 
