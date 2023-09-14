@@ -1,2 +1,2 @@
-cd doxygen/html
+cd docs
 index.html
