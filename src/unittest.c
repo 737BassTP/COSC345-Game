@@ -157,15 +157,20 @@ int testInitEnemy()
 	}
 	return ret;
 }
-
+//needs work.
 int test_attack() {
-	int ret = 0;
+    int ret = 0;
+
     // Mock a player object
     struct player player;
     memset(&player, 0, sizeof(player));
     player.facedir = 0;  // Set player's facedir to test different directions
     player.damage = 5;
     player.move_spd = 10;
+
+    // Initialize the global array of enemies
+    struct Enemy enemies[MAX_ENEMIES];
+    memset(enemies, 0, sizeof(enemies));
 
     // Initialize an enemy at a specific position
     enemies[0].x = 110;
@@ -174,18 +179,52 @@ int test_attack() {
     enemies[0].height = 10;
     enemies[0].health = 10;
 
-
     // Call the attack function
-    attack(&player); // Pass the player and the global array of enemies
+    attack(&player);
 
     // Assert that the enemy was hit, pushed, and damaged correctly
-    ret+=assert_equal(210, enemies[0].x, "Enemy X-coordinate after attack");
-    ret+=assert_equal(100, enemies[0].y ,"Enemy Y-coordinate after attack");
-    ret+=assert_equal(5, enemies[0].health ,"Enemy health after attack");
+    ret += assert_equal(210, enemies[0].x, "Enemy X-coordinate after attack");
+    ret += assert_equal(100, enemies[0].y, "Enemy Y-coordinate after attack");
+    ret += assert_equal(5, enemies[0].health, "Enemy health after attack");
+
+    return ret;
+}
+int test_clock_get_hour() {
+	int ret = 0;
+    // Test case 1: Test with a time of 90 minutes (1 hour and 30 minutes)
+    int result1 = clock_get_hour(90);
+    ret += assert_equal(1, result1, "Test case 1");
+
+    // Test case 2: Test with a time of 150 minutes (2 hours and 30 minutes)
+    int result2 = clock_get_hour(150);
+    ret += assert_equal(2, result2, "Test case 2");
+
 
 	return ret;
 }
+int test_clock_get_minute() {
+	int ret = 0;
+    int result1 = clock_get_minute(90);
+    ret += assert_equal(30, result1, "Test case 1");
 
+    int result2 = clock_get_minute(150);
+    ret += assert_equal(30, result2,  "Test case 2");
+
+return ret;
+}
+int test_clock_is_between() {
+	int ret = 0;
+    // Test case 1: Time is between 8:30 AM and 4:45 PM
+    int result1 = clock_is_between(930, 8, 30, 16, 45);
+    ret += assert_equal(1, result1, "Test case 1");
+
+    // Test case 2: Time is not between 2:00 AM and 6:00 AM
+    int result2 = clock_is_between(100, 2, 0, 6, 0);
+    ret += assert_equal(0, result2, "Test case 2");
+
+
+	return ret;
+}
 //Perform all unit tests
 int unit_test_all()
 {
@@ -199,7 +238,10 @@ int unit_test_all()
 	acc += testInitEnemy();
 	acc += testResetEnemy();
 	acc += calculateAttackHitboxTest();
-	acc += test_attack();
+	acc += test_attack();//needs work
+	acc += test_clock_get_hour();
+	acc+= test_clock_get_minute();
+	acc += test_clock_is_between();
 	//acc += ();
     //acc += ();
     //acc += ();
