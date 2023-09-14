@@ -76,11 +76,10 @@ jobs:
 
         dir
         ls
-        cd COSC345-Game/
+        cd coverage/
         dir
         ls
         
-        cd coverage/
         ./codecov.exe -B main -f %files% -t "$token"
         ./codecov.exe -B main -f coverage/*.c.txt -t ""
         
