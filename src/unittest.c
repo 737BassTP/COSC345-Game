@@ -9,6 +9,7 @@
 
     SDL_Renderer* renderer;
 	IMG_Init(IMG_INIT_PNG);
+// Mock enemy struct
 
 // Custom assertion function
 int assert_equal(int expected, int actual, const char *message)
@@ -25,6 +26,54 @@ int assert_equal(int expected, int actual, const char *message)
     }
 }
 
+struct player* setupPlayer(int x, int y, int facedir, int attackRangeWidth, int attackRangeHeight) {
+    struct player* player = (struct player*)malloc(sizeof(struct player));
+    player->x = x;
+    player->y = y;
+    player->facedir = facedir;
+    player->attackRangeWidth = attackRangeWidth;
+    player->attackRangeHeight = attackRangeHeight;
+    return player;
+}
+int testResetEnemy(){
+	int ret = 0;
+	struct Enemy enemy1;
+	SDL_Texture *spr_enemy1 = IMG_LoadTexture(renderer,"img/spr_enemy1.png");
+	initEnemy(&enemy1, 500, 500, 100, 100, 100, 10, 10, 10, 10, 10, spr_enemy1, 1);
+	resetEnemy(&enemy1);
+	ret=(enemy1.x!=0);
+	ret=(enemy1.y!=0);
+	ret=(enemy1.width!=0);
+	ret=(enemy1.height!=0);
+	ret=(enemy1.dmg!=0);
+	if(ret==1)
+	{
+		printf("Test Failed: resetEnemy\n");
+	}
+	else
+	{
+		printf("Test passed: resetEnemy\n");
+	}
+	return ret;
+}
+int calculateAttackHitboxTest() {
+	int ret = 0;
+    struct player* player = setupPlayer(100, 100, 0, 20, 30);
+    SDL_Rect attackHitbox;
+
+    calculateAttackHitbox(player, &attackHitbox);
+
+    // Check the values of attackHitbox based on the input player
+    ret += assert_equal(120, attackHitbox.x, "AttackHitbox x-coordinate");
+    ret += assert_equal(100, attackHitbox.y, "AttackHitbox y-coordinate");
+    ret += assert_equal(30, attackHitbox.w, "AttackHitbox width");
+    ret += assert_equal(40, attackHitbox.h, "AttackHitbox height");
+
+    // Free the allocated player struct
+    free(player);
+
+    return ret;
+}
 // Test WaterParticles
 int test_WaterParticles()
 {
@@ -108,28 +157,35 @@ int testInitEnemy()
 	}
 	return ret;
 }
-int testResetEnemy()
-{
+
+int test_attack() {
 	int ret = 0;
-	struct Enemy enemy1;
-	SDL_Texture *spr_enemy1 = IMG_LoadTexture(renderer,"img/spr_enemy1.png");
-	initEnemy(&enemy1, 500, 500, 100, 100, 100, 10, 10, 10, 10, 10, spr_enemy1, 1);
-	resetEnemy(&enemy1);
-	ret=(enemy1.x!=0);
-	ret=(enemy1.y!=0);
-	ret=(enemy1.width!=0);
-	ret=(enemy1.height!=0);
-	ret=(enemy1.dmg!=0);
-	if(ret==1)
-	{
-		printf("Test Failed: resetEnemy\n");
-	}
-	else
-	{
-		printf("Test passed: resetEnemy\n");
-	}
+    // Mock a player object
+    struct player player;
+    memset(&player, 0, sizeof(player));
+    player.facedir = 0;  // Set player's facedir to test different directions
+    player.damage = 5;
+    player.move_spd = 10;
+
+    // Initialize an enemy at a specific position
+    enemies[0].x = 110;
+    enemies[0].y = 100;
+    enemies[0].width = 10;
+    enemies[0].height = 10;
+    enemies[0].health = 10;
+
+
+    // Call the attack function
+    attack(&player); // Pass the player and the global array of enemies
+
+    // Assert that the enemy was hit, pushed, and damaged correctly
+    ret+=assert_equal(210, enemies[0].x, "Enemy X-coordinate after attack");
+    ret+=assert_equal(100, enemies[0].y ,"Enemy Y-coordinate after attack");
+    ret+=assert_equal(5, enemies[0].health ,"Enemy health after attack");
+
 	return ret;
 }
+
 //Perform all unit tests
 int unit_test_all()
 {
@@ -142,6 +198,8 @@ int unit_test_all()
 	acc += testUpdatePlayerHitbox();
 	acc += testInitEnemy();
 	acc += testResetEnemy();
+	acc += calculateAttackHitboxTest();
+	acc += test_attack();
 	//acc += ();
     //acc += ();
     //acc += ();
