@@ -837,75 +837,7 @@ void dev_tiled_to_leveldata(byte arr[])
 	* @return void
 	* @example dev_tiled_to_leveldata
 	*/
-	
-	//Extracts Tiles (done) and Objects (unfinished (unnecessary if tiles and objects share tileset)).
-	printf("may take a while; please wait.\n");
-	glob_vk_f2=0;//fakes a keyboard press event (fails if held).
-	FILE *filin = fopen("tiled/cosc345-game.tmx","rb");
-	FILE *filout = fopen("level.dat","wb");
-	FILE *filoff = fopen("devtools/OFFSET","rb");
-	int layers=2;
-	int layersize=131072;
-	//layersize=512;//debug only
-	int maxsize = layersize*layers;//131072
-	byte array[262144];//tiles + objects.
-	int arrsiz=sizeof(array);
-	for (long i=0; i<maxsize; i++) {array[i] = 0;}
-	//Discard input header.
-	fseek(filin,(long int)0x23D-0,SEEK_SET);//hardcoded; may bug out in future, so avoid renaming or resizing in Tiled project file.
-	//Read Tiles and Objects.
-	byte comma=","[0];
-	int ch=0;
-	byte entry[3];
-	word val;
-	int counter=0;
-	int off=0;
-	int ij=0;
-	//Extract and restructure.
-	for (int i=0; i<arrsiz; i++)
-	{
-		ch=fgetc(filin);
-		for (int j=0; j<3; j++) {entry[j]=48;}
-		while ((ch==0xD) || (ch==0xA)) {ch=fgetc(filin);}
-		entry[2]=ch;
-		ch=fgetc(filin);
-		if (ch!=comma)
-		{
-			entry[1]=entry[2];
-			entry[2]=ch;
-			ch=fgetc(filin);
-			if (ch!=comma)
-			{
-				entry[0]=entry[1];
-				entry[1]=entry[2];
-				entry[2]=ch;
-				fgetc(filin);//important.
-			}
-		}
-		val^=val;
-		for (int j=0; j<3; j++) {val+=(entry[j]-48)*(byte)pow((double)10,(double)(2-j));}
-		printf("i=%i/%i (v=%i)\n",i,arrsiz,val);//comment out to speed up.
-		val-=(val==0)?(-0xFF):(1)&0xFF;
-		array[(((1<<(1<<1))<<1)<<((1|(1<<1)|(1<<(1<<1)))<<1))*(val>=(((1<<1)<<1)<<((1+1+1)<<1)))+(1<<(3<<(1<<1)))*(i>>(3<<(1<<1)))+(1<<(1<<3))*((i>>(1<<(1<<1)))&(3*(1<<(1<<1)|1)))+(1<<(1<<(1<<1)))*((i>>(1<<3))&(3*(1<<(1<<1)|1)))+(i&(3*(1<<(1<<1)|1)))]=val;//security through obscurity, or what? (it crashes the compiler...)
-		//array[i] = fgetc(filoff)+256*fgetc(filoff);
-		//if ((i%layersize) == (layersize-1)) {fseek(filoff,0,SEEK_SET);}
-	}
-	//Compress.
-	val^=val;
-	counter=0;
-	int cv=0xC0;
-	int ct=0;
-	for (int i=0; i<layersize; i++)
-	{
-		break;
-		
-		ct++;
-	}
-	//Write to file.
-	fwrite(array,maxsize,1,filout);
-	fclose(filin);
-	fclose(filout);
-	fclose(filoff);
+	//Conversion moved to a Python script.
 	//Re-load in-game.
 	level_load(arr,256,512,2);
 }

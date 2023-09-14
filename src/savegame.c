@@ -44,7 +44,6 @@ void savegame_new()
 }
 void savegame_load()
 {
-	//TODO: Add check if file does not exist.
 	if (!savegame_exists(SAVEGAME_NAME))
 	{
 		savegame_new();

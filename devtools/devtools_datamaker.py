@@ -372,6 +372,8 @@ def script_inspect_chat(cid):
 #######################################
 def script_make_quest():
     print_error("script_make_quest\nUNFINISHED")
+    
+    
 def script_merge_quest():
     script_merge_any(filename_str(QUESTFILE))
 def script_inspect_quest(cid):
@@ -383,6 +385,8 @@ def script_inspect_quest(cid):
 #######################################
 def script_make_event():
     print_error("script_make_event\nUNFINISHED")
+    
+    
 def script_merge_event():
     script_merge_any(filename_str(EVENTFILE))
 def script_inspect_event(cid):
