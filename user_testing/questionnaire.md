@@ -266,3 +266,51 @@ I think adding more questions
 3
 - Do you have any additional comments?
 
+Zack Russell
+## General Feedback
+- On a scale of 1 to 5, how much did you enjoy playing this game?
+2
+- What aspects of the game did you enjoy the most?
+It has a cool concept.
+
+## Gameplay and Mechanics
+- On a scale of 1 to 5, how well balanced did you find the combat?
+5
+- Do you have any additional comments?
+Both you and the enemy can kill eachother quickly
+
+## Narrative and Storytelling
+- On a scale of 1 to 5, how enjoyable did you find the game's storyline and narrative elements?
+2
+- Do you have any additional comments?
+I didnt find any story but I did see the food enemies that were described.
+## Educational Aspect
+- Did you learn anything about nutrition or NZ birds? If so, please provide details.
+I learned a little bit from the one quiz I did.
+- On a scale of 1 to 5, how well do you think the game balanced entertainment and education?
+3
+- Do you have any additional comments?
+
+## Graphics and Visuals
+- On a scale of 1 to 5, how would you rate the visual design and overall aesthetics of the game?
+4
+- Do you have any additional comments?
+Pixel art is cool
+## Trivia Questions
+- How did you feel about the inclusion of the trivia questions? Did it add to your enjoyment of the game?
+It makes sense for the type of game you are going for
+- On a scale of 1 to 5,  how difficult did you find the trivia questions?
+2
+- Do you have any additional comments?
+
+## Suggestion for Improvement
+- Are there any other aspects of the game which could be improved? If so, please provide details.
+The game is unfinished but I can't blame you for that in an alpha release
+- Were there any technical issues or bugs that you encountered while playng the game?
+no
+
+## Overall Impressions
+- On a scale of 1 to 5, how likely are you to recommend this game to a friend or colleague?
+3
+- Do you have any additional comments?
+Maybe a 3 when it is finished.
