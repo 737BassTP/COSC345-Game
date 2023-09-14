@@ -8,7 +8,8 @@ on:
 
 jobs:
   # Doxygen job: Extract documentation from source files.
-  job-doxygen:
+  # TODO: Host it somewhere, e.g. Github Pages.
+  documentation:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
@@ -42,22 +43,22 @@ jobs:
           make all
           make check
           make distcheck
-          make test
 
-  # Run the game (Unfinished; since game will not quit itself!).
-  # TODO: Run game with command line arguments that run tests, then quits the game.
-  rungame:
+  # Perform unit tests to ensure game functionality works as it should.
+  unit-tests:
+    needs: build
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Run Game
+      - name: Perform unit testing
         run: |
-          main.exe
+          make test
   
   # Coverage job: Upload coverage reports somewhere.
   coverage:
-    #if: ${{ always() }} # always run this job even if previous jobs failed.
+    if: ${{ always() }} # always run this job even if previous jobs failed.
     #needs: build # run this job after "build" job has finished.
+    needs: [build, unit-tests]
     runs-on: windows-latest
     steps:
     #- name: Coveralls
@@ -70,9 +71,9 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: coverage/*.c.txt
     - run: |
-        cd $GITHUB_WORKSPACE
-        cd coverage/
         echo %cd%
-        codecov.exe -B main -f coverage/*.c.txt -t abcdef
-        codecov.exe -B main -f %files% -t %token%
+        cd coverage/
+        ./codecov.exe -B main -f %files% -t "$token"
+        ./codecov.exe -B main -f coverage/*.c.txt -t ""
+        
     
