@@ -72,9 +72,20 @@ jobs:
         files: coverage/*.c.txt
     - run: |
         cmd
-        echo %cd%
-        cd ..
+
+        echo 1/4
         dir
+        cd COSC345-Game/
+        echo 2/4
+        dir
+        cd COSC345-Game/
+        echo 3/4
+        dir
+        cd COSC345-Game/
+        echo 4/4
+        dir
+        cd COSC345-Game/
+        
         cd coverage/
         ./codecov.exe -B main -f %files% -t "$token"
         ./codecov.exe -B main -f coverage/*.c.txt -t ""
