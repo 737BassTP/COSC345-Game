@@ -44,12 +44,14 @@ jobs:
           make distcheck
           make test
 
-  # Run the tgame.
-  run-game:
-    - runs-on: windows-latest
-    - uses: actions/checkout@v3
+  # Run the game (Unfinished; since game will not quit itself!).
+  # TODO: Run game with command line arguments that run tests, then quits the game.
+  rungame:
+    runs-on: windows-latest
+    steps:
     - name: Run Game
-    - run: main.exe
+    - run: |
+        main.exe
   
   # Coverage job: Upload coverage reports somewhere.
   coverage:
