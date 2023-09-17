@@ -486,6 +486,7 @@ int SDL_main(int argc, char *argv[])
 	char* splashphoto_str_continue = "Press TAB to continue.";
 	//char* splashphoto_str_name = "Signal Hill Lookout";//make changeable.
 	char splashphoto_str_name[40] = "Signal Hill Lookout";//make changeable.
+	int splashphoto_found=0;
 	char* splashphoto_str_found = "Found: 01/32";//make changeable.
 	int splashphoto_slen_tab=strlen(splashphoto_str_continue);
 	int splashphoto_slen_found=strlen(splashphoto_str_found);
@@ -515,6 +516,15 @@ int SDL_main(int argc, char *argv[])
 	}
 	fclose(spf);
 	//free(splashphoto_tmp);//only for heap.
+	
+	FILE *spp=fopen("photoid.dat","rb");
+	word splashphoto_ids[32];
+	for (int i=0; i<32; i++)
+	{
+		splashphoto_ids[i] = fgetc(spp)|(fgetc(spp)<<8);
+		//printf("ids=%hu\n",splashphoto_ids[i]);
+	}
+	fclose(spp);
 	
 	//Splash bustimes screen.
 	int splashbustimes_bool=0;
@@ -702,7 +712,7 @@ int SDL_main(int argc, char *argv[])
 				splashphoto_cur = (--splashphoto_cur)%splashphoto_max;
 			}
 			
-			strcpy(splashphoto_str_name,splashphoto_names[splashphoto_cur]);
+			strcpy(splashphoto_str_name,splashphoto_names[splashphoto_cur]);//TODO: Move into a function.
 		}
 		//Menu input.
 		menu_input();
@@ -760,6 +770,7 @@ int SDL_main(int argc, char *argv[])
 					Objects[i].bbox_L,Objects[i].bbox_T,Objects[i].bbox_R,Objects[i].bbox_B))
 				{
 					int objid = Objects[i].tileid;
+					//printf("objid=%i\n",objid);
 					switch (objid)
 					{
 						//Door object.
@@ -791,6 +802,37 @@ int SDL_main(int argc, char *argv[])
 								Player.y = Player.yprevious;
 							}
 						} break;
+						//Photograph object.
+						case 0x1F:
+						{
+							//printf("photo\n");
+							int sp=-1;
+							for (int j=0; j<32; j++)
+							{
+								word spid=splashphoto_ids[j];
+								if ((((int)(spid))&0xFF) == ((int)(level_cur)))
+								{
+									sp=spid>>8;
+									break;
+								}
+							}
+							//printf("sp=%i\n",sp);
+							if (sp==-1)
+							{
+								printf("missing photo id: lvl=%i\n",level_cur);
+								break;
+							}
+							sp%=32;
+							Player.x = Player.xprevious;
+							Player.y = Player.yprevious;
+							splashphoto_bool=1;
+							splashphoto_cur=sp;
+							strcpy(splashphoto_str_name,splashphoto_names[splashphoto_cur]);//TODO: Move into a function.
+						} break;
+						default:
+						{
+							
+						}
 					}
 					
 				}
@@ -1192,7 +1234,7 @@ int SDL_main(int argc, char *argv[])
 					else if (k==1)
 					{
 						//animated
-						if ((tex>=0x10) && (tex <=0x1F))
+						if ((tex>=0x10) && (tex <=0x13))
 						{
 							int fr=16;
 							int di=(tex<0x12)?(60):(120);
@@ -2010,7 +2052,7 @@ int SDL_main(int argc, char *argv[])
 	free(records);
     //Wait n milliseconds jic something went wrong (so that printfs can be read)
     SDL_Delay(500);
-    
+    	
 	return 0;
 	
     /* Upon an error, print message and quit properly */

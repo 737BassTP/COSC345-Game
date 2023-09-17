@@ -22,7 +22,13 @@ Savegame format:
 			b9-bF: ? (7-bit)
 		$84    : lives (?)
 		$85    : health
-		$86-$8F: ?
+		$86-$87: ?
+		$88-$8B: nutrient stats
+			$88: Carbohydrates
+			$89: Fat
+			$8A: Protein
+			$8B: Alcohol
+		$8C-$8F: ?
 	$90-$9F: Statistics.
 		$90-$91: Enemies killed (total).
 		$92-$9B: ?
@@ -30,7 +36,7 @@ Savegame format:
 		$9E-$9F: Seconds in-game; 100% (stop counter after unlocking everything).
 	$A0-$AF: Player name (16 characters)
 	$B0-$BF: Inventory (16x items; max 255 since 0 is valid)
-	$C0-$CF: ?
+	$C0-$CF: Quest progress (4 simultaneous).
 	$D0-$DF: ?
 	$E0-$EF: Music timers (max 65536 seconds and 8 musics).
 		$E0-$E1: "overworld.wav"
