@@ -175,7 +175,7 @@ int test_attack() {
     memset(&Player, 0, sizeof(Player));
     Player.facedir = 0;  
     Player.damage = 5;
-    Player.move_spd = 10;
+    Player.move_spd = Player.move_spd_orig;
     Player.x = 80;  // Player's x-coordinate is the same as the enemy's x-coordinate
     Player.y = 100;  // Player's y-coordinate is adjusted to be above the enemy
 	Player.attackRangeHeight=100;

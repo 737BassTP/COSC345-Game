@@ -4,6 +4,7 @@ SDL2b = C:\Users\Thomas Pedersen\Documents\UiT\UTV-0001\University of Otago\COSC
 
 CC = gcc
 CFLAGS = -Wall -Wextra -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -g $(shell sdl2-config --cflags --libs)
+CFLAGSb = $(CFLAGS) $@ $< icon.res
 
 SRCDIR = ./src/
 
@@ -13,8 +14,9 @@ SOURCES =                        $(SRCDIR)draw.c $(SRCDIR)functions.c $(SRCDIR)g
 HEADERS = $(HEADERSb)
 
 all:
+	make icon
 	@echo $(WORKDIR)
-	$(CC) -std=c17 $(HEADERS) $(SOURCES) -I "$(SDL2)\include" -L "$(SDL2)\lib" $(CFLAGS) -o main
+	$(CC) -std=c17 $(HEADERS) $(SOURCES) -I "$(SDL2)\include" -L "$(SDL2)\lib" $(CFLAGS) -o main icon.res
 	@echo Build succeeded!
 	
 all-coverage:
@@ -45,7 +47,7 @@ asm:
 	gcc $(SOURCES) -O0 -S -o main.s -masm=intel $<
 	
 clean:
-	rm -rf *.exe *.s
+	rm -rf *.exe *.s *.res
 	
 check:
 	@echo TODO: Self-tests.
@@ -56,6 +58,9 @@ distcheck:
 run:
 	@echo Will run the game!
 	./main.exe
+	
+icon:
+	windres icon.rc -O coff -o icon.res
 
 obsolete_1:
 	gcc -std=c17 main.c -I "C:\Users\Thomas Pedersen\Documents\UiT\UTV-0001\University of Otago\COSC345 - Game\SDL2\include" -L "C:\Users\Thomas Pedersen\Documents\UiT\UTV-0001\University of Otago\COSC345 - Game\SDL2\lib" -Wall -Wextra -lmingw32 -lSDL2main -lSDL2 -o main

@@ -1224,7 +1224,7 @@ int SDL_main(int argc, char *argv[])
 					y2 = win_game_y + (j+1)*gh*win_game_tile_dim;
 					
 					int off = ijk + level_size*level_cur;
-					int tex = level_data[off];
+					int tex = (int)level_data[off];
 					if (k==0)
 					{
 						int defcol = mux_int(ij%3,c_red,c_green,c_blue);
@@ -1258,6 +1258,13 @@ int SDL_main(int argc, char *argv[])
 							}
 						}
 						/**/
+						//Y-offsets.
+						int yoff=0;
+						int yspd=1;//inverse.
+						int ymul=0;
+						if (tex == 0x1F) {ymul=4;}//photo object.
+						if (ymul) {yoff = ymul*gh*dsin(((((int)(get_timer()))/yspd)%360));}
+						
 						//Static object.
 						int oti=Objects[ij].tileid;
 						int skipoti=0;
@@ -1268,9 +1275,9 @@ int SDL_main(int argc, char *argv[])
 							oti += 0x100*(oti<0x100);
 							draw_image_part(renderer,
 								x1,//win_game_x+Objects[ij].bbox_L,
-								y1,//win_game_y+Objects[ij].bbox_T,
+								y1+yoff,//win_game_y+Objects[ij].bbox_T,
 								x2,//win_game_x+Objects[ij].bbox_R,
-								y2,//win_game_y+Objects[ij].bbox_B,
+								y2+yoff,//win_game_y+Objects[ij].bbox_B,
 								spr_tileset,d*(oti%win_game_tile_num),d*(oti/win_game_tile_num),d,d);
 						}
 					}
