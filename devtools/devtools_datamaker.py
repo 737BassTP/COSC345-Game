@@ -9,6 +9,7 @@
 # 03 sep: Added templates for Quest (unimplemented).
 # 05 sep: Added templates for Event (unimplemented).
 # 06 sep: Bugfix in merge script.
+# 21 sep: Event
 # -------------------------------------
 # Command-Line Args:
 # quiz      : Type=Quiz
@@ -372,29 +373,103 @@ def script_inspect_chat(cid):
 #######################################
 def script_make_quest():
     print_error("script_make_quest\nUNFINISHED")
-    
-    
+    if 0:
+        num_id = get_byte("Quest ID?")
+        nid=str(num_id)
+        fp = fileid(QUESTFILE,nid)
+        if file_exists(fp):
+            print_error("Warning!\n"+fp+" already exists!\nOverwrite? (0-1)")
+            ov=int(input())%2
+            if not ov:
+                print("No overwriting; will exit.")
+                sys.exit()
+        tmpfil = open(TMPFILE,"wb")
+        fw(tmpfil,num_id)
+        
+        tmpfil.close()
+        shutil.copy(TMPFILE,fp)
+        os.remove(TMPFILE)
+        script_inspect_quest(num_id)
+        print(text_rgb("Success!")+"\nWritten to: "+colored(fp,"yellow"))
 def script_merge_quest():
     script_merge_any(filename_str(QUESTFILE))
 def script_inspect_quest(cid):
     print_error("script_inspect_quest\nUNFINISHED")
+    # Specific file.
     if cid != -1:
         cid %= 256
+    # Main file.
     else:
         pass
 #######################################
 def script_make_event():
-    print_error("script_make_event\nUNFINISHED")
-    
-    
+    num_id = get_byte("Event ID?")
+    nid=str(num_id)
+    fp = fileid(EVENTFILE,nid)
+    if file_exists(fp):
+        print_error("Warning!\n"+fp+" already exists!\nOverwrite? (0-1)")
+        ov=int(input())%2
+        if not ov:
+            print("No overwriting; will exit.")
+            sys.exit()
+    tmpfil = open(TMPFILE,"wb")
+    fw(tmpfil,num_id)
+    datestr="Mo=0,7,14,21\nTu=1,8,15,22\nWe=2,9,16,23\nTh=3,10,17,24\nFr=4,11,18,25\nSa=5,12,19,26\nSu=6,13,20,27\n"
+    num_date1 = write(tmpfil,get_int("Start date (0-27)\n"+datestr))
+    num_date2 = write(tmpfil,get_int("End date (0-27)\n"+datestr))
+    num_lvl1 = write(tmpfil,get_int("Level (base-10), upper-left corner."))
+    num_lvl2 = write(tmpfil,get_int("Level (base-10); lower-right corner."))
+    txttim=[]
+    for j in range(2):
+        txt_se="Start" if j==0 else "End"
+        txt_time = get_string(txt_se+" time (00:00-23:59)")
+        if len(txt_time) != 5:
+            print_error("Wrong time format!\nUse hh:mm")
+        txt_time=txt_time[:2]+txt_time[3:]
+        for i in range(4):
+            if not ((int(txt_time[i]) >= int("0")) and (int(txt_time[i]) <= int("9"))):
+                print_error(txt_se+" time is not numerical!\nGot: "+txt_time)
+        num_time = int(txt_time[0])*600+int(txt_time[1])*60+int(txt_time[2])*10+int(txt_time[3])*1
+        txttim.append(num_time)
+    #num_time1 = write(tmpfil,txttim[0])
+    #num_time2 = write(tmpfil,txttim[1])
+    for i in range(2):
+        fw(tmpfil,txttim[i]&255)
+        fw(tmpfil,txttim[i]>>8)
+    tmpfil.close()
+    shutil.copy(TMPFILE,fp)
+    os.remove(TMPFILE)
+    script_inspect_event(num_id)
+    print(text_rgb("Success!")+"\nWritten to: "+colored(fp,"yellow"))
 def script_merge_event():
     script_merge_any(filename_str(EVENTFILE))
 def script_inspect_event(cid):
-    print_error("script_inspect_event\nUNFINISHED")
+    # Specific file.
     if cid != -1:
         cid %= 256
+        mnam=fileid(EVENTFILE,cid)
+        if not file_exists(mnam):
+            print_error(mnam+" does not exist!")
+            sys.exit()
+        mfile=open(mnam,"rb")
+        num_id = buffer_read(mfile,1)
+        num_date1 = buffer_read(mfile,1)
+        num_date2 = buffer_read(mfile,1)
+        num_lvl1 = buffer_read(mfile,1)
+        num_lvl2 = buffer_read(mfile,1)
+        num_time1 = buffer_read(mfile,2)
+        num_time2 = buffer_read(mfile,2)
+        if num_date1>num_date2:
+            print_error("Start Date is after End Date!\n("+str(num_date1)+" > "+str(num_date2)+")")
+        if num_lvl1>num_lvl2:
+            print_error("Start Level is after End Level!\n("+str(num_lvl1)+" > "+str(num_lvl2)+")")
+        if num_time1>num_time2:
+            print_error("Start Time is after End Time!\n("+str(num_time1)+" > "+str(num_time2)+")")
+        mfile.close()
+    # Main file.
     else:
-        pass
+        print_error("script_inspect_event (main file)\nUNFINISHED")
+    print(EVENTFILE+" inspection passed!")
 #######################################
 if __name__ == "__main__":
     # Main

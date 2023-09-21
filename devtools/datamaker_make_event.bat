@@ -1,2 +1,2 @@
-python devtools_datamaker.py quest make
+python devtools_datamaker.py event make
 pause
