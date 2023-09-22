@@ -30,11 +30,11 @@ char* audio_music_idtostr(int id)
 	//if (strcmp(str,"audio/overworld.wav")==0) {ret=0;}
 	switch (id)
 	{
-		case 0: {ret="audio/mus_overworld.wav";} break;
-		case 1: {ret="audio/mus_dungeon1.wav";} break;
-		//case : {ret="audio/mus_.wav"} break;
-		//case : {ret="audio/mus_.wav"} break;
-		//case : {ret="audio/mus_.wav"} break;
+		case 0: {ret="audio/mus_overworld.wav"; break;}
+		case 1: {ret="audio/mus_dungeon1.wav"; break;}
+		//case : {ret="audio/mus_.wav"; break;}
+		//case : {ret="audio/mus_.wav"; break;}
+		//case : {ret="audio/mus_.wav"; break;}
 		
 	}
 	return ret;
@@ -89,9 +89,9 @@ char* audio_sfx_idtostr(int id)
 	{
 		case 0: {ret="audio/sfx_explode.wav"; break;}
 		case 1: {ret="audio/sfx_playerdied.wav"; break;}
-		//case : {ret="audio/sfx_.wav"} break;
-		//case : {ret="audio/sfx_.wav"} break;
-		//case : {ret="audio/sfx_.wav"} break;
+		case 2: {ret="audio/sfx_pickup.wav"; break;}
+		//case : {ret="audio/sfx_.wav"; break;}
+		//case : {ret="audio/sfx_.wav"; break;}
 	}
 	return ret;
 }
