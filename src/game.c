@@ -64,8 +64,9 @@ void deactivateAllSnowParticles()
 
 
 //Health System test
-int health = 100;
 int maxHealth=100;
+int minHealth=0;
+int health = 100;//todo: remove hard-coding of this value.
 SDL_Rect playerHitbox;
 // Function to update the globalRect's position and size
 void updatePlayerHitbox(int x, int y, int width, int height)
@@ -78,9 +79,9 @@ void updatePlayerHitbox(int x, int y, int width, int height)
 //damaging test
 void damageMe(int dmg)
 {
-	if(health-dmg<=0)
+	if(health-dmg<=minHealth)
 	{
-		health=0;
+		health=minHealth;
 		audio_sfx_play_id(1,1);//player died.
 	}
 	else
@@ -93,7 +94,7 @@ void healMe(int dmg)
 {
 	if(health+dmg>=maxHealth)
 	{
-		health=100;
+		health=maxHealth;
 	}
 	else
 	{

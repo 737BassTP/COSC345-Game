@@ -747,7 +747,7 @@ void level_load_objects(byte arr[],struct gameobject Objects[],int level,int siz
 	for (int i=0; i<siz; i++)
 	{
 		//Explicit objects.
-		objid = (int)arr[offobj+i];
+		objid = 0x100+(int)arr[offobj+i];
 		
 		//Implicit objects.
 		implicit = (int)arr[offtil+i];

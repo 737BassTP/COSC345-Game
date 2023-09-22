@@ -786,7 +786,7 @@ int SDL_main(int argc, char *argv[])
 								level_load_objects(level_data,Objects,level_cur,level_size);
 								audio_music_level(level_cur,level_prev);
 								//incomplete level load; call a level loading function.
-								//todo: stop rain/snow in underworld.
+								//todo: stop rain/snow in underworld (call a function that calls functions).
 								int npos = (door>>9)&0xFF;
 								Player.x = win_game_x + gw*win_game_tile_dim*BGG(npos,4,0);
 								Player.y = win_game_y + gh*win_game_tile_dim*BGG(npos,4,1);
@@ -795,6 +795,8 @@ int SDL_main(int argc, char *argv[])
 								keyboard_reset(glob_vk_right);
 								keyboard_reset(glob_vk_up);
 								keyboard_reset(glob_vk_down);
+								//prevent back-and-forth'ing every frame.
+								Player.y += 16*gh*((level_cur<256)?(1):(-1));
 							}
 							else
 							{
@@ -804,7 +806,7 @@ int SDL_main(int argc, char *argv[])
 							}
 						} break;
 						//Photograph object.
-						case 0x1F:
+						case 0x11F:
 						{
 							//printf("photo\n");
 							int sp=-1;
@@ -832,15 +834,15 @@ int SDL_main(int argc, char *argv[])
 						} break;
 						//TODO: Add support for persistent objects (once removed, stay removed).
 						//Dungeon gates.
-						case 0x40: case 0x41: case 0x42: case 0x43: case 0x44: case 0x45: case 0x46: case 0x47:
-						case 0x48: case 0x49: case 0x4A: case 0x4B: case 0x4C: case 0x4D: case 0x4E: case 0x4F:
+						case 0x140: case 0x141: case 0x142: case 0x143: case 0x144: case 0x145: case 0x146: case 0x147:
+						case 0x148: case 0x149: case 0x14A: case 0x14B: case 0x14C: case 0x14D: case 0x14E: case 0x14F:
 						{
-							int gate=objid-0x40;
+							int gate=objid-0x140;
 							int sgk=savegame_get_key(gate);
 							if (sgk != 0)
 							{
 								savegame_add_key(gate,-1);
-								Objects[i].tileid = 0xFF;//lazy non-persistent destroy.
+								Objects[i].tileid = 0x1FF;//lazy non-persistent destroy.
 							}
 							else
 							{
@@ -849,13 +851,13 @@ int SDL_main(int argc, char *argv[])
 							}
 						} break;
 						//Dungeon keys.
-						case 0x50: case 0x51: case 0x52: case 0x53: case 0x54: case 0x55: case 0x56: case 0x57: 
-						case 0x58: case 0x59: case 0x5A: case 0x5B: case 0x5C: case 0x5D: case 0x5E: case 0x5F: 
+						case 0x150: case 0x151: case 0x152: case 0x153: case 0x154: case 0x155: case 0x156: case 0x157: 
+						case 0x158: case 0x159: case 0x15A: case 0x15B: case 0x15C: case 0x15D: case 0x15E: case 0x15F: 
 						{
-							int key=objid-0x50;
+							int key=objid-0x150;
 							savegame_add_key(key,+1);
 							audio_sfx_play_id(2,0);//pickup sound.
-							Objects[i].tileid = 0xFF;//lazy non-persistent destroy.
+							Objects[i].tileid = 0x1FF;//lazy non-persistent destroy.
 						} break;
 						//Default.
 						default:
@@ -1317,11 +1319,11 @@ int SDL_main(int argc, char *argv[])
 						//Static object.
 						int oti=Objects[ij].tileid;
 						int skipoti=0;
-						skipoti |= (oti == 0xFF);//undefined object.
-						skipoti |= ((oti >= 0x10) && (oti <= 0x13));//animated water/lava
+						skipoti |= (oti == 0x1FF);//undefined object.
+						skipoti |= ((oti >= 0x110) && (oti <= 0x113));//animated water/lava
 						if (!skipoti)
 						{
-							oti += 0x100*(oti<0x100);
+							//oti += 0x100*(oti<0x100);
 							draw_image_part(renderer,
 								x1+xoff,//win_game_x+Objects[ij].bbox_L,
 								y1+yoff,//win_game_y+Objects[ij].bbox_T,
