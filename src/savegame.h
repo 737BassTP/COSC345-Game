@@ -37,9 +37,13 @@ Savegame format:
 		$9C-$9D: Seconds in-game; story (stop counter after defeating final boss).
 		$9E-$9F: Seconds in-game; 100% (stop counter after unlocking everything).
 	$A0-$AF: Player name (16 characters)
-	$B0-$BF: Inventory (16x items; max 255 since 0 is valid)
-	$C0-$CF: Quest progress (4 simultaneous).
-	$D0-$DF: ?
+	$B0-$BF: Quest progress.
+		$B0-$B1: Quest 1/8
+			$B0: Quest ID.
+			$B1: Tasks done.
+		$B2-$BF: etc...
+	$C0-$CF: Inventory, standard (16x items; max 255 since 0 is valid)
+	$D0-$DF: Inventory, dungeon keys.
 	$E0-$EF: Music timers (max 65536 seconds and 8 musics).
 		$E0-$E1: "overworld.wav"
 		$E2-$EF: etc...
@@ -66,5 +70,8 @@ void savegame_checksum_write();
 int savegame_checksum_read();
 void savegame_set_pos(byte x,byte y);
 void savegame_set_lvl(word lvl);
+int savegame_get_key(int id);
+void savegame_add_key(int id,int am);
+//void savegame_();
 
 #endif

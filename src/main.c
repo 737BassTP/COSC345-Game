@@ -1,15 +1,16 @@
 /*
 COSC345 - Game
 
-Authors: (sorted alphabetically)
-	Matthew Yi
+Authors: (sorted alphabetically ascending by first name)
 	Campbell Nicholas
+	Matthew Yi
 	Sven Russell
 	Thomas Pedersen
 
 SDL2 Documentation:
 https://wiki.libsdl.org/SDL2/APIByCategory
 
+Unfinished tasks; search for "TODO: "
 */
 
 /**
@@ -829,6 +830,34 @@ int SDL_main(int argc, char *argv[])
 							splashphoto_cur=sp;
 							strcpy(splashphoto_str_name,splashphoto_names[splashphoto_cur]);//TODO: Move into a function.
 						} break;
+						//TODO: Add support for persistent objects (once removed, stay removed).
+						//Dungeon gates.
+						case 0x40: case 0x41: case 0x42: case 0x43: case 0x44: case 0x45: case 0x46: case 0x47:
+						case 0x48: case 0x49: case 0x4A: case 0x4B: case 0x4C: case 0x4D: case 0x4E: case 0x4F:
+						{
+							int gate=objid-0x40;
+							int sgk=savegame_get_key(gate);
+							if (sgk != 0)
+							{
+								savegame_add_key(gate,-1);
+								Objects[i].tileid = 0xFF;//lazy non-persistent destroy.
+							}
+							else
+							{
+								Player.x = Player.xprevious;
+								Player.y = Player.yprevious;
+							}
+						} break;
+						//Dungeon keys.
+						case 0x50: case 0x51: case 0x52: case 0x53: case 0x54: case 0x55: case 0x56: case 0x57: 
+						case 0x58: case 0x59: case 0x5A: case 0x5B: case 0x5C: case 0x5D: case 0x5E: case 0x5F: 
+						{
+							int key=objid-0x50;
+							savegame_add_key(key,+1);
+							audio_sfx_play_id(2,0);//pickup sound.
+							Objects[i].tileid = 0xFF;//lazy non-persistent destroy.
+						} break;
+						//Default.
 						default:
 						{
 							
@@ -891,6 +920,20 @@ int SDL_main(int argc, char *argv[])
 				level_load_objects(level_data,Objects,level_cur,level_size);
 				mapvisit[level_cur/32] |= (Uint32)(1<<level_cur%32);
 				audio_music_level(level_cur,level_prev);
+				
+				//Turn off weather inside closed containers (dungeon, houses, caves).
+				//Will only apply to level changes by hitting the screen border, not door interactions.
+				if (level_cur >= 256)
+				{
+					deactivateAllWaterParticles();
+					deactivateAllSnowParticles();
+				}
+				else
+				{
+					activateAllWaterParticles();
+					activateAllSnowParticles();
+				}
+				
 				
 				level_prev = level_cur;//finished handling level loading.
 			}
@@ -1258,11 +1301,17 @@ int SDL_main(int argc, char *argv[])
 							}
 						}
 						/**/
-						//Y-offsets.
+						//X/Y-offsets.
+						int xoff=0;
 						int yoff=0;
+						int xspd=1;//inverse.
 						int yspd=1;//inverse.
+						int xmul=0;
 						int ymul=0;
-						if (tex == 0x1F) {ymul=4;}//photo object.
+						     if (tex == 0x1F) {ymul=4;}//photo object.
+						else if ((tex >= 0x40) && (tex <= 0x4F)) {xmul=1; ymul=1;}//dungeon gate.
+						else if ((tex >= 0x50) && (tex <= 0x5F)) {ymul=3;}//dungeon key.
+						if (xmul) {xoff = xmul*gw*dcos(((((int)(get_timer()))/xspd)%360));}
 						if (ymul) {yoff = ymul*gh*dsin(((((int)(get_timer()))/yspd)%360));}
 						
 						//Static object.
@@ -1274,9 +1323,9 @@ int SDL_main(int argc, char *argv[])
 						{
 							oti += 0x100*(oti<0x100);
 							draw_image_part(renderer,
-								x1,//win_game_x+Objects[ij].bbox_L,
+								x1+xoff,//win_game_x+Objects[ij].bbox_L,
 								y1+yoff,//win_game_y+Objects[ij].bbox_T,
-								x2,//win_game_x+Objects[ij].bbox_R,
+								x2+xoff,//win_game_x+Objects[ij].bbox_R,
 								y2+yoff,//win_game_y+Objects[ij].bbox_B,
 								spr_tileset,d*(oti%win_game_tile_num),d*(oti/win_game_tile_num),d,d);
 						}

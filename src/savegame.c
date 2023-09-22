@@ -10,13 +10,19 @@ char* SAVEGAME_NAME="savegame.dat";
 
 //Offsets.
 int off_mapvisit   = 0x00;
-int off_quizzes    = 0x40;
-int off_60         = 0x60;
+int off_chats      = 0x40;
+int off_quizzes    = 0x60;
+int off_quests     = 0x70;
+int off_events     = 0x78;
+int off_photos     = 0x7C;
 int off_player     = 0x80;
 int off_statistics = 0x90;
 int off_username   = 0xA0;
-int off_inventory  = 0xB0;
-int off_C0         = 0xC0;
+int off_questprog  = 0xB0;
+int off_inventory  = 0xC0;
+int off_dungeonkeys= 0xD0;
+int off_E0         = 0xE0;
+int off_F0         = 0xF0;
 
 //Savegame array.
 byte savegame_data[256];
@@ -152,4 +158,16 @@ void savegame_set_pos(byte x,byte y)
 void savegame_set_lvl(word lvl)
 {
 	savegame_data[off_player+2] = lvl;
+}
+int savegame_get_key(int id)
+{
+	return savegame_data[off_dungeonkeys+(id%16)];
+}
+void savegame_add_key(int id,int am)
+{
+	id%=16;
+	int tmp=savegame_get_key(id)+am;
+	tmp=(tmp>=16)?(15):(tmp);
+	tmp=(tmp<0)?(0):(tmp);
+	savegame_data[off_dungeonkeys+id]=tmp;
 }

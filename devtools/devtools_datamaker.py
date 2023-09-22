@@ -372,25 +372,70 @@ def script_inspect_chat(cid):
         print(CHATFILE+" inspection passed!")
 #######################################
 def script_make_quest():
-    print_error("script_make_quest\nUNFINISHED")
-    if 0:
-        num_id = get_byte("Quest ID?")
-        nid=str(num_id)
-        fp = fileid(QUESTFILE,nid)
-        if file_exists(fp):
-            print_error("Warning!\n"+fp+" already exists!\nOverwrite? (0-1)")
-            ov=int(input())%2
-            if not ov:
-                print("No overwriting; will exit.")
-                sys.exit()
-        tmpfil = open(TMPFILE,"wb")
-        fw(tmpfil,num_id)
-        
-        tmpfil.close()
-        shutil.copy(TMPFILE,fp)
-        os.remove(TMPFILE)
-        script_inspect_quest(num_id)
-        print(text_rgb("Success!")+"\nWritten to: "+colored(fp,"yellow"))
+    # print_error("script_make_quest\nUNFINISHED")    
+    num_id = get_byte("Quest ID?")
+    nid=str(num_id)
+    fp = fileid(QUESTFILE,nid)
+    if file_exists(fp):
+        print_error("Warning!\n"+fp+" already exists!\nOverwrite? (0-1)")
+        ov=int(input())%2
+        if not ov:
+            print("No overwriting; will exit.")
+            sys.exit()
+    tmpfil = open(TMPFILE,"wb")
+    fw(tmpfil,num_id)
+    
+    txt_title = write(tmpfil,get_string("Quest title."))
+    txt_desc  = write(tmpfil,get_string("Quest descrpition."))
+    num_tasks = get_int("Number of tasks in Quest.")
+    fw(tmpfil,num_tasks)
+    tasklist=""
+    tasklist+="0=Kill X more enemies\n1=Go to level X (0-255)\n2=Have won X total quizzes\n3=Have visited X levels in Overworld\n"
+    tasklist+="4=Completed X dungeons (0-5)\n5=Have at least X items of Y in inventory\n6=Go to rectangle X,Y in level Z\n7=?"
+    tasklist=tasklist.replace("="," = ")
+    for i in range(num_tasks):
+        ct = "Task "+str(i+1)+"/"+str(num_tasks)+": "
+        num_taskid = get_int(ct+"Type:\n"+tasklist)
+        # encode taskid
+        taskd=[]
+        if num_taskid == 0:
+            num_taskid=0x10
+            taskd.append(get_int("Kill how many enemies? (0-255)"))
+        elif num_taskid == 1:
+            num_taskid=0x11
+            taskd.append(get_int("Go to which Overworld-level? (0-255)"))
+        elif num_taskid == 2:
+            num_taskid=0x12
+            taskd.append(get_int("Have won how many quizzes? (0-?)"))
+        elif num_taskid == 3:
+            num_taskid=0x13
+            taskd.append(get_int("Have visited how many Overworld-levels? (0-255)"))
+        elif num_taskid == 4:
+            num_taskid=0x14
+            taskd.append(get_int("Have completed how many dungeons? (0-5)"))
+        elif num_taskid == 5:
+            num_taskid=0x20
+            taskd.append(get_int("How many items of X? (0-255)"))
+            taskd.append(get_int("What is item Y? (0-15)"))
+        elif num_taskid == 6:
+            num_taskid=0x30
+            taskd.append(get_int("Rect-coord Y1X1? (0-255)"))
+            taskd.append(get_int("Rect-coord Y2X2? (0-255)"))
+            taskd.append(get_int("Overworld-Level Z? (0-255)"))
+        else:
+            print_error("Wrong task id specified!")
+            sys.exit()
+        # transfer to file.
+        fw(tmpfil,num_taskid)
+        for j in taskd:
+            fw(tmpfil,j&0xFF)
+        txt_task = write(tmpfil,get_string("Description of this task."))
+    
+    tmpfil.close()
+    shutil.copy(TMPFILE,fp)
+    os.remove(TMPFILE)
+    script_inspect_quest(num_id)
+    print(text_rgb("Success!")+"\nWritten to: "+colored(fp,"yellow"))
 def script_merge_quest():
     script_merge_any(filename_str(QUESTFILE))
 def script_inspect_quest(cid):
