@@ -17,6 +17,7 @@ all:
 	make icon
 	@echo $(WORKDIR)
 	$(CC) -std=c17 $(HEADERS) $(SOURCES) -I "$(SDL2)\include" -L "$(SDL2)\lib" $(CFLAGS) -o main icon.res
+	make free
 	@echo Build succeeded!
 	
 all-coverage:
@@ -47,7 +48,11 @@ asm:
 	gcc $(SOURCES) -O0 -S -o main.s -masm=intel $<
 	
 clean:
-	rm -rf *.exe *.s *.res
+	rm -rf *.exe *.s
+	
+free:
+	rm icon.rc
+	rm icon.res
 	
 check:
 	@echo TODO: Self-tests.
@@ -60,6 +65,7 @@ run:
 	./main.exe
 	
 icon:
+	echo "100 ICON img/main.ico" > ./icon.rc
 	windres icon.rc -O coff -o icon.res
 
 obsolete_1:

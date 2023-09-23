@@ -90,14 +90,24 @@ char* audio_sfx_idtostr(int id)
 		case 0: {ret="audio/sfx_explode.wav"; break;}
 		case 1: {ret="audio/sfx_playerdied.wav"; break;}
 		case 2: {ret="audio/sfx_pickup.wav"; break;}
+		case 3: {ret="audio/sfx_button.wav"; break;}
+		case 4: {ret="audio/sfx_gate.wav"; break;}
+		case 5: {ret="audio/sfx_keyhole.wav"; break;}
+		case 6: {ret="audio/sfx_teleport.wav"; break;}
+		case 7: {ret="audio/sfx_block.wav"; break;}
 		//case : {ret="audio/sfx_.wav"; break;}
-		//case : {ret="audio/sfx_.wav"; break;}
+		
 	}
 	return ret;
 }
 void audio_sfx_play_id(int id,int chn)
 {
-	if (!Mix_Playing(chn))
+	if (Mix_Playing(chn))
+	{
+		Mix_HaltChannel(chn);
+	}
+	//if (!Mix_Playing(chn))
+	if (1)
 	{
 		if (sfx != NULL)
 		{
@@ -112,5 +122,6 @@ void audio_sfx_play_id(int id,int chn)
 		}
 		
 		Mix_PlayChannel(chn,sfx,0);//last -1 is indef looping, 0 is once.
+		Mix_Volume(chn,(int)(lerp(0.0,(double)MIX_MAX_VOLUME,(double)0.25)));
 	}
 }

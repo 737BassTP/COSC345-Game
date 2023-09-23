@@ -47,7 +47,13 @@ Savegame format:
 	$E0-$EF: Music timers (max 65536 seconds and 8 musics).
 		$E0-$E1: "overworld.wav"
 		$E2-$EF: etc...
-	$F0-$FE: ? (15 bytes)
+	$F0-$FE: Variables (15 bytes)
+		$F0    : Dungeon gates are open/closed (8 bools).
+		$F1    : Flags
+			b0   : Cannot teleport.
+			b1   : Cannot flip gate.
+			b2-b7: ?
+		$F2-$FE: ?
 	$FF    : Checksum (basic)
 */
 
@@ -72,6 +78,13 @@ void savegame_set_pos(byte x,byte y);
 void savegame_set_lvl(word lvl);
 int savegame_get_key(int id);
 void savegame_add_key(int id,int am);
-//void savegame_();
+int savegame_get_gate(int id);
+void savegame_flip_gate(int id);
+int savegame_get_flag_tele();
+void savegame_set_flag_tele(int v);
+int savegame_get_flag_gate();
+void savegame_set_flag_gate(int v);
+//int savegame_get_(int id);
+//void savegame_set_(int id);
 
 #endif

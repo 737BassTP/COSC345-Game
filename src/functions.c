@@ -477,6 +477,14 @@ int BGG(int val,int size,int nth)
 	
 	return (val>>(nth*size))&((1<<size)-1);
 }
+int BS(int val,int nth,int new)
+{
+	return (val&(~(1<<nth)))|(new<<nth);
+}
+int BT(int val,int nth)
+{
+	return val^=(1<<nth);
+}
 int sqr(int v)
 {
 	/**
@@ -747,7 +755,7 @@ void level_load_objects(byte arr[],struct gameobject Objects[],int level,int siz
 	for (int i=0; i<siz; i++)
 	{
 		//Explicit objects.
-		objid = (int)arr[offobj+i];
+		objid = 0x100+(int)arr[offobj+i];
 		
 		//Implicit objects.
 		implicit = (int)arr[offtil+i];
