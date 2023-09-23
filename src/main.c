@@ -570,7 +570,11 @@ int SDL_main(int argc, char *argv[])
 	//score display
 	int score = 0; //initial score
 	SDL_Color scoreColour = { 0, 0, 0, 255 };
-
+	
+	//Variables.
+	int var_gate_from_button=0;
+	int var_gate_from_button_lastid=0;
+	
 	//Tests.
 	//none
 	
@@ -770,10 +774,121 @@ int SDL_main(int argc, char *argv[])
 					mean_int(2,Player.x,Player.x+win_game_tile_dim*gw),mean_int(2,Player.y,Player.y+win_game_tile_dim*gh),
 					Objects[i].bbox_L,Objects[i].bbox_T,Objects[i].bbox_R,Objects[i].bbox_B))
 				{
-					int objid = Objects[i].tileid;
+					int objid = (Objects[i].tileid & 0x1FF);
 					//printf("objid=%i\n",objid);
 					switch (objid)
 					{
+						//Blocks.
+						case 0x100: case 0x101: case 0x102: case 0x103: case 0x104: case 0x105: case 0x106: case 0x107: 
+						case 0x108: case 0x109: case 0x10A: case 0x10B: case 0x10C: case 0x10D: case 0x10E: case 0x10F: 
+						{
+							int block=objid-0x100;
+							int dir=(int)cartodir(
+								mean_int(2,Player.x,Player.x+win_game_tile_dim*gw)-mean_int(2,Objects[i].bbox_L,Objects[i].bbox_R),
+								mean_int(2,Player.y,Player.y+win_game_tile_dim*gh)-mean_int(2,Objects[i].bbox_T,Objects[i].bbox_B));
+							dir=((dir+45)/90)%4;
+							if (dir==0) {dir=2;} else if (dir==2) {dir=0;}//hacky bugfix.
+							if (objid&(1<<dir))
+							{
+								int dx,dy;
+								dx=mux_int(dir,1,0,-1,0);
+								dy=mux_int(dir,0,-1,0,1);
+								int moved=0;
+								//TODO: Works, but button is not immediately triggered (consider re-write).
+								if (dx!=0)
+								{
+									int ota=Objects[i].tileid;
+									int otb=Objects[i+dx].tileid;
+									if ((otb == 0x1FF)||((otb>=0x170)&&(otb<=0x17F)&&((otb-0x170)&1)))//none or buttons
+									{
+										if (otb == 0x1FF)
+										{
+											otb=0x100+block;
+											if (ota>>16)
+											{
+												ota>>=16;
+												savegame_flip_gate((ota-0x170)/2);
+												audio_sfx_play_id(3,1);//button sound (chn1; chn0 is block sound).
+											}
+											else {ota=0x1FF;}
+										}
+										else
+										{
+											otb<<=16;
+											otb|=0x100+block;
+											savegame_flip_gate((otb-0x170)/2);
+											audio_sfx_play_id(3,1);//button sound (chn1; chn0 is block sound).
+											if (ota>>16)
+											{
+												ota>>=16;
+												savegame_flip_gate((ota-0x170)/2);
+												audio_sfx_play_id(3,2);//button sound (chn1; chn0 is block sound).
+											}
+											else {ota=0x1FF;}
+										}
+										moved=1;
+										Objects[i].tileid=ota;
+										Objects[i+dx].tileid=otb;
+									}
+								}
+								if (dy!=0)
+								{
+									int ota=Objects[i].tileid;
+									int otb=Objects[i+dy*16].tileid;
+									if ((otb == 0x1FF)||((otb>=0x170)&&(otb<=0x17F)&&((otb-0x170)&1)))//none or buttons
+									{
+										if (otb == 0x1FF)
+										{
+											otb=0x100+block;
+											if (ota>>16)
+											{
+												ota>>=16;
+												savegame_flip_gate((ota-0x170)/2);
+												audio_sfx_play_id(3,1);//button sound (chn1; chn0 is block sound).
+											}
+											else {ota=0x1FF;}
+										}
+										else
+										{
+											otb<<=16;
+											otb|=0x100+block;
+											savegame_flip_gate((otb-0x170)/2);
+											audio_sfx_play_id(3,1);//button sound (chn1; chn0 is block sound).
+											if (ota>>16)
+											{
+												ota>>=16;
+												savegame_flip_gate((ota-0x170)/2);
+												audio_sfx_play_id(3,2);//button sound (chn1; chn0 is block sound).
+											}
+											else {ota=0x1FF;}
+										}
+										moved=1;
+										Objects[i].tileid=ota;
+										Objects[i+dy*16].tileid=otb;
+									}
+								}
+								if ((dx!=0)||(dy!=0))
+								{
+									//unfinished.
+									
+								}
+								if (moved)
+								{
+									audio_sfx_play_id(7,0);//block sound.
+								}
+								else
+								{
+									Player.x = Player.xprevious;
+									Player.y = Player.yprevious;
+								}
+							}
+							else
+							{
+								Player.x = Player.xprevious;
+								Player.y = Player.yprevious;
+							}
+						} break;
+
 						//Door object.
 						case 0x116:
 						{
@@ -805,6 +920,28 @@ int SDL_main(int argc, char *argv[])
 								Player.y = Player.yprevious;
 							}
 						} break;
+						//Teleporters (within same level).
+						case 0x118: case 0x119: case 0x11A: case 0x11B: 
+						{
+							int tele=objid-0x118;
+							//Find the other teleporter (will only work between two-of-same-color within same level).
+							if (!savegame_get_flag_tele())
+							{
+								for (int j=0; j<256; j++)
+								{
+									if (i==j) {continue;}
+									int otherid = (Objects[j].tileid)-0x118;
+									if (tele==otherid)
+									{
+										Player.x = Objects[j].bbox_L;
+										Player.y = Objects[j].bbox_T;
+										savegame_set_flag_tele(1);
+										audio_sfx_play_id(6,0);//teleport sound.
+										break;									
+									}
+								}
+							}
+						} break;
 						//Photograph object.
 						case 0x11F:
 						{
@@ -833,16 +970,17 @@ int SDL_main(int argc, char *argv[])
 							strcpy(splashphoto_str_name,splashphoto_names[splashphoto_cur]);//TODO: Move into a function.
 						} break;
 						//TODO: Add support for persistent objects (once removed, stay removed).
-						//Dungeon gates.
+						//Dungeon keyholes.
 						case 0x140: case 0x141: case 0x142: case 0x143: case 0x144: case 0x145: case 0x146: case 0x147:
 						case 0x148: case 0x149: case 0x14A: case 0x14B: case 0x14C: case 0x14D: case 0x14E: case 0x14F:
 						{
-							int gate=objid-0x140;
-							int sgk=savegame_get_key(gate);
+							int keyhole=objid-0x140;
+							int sgk=savegame_get_key(keyhole);
 							if (sgk != 0)
 							{
-								savegame_add_key(gate,-1);
+								savegame_add_key(keyhole,-1);
 								Objects[i].tileid = 0x1FF;//lazy non-persistent destroy.
+								audio_sfx_play_id(5,0);//keyhole sound.
 							}
 							else
 							{
@@ -859,10 +997,48 @@ int SDL_main(int argc, char *argv[])
 							audio_sfx_play_id(2,0);//pickup sound.
 							Objects[i].tileid = 0x1FF;//lazy non-persistent destroy.
 						} break;
+						//Dungeon gates.
+						case 0x160: case 0x161: case 0x162: case 0x163: case 0x164: case 0x165: case 0x166: case 0x167: 
+						case 0x168: case 0x169: case 0x16A: case 0x16B: case 0x16C: case 0x16D: case 0x16E: case 0x16F: 
+						{
+							int gate=objid-0x160;
+							int open=savegame_get_gate(gate/2)^(gate&1);
+							if (!open)
+							{
+								Player.x = Player.xprevious;
+								Player.y = Player.yprevious;
+							}
+						} break;
+						//Dungeon levers and buttons.
+						case 0x170: case 0x171: case 0x172: case 0x173: case 0x174: case 0x175: case 0x176: case 0x177: 
+						case 0x178: case 0x179: case 0x17A: case 0x17B: case 0x17C: case 0x17D: case 0x17E: case 0x17F: 
+						{
+							int levbut=objid-0x170;
+							int isbut=levbut&1;
+							var_gate_from_button=isbut;
+							var_gate_from_button_lastid=levbut/2;
+							if (!savegame_get_flag_gate())
+							{
+								savegame_flip_gate(levbut/2);
+								audio_sfx_play_id(4-isbut,0);//gate/button sound.
+								savegame_set_flag_gate(1);
+							}
+						} break;
+						
+						
 						//Default.
 						default:
 						{
-							
+							//Reset variables.
+							savegame_set_flag_tele(0);
+							savegame_set_flag_gate(0);
+							//Button-activated gates decline after leaving the button.
+							if (var_gate_from_button)
+							{
+								savegame_flip_gate(var_gate_from_button_lastid);
+								audio_sfx_play_id(3,0);//button sound.
+								var_gate_from_button^=var_gate_from_button;
+							}
 						}
 					}
 					
@@ -1292,6 +1468,15 @@ int SDL_main(int argc, char *argv[])
 							else                {spr=spr_water;}
 							draw_image_part(renderer,x1,y1,x2,y2,spr,d*((at/di)%fr),0,d,d);
 						}
+						else if ((tex>=0x60) && (tex <=0x7F))
+						{
+							int img=0x100+tex;
+							if ((tex>=0x60) && (tex <=0x6F))
+							{
+								img ^= savegame_get_gate((tex-0x60)/2);
+							}
+							draw_image_part(renderer,x1,y1,x2,y2,spr_tileset,d*(img%win_game_tile_num),d*(img/win_game_tile_num),d,d);
+						}
 						//unhandled.
 						/*
 						else
@@ -1313,14 +1498,16 @@ int SDL_main(int argc, char *argv[])
 						     if (tex == 0x1F) {ymul=4;}//photo object.
 						else if ((tex >= 0x40) && (tex <= 0x4F)) {xmul=1; ymul=1;}//dungeon gate.
 						else if ((tex >= 0x50) && (tex <= 0x5F)) {ymul=3;}//dungeon key.
+						else if ((tex >= 0x60) && (tex <= 0x7F)) {xmul=1; ymul=1;}//dungeon levers/buttons
 						if (xmul) {xoff = xmul*gw*dcos(((((int)(get_timer()))/xspd)%360));}
 						if (ymul) {yoff = ymul*gh*dsin(((((int)(get_timer()))/yspd)%360));}
 						
 						//Static object.
-						int oti=Objects[ij].tileid;
+						int oti=(Objects[ij].tileid&0x1FF);
 						int skipoti=0;
 						skipoti |= (oti == 0x1FF);//undefined object.
 						skipoti |= ((oti >= 0x110) && (oti <= 0x113));//animated water/lava
+						skipoti |= ((oti >= 0x160) && (oti <= 0x17F));//dungeon levers/buttons.
 						if (!skipoti)
 						{
 							//oti += 0x100*(oti<0x100);

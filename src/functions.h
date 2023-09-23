@@ -90,6 +90,8 @@ SDL_Texture* mux_sdltex(int nth,...);
 int pos_int(int num,int val,...);
 int BG(int val,int nth);
 int BGG(int val,int size,int nth);
+int BS(int val,int nth,int new);
+int BT(int val,int nth);
 int sqr(int v);
 int mean_int(int num,...);
 int min_int(int num,...);

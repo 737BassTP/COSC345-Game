@@ -22,7 +22,11 @@ int off_questprog  = 0xB0;
 int off_inventory  = 0xC0;
 int off_dungeonkeys= 0xD0;
 int off_E0         = 0xE0;
-int off_F0         = 0xF0;
+int off_variables  = 0xF0;
+int off_flags      = 0xF1;
+int off_flag_tele  = 0;
+int off_flag_gate  = 1;
+
 
 //Savegame array.
 byte savegame_data[256];
@@ -170,4 +174,28 @@ void savegame_add_key(int id,int am)
 	tmp=(tmp>=16)?(15):(tmp);
 	tmp=(tmp<0)?(0):(tmp);
 	savegame_data[off_dungeonkeys+id]=tmp;
+}
+int savegame_get_gate(int id)
+{
+	return BG(savegame_data[off_variables+0],id&7);
+}
+void savegame_flip_gate(int id)
+{
+	savegame_data[off_variables+0]=BT(savegame_data[off_variables+0],id);
+}
+int savegame_get_flag_tele()
+{
+	return BG(savegame_data[off_flags],off_flag_tele);
+}
+void savegame_set_flag_tele(int v)
+{
+	savegame_data[off_flags]=BS(savegame_data[off_flags],off_flag_tele,v);
+}
+int savegame_get_flag_gate()
+{
+	return BG(savegame_data[off_flags],off_flag_gate);
+}
+void savegame_set_flag_gate(int v)
+{
+	savegame_data[off_flags]=BS(savegame_data[off_flags],off_flag_gate,v);
 }

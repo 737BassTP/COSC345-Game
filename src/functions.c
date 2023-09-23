@@ -477,6 +477,14 @@ int BGG(int val,int size,int nth)
 	
 	return (val>>(nth*size))&((1<<size)-1);
 }
+int BS(int val,int nth,int new)
+{
+	return (val&(~(1<<nth)))|(new<<nth);
+}
+int BT(int val,int nth)
+{
+	return val^=(1<<nth);
+}
 int sqr(int v)
 {
 	/**
