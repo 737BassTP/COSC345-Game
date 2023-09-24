@@ -304,6 +304,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *spr_tileset = IMG_LoadTexture(renderer,"tiled/tileset.png");
 	SDL_Texture *spr_hudshade = IMG_LoadTexture(renderer,"img/hudshade.png");
 	SDL_Texture *spr_enemy1 = IMG_LoadTexture(renderer,"img/spr_enemy1.png");
+	SDL_Texture *spr_teleport = IMG_LoadTexture(renderer,"img/spr_teleport_strip4.png");
 	SDL_Texture *spr_burger = IMG_LoadTexture(renderer,"img/burger.png");
 	SDL_Texture *spr_bread = IMG_LoadTexture(renderer,"img/bread.png");
 	SDL_Texture *spr_avo = IMG_LoadTexture(renderer,"img/avo.png");
@@ -888,7 +889,14 @@ int SDL_main(int argc, char *argv[])
 								Player.y = Player.yprevious;
 							}
 						} break;
-
+						//Water/Lava.
+						case 0x110: case 0x111: case 0x112: case 0x113:
+						{
+							Player.x = Player.xprevious;
+							Player.y = Player.yprevious;
+							int wl=objid-0x110;
+							if (wl>=2) {damageMe(5);}
+						} break;
 						//Door object.
 						case 0x116:
 						{
@@ -1098,6 +1106,11 @@ int SDL_main(int argc, char *argv[])
 				level_load_objects(level_data,Objects,level_cur,level_size);
 				mapvisit[level_cur/32] |= (Uint32)(1<<level_cur%32);
 				audio_music_level(level_cur,level_prev);
+				if (level_cur < 256)
+				{
+					//clear all dungeon gates while in Overworld.
+					for (int i=0; i<8; i++) {savegame_set_gate(i,0);}
+				}
 				
 				//Turn off weather inside closed containers (dungeon, houses, caves).
 				//Will only apply to level changes by hitting the screen border, not door interactions.
@@ -1455,11 +1468,11 @@ int SDL_main(int argc, char *argv[])
 					else if (k==1)
 					{
 						//animated
+						int at=(int)get_timer();
 						if ((tex>=0x10) && (tex <=0x13))
 						{
 							int fr=16;
 							int di=(tex<0x12)?(60):(120);
-							int at=(int)get_timer();
 							SDL_Texture *spr;
 								 if (tex==0x10) {spr=spr_water;}
 							else if (tex==0x11) {spr=spr_water_shallow;}
@@ -1467,6 +1480,16 @@ int SDL_main(int argc, char *argv[])
 							else if (tex==0x13) {spr=spr_lava_shallow;}
 							else                {spr=spr_water;}
 							draw_image_part(renderer,x1,y1,x2,y2,spr,d*((at/di)%fr),0,d,d);
+						}
+						else if ((tex>=0x18) && (tex <=0x1B))
+						{
+							int fr=4;
+							int di=90-(tex-0x18)*15;
+							int c=mux_int(tex-0x18,c_red,c_yellow,c_green,c_blue);
+							for (int a=0; a<3; a++) {if (!BGG(c,8,a)) {c|=0x80<<a*8;}}
+							draw_set_color(renderer,c);
+							draw_image_part(renderer,x1,y1,x2,y2,spr_teleport,d*((at/di)%fr),0,d,d);
+							draw_set_color(renderer,c_white);
 						}
 						else if ((tex>=0x60) && (tex <=0x7F))
 						{
@@ -1507,6 +1530,7 @@ int SDL_main(int argc, char *argv[])
 						int skipoti=0;
 						skipoti |= (oti == 0x1FF);//undefined object.
 						skipoti |= ((oti >= 0x110) && (oti <= 0x113));//animated water/lava
+						skipoti |= ((oti >= 0x118) && (oti <= 0x11B));//teleporters.
 						skipoti |= ((oti >= 0x160) && (oti <= 0x17F));//dungeon levers/buttons.
 						if (!skipoti)
 						{
@@ -2271,6 +2295,7 @@ int SDL_main(int argc, char *argv[])
 	SDL_DestroyTexture(spr_hudshade);
 	SDL_DestroyTexture(spr_nutrients);
 	SDL_DestroyTexture(spr_enemy1);
+	SDL_DestroyTexture(spr_teleport);
 	
 	SDL_DestroyTexture(spr_burger);
 	SDL_DestroyTexture(spr_bread);

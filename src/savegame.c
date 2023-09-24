@@ -159,14 +159,8 @@ void savegame_set_pos(byte x,byte y)
 	savegame_data[off_player+0] = x;
 	savegame_data[off_player+1] = y;
 }
-void savegame_set_lvl(word lvl)
-{
-	savegame_data[off_player+2] = lvl;
-}
-int savegame_get_key(int id)
-{
-	return savegame_data[off_dungeonkeys+(id%16)];
-}
+void savegame_set_lvl(word lvl) {savegame_data[off_player+2] = lvl;}
+int savegame_get_key(int id) {return savegame_data[off_dungeonkeys+(id%16)];}
 void savegame_add_key(int id,int am)
 {
 	id%=16;
@@ -175,27 +169,11 @@ void savegame_add_key(int id,int am)
 	tmp=(tmp<0)?(0):(tmp);
 	savegame_data[off_dungeonkeys+id]=tmp;
 }
-int savegame_get_gate(int id)
-{
-	return BG(savegame_data[off_variables+0],id&7);
-}
-void savegame_flip_gate(int id)
-{
-	savegame_data[off_variables+0]=BT(savegame_data[off_variables+0],id);
-}
-int savegame_get_flag_tele()
-{
-	return BG(savegame_data[off_flags],off_flag_tele);
-}
-void savegame_set_flag_tele(int v)
-{
-	savegame_data[off_flags]=BS(savegame_data[off_flags],off_flag_tele,v);
-}
-int savegame_get_flag_gate()
-{
-	return BG(savegame_data[off_flags],off_flag_gate);
-}
-void savegame_set_flag_gate(int v)
-{
-	savegame_data[off_flags]=BS(savegame_data[off_flags],off_flag_gate,v);
-}
+int savegame_get_gate(int id) {return BG(savegame_data[off_variables+0],id&7);}
+void savegame_set_gate(int id,int v) {savegame_data[off_variables+0]=BS(savegame_data[off_variables+0],id,v);}
+void savegame_flip_gate(int id) {savegame_data[off_variables+0]=BT(savegame_data[off_variables+0],id);}
+int savegame_get_flag_tele() {return BG(savegame_data[off_flags],off_flag_tele);}
+void savegame_set_flag_tele(int v) {savegame_data[off_flags]=BS(savegame_data[off_flags],off_flag_tele,v);}
+int savegame_get_flag_gate() {return BG(savegame_data[off_flags],off_flag_gate);}
+void savegame_set_flag_gate(int v) {savegame_data[off_flags]=BS(savegame_data[off_flags],off_flag_gate,v);}
+

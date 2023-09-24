@@ -79,6 +79,7 @@ void savegame_set_lvl(word lvl);
 int savegame_get_key(int id);
 void savegame_add_key(int id,int am);
 int savegame_get_gate(int id);
+void savegame_set_gate(int id,int v);
 void savegame_flip_gate(int id);
 int savegame_get_flag_tele();
 void savegame_set_flag_tele(int v);

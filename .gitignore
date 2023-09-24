@@ -1,4 +1,4 @@
-data/~$Weather_Data.xlsx
+data/~$*.xlsx
 coverage/codecov_token.txt
 gitignore/*
 devtools/__pycache__
