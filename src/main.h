@@ -11,7 +11,6 @@
 //Dimensions.
 const int screen_w;///< screen width
 const int screen_h;///< screen height
-
 //Game area.
 const int win_game_x;///<
 const int win_game_y;///< 

@@ -578,7 +578,11 @@ int SDL_main(int argc, char *argv[])
 	
 	//Tests.
 	//none
-	
+	struct AttackAnimation attackAnimation;
+	attackAnimation.isActive = 0; // Animation is initially inactive
+	attackAnimation.currentFrame = 0;
+	attackAnimation.totalFrames = NUM_FRAMES;
+	SDL_Texture* backBuffer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, screen_w, screen_h);
 	//Mainloop here.
 	printf("Entering main loop...\n");
 	while (running)
@@ -616,12 +620,27 @@ int SDL_main(int argc, char *argv[])
 				objid.bbox_L,objid.bbox_T,objid.bbox_R,objid.bbox_B);
 			
 		}
-		
-		if (keyboard_check_pressed(glob_vk_7))
-		{
-			attack(&Player);//calls attack function
-			renderWeaponSwing(renderer, spr_water, &Player);//renders the swing
-		}
+if (keyboard_check_pressed(glob_vk_7) && !attackAnimation.isActive) {
+    attack(&Player); // calls the attack function
+    attackAnimation.isActive = 1;
+    attackAnimation.currentFrame = 0;
+}
+
+if (attackAnimation.isActive) {
+    // Render the attack animation frame
+    renderWeaponSwing(renderer, spr_water, &Player, attackAnimation.currentFrame);
+
+    // Increment the animation frame
+    attackAnimation.currentFrame++;
+
+    // Check if the animation has reached its last frame
+    if (attackAnimation.currentFrame >= attackAnimation.totalFrames) {
+        // Deactivate the attack animation
+        attackAnimation.isActive = 0;
+    }
+}
+
+
 		if (keyboard_check_pressed(glob_vk_8))
 		{
 			enemyAttack(&enemies[0], &Player);

@@ -32,14 +32,17 @@ struct player
 	int height;
 	int health;
 };
-
+struct AttackAnimation {
+    int isActive;           // Flag to indicate if the attack animation is active
+    int currentFrame;       // Current frame of the animation
+    int totalFrames;        // Total frames in the animation
+};
 void calculateAttackHitbox(struct player* player, SDL_Rect* attackHitbox);
 void attack(struct player* player);// Function to perform the player's attack
 void enemyAttack(struct Enemy* enemy, struct player* Player); 
 #define NUM_FRAMES 8
 #define ANGLE_INCREMENT 5.625
-void renderWeaponSwing(SDL_Renderer* renderer, SDL_Texture* weaponTexture, struct player* player);// Function to render the weapon swing animation
-
+void renderWeaponSwing(SDL_Renderer* renderer, SDL_Texture* weaponTexture, struct player* player, int currentFrame);
 void player_movement();
 
 #endif
