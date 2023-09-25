@@ -31,7 +31,9 @@ char* audio_music_idtostr(int id)
 	switch (id)
 	{
 		case 0: {ret="audio/mus_overworld.wav"; break;}
-		case 1: {ret="audio/mus_dungeon1.wav"; break;}
+		case 1: {ret="audio/mus_dungeon_final.wav"; break;}
+		case 2: {ret="audio/mus_dungeon_alcohol.wav"; break;}
+		case 3: {ret="audio/mus_dungeon_carbohydrate.wav"; break;}
 		//case : {ret="audio/mus_.wav"; break;}
 		//case : {ret="audio/mus_.wav"; break;}
 		//case : {ret="audio/mus_.wav"; break;}
@@ -69,18 +71,39 @@ void audio_music_level(int lc,int lp)
 {
 	if ((lc<256) && (lp<256)) {return;}//Still in Overworld.
 	if ((lc>=256) && (lp>=256)) {return;}//Still in Underworld.
+	//NOTE: Music changes only when travelling between Over- and Underworld.
 	
 	//Overworld.
+	int id=0;
 	if (lc<256)
 	{
-		audio_music_play_id(0);
+		id=0;
 	}
 	//Underworld.
 	if (lc>=256)
 	{
-		audio_music_play_id(1);
+		//Houses.
+		//Caves.
+		id=1;
+		
+		//Dungeons.
+		if (lc>=352)
+		{
+			if (lc>=400)
+			{
+				id=2+((lc-400)/4)%4;
+				if (id>=4)
+				{
+					id=1;
+				}
+			}
+			else
+			{
+				id=1;
+			}
+		}
 	}
-	
+	audio_music_play_id(id);
 }
 char* audio_sfx_idtostr(int id)
 {
