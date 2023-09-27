@@ -159,3 +159,9 @@ void snow_create()
         createWaterParticle(i, screen_w, screen_h);
     }
 }
+
+//Bus (fast travel)
+void bus_show_timetable(int lvl)
+{
+	
+}
