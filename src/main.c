@@ -317,6 +317,8 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *spr_potato = IMG_LoadTexture(renderer,"img/potato.png");
 	SDL_Texture *spr_tomato = IMG_LoadTexture(renderer,"img/tomato.png");
 	SDL_Texture *spr_sword = IMG_LoadTexture(renderer,"img/spr_sword.png");
+	SDL_Texture *spr_bus_stop = IMG_LoadTexture(renderer,"img/spr_bus_stop.png");
+	SDL_Texture *spr_bus_vehicle = IMG_LoadTexture(renderer,"img/spr_bus_vehicle_strip4.png");
 	
 	SDL_Texture *penguinSamImg = IMG_LoadTexture(renderer,"img/sammy.png");
 	SDL_Texture *snowflake = IMG_LoadTexture(renderer,"img/snowflake.png");
@@ -2330,6 +2332,8 @@ if (attackAnimation.isActive) {
 	SDL_DestroyTexture(spr_tomato);
 	
 	SDL_DestroyTexture(spr_sword);
+	SDL_DestroyTexture(spr_bus_stop);
+	SDL_DestroyTexture(spr_bus_vehicle);
 	IMG_Quit();
 	
 	audio_free();

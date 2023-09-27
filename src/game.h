@@ -111,4 +111,7 @@ double temp_ctof(int c);//Celsius to Fahrenheit.
 
 void rain_create();
 void snow_create();
+
+void bus_show_timetable(int lvl);
+
 #endif
