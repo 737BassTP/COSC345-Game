@@ -23,6 +23,10 @@ Thank you for participating in the user testing for our game. Your feedback is i
 - On a scale of 1 to 5, how would you rate the visual design and overall aesthetics of the game?
 - Do you have any additional comments?
 
+## Music
+- On a scale of 1 to 5, how would you rate the music and sound design?
+- Do you have any additional comments?
+
 ## Trivia Questions
 - How did you feel about the inclusion of the trivia questions? Did it add to your enjoyment of the game?
 - On a scale of 1 to 5,  how difficult did you find the trivia questions?
