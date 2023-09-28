@@ -131,9 +131,9 @@ void attack(struct player* player)
                     healMe(currentEnemy->fat);
 
                     // Carb --> move speed (NEED TO CHANGE A BIT)
-                    printf("Move speed increased from %d", player->move_spd);
-                    player->move_spd += 0.1 * currentEnemy->carb;
-                    printf(" to %d\n", player->move_spd);
+                    //printf("Move speed increased from %d", player->move_spd);
+                    //player->move_spd += 0.1 * currentEnemy->carb;//too unwieldy.
+                    //printf(" to %d\n", player->move_spd);
                 }
             }
         }
