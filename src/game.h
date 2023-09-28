@@ -114,4 +114,9 @@ void snow_create();
 
 void bus_show_timetable(int lvl);
 
+byte signpost_txt[256];
+int signpost_bool;
+void signpost_load(int id);
+void signpost_draw();
+
 #endif

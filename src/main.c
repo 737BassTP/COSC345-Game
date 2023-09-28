@@ -31,6 +31,23 @@ Unfinished tasks; search for "TODO: "
 #include <string.h>
 #include <time.h>   // for time()
 
+//SDL2.
+SDL_Surface *surface = NULL;
+SDL_Window *window = NULL;
+SDL_Renderer *renderer = NULL;
+
+//Textures.
+SDL_Texture *spr_boss_a = NULL;
+SDL_Texture *spr_boss_c = NULL;
+SDL_Texture *spr_boss_m = NULL;
+SDL_Texture *spr_boss_s = NULL;
+SDL_Texture *spr_boss_t = NULL;
+
+//Font.
+SDL_Texture *font_ascii = NULL;
+int font_ascii_w = 0;//updated in main loop
+int font_ascii_h = 0;//updated in main loop
+
 /*
 Global variables and memory allocations.
 */
@@ -47,6 +64,10 @@ const int win_game_x2 = win_game_x+win_game_w;
 const int win_game_y2 = win_game_y+win_game_h;
 const int win_game_tile_num = 16;//16 "tiles" per screen axis.
 const int win_game_tile_dim = 16;//each tile is 16 "pixels" along each axis.
+
+//Level.
+int level_cur=511;
+int level_prev=511;
 
 //Scaling.
 int gw,gh;
@@ -116,9 +137,11 @@ int SDL_main(int argc, char *argv[])
 	gh = gw;
 
 	//SDL2 structs.
+	/*
 	SDL_Surface* surface;
     SDL_Window* window;
     SDL_Renderer* renderer;
+	*/
     SDL_Event event;
 	
 	//initialize random number generator seed
@@ -252,7 +275,7 @@ int SDL_main(int argc, char *argv[])
 	}
 	
 	//Create window (main window).
-	window = SDL_CreateWindow("COSC345 - Game",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,screen_w,screen_h,0);
+	window = SDL_CreateWindow("COSC345-Game (Duneatin')",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,screen_w,screen_h,0);
 	if (!window)
 	{
 		snprintf(errmsg, bufsize, "Window error");
@@ -322,14 +345,20 @@ int SDL_main(int argc, char *argv[])
 	
 	SDL_Texture *penguinSamImg = IMG_LoadTexture(renderer,"img/sammy.png");
 	SDL_Texture *snowflake = IMG_LoadTexture(renderer,"img/snowflake.png");
+	//Bosses.
+	spr_boss_a = IMG_LoadTexture(renderer,"img/bosses/andrew.png");
+	spr_boss_c = IMG_LoadTexture(renderer,"img/bosses/cam1.png");
+	spr_boss_m = IMG_LoadTexture(renderer,"img/bosses/matthew1.png");
+	spr_boss_s = IMG_LoadTexture(renderer,"img/bosses/sean1.png");
+	spr_boss_t = IMG_LoadTexture(renderer,"img/bosses/thomas1.png");
 	//SDL_Texture *spr_ = IMG_LoadTexture(renderer,"img/spr_.png");
 	//SDL_Texture *spr_ = IMG_LoadTexture(renderer,"img/spr_.png");
 	//Player.
 	SDL_Texture *sprstrip_player = IMG_LoadTexture(renderer,"img/player_strip8.png");
 	//Text.
-	SDL_Texture *font_ascii = IMG_LoadTexture(renderer,"img/ascii_strip96.png");
-	int font_ascii_w = 8;
-	int font_ascii_h = 24;
+	font_ascii = IMG_LoadTexture(renderer,"img/ascii_strip96.png");
+	font_ascii_w = 8;
+	font_ascii_h = 24;
 
 	SDL_Texture *enemySprites[] = 
 	{
@@ -367,8 +396,8 @@ int SDL_main(int argc, char *argv[])
 	int level_realms = 2;//overworld, underworld.
 	int level_count = 256*level_realms;
 	int level_layers = 2;
-	int level_cur=0;//256 = 16*16 
-	int level_prev=level_cur;
+	level_cur=0x00;//256 = 16*16 
+	level_prev=level_cur;
 	byte level_data[262144];//static; can not be free'd.
 	//262144 = 256*512*2 (level size * level count * level layers)
 	//Objects.
@@ -410,7 +439,7 @@ int SDL_main(int argc, char *argv[])
 	struct player Player;
 	//struct pos Pos;
 	//Player.Pos = Pos;
-	Player.x = win_game_x + 8*gw*win_game_tile_dim;
+	Player.x = win_game_x + 3*gw*win_game_tile_dim;
 	Player.y = win_game_y + 8*gh*win_game_tile_dim;
 	Player.facedir = 0;
 	Player.anim_spd_cur = 0;//counter.
@@ -537,7 +566,9 @@ int SDL_main(int argc, char *argv[])
 	char* splashbustimes_route=15;
 	char splashbustimes_txt_routename[32];
 	char *splashbustimes_infostr="Bus Timetable Fast Travel";
-	FILE *sbf = fopen("data/bustimes-15a.dat","rb");
+	char *splashbustimes_txt_bustable="07:37am, 271 Anderson Bay";//placeholder data.
+	char* splashbustimes_str_continue = "Press HOME to continue.";
+	FILE *sbf = fopen("data/bustimes-15N.dat","rb");
 	splashbustimes_route=fgetc(sbf);
 	for (int i=0; i<32; i++)
 	{
@@ -554,6 +585,16 @@ int SDL_main(int argc, char *argv[])
 	//Help menu.
 	int helpmenu_bool=0;
 	char* helpmenu_str="Player Controls: Inspect source code.";
+	
+	/*
+	int cutscene_bool=0;
+	int cutscene_pause=0;
+	int cutscene_id=0;
+	char* cutscene_str="Cutscene in progress.";
+	int cutscene_cur=0;
+	int cutscene_spd=1;//spd=1 + 60FPS -> cur+=60 per second.
+	int cutscene_max=60*10;
+	/**/
 	
 	//pop up window test
 	//int option = 0;
@@ -623,25 +664,28 @@ int SDL_main(int argc, char *argv[])
 				objid.bbox_L,objid.bbox_T,objid.bbox_R,objid.bbox_B);
 			
 		}
-if (keyboard_check_pressed(glob_vk_7) && !attackAnimation.isActive) {
-    attack(&Player); // calls the attack function
-    attackAnimation.isActive = 1;
-    attackAnimation.currentFrame = 0;
-}
+		if (keyboard_check_pressed(glob_vk_7) && !attackAnimation.isActive)
+		{
+			attack(&Player); // calls the attack function
+			attackAnimation.isActive = 1;
+			attackAnimation.currentFrame = 0;
+		}
 
-if (attackAnimation.isActive) {
-    // Render the attack animation frame
-    renderWeaponSwing(renderer, spr_water, &Player, attackAnimation.currentFrame);
+		if (attackAnimation.isActive)
+		{
+			// Render the attack animation frame
+			renderWeaponSwing(renderer, spr_water, &Player, attackAnimation.currentFrame);
 
-    // Increment the animation frame
-    attackAnimation.currentFrame++;
+			// Increment the animation frame
+			attackAnimation.currentFrame++;
 
-    // Check if the animation has reached its last frame
-    if (attackAnimation.currentFrame >= attackAnimation.totalFrames) {
-        // Deactivate the attack animation
-        attackAnimation.isActive = 0;
-    }
-}
+			// Check if the animation has reached its last frame
+			if (attackAnimation.currentFrame >= attackAnimation.totalFrames)
+			{
+				// Deactivate the attack animation
+				attackAnimation.isActive = 0;
+			}
+		}
 
 
 		if (keyboard_check_pressed(glob_vk_8))
@@ -755,6 +799,19 @@ if (attackAnimation.isActive) {
 		{
 			splashbustimes_bool ^= 1;
 		}
+		//Show cutscene.
+		if (keyboard_check_pressed(glob_vk_insert))
+		{
+			if (!cutscene_bool)
+			{
+				cutscene_start(cutscene_id);
+			}
+			else
+			{
+				cutscene_stop();
+			}
+		}
+		
 		
 		//Player movement.
 		int mvspd = Player.move_spd;
@@ -776,14 +833,20 @@ if (attackAnimation.isActive) {
 			if (khd) {Player.facedir=3;}
 			
 			//Position.
-			if (khrl!=0)
+			int discordant=((level_cur>=400)&&(!BGG(level_cur,2,1)));//alcohol dungeon.
+			if (!discordant)
 			{
 				Player.x += mvspd*khrl;
-			}
-			if (khud!=0)
-			{
 				Player.y += mvspd*khud;
 			}
+			else
+			{
+				int t=(int)get_timer();
+				t=(t/2000)%4;
+				Player.x += mvspd*mux_int(t,+khrl,+khud,-khrl,-khud);
+				Player.y += mvspd*mux_int(t,-khud,-khrl,+khud,+khrl);
+			}
+			
 			savegame_set_pos((byte)Player.x,(byte)Player.y);
 			savegame_set_lvl((word)level_cur);
 			
@@ -950,6 +1013,13 @@ if (attackAnimation.isActive) {
 								Player.y = Player.yprevious;
 							}
 						} break;
+						//Signpost (only one per level).
+						case 0x117:
+						{
+							signpost_load(level_cur);
+							Player.x = Player.xprevious;
+							Player.y = Player.yprevious;
+						} break;
 						//Teleporters (within same level).
 						case 0x118: case 0x119: case 0x11A: case 0x11B: 
 						{
@@ -998,6 +1068,18 @@ if (attackAnimation.isActive) {
 							splashphoto_bool=1;
 							splashphoto_cur=sp;
 							strcpy(splashphoto_str_name,splashphoto_names[splashphoto_cur]);//TODO: Move into a function.
+						} break;
+						//Bus stops.
+						case 0x130: case 0x131: case 0x132: case 0x133: 
+						{
+							splashbustimes_bool=1;
+							
+						} break;
+						//Invisible wall.
+						case 0x13F:
+						{
+							Player.x=Player.xprevious;
+							Player.y=Player.yprevious;
 						} break;
 						//TODO: Add support for persistent objects (once removed, stay removed).
 						//Dungeon keyholes.
@@ -1054,7 +1136,13 @@ if (attackAnimation.isActive) {
 								savegame_set_flag_gate(1);
 							}
 						} break;
-						
+						//Collectables.
+						case 0x180: case 0x181: case 0x182: case 0x183: case 0x184: case 0x185: case 0x186: case 0x187: 
+						case 0x188: case 0x189: case 0x18A: case 0x18B: case 0x18C: case 0x18D: case 0x18E: case 0x18F: 
+						{
+							savegame_set_collectable(objid-0x180);
+							audio_sfx_play_id(2,0);//pickup sound.
+						} break;
 						
 						//Default.
 						default:
@@ -1247,6 +1335,9 @@ if (attackAnimation.isActive) {
 		newtempstr[3] = (char)("*"[0]);
 		newtempstr[4] = (char)(temp_mode==0)?(67):(70);
 		//newtempstr[4] = (char)(temp_mode==0)?("C"[0]):("F"[0]);
+		
+		//Cutscene update.
+		cutscene_update();
 		
 		/*
 		Draw to the screen.
@@ -1544,6 +1635,7 @@ if (attackAnimation.isActive) {
 						else if ((tex >= 0x40) && (tex <= 0x4F)) {xmul=1; ymul=1;}//dungeon gate.
 						else if ((tex >= 0x50) && (tex <= 0x5F)) {ymul=3;}//dungeon key.
 						else if ((tex >= 0x60) && (tex <= 0x7F)) {xmul=1; ymul=1;}//dungeon levers/buttons
+						else if ((tex >= 0x80) && (tex <= 0x8F)) {xmul=4; ymul=4;}//collectables.
 						if (xmul) {xoff = xmul*gw*dcos(((((int)(get_timer()))/xspd)%360));}
 						if (ymul) {yoff = ymul*gh*dsin(((((int)(get_timer()))/yspd)%360));}
 						
@@ -1551,8 +1643,10 @@ if (attackAnimation.isActive) {
 						int oti=(Objects[ij].tileid&0x1FF);
 						int skipoti=0;
 						skipoti |= (oti == 0x1FF);//undefined object.
+						skipoti |= (oti == 0x13F);//invisible wall.
 						skipoti |= ((oti >= 0x110) && (oti <= 0x113));//animated water/lava
 						skipoti |= ((oti >= 0x118) && (oti <= 0x11B));//teleporters.
+						skipoti |= ((oti >= 0x130) && (oti <= 0x133));//bus stops.
 						skipoti |= ((oti >= 0x160) && (oti <= 0x17F));//dungeon levers/buttons.
 						if (!skipoti)
 						{
@@ -1563,6 +1657,17 @@ if (attackAnimation.isActive) {
 								x2+xoff,//win_game_x+Objects[ij].bbox_R,
 								y2+yoff,//win_game_y+Objects[ij].bbox_B,
 								spr_tileset,d*(oti%win_game_tile_num),d*(oti/win_game_tile_num),d,d);
+						}
+						
+						//In-place objects.
+						//Bus stops.
+						if ((oti>=0x130) && (oti<=0x133))
+						{
+							int bid=oti-0x130;
+							int y3,y4;
+							y3=2*gh*win_game_tile_dim;
+							y4=-y3+(y2-y1);
+							draw_image(renderer,x1,y1-y3,x2,y2-y4,spr_bus_stop);
 						}
 					}
 				}
@@ -2170,6 +2275,20 @@ if (attackAnimation.isActive) {
 			draw_text_color(renderer,xx,yy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashbustimes_infostr,font_ascii_w,font_ascii_h,c_green);
 			yy += gh*font_ascii_h*2;
 			draw_text_color(renderer,xx,yy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashbustimes_txt_routename,font_ascii_w,font_ascii_h,c_green);
+			yy += gh*font_ascii_h*2;
+			draw_text_color(renderer,xx,yy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashbustimes_txt_bustable,font_ascii_w,font_ascii_h,c_green);
+			
+			//Press HOME to continue.
+			int timer=(int)get_timer();
+			if (timer/60%8>=4)
+			{
+				xx=384;
+				yy=screen_h-font_ascii_h*gh;
+				draw_text_color(renderer,xx,yy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,splashbustimes_str_continue,font_ascii_w,font_ascii_h,c_yellow);
+			}
+			
+			//
+			
 			
 		}
 		
@@ -2269,6 +2388,9 @@ if (attackAnimation.isActive) {
 			yy=0;
 			draw_text_color(renderer,xx,yy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,helpmenu_str,font_ascii_w,font_ascii_h,c_red);
 		}
+		
+		//Cutscene draw.
+		cutscene_draw();
 		
 		// Clear the renderer
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);

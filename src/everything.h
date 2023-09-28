@@ -13,6 +13,7 @@
 #include "functions.h"
 
 #include "audio.h"
+#include "cutscene.h"
 #include "draw.h"
 #include "enemy.h"
 #include "game.h"

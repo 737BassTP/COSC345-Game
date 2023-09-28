@@ -165,3 +165,45 @@ void bus_show_timetable(int lvl)
 {
 	
 }
+
+//Signposts.
+int signpost_bool=0;
+void signpost_load(int id)
+{
+	FILE *sf=fopen("signpost.dat","rb");
+	//fseek(sf,(long int)0,SEEK_SET);
+	while (id)
+	{
+		int c=fgetc(sf);
+		if (c == NULL) {id--;}
+	}
+	int i=0;
+	while (1)
+	{
+		int c=fgetc(sf);
+		signpost_txt[i]=c;
+		if (c==NULL) {break;}
+		i++;
+	}
+	fclose(sf);
+	signpost_bool=1;
+	printf("signpost:\n%s\n",signpost_txt);
+}
+void signpost_draw()
+{
+	if (signpost_bool)
+	{
+		int xx,yy,ww,hh;
+		xx=1*gw;
+		yy=screen_h-gh*font_ascii_h*2;
+		ww=gw*font_ascii_w*strlen(signpost_txt);
+		hh=gh*font_ascii_h;
+		draw_rectangle_color(renderer,xx,yy,xx+ww,yy+hh,c_black);
+		draw_text_color(renderer,xx,yy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,signpost_txt,font_ascii_w,font_ascii_h,c_white);
+		
+		if (keyboard_check_anykey())
+		{
+			signpost_bool=0;
+		}
+	}
+}

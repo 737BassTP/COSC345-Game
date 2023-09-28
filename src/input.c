@@ -150,6 +150,46 @@ void keyboard_update_previous()
 	//keyboard_set_old(&glob_vk_);
 	//keyboard_set_old(&glob_vk_);
 }
+int keyboard_check_anykey()
+{
+	int ret=0;
+	ret |= keyboard_check(glob_vk_right);
+	ret |= keyboard_check(glob_vk_left);
+	ret |= keyboard_check(glob_vk_up);
+	ret |= keyboard_check(glob_vk_down);
+	ret |= keyboard_check(glob_vk_space);
+	ret |= keyboard_check(glob_vk_enter);
+	ret |= keyboard_check(glob_vk_tab);
+	ret |= keyboard_check(glob_vk_pageup);
+	ret |= keyboard_check(glob_vk_pagedown);
+	ret |= keyboard_check(glob_vk_home);
+	ret |= keyboard_check(glob_vk_end);
+	ret |= keyboard_check(glob_vk_insert);
+	ret |= keyboard_check(glob_vk_delete);
+	ret |= keyboard_check(glob_vk_f1);
+	ret |= keyboard_check(glob_vk_f2);
+	ret |= keyboard_check(glob_vk_f3);
+	ret |= keyboard_check(glob_vk_f4);
+	ret |= keyboard_check(glob_vk_f5);
+	ret |= keyboard_check(glob_vk_f6);
+	ret |= keyboard_check(glob_vk_f7);
+	ret |= keyboard_check(glob_vk_f8);
+	ret |= keyboard_check(glob_vk_f9);
+	ret |= keyboard_check(glob_vk_f10);
+	ret |= keyboard_check(glob_vk_f11);
+	ret |= keyboard_check(glob_vk_f12);
+	ret |= keyboard_check(glob_vk_0);
+	ret |= keyboard_check(glob_vk_1);
+	ret |= keyboard_check(glob_vk_2);
+	ret |= keyboard_check(glob_vk_3);
+	ret |= keyboard_check(glob_vk_4);
+	ret |= keyboard_check(glob_vk_5);
+	ret |= keyboard_check(glob_vk_6);
+	ret |= keyboard_check(glob_vk_7);
+	ret |= keyboard_check(glob_vk_8);
+	ret |= keyboard_check(glob_vk_9);
+	return ret;
+}
 void keyboard_sdl_polls(SDL_Event event)
 {
 	while (SDL_PollEvent(&event))

@@ -9,8 +9,8 @@ CFLAGSb = $(CFLAGS) $@ $< icon.res
 SRCDIR = ./src/
 
 HEADERSa = 
-HEADERSb = $(SRCDIR)everything.h $(SRCDIR)draw.h $(SRCDIR)functions.h $(SRCDIR)game.h $(SRCDIR)input.h $(SRCDIR)main.h $(SRCDIR)audio.h $(SRCDIR)player.h $(SRCDIR)enemy.h $(SRCDIR)menu.h $(SRCDIR)quiz.h $(SRCDIR)savegame.h $(SRCDIR)unittest.h
-SOURCES =                        $(SRCDIR)draw.c $(SRCDIR)functions.c $(SRCDIR)game.c $(SRCDIR)input.c $(SRCDIR)main.c $(SRCDIR)audio.c $(SRCDIR)player.c $(SRCDIR)enemy.c $(SRCDIR)menu.c $(SRCDIR)quiz.c $(SRCDIR)savegame.c $(SRCDIR)unittest.c
+HEADERSb = $(SRCDIR)everything.h $(SRCDIR)audio.h $(SRCDIR)cutscene.h $(SRCDIR)draw.h $(SRCDIR)enemy.h $(SRCDIR)functions.h $(SRCDIR)game.h $(SRCDIR)input.h $(SRCDIR)main.h $(SRCDIR)menu.h $(SRCDIR)player.h $(SRCDIR)quiz.h $(SRCDIR)savegame.h $(SRCDIR)unittest.h
+SOURCES =                        $(SRCDIR)audio.c $(SRCDIR)cutscene.c $(SRCDIR)draw.c $(SRCDIR)enemy.c $(SRCDIR)functions.c $(SRCDIR)game.c $(SRCDIR)input.c $(SRCDIR)main.c $(SRCDIR)menu.c $(SRCDIR)player.c $(SRCDIR)quiz.c $(SRCDIR)savegame.c $(SRCDIR)unittest.c
 HEADERS = $(HEADERSb)
 
 all:

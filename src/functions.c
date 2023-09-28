@@ -759,7 +759,17 @@ void level_load_objects(byte arr[],struct gameobject Objects[],int level,int siz
 		
 		//Implicit objects.
 		implicit = (int)arr[offtil+i];
-		if ((implicit==0x61) || (implicit==0x81)) {objid=0x116;}//door object
+		if ((implicit>=0x60) && (implicit==0x6F)) {objid=0x13F;}//invisible wall.
+		if ((implicit>=0x74) && (implicit==0x7F)) {objid=0x13F;}//invisible wall.
+		if ((implicit>=0x80) && (implicit==0x83)) {objid=0x13F;}//invisible wall.
+		if ((implicit==0x61) || (implicit==0x81)) {objid=0x116;}//door object (overwrite invisible wall).
+		
+		//Requires memory allocation.
+		if ((objid>=0x134) && (objid<=0x135))
+		{
+			//Directional enemies.
+			printf("directional enemy is unfinished.\n");
+		}
 		
 		//Apply.
 		Objects[i].tileid = objid;

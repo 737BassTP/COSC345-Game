@@ -12,10 +12,12 @@ char* SAVEGAME_NAME="savegame.dat";
 int off_mapvisit   = 0x00;
 int off_chats      = 0x40;
 int off_quizzes    = 0x60;
+int off_cutscenes  = 0x68;
 int off_quests     = 0x70;
 int off_events     = 0x78;
 int off_photos     = 0x7C;
 int off_player     = 0x80;
+int off_collectable= 0x86;
 int off_statistics = 0x90;
 int off_username   = 0xA0;
 int off_questprog  = 0xB0;
@@ -66,6 +68,7 @@ void savegame_load()
 	fclose(fil);
 	//TODO: Update variables with loaded data, e.g player position and level.
 	level_cur = (int)savegame_data[off_player+2];
+	level_prev = level_cur;
 }
 void savegame_save()
 {
@@ -176,4 +179,25 @@ int savegame_get_flag_tele() {return BG(savegame_data[off_flags],off_flag_tele);
 void savegame_set_flag_tele(int v) {savegame_data[off_flags]=BS(savegame_data[off_flags],off_flag_tele,v);}
 int savegame_get_flag_gate() {return BG(savegame_data[off_flags],off_flag_gate);}
 void savegame_set_flag_gate(int v) {savegame_data[off_flags]=BS(savegame_data[off_flags],off_flag_gate,v);}
-
+int savegame_get_cutscene(int id)
+{
+	return savegame_data[off_cutscenes+id/8]>>id%8&1;
+}
+void savegame_set_cutscene(int id)
+{
+	int mid=64;
+	id=(id>mid)?(mid-1):((id<0)?(0):(id));
+	byte tmp=savegame_data[off_cutscenes+id/8];
+	savegame_data[off_cutscenes]=tmp|1<<id%8;
+}
+int savegame_get_collectable(int id)
+{
+	id%=16;
+	return savegame_data[off_collectable+id/8]>>id%8&1;
+}
+void savegame_set_collectable(int id)
+{
+	id%=16;
+	byte tmp=savegame_data[off_collectable+id/8];
+	savegame_data[off_collectable]=tmp|1<<id%8;
+}

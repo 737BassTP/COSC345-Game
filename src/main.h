@@ -8,6 +8,24 @@
 
 #include "everything.h"
 
+//SDL2.
+SDL_Surface *surface;
+SDL_Window *window;
+SDL_Renderer *renderer;
+
+//Textures.
+SDL_Texture *spr_boss_a;
+SDL_Texture *spr_boss_c;
+SDL_Texture *spr_boss_m;
+SDL_Texture *spr_boss_s;
+SDL_Texture *spr_boss_t;
+
+//Font.
+SDL_Texture *font_ascii;
+int font_ascii_w;
+int font_ascii_h;
+
+
 //Dimensions.
 const int screen_w;///< screen width
 const int screen_h;///< screen height
@@ -20,6 +38,9 @@ const int win_game_x2;///<
 const int win_game_y2;///< 
 const int win_game_tile_num;///< number of tiles in a level.
 const int win_game_tile_dim;///< size of a tile in pixels per direction.
+
+//Level.
+int level_cur;
 
 //Scaling.
 int gw,gh;///< scaling variables.

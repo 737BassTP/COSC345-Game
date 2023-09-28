@@ -54,6 +54,7 @@ int keyboard_check(int key);
 int keyboard_check_pressed(int key);
 int keyboard_check_released(int key);
 void keyboard_update_previous();
+int keyboard_check_anykey();
 void keyboard_sdl_polls(SDL_Event event);
 
 #endif

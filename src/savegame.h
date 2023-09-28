@@ -10,7 +10,8 @@ TODO:
 Savegame format:
 	$00-$3F: Levels visited (by ID; 512)
 	$40-$5F: Chats read (by ID; 256)
-	$60-$6F: Quizzes won (by ID; 128)
+	$60-$67: Quizzes won (by ID; 64)
+	$68-$6F: Cutscenes viewed (by ID; 64).
 	$70-$77: Quests done (by ID; 64)
 	$78-$7B: Events visited (by ID; 32)
 	$7C-$7F: Photographies unlocked (by ID; 32)
@@ -23,7 +24,7 @@ Savegame format:
 			b9-bF: ? (7-bit)
 		$84    : lives (?)
 		$85    : health
-		$86-$87: ?
+		$86-$87: collectables (16x).
 		$88-$8B: nutrient stats
 			$88: Carbohydrates
 			$89: Fat
@@ -85,6 +86,10 @@ int savegame_get_flag_tele();
 void savegame_set_flag_tele(int v);
 int savegame_get_flag_gate();
 void savegame_set_flag_gate(int v);
+int savegame_get_cutscene(int id);
+void savegame_set_cutscene(int id);
+int savegame_get_collectable(int id);
+void savegame_set_collectable(int id);
 //int savegame_get_(int id);
 //void savegame_set_(int id);
 
