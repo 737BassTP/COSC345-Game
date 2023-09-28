@@ -1,0 +1,21 @@
+COSC345 Game Notes
+
+- Still no death when health is depleted
+- F1 game controls can be more informative
+- Finding photos does not increment the progress (stuck at 1/32)
+- Water Traps:
+	165 from N
+	122 from W
+	239 from E
+	142 from N
+	187 from E
+	55 from W
+	77 from W
+  Should be able to patch these by making sure waterlines match between adjacent tiles
+- Entering 165 from the North leads to a water trap
+- Food can walk on water
+- Unable to move when starting a new game but issue resolved when restarting the game
+- Quitting doesn't save map but preserves player location
+- Photo on 133 does not prompt popup
+- On screen information about food/enemy stats would help passive education (eg showing +10 health when defeating an enemy)
+- Cutscene can display in corner controls for next line or to skip scene
