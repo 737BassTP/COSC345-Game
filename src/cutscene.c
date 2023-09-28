@@ -73,7 +73,7 @@ void cutscene_update()
 		{
 			cutscene_cur += cutscene_spd;
 		}
-		if ((cutscene_cur >= (5*cutscene_spd)) && keyboard_check_anykey())
+		if ((cutscene_cur >= (60*cutscene_spd)) && keyboard_check_anykey())
 		{
 			cutscene_start(63);
 		}
@@ -86,10 +86,8 @@ void cutscene_update()
 }
 void cutscene_trigger()
 {
-	if (level_cur == 0x00) {cutscene_start(1);}//Andrew introduction.
-	
-	if (level_cur == 0x100) {cutscene_start(0);}//Find the albatross egg.
-	//if ((level_cur == 0x0C3) && (savegame_get_collectable(0))) {cutscene_start(1);}//Andrew introduction.
+	if ((level_cur == 0x100) && (!savegame_get_collectable(0))) {cutscene_start(0);}//Find the albatross egg.
+	if ((level_cur == 0x0C2) && (savegame_get_collectable(0))) {cutscene_start(1);}//Andrew introduction.
 	//if () {cutscene_start();}//
 	//if () {cutscene_start();}//
 }
@@ -116,16 +114,16 @@ void cutscene_draw()
 		{
 			case 0://find the albatross egg.
 			{
-				bc=0xFFC0C0;
-				tc=c_black;
+				bc=0x800000;
+				tc=c_white;
 				switch ((int)(fp*100.0))
 				{
 					
-					case 10: {cutscene_set_text("This cellar surely is dark!");} break;
+					case 10: {cutscene_set_text("This cellar surely is quite dark!");} break;
 					case 25: {cutscene_set_text("");} break;
 					case 30: {cutscene_set_text("There should be an albatross egg here.");} break;
 					case 45: {cutscene_set_text("");} break;
-					case 50: {cutscene_set_text("I should safely return it to its home on the Otago peninsula.");} break;
+					case 50: {cutscene_set_text("I must safely return it to its home on the peninsula.");} break;
 					case 65: {cutscene_set_text("");} break;
 					case 70: {cutscene_set_text("Don't tell anyone, but this egg has magical powers!");} break;
 					case 85: {cutscene_set_text("");} break;
@@ -142,18 +140,29 @@ void cutscene_draw()
 			} break;
 			case 1://andrew introduction.
 			{
-				switch ((int)(fp*100.0))
+				switch ((int)(fp*300.0))
 				{
 					
-					case 10: {cutscene_set_text("I am Andrew, and that albatross egg is mine!");} break;
+					case 0: {cutscene_set_text("Stop right there; I am Andrew, and you have my egg!!!");} break;
 					case 25: {cutscene_set_text("");} break;
-					case 30: {cutscene_set_text("I have made all the food in Dunedin come to life!");} break;
-					case 45: {cutscene_set_text("");} break;
-					case 50: {cutscene_set_text("I hereby declare this city for Duneatin'.");} break;
-					case 65: {cutscene_set_text("");} break;
-					case 70: {cutscene_set_text("If you do come, you will get a piece of chocolate!");} break;
+					case 30: {cutscene_set_text("I have been looking for this egg for ages and a half!");} break;
+					case 55: {cutscene_set_text("");} break;
+					case 60: {cutscene_set_text("I have made all the food in Dunedin come to life...");} break;
 					case 85: {cutscene_set_text("");} break;
-					case 90: {cutscene_set_text("There is nothing you can do to stop me, haha!");} break;
+					case 90: {cutscene_set_text("...and with this egg; do you know what? ...");} break;
+					case 115: {cutscene_set_text("");} break;
+					case 120: {cutscene_set_text("ALL THE FOOD IN THE WORLD CAN COME ALIVE!!!");} break;
+					case 145: {cutscene_set_text("");} break;
+					case 150: {cutscene_set_text("There is nothing you can do to stop me!");} break;
+					case 175: {cutscene_set_text("");} break;
+					case 180: {cutscene_set_text("If you are nearby, why not come for a visit...");} break;
+					case 205: {cutscene_set_text("");} break;
+					case 210: {cutscene_set_text("...to witness the albatross egg devoured for its power!");} break;
+					case 235: {cutscene_set_text("");} break;
+					case 240: {cutscene_set_text("Oh, and if you do come, I have some chocolate for you!");} break;
+					case 265: {cutscene_set_text("");} break;
+					case 270: {cutscene_set_text("Now fuck off would you; I have important things to do!!!");} break;
+					case 295: {cutscene_set_text("");} break;
 					//case : {cutscene_set_text("");} break;
 					
 				}

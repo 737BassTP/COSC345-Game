@@ -400,6 +400,10 @@ int SDL_main(int argc, char *argv[])
 	level_prev=level_cur;
 	byte level_data[262144];//static; can not be free'd.
 	//262144 = 256*512*2 (level size * level count * level layers)
+	
+	//Savegame.
+	savegame_load();
+	
 	//Objects.
 	struct gameobject Objects[256];
 	for (int i=0; i<0x100; i++)
@@ -1142,6 +1146,7 @@ int SDL_main(int argc, char *argv[])
 						{
 							savegame_set_collectable(objid-0x180);
 							audio_sfx_play_id(2,0);//pickup sound.
+							Objects[i].tileid = 0x1FF;//lazy non-persistent destroy.
 						} break;
 						
 						//Default.

@@ -48,9 +48,11 @@ int savegame_exists(char *fpath)
 void savegame_new()
 {
 	FILE* fil = fopen(SAVEGAME_NAME,"wb");
+	int vv=0x00;
 	for (int i=0; i<SAVEGAME_SIZE; i++)
 	{
-		fputc(0x00,fil);
+		vv=(i==0x82)?(0xC2):(0x00);//player start level.
+		fputc(vv,fil);
 	}
 	fclose(fil);
 }

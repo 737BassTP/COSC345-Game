@@ -771,8 +771,15 @@ void level_load_objects(byte arr[],struct gameobject Objects[],int level,int siz
 			printf("directional enemy is unfinished.\n");
 		}
 		
+		//Skippable.
+		int doskip=0;
+		for (int j=0; j<16; j++) {doskip |= ((objid == 0x180+j) && savegame_get_collectable(j));}//collectables have been picked up.
+		
 		//Apply.
-		Objects[i].tileid = objid;
+		if (!doskip)
+		{
+			Objects[i].tileid = objid;
+		}
 	}
 	//
 	
