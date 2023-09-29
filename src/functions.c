@@ -818,6 +818,18 @@ int level_load_door(int level,int pos)
 	//For best results, the forward match is from overworld to underworld, and backward match is from underworld to overworld.
 	//This only matters when editing link.dat.
 	
+	savegame_set_mapvisit(level);
+	if (level >= 256)
+	{
+		deactivateAllWaterParticles();
+		deactivateAllSnowParticles();
+	}
+	else
+	{
+		activateAllWaterParticles();
+		activateAllSnowParticles();
+	}
+	
 	FILE *fil = fopen("link.dat","rb");
 	int fillen = (int)file_get_size(fil);//note: downcast from long int to int.
 	int fpos,flev;

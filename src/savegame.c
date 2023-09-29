@@ -71,6 +71,7 @@ void savegame_load()
 	//TODO: Update variables with loaded data, e.g player position and level.
 	level_cur = (int)savegame_data[off_player+2];
 	level_prev = level_cur;
+	savegame_set_mapvisit(level_cur);
 }
 void savegame_save()
 {
@@ -190,7 +191,7 @@ void savegame_set_cutscene(int id)
 	int mid=64;
 	id=(id>mid)?(mid-1):((id<0)?(0):(id));
 	byte tmp=savegame_data[off_cutscenes+id/8];
-	savegame_data[off_cutscenes]=tmp|1<<id%8;
+	savegame_data[off_cutscenes+id/8]=tmp|1<<id%8;
 }
 int savegame_get_collectable(int id)
 {
@@ -201,5 +202,33 @@ void savegame_set_collectable(int id)
 {
 	id%=16;
 	byte tmp=savegame_data[off_collectable+id/8];
-	savegame_data[off_collectable]=tmp|1<<id%8;
+	savegame_data[off_collectable+id/8]=tmp|1<<id%8;
+}
+int savegame_get_mapvisit(int id)
+{
+	id%=512;
+	return (savegame_data[off_mapvisit+id/8]>>(id%8))&1;
+}
+void savegame_set_mapvisit(int id)
+{
+	id%=512;
+	byte tmp=savegame_data[off_mapvisit+id/8];
+	savegame_data[off_mapvisit+id/8]=tmp|(1<<(id%8));
+}
+int savegame_get_photo(int id)
+{
+	id%=32;
+	return (savegame_data[off_photos+id/8]>>(id%8))&1;
+}
+int savegame_count_photo()
+{
+	int ret=0;
+	for (int i=0; i<32; i++) {ret += savegame_get_photo(i);}
+	return ret;
+}
+void savegame_set_photo(int id)
+{
+	id%=32;
+	byte tmp=savegame_data[off_photos+id/8];
+	savegame_data[off_photos+id/8]=tmp|(1<<(id%8));
 }

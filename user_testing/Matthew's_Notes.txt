@@ -1,4 +1,5 @@
 COSC345 Game Notes
+Remove entries when they are fixed.
 
 - Still no death when health is depleted
 - F1 game controls can be more informative
@@ -15,7 +16,5 @@ COSC345 Game Notes
 - Entering 165 from the North leads to a water trap
 - Food can walk on water
 - Unable to move when starting a new game but issue resolved when restarting the game
-- Quitting doesn't save map but preserves player location
-- Photo on 133 does not prompt popup
 - On screen information about food/enemy stats would help passive education (eg showing +10 health when defeating an enemy)
 - Cutscene can display in corner controls for next line or to skip scene

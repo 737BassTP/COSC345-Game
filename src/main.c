@@ -428,8 +428,6 @@ int SDL_main(int argc, char *argv[])
 	SDL_Texture *spr_mapicon_unknown = IMG_LoadTexture(renderer,"img/spr_map_unknown.png");
 	char mapstr_location[16];
 	level_get_name(level_cur,mapstr_location);
-	Uint32 mapvisit[16];//512 bools.
-	mapvisit[level_cur/32]=1<<(level_cur%32);
 	
 	//Temperature.
 	int temp_mode=0;//0=Celsius, 1=Fahrenheit.
@@ -525,7 +523,7 @@ int SDL_main(int argc, char *argv[])
 	//char* splashphoto_str_name = "Signal Hill Lookout";//make changeable.
 	char splashphoto_str_name[40] = "Signal Hill Lookout";//make changeable.
 	int splashphoto_found=0;
-	char* splashphoto_str_found = "Found: 01/32";//make changeable.
+	char splashphoto_str_found[16] = "Found: 01/32";//unsturdy?
 	int splashphoto_slen_tab=strlen(splashphoto_str_continue);
 	int splashphoto_slen_found=strlen(splashphoto_str_found);
 	int splashphoto_slen_name=strlen(splashphoto_str_name);
@@ -588,7 +586,7 @@ int SDL_main(int argc, char *argv[])
 	
 	//Help menu.
 	int helpmenu_bool=0;
-	char* helpmenu_str="Player Controls: Inspect source code.";
+	char* helpmenu_str="Player Controls: Read 'User-Documentation.pdf'";
 	
 	/*
 	int cutscene_bool=0;
@@ -789,6 +787,14 @@ int SDL_main(int argc, char *argv[])
 			}
 			
 			strcpy(splashphoto_str_name,splashphoto_names[splashphoto_cur]);//TODO: Move into a function.
+			savegame_set_photo(splashphoto_cur);
+			int scp=savegame_count_photo();
+			/*
+			printf("scp=%i\n",scp);
+			splashphoto_str_found[7]=(byte)(scp/10);//todo: improve.
+			splashphoto_str_found[8]=(byte)(scp%10);
+			/**/
+			
 		}
 		//Menu input.
 		menu_input();
@@ -1219,7 +1225,7 @@ int SDL_main(int argc, char *argv[])
 				printf("lvl=%i\n",level_cur);
 				level_get_name(level_cur,mapstr_location);
 				level_load_objects(level_data,Objects,level_cur,level_size);
-				mapvisit[level_cur/32] |= (Uint32)(1<<level_cur%32);
+				savegame_set_mapvisit(level_cur);
 				audio_music_level(level_cur,level_prev);
 				if (level_cur < 256)
 				{
@@ -1439,7 +1445,7 @@ int SDL_main(int argc, char *argv[])
 			//Discovered map levels.
 			for (int i=0; i<256; i++)
 			{
-				if (!BG(mapvisit[i/32],i%32))
+				if (!savegame_get_mapvisit(i))
 				{
 					draw_image(renderer,
 					(int)lerp((double)mapx1,(double)mapx2,(double)(i%16+0)/16.0),

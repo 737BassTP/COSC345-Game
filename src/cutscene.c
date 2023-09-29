@@ -73,7 +73,7 @@ void cutscene_update()
 		{
 			cutscene_cur += cutscene_spd;
 		}
-		if ((cutscene_cur >= (60*cutscene_spd)) && keyboard_check_anykey())
+		if ((cutscene_cur >= (120*cutscene_spd)) && keyboard_check_anykey())
 		{
 			cutscene_start(63);
 		}
@@ -105,6 +105,8 @@ void cutscene_draw()
 		double prog=(double)cutscene_cur/(double)cutscene_max;
 		float fp=(float)prog;
 		//printf("prog=%lf\n",prog);
+		
+		//TODO: Move text into a file, to avoid the need for recompiling for small textual changes.
 		
 		//Local.
 		int xx,yy,ww,hh;

@@ -90,7 +90,13 @@ int savegame_get_cutscene(int id);
 void savegame_set_cutscene(int id);
 int savegame_get_collectable(int id);
 void savegame_set_collectable(int id);
+int savegame_get_mapvisit(int id);
+void savegame_set_mapvisit(int id);
+int savegame_get_photo(int id);
+int savegame_count_photo();
+void savegame_set_photo(int id);
 //int savegame_get_(int id);
 //void savegame_set_(int id);
+
 
 #endif
