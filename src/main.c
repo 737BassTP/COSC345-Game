@@ -789,11 +789,8 @@ int SDL_main(int argc, char *argv[])
 			strcpy(splashphoto_str_name,splashphoto_names[splashphoto_cur]);//TODO: Move into a function.
 			savegame_set_photo(splashphoto_cur);
 			int scp=savegame_count_photo();
-			/*
-			printf("scp=%i\n",scp);
-			splashphoto_str_found[7]=(byte)(scp/10);//todo: improve.
-			splashphoto_str_found[8]=(byte)(scp%10);
-			/**/
+			splashphoto_str_found[7]=(byte)(48+scp/10);//todo: improve.
+			splashphoto_str_found[8]=(byte)(48+scp%10);
 			
 		}
 		//Menu input.

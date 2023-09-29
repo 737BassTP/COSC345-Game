@@ -3,7 +3,6 @@ Remove entries when they are fixed.
 
 - Still no death when health is depleted
 - F1 game controls can be more informative
-- Finding photos does not increment the progress (stuck at 1/32)
 - Water Traps:
 	165 from N
 	122 from W
