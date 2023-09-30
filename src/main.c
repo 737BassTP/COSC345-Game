@@ -789,7 +789,7 @@ int SDL_main(int argc, char *argv[])
 			strcpy(splashphoto_str_name,splashphoto_names[splashphoto_cur]);//TODO: Move into a function.
 			savegame_set_photo(splashphoto_cur);
 			int scp=savegame_count_photo();
-			splashphoto_str_found[7]=(byte)(48+scp/10);//todo: improve.
+			splashphoto_str_found[7]=(byte)(48+scp/10);//hacky solution.
 			splashphoto_str_found[8]=(byte)(48+scp%10);
 			
 		}
@@ -849,7 +849,7 @@ int SDL_main(int argc, char *argv[])
 			else
 			{
 				int t=(int)get_timer();
-				t=(t/2000)%4;
+				t=(t/8000)%4;
 				Player.x += mvspd*mux_int(t,+khrl,+khud,-khrl,-khud);
 				Player.y += mvspd*mux_int(t,-khud,-khrl,+khud,+khrl);
 			}
