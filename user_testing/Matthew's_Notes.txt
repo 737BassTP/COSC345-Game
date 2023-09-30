@@ -17,3 +17,7 @@ Remove entries when they are fixed.
 - Unable to move when starting a new game but issue resolved when restarting the game
 - On screen information about food/enemy stats would help passive education (eg showing +10 health when defeating an enemy)
 - Cutscene can display in corner controls for next line or to skip scene
+- 436 of Underworld in Matthew's dungeon should have the blue gate closed when the player enters
+- Level 503 should have red gate closed
+- Picture on 134 cannot be picked up
+- Add the remove weather effects key and how to use levers to the controls in user documentation
