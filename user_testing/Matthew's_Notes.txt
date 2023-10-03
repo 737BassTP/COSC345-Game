@@ -12,8 +12,7 @@ Remove entries when they are fixed.
 	55 from W
 	77 from W
   Should be able to patch these by making sure waterlines match between adjacent tiles
-- Entering 165 from the North leads to a water trap
-- Food can walk on water
+- Food can walk on water and through walls
 - Unable to move when starting a new game but issue resolved when restarting the game
 - On screen information about food/enemy stats would help passive education (eg showing +10 health when defeating an enemy)
 - Cutscene can display in corner controls for next line or to skip scene
@@ -21,3 +20,4 @@ Remove entries when they are fixed.
 - Level 503 should have red gate closed
 - Picture on 134 cannot be picked up
 - Add the remove weather effects key and how to use levers to the controls in user documentation
+- Using the F key for attack is more intuitive and similar to other games.
