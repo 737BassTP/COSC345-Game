@@ -314,7 +314,8 @@ int SDL_main(int argc, char *argv[])
 	{
         printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
     }
-	
+	TTF_Font* fontEnd = TTF_OpenFont("font.ttf", 48);
+
 	//Images.
 	IMG_Init(IMG_INIT_PNG);
 	SDL_Texture *spr_error = IMG_LoadTexture(renderer,"img/spr_error.png");
@@ -2299,7 +2300,70 @@ int SDL_main(int argc, char *argv[])
 			
 			
 		}
-		
+		//If the player dies, game over.
+		if (health<=0) {
+			SDL_Color textColor = {255, 0, 0};
+			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    		SDL_RenderClear(renderer);
+
+			// Render "You died" message
+			SDL_Surface* textSurface1 = TTF_RenderText_Solid(fontEnd, "You died", textColor);
+			SDL_Texture* textTexture1 = SDL_CreateTextureFromSurface(renderer, textSurface1);
+
+			// Position and size for the "You died" text
+			SDL_Rect textRect1;
+			textRect1.x = (screen_w - textSurface1->w) / 2;
+			textRect1.y = (screen_h - textSurface1->h) / 4; // Adjust positioning
+			textRect1.w = textSurface1->w;
+			textRect1.h = textSurface1->h;
+
+			// Render the "You died" text
+			SDL_RenderCopy(renderer, textTexture1, NULL, &textRect1);
+
+			// Clean up resources for "You died" text
+			SDL_FreeSurface(textSurface1);
+			SDL_DestroyTexture(textTexture1);
+
+			// Render "Your score was" message
+			char scoreText[100];
+			sprintf(scoreText, "Your score was: %d", score);
+			SDL_Surface* textSurface2 = TTF_RenderText_Solid(fontEnd, scoreText, textColor);
+			SDL_Texture* textTexture2 = SDL_CreateTextureFromSurface(renderer, textSurface2);
+
+			// Position and size for the "Your score was" text
+			SDL_Rect textRect2;
+			textRect2.x = (screen_w - textSurface2->w) / 2;
+			textRect2.y = (screen_h - textSurface2->h) / 2; // Adjust positioning
+			textRect2.w = textSurface2->w;
+			textRect2.h = textSurface2->h;
+
+			// Render the "Your score was" text
+			SDL_RenderCopy(renderer, textTexture2, NULL, &textRect2);
+
+			// Clean up resources for "Your score was" text
+			SDL_FreeSurface(textSurface2);
+			SDL_DestroyTexture(textTexture2);
+
+			// Render "Press esc to exit" message
+			SDL_Surface* textSurface3 = TTF_RenderText_Solid(fontEnd, "Press Esc to Exit", textColor);
+			SDL_Texture* textTexture3 = SDL_CreateTextureFromSurface(renderer, textSurface3);
+
+			// Position and size for the "Press esc to exit" text
+			SDL_Rect textRect3;
+			textRect3.x = (screen_w - textSurface3->w) / 2;
+			textRect3.y = (3 * screen_h - textSurface3->h) / 4; // Adjust positioning
+			textRect3.w = textSurface3->w;
+			textRect3.h = textSurface3->h;
+
+			// Render the "Press esc to exit" text
+			SDL_RenderCopy(renderer, textTexture3, NULL, &textRect3);
+
+			// Clean up resources for "Press esc to exit" text
+			SDL_FreeSurface(textSurface3);
+			SDL_DestroyTexture(textTexture3);
+
+
+}
 		//Splash photo screen.
 		if (splashphoto_bool)
 		{
