@@ -4,3 +4,6 @@ gitignore/*
 devtools/__pycache__
 *.bak
 savegame.dat
+icon.rc
+icon.res
+

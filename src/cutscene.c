@@ -73,7 +73,9 @@ void cutscene_update()
 		{
 			cutscene_cur += cutscene_spd;
 		}
-		if ((cutscene_cur >= (120*cutscene_spd)) && keyboard_check_anykey())
+		//skip cutscene
+		//if ((cutscene_cur >= (120*cutscene_spd)) && keyboard_check_anykey())
+		if (keyboard_check_pressed(glob_vk_space)||keyboard_check_pressed(glob_vk_enter))
 		{
 			cutscene_start(63);
 		}
@@ -86,10 +88,17 @@ void cutscene_update()
 }
 void cutscene_trigger()
 {
-	if ((level_cur == 0x100) && (!savegame_get_collectable(0))) {cutscene_start(0);}//Find the albatross egg.
+	if ((level_cur == 0x112) && (!savegame_get_collectable(0))) {cutscene_start(0);}//Find the albatross egg.
 	if ((level_cur == 0x0C2) && (savegame_get_collectable(0))) {cutscene_start(1);}//Andrew introduction.
+	if ((level_cur == 0x1F1) && (!savegame_get_cutscene(2))) {cutscene_start(2);}//dungeon c
+	if ((level_cur == 0x1F4) && (!savegame_get_cutscene(3))) {cutscene_start(3);}//dungeon m
+	if ((level_cur == 0x1F9) && (!savegame_get_cutscene(4))) {cutscene_start(4);}//dungeon s
+	if ((level_cur == 0x1FD) && (!savegame_get_cutscene(5))) {cutscene_start(5);}//dungeon t
+	if ((level_cur == 0x187) && (!savegame_get_cutscene(6))) {cutscene_start(6);}//dungeon a
+	
 	//if () {cutscene_start();}//
 	//if () {cutscene_start();}//
+	
 }
 void cutscene_populate()
 {
@@ -120,7 +129,6 @@ void cutscene_draw()
 				tc=c_white;
 				switch ((int)(fp*100.0))
 				{
-					
 					case 10: {cutscene_set_text("This cellar surely is quite dark!");} break;
 					case 25: {cutscene_set_text("");} break;
 					case 30: {cutscene_set_text("There should be an albatross egg here.");} break;
@@ -144,7 +152,6 @@ void cutscene_draw()
 			{
 				switch ((int)(fp*300.0))
 				{
-					
 					case 0: {cutscene_set_text("Stop right there; I am Andrew, and you have my egg!!!");} break;
 					case 25: {cutscene_set_text("");} break;
 					case 30: {cutscene_set_text("I have been looking for this egg for ages and a half!");} break;
@@ -175,6 +182,94 @@ void cutscene_draw()
 				hh=2*gh*32;
 				draw_image(renderer,xx,yy,xx+ww,yy+hh,spr_boss_a);
 			} break;
+			case 2://enter dungeon: campbell
+			{
+				switch ((int)(fp*60.0))
+				{
+					case 0: {cutscene_set_text("I am Campbell and this is the Alcohol Dungeon");} break;
+					case 25: {cutscene_set_text("");} break;
+					case 30: {cutscene_set_text("You are intoxicated and will move in strange ways.");} break;
+					case 55: {cutscene_set_text("");} break;
+					
+				}
+				draw_rectangle_color(renderer,0,0,screen_w,screen_h,bc);
+				xx=683;
+				yy=128;
+				ww=2*gw*32;
+				hh=2*gh*32;
+				draw_image(renderer,xx,yy,xx+ww,yy+hh,spr_boss_c);
+			} break;
+			case 3://enter dungeon: matthew
+			{
+				switch ((int)(fp*50.0))
+				{
+					case 0: {cutscene_set_text("I am Matthew and this is the Carbohydrate Dungeon");} break;
+					//case : {cutscene_set_text("");} break;
+				}
+				draw_rectangle_color(renderer,0,0,screen_w,screen_h,bc);
+				xx=683;
+				yy=128;
+				ww=2*gw*32;
+				hh=2*gh*32;
+				draw_image(renderer,xx,yy,xx+ww,yy+hh,spr_boss_m);
+			} break;
+			case 4://enter dungeon: sean
+			{
+				switch ((int)(fp*50.0))
+				{
+					case 0: {cutscene_set_text("I am Sean and this is the Protein Dungeon");} break;
+					//case : {cutscene_set_text("");} break;
+				}
+				draw_rectangle_color(renderer,0,0,screen_w,screen_h,bc);
+				xx=683;
+				yy=128;
+				ww=2*gw*32;
+				hh=2*gh*32;
+				draw_image(renderer,xx,yy,xx+ww,yy+hh,spr_boss_s);
+			} break;
+			case 5://enter dungeon: thomas
+			{
+				switch ((int)(fp*50.0))
+				{
+					case 0: {cutscene_set_text("I am Thomas and this is the Fat Dungeon");} break;
+					//case : {cutscene_set_text("");} break;
+				}
+				draw_rectangle_color(renderer,0,0,screen_w,screen_h,bc);
+				xx=683;
+				yy=128;
+				ww=2*gw*32;
+				hh=2*gh*32;
+				draw_image(renderer,xx,yy,xx+ww,yy+hh,spr_boss_t);
+			} break;
+			case 6://enter dungeon: andrew
+			{
+				switch ((int)(fp*50.0))
+				{
+					case 0: {cutscene_set_text("I am Andrew and this is the Chocolate Dungeon");} break;
+					//case : {cutscene_set_text("");} break;
+				}
+				draw_rectangle_color(renderer,0,0,screen_w,screen_h,bc);
+				xx=683;
+				yy=128;
+				ww=2*gw*32;
+				hh=2*gh*32;
+				draw_image(renderer,xx,yy,xx+ww,yy+hh,spr_boss_a);
+			} break;
+			case 7:// ?
+			{
+				switch ((int)(fp*300.0))
+				{
+					case 0: {cutscene_set_text("empty");} break;
+					//case : {cutscene_set_text("");} break;
+				}
+				draw_rectangle_color(renderer,0,0,screen_w,screen_h,bc);
+				xx=683;
+				yy=128;
+				ww=2*gw*32;
+				hh=2*gh*32;
+				//draw_image(renderer,xx,yy,xx+ww,yy+hh,spr_boss_c);
+			} break;
+			
 			case 63://skip cutscene cutscene
 			{
 				bc=c_black;

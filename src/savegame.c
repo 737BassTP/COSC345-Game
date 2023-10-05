@@ -176,8 +176,8 @@ void savegame_add_key(int id,int am)
 	savegame_data[off_dungeonkeys+id]=tmp;
 }
 int savegame_get_gate(int id) {return BG(savegame_data[off_variables+0],id&7);}
-void savegame_set_gate(int id,int v) {savegame_data[off_variables+0]=BS(savegame_data[off_variables+0],id,v);}
-void savegame_flip_gate(int id) {savegame_data[off_variables+0]=BT(savegame_data[off_variables+0],id);}
+void savegame_set_gate(int id,int v) {savegame_data[off_variables+0]=BS(savegame_data[off_variables+0],id&7,v&1);}
+void savegame_flip_gate(int id) {savegame_data[off_variables+0]=BT(savegame_data[off_variables+0],id&7);}
 int savegame_get_flag_tele() {return BG(savegame_data[off_flags],off_flag_tele);}
 void savegame_set_flag_tele(int v) {savegame_data[off_flags]=BS(savegame_data[off_flags],off_flag_tele,v);}
 int savegame_get_flag_gate() {return BG(savegame_data[off_flags],off_flag_gate);}

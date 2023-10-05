@@ -50,6 +50,7 @@ int glob_vk_9;
 int keyboard_set_new(int *keyid,int keyval);
 int keyboard_set_old(int *keyid);
 int keyboard_reset(int keyid);
+void keyboard_reset_force();
 int keyboard_check(int key);
 int keyboard_check_pressed(int key);
 int keyboard_check_released(int key);

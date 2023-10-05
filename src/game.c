@@ -168,42 +168,52 @@ void bus_show_timetable(int lvl)
 
 //Signposts.
 int signpost_bool=0;
+byte signpost_txt[256];
 void signpost_load(int id)
 {
-	FILE *sf=fopen("signpost.dat","rb");
-	//fseek(sf,(long int)0,SEEK_SET);
-	while (id)
+	if (!signpost_bool)
 	{
-		int c=fgetc(sf);
-		if (c == NULL) {id--;}
+		FILE *sf=fopen("signpost.dat","rb");
+		while (id)
+		{
+			int c=fgetc(sf);
+			if (c == NULL) {id--;}
+		}
+		int i=0;
+		while (1)
+		{
+			int c=fgetc(sf);
+			signpost_txt[i]=(byte)c;
+			if (c==NULL) {break;}
+			i++;
+		}
+		fclose(sf);
+		//Default message.
+		if (i==0)
+		{
+			signpost_load(0);
+			return;
+		}
+		signpost_bool=1;
+		//printf("signpost:\n%s\n",signpost_txt);
 	}
-	int i=0;
-	while (1)
-	{
-		int c=fgetc(sf);
-		signpost_txt[i]=c;
-		if (c==NULL) {break;}
-		i++;
-	}
-	fclose(sf);
-	signpost_bool=1;
-	printf("signpost:\n%s\n",signpost_txt);
 }
 void signpost_draw()
 {
 	if (signpost_bool)
 	{
 		int xx,yy,ww,hh;
-		xx=1*gw;
+		xx=win_game_x;
 		yy=screen_h-gh*font_ascii_h*2;
-		ww=gw*font_ascii_w*strlen(signpost_txt);
-		hh=gh*font_ascii_h;
+		ww=gw*font_ascii_w*min_int(2,32,strlen(signpost_txt));
+		hh=gh*font_ascii_h*2;
 		draw_rectangle_color(renderer,xx,yy,xx+ww,yy+hh,c_black);
 		draw_text_color(renderer,xx,yy,font_ascii_w*gw,font_ascii_h*gh,font_ascii,signpost_txt,font_ascii_w,font_ascii_h,c_white);
 		
 		if (keyboard_check_anykey())
 		{
 			signpost_bool=0;
+			//printf("closed signpost.\n");
 		}
 	}
 }

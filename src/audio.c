@@ -34,7 +34,8 @@ char* audio_music_idtostr(int id)
 		case 1: {ret="audio/mus_dungeon_final.wav"; break;}
 		case 2: {ret="audio/mus_dungeon_alcohol.wav"; break;}
 		case 3: {ret="audio/mus_dungeon_carbohydrate.wav"; break;}
-		//case : {ret="audio/mus_.wav"; break;}
+		case 4: {ret="audio/mus_dungeon_protein.wav"; break;}
+		case 5: {ret="audio/mus_dungeon_fat.wav"; break;}
 		//case : {ret="audio/mus_.wav"; break;}
 		//case : {ret="audio/mus_.wav"; break;}
 		
@@ -92,10 +93,6 @@ void audio_music_level(int lc,int lp)
 			if (lc>=400)
 			{
 				id=2+((lc-400)/4)%4;
-				if (id>=4)
-				{
-					id=1;
-				}
 			}
 			else
 			{

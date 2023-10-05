@@ -305,6 +305,7 @@ void draw_text(SDL_Renderer *renderer,int x,int y,int w,int h,SDL_Texture *font,
 			{
 				xo = 0;
 				yo += h;
+				//i += 1;
 				continue;
 			}
 		}
@@ -733,6 +734,33 @@ void game_level_load(int lvl,int lvlmax)
 	
 	//done below.
 }
+void level_load_any(byte arr[],struct gameobject Objects[],int level,int siz)
+{
+	printf("(this,cur,prev) = %i,%i,%i\n",level,level_cur,level_prev);
+	level_cur = level;
+	if (level_cur >= 256)
+	{
+		deactivateAllWaterParticles();
+		deactivateAllSnowParticles();
+	}
+	else
+	{
+		activateAllWaterParticles();
+		activateAllSnowParticles();
+	}
+	savegame_set_mapvisit(level_cur);
+	level_load_objects(arr,Objects,level_cur,siz);
+	audio_music_level(level_cur,level_prev);
+	level_get_name(level_cur,mapstr_location);
+	discordant_cur = ((int)rand())%discordant_max;//alcohol movement randomizer.
+	//printf("discordant=%i\n",discordant_cur);
+	if (((level_cur<256)&&(level_prev>=256))||((level_cur>=256)&&(level_prev<256)))//if (level_cur < 256)
+	{
+		//clear all dungeon gates while in Overworld.
+		for (int i=0; i<8; i++) {savegame_set_gate(i,0);}
+	}
+	level_prev = level_cur;//finished handling level loading.
+}
 void level_load_objects(byte arr[],struct gameobject Objects[],int level,int siz)
 {
 	/**
@@ -759,10 +787,10 @@ void level_load_objects(byte arr[],struct gameobject Objects[],int level,int siz
 		
 		//Implicit objects.
 		implicit = (int)arr[offtil+i];
-		if ((implicit>=0x60) && (implicit==0x6F)) {objid=0x13F;}//invisible wall.
-		if ((implicit>=0x74) && (implicit==0x7F)) {objid=0x13F;}//invisible wall.
-		if ((implicit>=0x80) && (implicit==0x83)) {objid=0x13F;}//invisible wall.
-		if ((implicit==0x61) || (implicit==0x81)) {objid=0x116;}//door object (overwrite invisible wall).
+		if ((implicit>=0x60) && (implicit<=0x6F)) {objid=0x13F;}//invisible wall.
+		if ((implicit>=0x74) && (implicit<=0x7F)) {objid=0x13F;}//invisible wall.
+		if ((implicit>=0x80) && (implicit<=0x83)) {objid=0x13F;}//invisible wall.
+		if ((implicit==0x61) || (implicit==0x81) || (implicit==0xA1)) {objid=0x116;}//door object (overwrite invisible wall).
 		
 		//Requires memory allocation.
 		if ((objid>=0x134) && (objid<=0x135))
@@ -784,7 +812,7 @@ void level_load_objects(byte arr[],struct gameobject Objects[],int level,int siz
 	//
 	
 }
-void level_load(byte arr[],int siz,int count,int layers)
+void level_load_file(byte arr[],int siz,int count,int layers)
 {
 	/**
 	* @brief level_load
@@ -817,18 +845,6 @@ int level_load_door(int level,int pos)
 	
 	//For best results, the forward match is from overworld to underworld, and backward match is from underworld to overworld.
 	//This only matters when editing link.dat.
-	
-	savegame_set_mapvisit(level);
-	if (level >= 256)
-	{
-		deactivateAllWaterParticles();
-		deactivateAllSnowParticles();
-	}
-	else
-	{
-		activateAllWaterParticles();
-		activateAllSnowParticles();
-	}
 	
 	FILE *fil = fopen("link.dat","rb");
 	int fillen = (int)file_get_size(fil);//note: downcast from long int to int.
@@ -865,18 +881,6 @@ int level_load_door(int level,int pos)
 	fclose(fil);
 	if (!error) {return ret;}
 	return 0x1FFFF;
-}
-void dev_tiled_to_leveldata(byte arr[])
-{
-	/**
-	* @brief dev_tiled_to_leveldata
-	* @param arr
-	* @return void
-	* @example dev_tiled_to_leveldata
-	*/
-	//Conversion moved to a Python script.
-	//Re-load in-game.
-	level_load(arr,256,512,2);
 }
 char* level_get_name(int lvl,char* ret)
 {

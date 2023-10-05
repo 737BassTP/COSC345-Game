@@ -73,9 +73,51 @@ int keyboard_set_old(int *keyid)
 }
 int keyboard_reset(int keyid)
 {
+	keyboard_reset_force();
+	return 0;
+	
+	//faulty.
 	SDL_ResetKeyboard();
 	keyid = 0;
 	return keyid;
+}
+void keyboard_reset_force()
+{
+	glob_vk_right   = 0;
+	glob_vk_left    = 0;
+	glob_vk_up 	    = 0;
+	glob_vk_down    = 0;
+	glob_vk_space   = 0;
+	glob_vk_enter   = 0;
+	glob_vk_tab     = 0;
+	glob_vk_pagedown= 0;
+	glob_vk_pageup  = 0;
+	glob_vk_home    = 0;
+	glob_vk_end     = 0;
+	glob_vk_insert  = 0;
+	glob_vk_delete  = 0;
+	glob_vk_f1      = 0;
+	glob_vk_f2      = 0;
+	glob_vk_f3      = 0;
+	glob_vk_f4      = 0;
+	glob_vk_f5      = 0;
+	glob_vk_f6      = 0;
+	glob_vk_f7      = 0;
+	glob_vk_f8      = 0;
+	glob_vk_f9      = 0;
+	glob_vk_f10     = 0;
+	glob_vk_f11     = 0;
+	glob_vk_f12     = 0;
+	glob_vk_0       = 0;
+	glob_vk_1       = 0;
+	glob_vk_2       = 0;
+	glob_vk_3       = 0;
+	glob_vk_4       = 0;
+	glob_vk_5       = 0;
+	glob_vk_6       = 0;
+	glob_vk_7       = 0;
+	glob_vk_8       = 0;
+	glob_vk_9       = 0;
 }
 int keyboard_check(int key)
 {

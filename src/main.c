@@ -68,6 +68,7 @@ const int win_game_tile_dim = 16;//each tile is 16 "pixels" along each axis.
 //Level.
 int level_cur=511;
 int level_prev=511;
+char mapstr_location[16];
 
 //Scaling.
 int gw,gh;
@@ -80,6 +81,10 @@ int running=1;
 
 //Splash screens.
 int splashintro_bool=1;
+
+//Other.
+int discordant_cur=0;
+int discordant_max=8;
 
 /*
 Entry point.
@@ -421,14 +426,15 @@ int SDL_main(int argc, char *argv[])
 	//Load Level.
 	int lvl_off_obj=0x20000;
 	int lvl_yoff=(int)sqrt(level_count/level_realms);
-	level_load(level_data,level_size,level_count,level_layers);
-	level_load_objects(level_data,Objects,level_cur,level_size);
+	level_load_file(level_data,level_size,level_count,level_layers);
+	//level_load_objects(level_data,Objects,level_cur,level_size);
+	level_load_any(level_data,Objects,level_cur,level_size);
 	
 	//Map.
 	SDL_Texture *spr_map = IMG_LoadTexture(renderer,"img/dunedin-map.png");
 	SDL_Texture *spr_mapicon_unknown = IMG_LoadTexture(renderer,"img/spr_map_unknown.png");
-	char mapstr_location[16];
-	level_get_name(level_cur,mapstr_location);
+	//char mapstr_location[16];
+	//level_get_name(level_cur,mapstr_location);
 	
 	//Temperature.
 	int temp_mode=0;//0=Celsius, 1=Fahrenheit.
@@ -652,8 +658,8 @@ int SDL_main(int argc, char *argv[])
 		if (keyboard_check_pressed(glob_vk_f2))
 		{
 			printf("F2 started!\n");	
-			dev_tiled_to_leveldata(level_data);
-			level_load_objects(level_data,Objects,level_cur,level_size);
+			level_load_file(level_data,level_size,level_count,level_layers);
+			level_load_any(level_data,Objects,level_cur,level_size);
 			printf("F2 finished!\n");	
 		}
 		//Debug input.
@@ -716,6 +722,8 @@ int SDL_main(int argc, char *argv[])
 		if (keyboard_check_pressed(glob_vk_9))
 		{
 			//pressing 9 resets chat with npc if you have already completed the dialogue
+			//causes a segfault.
+			/*
 			if(buttonVis==0)
 			{
 				buttonVis=1;
@@ -724,6 +732,7 @@ int SDL_main(int argc, char *argv[])
 			{
 				buttonVis=0;
 			}
+			/**/
 		}
 		//pressing 1 changes text inside test box.
 		if (keyboard_check_pressed(glob_vk_1))
@@ -849,10 +858,11 @@ int SDL_main(int argc, char *argv[])
 			}
 			else
 			{
-				int t=(int)get_timer();
-				t=(t/8000)%4;
-				Player.x += mvspd*mux_int(t,+khrl,+khud,-khrl,-khud);
-				Player.y += mvspd*mux_int(t,-khud,-khrl,+khud,+khrl);
+				//int t=(int)get_timer();
+				//t=(t/8000)%4;
+				int t=discordant_cur%discordant_max;
+				Player.x += mvspd*mux_int(t,+khrl,+khrl,-khrl,-khrl,+khud,+khud,-khud,-khud);
+				Player.y += mvspd*mux_int(t,+khud,-khud,+khud,-khud,+khrl,-khrl,+khrl,-khrl);
 			}
 			
 			savegame_set_pos((byte)Player.x,(byte)Player.y);
@@ -864,9 +874,10 @@ int SDL_main(int argc, char *argv[])
 			//Object collision.
 			for (int i=0; i<256; i++)//can be improved upon.
 			{
-				if (point_in_rectangle(
+				if ((point_in_rectangle(
 					mean_int(2,Player.x,Player.x+win_game_tile_dim*gw),mean_int(2,Player.y,Player.y+win_game_tile_dim*gh),
 					Objects[i].bbox_L,Objects[i].bbox_T,Objects[i].bbox_R,Objects[i].bbox_B))
+				&& (1))
 				{
 					int objid = (Objects[i].tileid & 0x1FF);
 					//printf("objid=%i\n",objid);
@@ -888,95 +899,173 @@ int SDL_main(int argc, char *argv[])
 								dx=mux_int(dir,1,0,-1,0);
 								dy=mux_int(dir,0,-1,0,1);
 								int moved=0;
-								//TODO: Works, but button is not immediately triggered (consider re-write).
-								if (dx!=0)
-								{
-									int ota=Objects[i].tileid;
-									int otb=Objects[i+dx].tileid;
-									if ((otb == 0x1FF)||((otb>=0x170)&&(otb<=0x17F)&&((otb-0x170)&1)))//none or buttons
-									{
-										if (otb == 0x1FF)
-										{
-											otb=0x100+block;
-											if (ota>>16)
-											{
-												ota>>=16;
-												savegame_flip_gate((ota-0x170)/2);
-												audio_sfx_play_id(3,1);//button sound (chn1; chn0 is block sound).
-											}
-											else {ota=0x1FF;}
-										}
-										else
-										{
-											otb<<=16;
-											otb|=0x100+block;
-											savegame_flip_gate((otb-0x170)/2);
-											audio_sfx_play_id(3,1);//button sound (chn1; chn0 is block sound).
-											if (ota>>16)
-											{
-												ota>>=16;
-												savegame_flip_gate((ota-0x170)/2);
-												audio_sfx_play_id(3,2);//button sound (chn1; chn0 is block sound).
-											}
-											else {ota=0x1FF;}
-										}
-										moved=1;
-										Objects[i].tileid=ota;
-										Objects[i+dx].tileid=otb;
-									}
-								}
-								if (dy!=0)
-								{
-									int ota=Objects[i].tileid;
-									int otb=Objects[i+dy*16].tileid;
-									if ((otb == 0x1FF)||((otb>=0x170)&&(otb<=0x17F)&&((otb-0x170)&1)))//none or buttons
-									{
-										if (otb == 0x1FF)
-										{
-											otb=0x100+block;
-											if (ota>>16)
-											{
-												ota>>=16;
-												savegame_flip_gate((ota-0x170)/2);
-												audio_sfx_play_id(3,1);//button sound (chn1; chn0 is block sound).
-											}
-											else {ota=0x1FF;}
-										}
-										else
-										{
-											otb<<=16;
-											otb|=0x100+block;
-											savegame_flip_gate((otb-0x170)/2);
-											audio_sfx_play_id(3,1);//button sound (chn1; chn0 is block sound).
-											if (ota>>16)
-											{
-												ota>>=16;
-												savegame_flip_gate((ota-0x170)/2);
-												audio_sfx_play_id(3,2);//button sound (chn1; chn0 is block sound).
-											}
-											else {ota=0x1FF;}
-										}
-										moved=1;
-										Objects[i].tileid=ota;
-										Objects[i+dy*16].tileid=otb;
-									}
-								}
+								/**/
 								if ((dx!=0)||(dy!=0))
 								{
-									//unfinished.
-									
+									int docontinue=1;
+									int off=0;
+									     if ((dx!=0) && (dy!=0)) {docontinue=0;}
+									else if ((dx!=0) && (dy==0)) {off += dx;}
+									else if ((dy!=0) && (dx==0)) {off += 16*dy;}
+									int ota=Objects[i].tileid;
+									int otb=Objects[i+off].tileid;
+									int otaa=ota&0x1FF;
+									int otbb=otb&0x1FF;
+									if (docontinue)
+									{
+										moved=1;
+										int buttons = ((otbb>=0x170)&&(otbb<=0x17F)&&((otbb-0x170)&1));
+										int opengate = ((otbb>=0x160)&&(otbb<=0x16F)&&((otbb-0x160)&1));
+										int opengate_a = ((otaa>=0x160)&&(otaa<=0x16F)&&((otaa-0x160)&1));
+										//printf("AAA:\n(i,off),(ota,otb)\n(%i,%i),(%i,%i)\n",i,off,ota,otb);
+										int gaid,gbid;
+										gaid=(otaa-0x170)/2;
+										gbid=(otbb-0x170)/2;
+										//printf("(gaid,gbid) = %x,%x\n",gaid,gbid);
+										if (otb==0x1FF) //completely empty dst
+										{
+											otb=ota;
+											if (ota>>16) // restore src
+											{
+												ota>>=16;
+												otb&=0x1FF;
+												//if (!opengate_a)
+												//if ((ota-0x170)/2)
+												if (1)
+												{
+													savegame_flip_gate((ota-0x170)/2);//gaid
+												}
+												//printf("1st\n");
+											}
+											else //nothing to restore
+											{
+												ota=0x1FF;
+											}
+										}
+										else if (buttons) // non-empty dst
+										{
+											savegame_flip_gate(gbid);
+											audio_sfx_play_id(3,1);//button sound
+											otb<<=16;
+											otb|=otaa;
+											if (ota>>16) //restore src
+											{
+												ota>>=16;
+												if (ota+1-0x170)
+												{
+													savegame_flip_gate(gaid);//gaid
+												}
+												//printf("2nd\n");
+											}
+											else //empty src
+											{
+												ota=0x1FF;
+											}
+										}
+										else if (opengate) // non-empty dst
+										{
+											//laziest: avoid all.
+											moved=0;
+											//lazy; destroy open gates.
+											if (0)
+											{
+												int ggo=(otbb-0x160)/2;
+												int sgg=savegame_get_gate(ggo);
+												int ggc=(otbb-0x160)%2;
+												if (!(sgg^ggc))
+												{
+													otb=ota;
+													ota=0x1FF;
+												}
+											}
+											//moved=0;
+											if (0)
+											{
+												int gg=savegame_get_gate((otbb-0x160)/2);
+												//printf("gbid = %i\n",gbid);
+												if (!gg)
+												{
+													//audio_sfx_play_id(3,1);//button sound
+													otb<<=16;
+													otb|=otaa;
+													if (ota>>16) //restore src
+													{
+														ota>>=16;
+														//savegame_flip_gate(gaid);//gaid
+														//printf("2nd\n");
+													}
+													else //empty src
+													{
+														ota=0x1FF;
+													}
+												}
+												else
+												{
+													moved=0;
+												}
+											}
+										}
+									}
+									else
+									{
+										moved=0;
+									}
+									Objects[i].tileid=ota;
+									Objects[i+off].tileid=otb;
+									//printf("BBB:\n(i,off),(ota,otb)\n(%i,%i),(%i,%i)\n\n",i,off,ota,otb);
 								}
+								/*
+								//TODO: Works, but button is not immediately triggered (consider re-write).
+								int docontinue=1;
+								int off=0;
+									 if ((dx!=0) && (dy!=0)) {docontinue=0;}
+								else if ((dx!=0) && (dy==0)) {off += dx;}
+								else if ((dy!=0) && (dx==0)) {off += 16*dy;}
+								int ota=Objects[i].tileid;
+								int otb=Objects[i+off].tileid;
+								if ((otb == 0x1FF)||((otb>=0x170)&&(otb<=0x17F)&&((otb-0x170)&1)))//none or buttons
+								{
+									if (otb == 0x1FF)
+									{
+										otb=0x100+block;
+										if (ota>>16)
+										{
+											ota>>=16;
+											savegame_flip_gate((ota-0x170)/2);
+											audio_sfx_play_id(3,1);//button sound (chn1; chn0 is block sound).
+										}
+										else {ota=0x1FF;}
+									}
+									else
+									{
+										otb<<=16;
+										otb|=0x100+block;
+										savegame_flip_gate((otb-0x170)/2);
+										audio_sfx_play_id(3,1);//button sound (chn1; chn0 is block sound).
+										if (ota>>16)
+										{
+											ota>>=16;
+											savegame_flip_gate((ota-0x170)/2);
+											audio_sfx_play_id(3,2);//button sound (chn1; chn0 is block sound).
+										}
+										else {ota=0x1FF;}
+									}
+									moved=1;
+									Objects[i].tileid=ota;
+									Objects[i+off].tileid=otb;
+								}
+								/**/
 								if (moved)
 								{
 									audio_sfx_play_id(7,0);//block sound.
 								}
-								else
+								else //could push, but blocked.
 								{
 									Player.x = Player.xprevious;
 									Player.y = Player.yprevious;
 								}
 							}
-							else
+							else //unpushable
 							{
 								Player.x = Player.xprevious;
 								Player.y = Player.yprevious;
@@ -998,9 +1087,12 @@ int SDL_main(int argc, char *argv[])
 							if (door != 0x1FFFF)
 							{
 								printf("door (0x%X, 0x%X)\n",door&0x1FF,(door>>9)&0xFF);//lvl,pos
-								level_cur = (door&0x1FF);
-								level_load_objects(level_data,Objects,level_cur,level_size);
-								audio_music_level(level_cur,level_prev);
+								
+								//level_cur = (door&0x1FF);
+								int level_new = (door&0x1FF);
+								
+								//level_load_objects(level_data,Objects,level_cur,level_size);
+								level_load_any(level_data,Objects,level_new,level_size);
 								//incomplete level load; call a level loading function.
 								//todo: stop rain/snow in underworld (call a function that calls functions).
 								int npos = (door>>9)&0xFF;
@@ -1027,6 +1119,7 @@ int SDL_main(int argc, char *argv[])
 							signpost_load(level_cur);
 							Player.x = Player.xprevious;
 							Player.y = Player.yprevious;
+							keyboard_reset_force();
 						} break;
 						//Teleporters (within same level).
 						case 0x118: case 0x119: case 0x11A: case 0x11B: 
@@ -1168,7 +1261,26 @@ int SDL_main(int argc, char *argv[])
 							}
 						}
 					}
-					
+					//Attempt to fix diagonal wall glitch.
+					//Solution: Design levels that prevents this in the first place.
+					/*
+					if ((khrl!=0)&&(khud!=0))
+					{
+						int px,py,pt;
+						px=(Player.x+(gw*1*win_game_tile_dim)/2)-win_game_x;
+						py=(Player.y+(gh*1*win_game_tile_dim)/2)-win_game_y;
+						pt=(px/win_game_tile_dim)+16*(py/win_game_tile_dim);
+						int dwgo = Objects[pt].tileid;
+						if ((pt>=17)&&(pt<=238)&&((pt&15)>=1)&&((pt&15)<=14))
+						{
+							if ((Objects[pt+1].tileid==0x13F)&&(Objects[pt+16].tileid==0x13F))//specific test
+							{
+								Player.x=Player.xprevious;
+								Player.y=Player.yprevious;
+							}
+						}
+					}
+					/**/
 				}
 			}
 			
@@ -1222,30 +1334,14 @@ int SDL_main(int argc, char *argv[])
 				level_cur %= level_count;//prevents overflow.
 				printf("lvl=%i\n",level_cur);
 				level_get_name(level_cur,mapstr_location);
-				level_load_objects(level_data,Objects,level_cur,level_size);
-				savegame_set_mapvisit(level_cur);
-				audio_music_level(level_cur,level_prev);
-				if (level_cur < 256)
-				{
-					//clear all dungeon gates while in Overworld.
-					for (int i=0; i<8; i++) {savegame_set_gate(i,0);}
-				}
-				
+				//level_load_objects(level_data,Objects,level_cur,level_size);
+				level_load_any(level_data,Objects,level_cur,level_size);
+
 				//Turn off weather inside closed containers (dungeon, houses, caves).
 				//Will only apply to level changes by hitting the screen border, not door interactions.
-				if (level_cur >= 256)
-				{
-					deactivateAllWaterParticles();
-					deactivateAllSnowParticles();
-				}
-				else
-				{
-					activateAllWaterParticles();
-					activateAllSnowParticles();
-				}
 				
 				
-				level_prev = level_cur;//finished handling level loading.
+				//level_prev = level_cur;//finished handling level loading.
 			}
 		}
 		else
@@ -1640,7 +1736,8 @@ int SDL_main(int argc, char *argv[])
 						int yspd=1;//inverse.
 						int xmul=0;
 						int ymul=0;
-						     if (tex == 0x1F) {ymul=4;}//photo object.
+						     if (tex == 0x17) {xmul=1; ymul=1;}//signpost object.
+						else if (tex == 0x1F) {ymul=4;}//photo object.
 						else if ((tex >= 0x40) && (tex <= 0x4F)) {xmul=1; ymul=1;}//dungeon gate.
 						else if ((tex >= 0x50) && (tex <= 0x5F)) {ymul=3;}//dungeon key.
 						else if ((tex >= 0x60) && (tex <= 0x7F)) {xmul=1; ymul=1;}//dungeon levers/buttons
@@ -2300,8 +2397,12 @@ int SDL_main(int argc, char *argv[])
 			
 			
 		}
+		//Signpost message.
+		signpost_draw();
+		
 		//If the player dies, game over.
-		if (health<=0) {
+		if (health<=0)
+		{
 			SDL_Color textColor = {255, 0, 0};
 			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     		SDL_RenderClear(renderer);
@@ -2361,9 +2462,7 @@ int SDL_main(int argc, char *argv[])
 			// Clean up resources for "Press esc to exit" text
 			SDL_FreeSurface(textSurface3);
 			SDL_DestroyTexture(textTexture3);
-
-
-}
+		}
 		//Splash photo screen.
 		if (splashphoto_bool)
 		{

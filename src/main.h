@@ -49,11 +49,16 @@ int gw,gh;///< scaling variables.
 int lvl_off_obj;///< object-offset in level.dat
 int level_cur;///< current level (out of 512 levels)
 int level_prev;///< previous level.
+char mapstr_location[16];
 
 //Main loop.
 int running;
 
 //Splash screens.
 int splashintro_bool;
+
+//Other.
+int discordant_cur;
+int discordant_max;
 
 #endif
