@@ -736,7 +736,7 @@ void game_level_load(int lvl,int lvlmax)
 }
 void level_load_any(byte arr[],struct gameobject Objects[],int level,int siz)
 {
-	printf("(this,cur,prev) = %i,%i,%i\n",level,level_cur,level_prev);
+	//printf("(this,cur,prev) = %i,%i,%i\n",level,level_cur,level_prev);
 	level_cur = level;
 	if (level_cur >= 256)
 	{

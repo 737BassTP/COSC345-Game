@@ -502,7 +502,7 @@ int SDL_main(int argc, char *argv[])
 	addNPC(&seanBoss); int seanBossChatDone = 0;
 	initNPC(&campbellBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 80);//init alcohol boss on level 80
 	addNPC(&campbellBoss); int campbellBossChatDone = 0;
-	initNPC(&matthewBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 179);//init sugar boss on level 179 (octagon)
+	initNPC(&matthewBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 146);//init sugar boss on level 146 (dunedin outskirts)
 	addNPC(&matthewBoss); int matthewBossChatDone = 0;
 	initNPC(&thomasBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 202);//init fat boss at level 202 (sandymount)
 	addNPC(&thomasBoss); int thomasBossChatDone = 0;
@@ -1426,12 +1426,12 @@ int SDL_main(int argc, char *argv[])
 			if (Player.y > p_south)
 			{
 				//at south side
-				if (level_cur<=240)
+				if ((level_cur<=240) || (level_cur>=256))
 				{
 					Player.y = p_north;
 					level_cur += lvl_yoff;
 				}
-				else
+				else if ((level_cur>=240) && (level_cur<=255))
 				{
 					Player.y = Player.yprevious;
 					lvlbool=0;
@@ -2443,7 +2443,7 @@ int SDL_main(int argc, char *argv[])
 				globalNpc->destroyed=1;
 			}
 		}
-		if(level_cur==179)
+		if(level_cur==146)
 		{
 			if(matthewBossChatDone==0)
 			{
@@ -2463,7 +2463,7 @@ int SDL_main(int argc, char *argv[])
 				buttonVis=0;
 				nextChat=0;
 				matthewBossChatDone=1;
-				addEnemy(900, 300, 150, 150, 400, 10, 0,0,200,0, spr_enemy1,179);
+				addEnemy(900, 300, 150, 150, 400, 10, 0,0,200,0, spr_enemy1,146);
 				matthewBoss.destroyed=1;
 				globalNpc->destroyed=1;
 			}
