@@ -16,6 +16,7 @@ int glob_vk_down;
 int glob_vk_space;
 int glob_vk_enter;
 int glob_vk_tab;
+int glob_vk_shift;
 int glob_vk_pageup;
 int glob_vk_pagedown;
 int glob_vk_home;

@@ -48,6 +48,10 @@ SDL_Texture *font_ascii = NULL;
 int font_ascii_w = 0;//updated in main loop
 int font_ascii_h = 0;//updated in main loop
 
+//Player.
+//struct player Player;
+
+
 /*
 Global variables and memory allocations.
 */
@@ -69,6 +73,8 @@ const int win_game_tile_dim = 16;//each tile is 16 "pixels" along each axis.
 int level_cur=511;
 int level_prev=511;
 char mapstr_location[16];
+byte level_data[262144];
+struct gameobject Objects[256];
 
 //Scaling.
 int gw,gh;
@@ -404,14 +410,14 @@ int SDL_main(int argc, char *argv[])
 	int level_layers = 2;
 	level_cur=0x00;//256 = 16*16 
 	level_prev=level_cur;
-	byte level_data[262144];//static; can not be free'd.
+	//byte level_data[262144];//static; can not be free'd.//moved outside main-function.
 	//262144 = 256*512*2 (level size * level count * level layers)
 	
 	//Savegame.
 	savegame_load();
 	
 	//Objects.
-	struct gameobject Objects[256];
+	//struct gameobject Objects[256];//moved outside main-function.
 	for (int i=0; i<0x100; i++)
 	{
 		Objects[i].tileid = 0xFF;
@@ -445,7 +451,7 @@ int SDL_main(int argc, char *argv[])
 	byte temp_col=0x80;
 	
 	//Player.
-	struct player Player;
+	struct player Player;//moved outside main-function
 	//struct pos Pos;
 	//Player.Pos = Pos;
 	Player.x = win_game_x + 3*gw*win_game_tile_dim;
@@ -494,9 +500,9 @@ int SDL_main(int argc, char *argv[])
 	addNPC(&quizTutor);
 	initNPC(&seanBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 75);//init protein boss on level 75
 	addNPC(&seanBoss); int seanBossChatDone = 0;
-	initNPC(&campbellBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 80);//init  boss on level 80
+	initNPC(&campbellBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 80);//init alcohol boss on level 80
 	addNPC(&campbellBoss); int campbellBossChatDone = 0;
-	initNPC(&matthewBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 179);//init  boss on level 179 (octagon)
+	initNPC(&matthewBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 179);//init sugar boss on level 179 (octagon)
 	addNPC(&matthewBoss); int matthewBossChatDone = 0;
 	initNPC(&thomasBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 202);//init fat boss at level 202 (sandymount)
 	addNPC(&thomasBoss); int thomasBossChatDone = 0;
@@ -595,6 +601,9 @@ int SDL_main(int argc, char *argv[])
 	int helpmenu_bool=0;
 	char* helpmenu_str="Player Controls: Read 'User-Documentation.pdf'";
 	
+	//Dev menu.
+	int devmenu_bool=0;
+	
 	/*
 	int cutscene_bool=0;
 	int cutscene_pause=0;
@@ -662,7 +671,7 @@ int SDL_main(int argc, char *argv[])
 			level_load_any(level_data,Objects,level_cur,level_size);
 			printf("F2 finished!\n");	
 		}
-		//Debug input.
+		//Debug input (quick).
 		if (keyboard_check_pressed(glob_vk_f3))
 		{
 			int off=0x96;
@@ -671,8 +680,68 @@ int SDL_main(int argc, char *argv[])
 				Player.x,Player.y,
 				mean_int(2,Player.x,Player.x+16*gw),mean_int(2,Player.y,Player.y+16*gh),
 				objid.bbox_L,objid.bbox_T,objid.bbox_R,objid.bbox_B);
-			
 		}
+		//Debug input (dev menu).
+		if (keyboard_check_pressed(glob_vk_f7))
+		{
+			if (devmenu_bool) //will hang the window while waiting.
+			{
+				int shi=keyboard_check(glob_vk_shift);
+				printf("Mode:\n0=(lvl,pos)\n1=keys\n2=state switch\n3=?\n");
+				int mode;
+				scanf("%i",&mode);
+				switch (mode)
+				{
+					case 0:
+					{
+						int var;
+						printf("Enter ");
+						if (shi) {printf("LVL");} else {printf("POS");}
+						printf(" to jump to in hex:\n");
+						scanf("%X",&var);
+						printf("Jumps to %i (0x%X)\n",var,var);
+						if (shi) {level_load_any(level_data,Objects,var&511,level_size);}
+						else
+						{
+							Player.x = win_game_x + gw*win_game_tile_dim*(var&0x0F);
+							Player.y = win_game_y + gh*win_game_tile_dim*((var&0xF0)>>4);
+							Player.xprevious=Player.x;
+							Player.yprevious=Player.y;
+						}
+					} break;
+					case 1:
+					{
+						int var;
+						printf("Increment key by id (0-7)\n");
+						scanf("%i",&var);
+						savegame_add_key(var&7,1);
+					} break;
+					case 2:
+					{
+						int var;
+						printf("State switch by id (0-7)\n");
+						scanf("%i",&var);
+						savegame_flip_gate(var&7);
+					} break;
+					
+				}
+				
+			}
+		}
+		//Debug input (activate/deactivate dev menu).
+		if (keyboard_check_pressed(glob_vk_f9))
+		{
+			int shi=keyboard_check(glob_vk_shift);
+			if (shi)
+			{
+				devmenu_bool^=1;
+				printf("-----------\n");
+				printf("dev menu: %i\n",devmenu_bool);
+				printf("-----------\n");
+			}
+		}
+		
+		
 		if (keyboard_check_pressed(glob_vk_7) && !attackAnimation.isActive)
 		{
 			attack(&Player); // calls the attack function
@@ -1005,6 +1074,12 @@ int SDL_main(int argc, char *argv[])
 												}
 											}
 										}
+										else
+										{
+											moved=0;
+											Player.x=Player.xprevious;
+											Player.y=Player.yprevious;
+										}
 									}
 									else
 									{
@@ -1244,6 +1319,14 @@ int SDL_main(int argc, char *argv[])
 							savegame_set_collectable(objid-0x180);
 							audio_sfx_play_id(2,0);//pickup sound.
 							Objects[i].tileid = 0x1FF;//lazy non-persistent destroy.
+							
+							//Return to plaza from dungeon boss room.
+							int oi=objid-0x180;
+							if ((oi==4)&&(level_cur==0x193)) {level_load_any(level_data,Objects,0xB3,level_size); cutscene_start(7);}
+							if ((oi==5)&&(level_cur==0x197)) {level_load_any(level_data,Objects,0xB3,level_size); cutscene_start(8);}
+							if ((oi==6)&&(level_cur==0x198)) {level_load_any(level_data,Objects,0xB3,level_size); cutscene_start(9);}
+							if ((oi==7)&&(level_cur==0x19F)) {level_load_any(level_data,Objects,0xB3,level_size); cutscene_start(10);}
+							if ((oi==8)&&(level_cur==0x167)) {level_load_any(level_data,Objects,0xB3,level_size); cutscene_start(11);}
 						} break;
 						
 						//Default.
@@ -1300,26 +1383,58 @@ int SDL_main(int argc, char *argv[])
 			if (Player.x > p_east)
 			{
 				//at east side
-				Player.x = p_west;
-				level_cur += 1;
+				if ((level_cur&15)!=15)
+				{
+					Player.x = p_west;
+					level_cur += 1;
+				}
+				else
+				{
+					Player.x = Player.xprevious;
+					lvlbool=0;
+				}
 			}
 			if (Player.y < p_north)
 			{
 				//at north side
-				Player.y = p_south;
-				level_cur -= lvl_yoff;
+				if (level_cur>=15)
+				{
+					Player.y = p_south;
+					level_cur -= lvl_yoff;
+				}
+				else
+				{
+					Player.y = Player.yprevious;
+					lvlbool=0;
+				}
 			}
 			if (Player.x < p_west)
 			{
 				//at west side
-				Player.x = p_east;
-				level_cur -= 1;
+				if ((level_cur&15)!=0)
+				{
+					Player.x = p_east;
+					level_cur -= 1;
+				}
+				else
+				{
+					Player.x = Player.xprevious;
+					lvlbool=0;
+				}
 			}
 			if (Player.y > p_south)
 			{
 				//at south side
-				Player.y = p_north;
-				level_cur += lvl_yoff;
+				if (level_cur<=240)
+				{
+					Player.y = p_north;
+					level_cur += lvl_yoff;
+				}
+				else
+				{
+					Player.y = Player.yprevious;
+					lvlbool=0;
+				}
 			}
 			if (lvlbool)//has changed level
 			{

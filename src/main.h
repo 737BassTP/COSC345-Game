@@ -25,6 +25,9 @@ SDL_Texture *font_ascii;
 int font_ascii_w;
 int font_ascii_h;
 
+//Player.
+//struct player;
+
 
 //Dimensions.
 const int screen_w;///< screen width
@@ -41,6 +44,7 @@ const int win_game_tile_dim;///< size of a tile in pixels per direction.
 
 //Level.
 int level_cur;
+byte level_data[262144];
 
 //Scaling.
 int gw,gh;///< scaling variables.

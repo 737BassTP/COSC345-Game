@@ -13,6 +13,7 @@ int glob_vk_down    = 0;///< key: down
 int glob_vk_space   = 0;///< key: space
 int glob_vk_enter   = 0;///< key: enter
 int glob_vk_tab     = 0;///< key: tab
+int glob_vk_shift   = 0;///< key: shift
 int glob_vk_pagedown= 0;///< key: page down
 int glob_vk_pageup  = 0;///< key: page up
 int glob_vk_home    = 0;///< key: home
@@ -90,6 +91,7 @@ void keyboard_reset_force()
 	glob_vk_space   = 0;
 	glob_vk_enter   = 0;
 	glob_vk_tab     = 0;
+	glob_vk_shift   = 0;
 	glob_vk_pagedown= 0;
 	glob_vk_pageup  = 0;
 	glob_vk_home    = 0;
@@ -161,6 +163,7 @@ void keyboard_update_previous()
 	keyboard_set_old(&glob_vk_space);
 	keyboard_set_old(&glob_vk_enter);
 	keyboard_set_old(&glob_vk_tab);
+	keyboard_set_old(&glob_vk_shift);
 	keyboard_set_old(&glob_vk_pageup);
 	keyboard_set_old(&glob_vk_pagedown);
 	keyboard_set_old(&glob_vk_home);
@@ -202,6 +205,7 @@ int keyboard_check_anykey()
 	ret |= keyboard_check(glob_vk_space);
 	ret |= keyboard_check(glob_vk_enter);
 	ret |= keyboard_check(glob_vk_tab);
+	ret |= keyboard_check(glob_vk_shift);
 	ret |= keyboard_check(glob_vk_pageup);
 	ret |= keyboard_check(glob_vk_pagedown);
 	ret |= keyboard_check(glob_vk_home);
@@ -258,6 +262,7 @@ void keyboard_sdl_polls(SDL_Event event)
 					case SDLK_SPACE:    {keyboard_set_new(&glob_vk_space,v);} break;
 					case SDLK_RETURN:   {keyboard_set_new(&glob_vk_enter,v);} break;
 					case SDLK_TAB:      {keyboard_set_new(&glob_vk_tab,v);} break;
+					case SDLK_LSHIFT:    {keyboard_set_new(&glob_vk_shift,v);} break;
 					case SDLK_PAGEUP:   {keyboard_set_new(&glob_vk_pageup,v);} break;
 					case SDLK_PAGEDOWN: {keyboard_set_new(&glob_vk_pagedown,v);} break;
 					case SDLK_HOME:     {keyboard_set_new(&glob_vk_home,v);} break;
@@ -305,6 +310,7 @@ void keyboard_sdl_polls(SDL_Event event)
 					case SDLK_SPACE:    {keyboard_set_new(&glob_vk_space,v);} break;
 					case SDLK_RETURN:   {keyboard_set_new(&glob_vk_enter,v);} break;
 					case SDLK_TAB:      {keyboard_set_new(&glob_vk_tab,v);} break;
+					case SDLK_LSHIFT:    {keyboard_set_new(&glob_vk_shift,v);} break;
 					case SDLK_PAGEUP:   {keyboard_set_new(&glob_vk_pageup,v);} break;
 					case SDLK_PAGEDOWN: {keyboard_set_new(&glob_vk_pagedown,v);} break;
 					case SDLK_HOME:     {keyboard_set_new(&glob_vk_home,v);} break;

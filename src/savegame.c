@@ -69,12 +69,26 @@ void savegame_load()
 	}
 	fclose(fil);
 	//TODO: Update variables with loaded data, e.g player position and level.
-	level_cur = (int)savegame_data[off_player+2];
-	level_prev = level_cur;
 	savegame_set_mapvisit(level_cur);
+	level_cur  = (int)savegame_data[off_player+2];
+	level_cur += 256*(int)savegame_data[off_player+3];
+	level_prev = level_cur;
+	//Reads wrong memory (Player struct).
+	/*
+	Player.x = win_game_x + gw*(int)savegame_data[off_player+0];
+	Player.y = win_game_y + gh*(int)savegame_data[off_player+1];
+	Player.xprevious=Player.x;
+	Player.yprevious=Player.y;
+	/**/
 }
 void savegame_save()
 {
+	//Transfer.
+	/*
+	savegame_data[off_player+0] = (byte)Player.x;
+	savegame_data[off_player+1] = (byte)Player.y;
+	/**/
+	//Save.
 	FILE* fil = fopen(SAVEGAME_NAME,"wb");
 	for (int i=0; i<SAVEGAME_SIZE; i++)
 	{
