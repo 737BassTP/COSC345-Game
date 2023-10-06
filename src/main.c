@@ -886,6 +886,7 @@ int SDL_main(int argc, char *argv[])
 			splashbustimes_bool ^= 1;
 		}
 		//Show cutscene.
+		/*
 		if (keyboard_check_pressed(glob_vk_insert))
 		{
 			if (!cutscene_bool)
@@ -897,7 +898,7 @@ int SDL_main(int argc, char *argv[])
 				cutscene_stop();
 			}
 		}
-		
+		/**/
 		
 		//Player movement.
 		int mvspd = Player.move_spd;
@@ -2561,7 +2562,7 @@ int SDL_main(int argc, char *argv[])
 			SDL_DestroyTexture(textTexture2);
 
 			// Render "Press esc to exit" message
-			SDL_Surface* textSurface3 = TTF_RenderText_Solid(fontEnd, "Press Esc to Exit", textColor);
+			SDL_Surface* textSurface3 = TTF_RenderText_Solid(fontEnd, "Press INSERT to Exit", textColor);
 			SDL_Texture* textTexture3 = SDL_CreateTextureFromSurface(renderer, textSurface3);
 
 			// Position and size for the "Press esc to exit" text
@@ -2577,6 +2578,13 @@ int SDL_main(int argc, char *argv[])
 			// Clean up resources for "Press esc to exit" text
 			SDL_FreeSurface(textSurface3);
 			SDL_DestroyTexture(textTexture3);
+			
+			if (keyboard_check_pressed(glob_vk_insert))
+			{
+				health=maxHealth;
+				splashintro_bool=1;
+				level_load_any(level_data,Objects,0xC2,level_size);
+			}
 		}
 		//Splash photo screen.
 		if (splashphoto_bool)
