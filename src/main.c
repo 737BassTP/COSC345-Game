@@ -1992,37 +1992,45 @@ int SDL_main(int argc, char *argv[])
         // }
 		// }
 		//for all randomly spawned enemies.
-		for (int i = 0; i < MAX_ENEMIES; i++) 
+		int doenemies=1;
+		doenemies &= !splashintro_bool;
+		doenemies &= !splashphoto_bool;
+		doenemies &= !splashbustimes_bool;
+		doenemies &= !helpmenu_bool;
+		//doenemies &= !_bool;
+		if (doenemies)
 		{
-			struct Enemy* currentEnemy = &enemies[i];
-			if (currentEnemy->health > 0 && currentEnemy->spawnLevel == level_cur)
+			for (int i = 0; i < MAX_ENEMIES; i++) 
 			{
-
-				// Enemy movement logic
-				float directionX = Player.x - currentEnemy->x;
-				float directionY = Player.y - currentEnemy->y;
-				float distanceToPlayer = distance(Player.x, Player.y, currentEnemy->x, currentEnemy->y);
-
-				// Stop the enemy when within the selected units (125)
-				if (distanceToPlayer > 110) 
+				struct Enemy* currentEnemy = &enemies[i];
+				if (currentEnemy->health > 0 && currentEnemy->spawnLevel == level_cur)
 				{
-					// Normalize the direction vector (make it a unit vector)
-					if (distanceToPlayer != 0) 
+
+					// Enemy movement logic
+					float directionX = Player.x - currentEnemy->x;
+					float directionY = Player.y - currentEnemy->y;
+					float distanceToPlayer = distance(Player.x, Player.y, currentEnemy->x, currentEnemy->y);
+
+					// Stop the enemy when within the selected units (125)
+					if (distanceToPlayer > 110) 
 					{
-						directionX /= distanceToPlayer;
-						directionY /= distanceToPlayer;
+						// Normalize the direction vector (make it a unit vector)
+						if (distanceToPlayer != 0) 
+						{
+							directionX /= distanceToPlayer;
+							directionY /= distanceToPlayer;
+						}
+							// Calculate the angle in radians
+						
+						if(quizOn==false)
+						{
+							//enemies won't move when quiz is active
+							float enemySpeed = 2.0; // Adjust this value to control the enemy's speed
+							currentEnemy->x += directionX * enemySpeed;
+							currentEnemy->y += directionY * enemySpeed;
+						}
 					}
-					    // Calculate the angle in radians
-					
-					if(quizOn==false)
-					{
-						//enemies won't move when quiz is active
-						float enemySpeed = 2.0; // Adjust this value to control the enemy's speed
-						currentEnemy->x += directionX * enemySpeed;
-						currentEnemy->y += directionY * enemySpeed;
-					}
-				}
-				float angle = atan2(directionY, directionX);
+					float angle = atan2(directionY, directionX);
 
 					// Convert the angle to degrees
 					float degrees = angle * (180.0 / M_PI);
@@ -2046,31 +2054,32 @@ int SDL_main(int argc, char *argv[])
 						// Down
 						currentEnemy->facedir = 3;
 					}
-				// Rendering
-				SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-				SDL_Rect enemyRect = { currentEnemy->x-5, currentEnemy->y-5, currentEnemy->width+5, currentEnemy->height+5 };
-				draw_image(renderer, currentEnemy->x, currentEnemy->y, currentEnemy->x + currentEnemy->width, currentEnemy->y + currentEnemy->height, currentEnemy->texture);
+					// Rendering
+					SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+					SDL_Rect enemyRect = { currentEnemy->x-5, currentEnemy->y-5, currentEnemy->width+5, currentEnemy->height+5 };
+					draw_image(renderer, currentEnemy->x, currentEnemy->y, currentEnemy->x + currentEnemy->width, currentEnemy->y + currentEnemy->height, currentEnemy->texture);
 
-				// Collision detection with the player
-				if (checkCollision(playerHitbox, enemyRect)) 
-				{
-					// If the player collides with the enemy, apply damage to the player
-					printf("Player collided with enemy!\n");
-					int enemyDamage = currentEnemy->dmg; // Adjust this value as needed
-					damageMe(enemyDamage);
-
-					// Bump back the enemy when they run into the player
-					int bumpDistance = 50;
-					float bumpDirectionX = directionX;
-					float bumpDirectionY = directionY;
-					if (distanceToPlayer != 0)
+					// Collision detection with the player
+					if (checkCollision(playerHitbox, enemyRect)) 
 					{
-						bumpDirectionX /= distanceToPlayer;
-						bumpDirectionY /= distanceToPlayer;
+						// If the player collides with the enemy, apply damage to the player
+						printf("Player collided with enemy!\n");
+						int enemyDamage = currentEnemy->dmg; // Adjust this value as needed
+						damageMe(enemyDamage);
+
+						// Bump back the enemy when they run into the player
+						int bumpDistance = 50;
+						float bumpDirectionX = directionX;
+						float bumpDirectionY = directionY;
+						if (distanceToPlayer != 0)
+						{
+							bumpDirectionX /= distanceToPlayer;
+							bumpDirectionY /= distanceToPlayer;
+						}
+						currentEnemy->x -= bumpDirectionX * bumpDistance;
+						currentEnemy->y -= bumpDirectionY * bumpDistance;
+						audio_sfx_play_id(0,0);//explosion sound.
 					}
-					currentEnemy->x -= bumpDirectionX * bumpDistance;
-					currentEnemy->y -= bumpDirectionY * bumpDistance;
-					audio_sfx_play_id(0,0);//explosion sound.
 				}
 			}
 		}
