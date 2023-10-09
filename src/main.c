@@ -456,6 +456,8 @@ int SDL_main(int argc, char *argv[])
 	//Player.Pos = Pos;
 	Player.x = win_game_x + 3*gw*win_game_tile_dim;
 	Player.y = win_game_y + 8*gh*win_game_tile_dim;
+	Player.xprevious = Player.x;
+	Player.yprevious = Player.y;
 	Player.facedir = 0;
 	Player.anim_spd_cur = 0;//counter.
 	Player.anim_spd_spd = 1;//inc counter by spd per frame.
@@ -484,10 +486,11 @@ int SDL_main(int argc, char *argv[])
 	struct NPC forestMan;
 	struct NPC Tutorlvl2;
 	struct NPC quizTutor;
-	struct NPC seanBoss;
+	struct NPC andrewBoss;
 	struct NPC campbellBoss;
-	struct NPC thomasBoss;
+	struct NPC seanBoss;
 	struct NPC matthewBoss;
+	struct NPC thomasBoss;
 	initNPC(&Tutor, 900, 700,50, 50, 400, 400, 2, spr_enemy1, 16);//init tutor
 	addNPC(&Tutor);//add tutor to NPC array
 	initNPC(&Tutorlvl2, 900, 400,50, 50, 400, 400, 2, spr_enemy1, 1);//init tutor2
@@ -498,13 +501,21 @@ int SDL_main(int argc, char *argv[])
 	addNPC(&forestMan);
 	initNPC(&quizTutor, 850, 520,50, 50, 400, 400, 2, spr_enemy1, 3);//init forestMan
 	addNPC(&quizTutor);
-	initNPC(&seanBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 75);//init protein boss on level 75
-	addNPC(&seanBoss); int seanBossChatDone = 0;
-	initNPC(&campbellBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 80);//init alcohol boss on level 80
+	int blvl_a,blvl_c,blvl_m,blvl_s,blvl_t;
+	blvl_a=359;
+	blvl_c=403;
+	blvl_m=407;
+	blvl_s=408;
+	blvl_t=415;
+	initNPC(&andrewBoss, 900, 300,150, 150, 400, 400, 2, spr_boss_a, blvl_a);//init chocolate boss at level 359
+	addNPC(&andrewBoss); int andrewBossChatDone = 0;
+	initNPC(&campbellBoss, 900, 300,150, 150, 400, 400, 2, spr_boss_c, blvl_c);//init alcohol boss on level 403
 	addNPC(&campbellBoss); int campbellBossChatDone = 0;
-	initNPC(&matthewBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 146);//init sugar boss on level 146 (dunedin outskirts)
+	initNPC(&matthewBoss, 900, 300,150, 150, 400, 400, 2, spr_boss_m, blvl_m);//init sugar boss on level 407
 	addNPC(&matthewBoss); int matthewBossChatDone = 0;
-	initNPC(&thomasBoss, 900, 300,150, 150, 400, 400, 2, spr_enemy1, 202);//init fat boss at level 202 (sandymount)
+	initNPC(&seanBoss, 900, 300,150, 150, 400, 400, 2, spr_boss_s, blvl_s);//init protein boss on level 408
+	addNPC(&seanBoss); int seanBossChatDone = 0;
+	initNPC(&thomasBoss, 900, 300,150, 150, 400, 400, 2, spr_boss_t, blvl_t);//init fat boss at level 415
 	addNPC(&thomasBoss); int thomasBossChatDone = 0;
 	//Nutrients.
 	SDL_Texture *spr_nutrients = IMG_LoadTexture(renderer,"img/spr_nutrients_strip4.png");
@@ -942,12 +953,18 @@ int SDL_main(int argc, char *argv[])
 			updatePlayerHitbox(Player.x, Player.y, Player.width, Player.height);
 			
 			//Object collision.
+			int pd=4*gw;
 			for (int i=0; i<256; i++)//can be improved upon.
 			{
-				if ((point_in_rectangle(
+				/**/
+				if (point_in_rectangle(
 					mean_int(2,Player.x,Player.x+win_game_tile_dim*gw),mean_int(2,Player.y,Player.y+win_game_tile_dim*gh),
 					Objects[i].bbox_L,Objects[i].bbox_T,Objects[i].bbox_R,Objects[i].bbox_B))
-				&& (1))
+				/*
+				if (rectangle_in_rectangle(
+					Player.x+pd,Player.y+pd,Player.x+((Player.width+1)*gw)-pd,Player.y+((Player.height+1)*gh)-pd,
+					Objects[i].bbox_L,Objects[i].bbox_T,Objects[i].bbox_R,Objects[i].bbox_B))
+				/**/
 				{
 					int objid = (Objects[i].tileid & 0x1FF);
 					//printf("objid=%i\n",objid);
@@ -985,8 +1002,8 @@ int SDL_main(int argc, char *argv[])
 									{
 										moved=1;
 										int buttons = ((otbb>=0x170)&&(otbb<=0x17F)&&((otbb-0x170)&1));
-										int opengate = ((otbb>=0x160)&&(otbb<=0x16F)&&((otbb-0x160)&1));
 										int opengate_a = ((otaa>=0x160)&&(otaa<=0x16F)&&((otaa-0x160)&1));
+										int opengate = ((otbb>=0x160)&&(otbb<=0x16F)&&((otbb-0x160)&1)) ^ savegame_get_gate((otbb-0x160)/2);
 										//printf("AAA:\n(i,off),(ota,otb)\n(%i,%i),(%i,%i)\n",i,off,ota,otb);
 										int gaid,gbid;
 										gaid=(otaa-0x170)/2;
@@ -2393,32 +2410,32 @@ int SDL_main(int argc, char *argv[])
 				quizTutorChatCompleted=1;
 			}
 		}
-		if(level_cur==75)
+		if(level_cur==blvl_a)
 		{
-			if(seanBossChatDone==0)
+			if(andrewBossChatDone==0)
 			{
 				buttonVis=1;
-				strcpy(buttonTexts, "Greetings fool");
+				strcpy(buttonTexts, "This should not have happened!");
 			}
 			if(nextChat==1)
 			{
-				strcpy(buttonTexts, "I am Sean");
+				strcpy(buttonTexts, "I am Andrew");
 			}
 			if(nextChat==2)
 			{
-				strcpy(buttonTexts, "You think you can face me? you are mistaken.");
+				strcpy(buttonTexts, "Seems like I have to do everything myself!");
 			}
 			if(nextChat==3)
 			{
 				buttonVis=0;
 				nextChat=0;
-				seanBossChatDone=1;
-				addEnemy(900, 300, 150, 150, 400, 10, 0,0,200,0, spr_enemy1,75);
-				seanBoss.destroyed=1;
+				andrewBossChatDone=1;
+				addEnemy(900, 300, 150, 150, 400, 10, 0,0,200,0, spr_boss_a,80);
+				andrewBoss.destroyed=1;
 				globalNpc->destroyed=1;
 			}
 		}
-		if(level_cur==80)
+		if(level_cur==blvl_c)
 		{
 			if(campbellBossChatDone==0)
 			{
@@ -2443,7 +2460,7 @@ int SDL_main(int argc, char *argv[])
 				globalNpc->destroyed=1;
 			}
 		}
-		if(level_cur==146)
+		if(level_cur==blvl_m)
 		{
 			if(matthewBossChatDone==0)
 			{
@@ -2468,7 +2485,32 @@ int SDL_main(int argc, char *argv[])
 				globalNpc->destroyed=1;
 			}
 		}
-		if(level_cur==202)
+		if(level_cur==blvl_s)
+		{
+			if(seanBossChatDone==0)
+			{
+				buttonVis=1;
+				strcpy(buttonTexts, "Greetings fool");
+			}
+			if(nextChat==1)
+			{
+				strcpy(buttonTexts, "I am Sean");
+			}
+			if(nextChat==2)
+			{
+				strcpy(buttonTexts, "You think you can face me? you are mistaken.");
+			}
+			if(nextChat==3)
+			{
+				buttonVis=0;
+				nextChat=0;
+				seanBossChatDone=1;
+				addEnemy(900, 300, 150, 150, 400, 10, 0,0,200,0, spr_enemy1,75);
+				seanBoss.destroyed=1;
+				globalNpc->destroyed=1;
+			}
+		}
+		if(level_cur==blvl_t)
 		{
 			if(thomasBossChatDone==0)
 			{

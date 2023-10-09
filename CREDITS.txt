@@ -1,0 +1,53 @@
+Credits; who have contributed to what.
+Examine git commits for more details.
+
+--------------------
+
+Programmers
+	Thomas Pedersen		(systems, ui, main menu effects, devtools)
+	Sean Russell		(enemies, bosses)
+	Campbell Nicholas	(enemy and player stats)
+
+Graphics
+	Art
+		Thomas Pedersen		(tileset, graphics)
+		Campbell Nicholas	(enemies, bosses, tiles)
+	
+	Photographies
+		Thomas Pedersen		(nature)
+
+Audio (Music/SFX)
+	Thomas Pedersen		(8-bit)
+
+Mappers
+	Sean Russell		(base overworld, protein dungeon)
+	Thomas Pedersen		(minor overworld, fat dungeon)
+	Campbell Nicholas	(minor overworld, alcohol dungeon)
+	(Matthew Yi)		(carbohydrate dungeon on paper)
+
+Design
+	Thomas Pedersen		(savegame)
+	Matthew Yi		()
+
+Story
+	Matthew Yi		(living food)
+
+Data Scientist
+	Matthew Yi		(weather data, bus timetable)
+	Thomas Pedersen		(bus timetable)
+
+Documentation
+	Thomas Pedersen		(source code)
+	Campbell Nicholas	(user docs)
+
+Unit Testing
+	Thomas Pedersen		()
+	Sean Russell		()
+
+Other
+	Sean Russell		(powerpoint)
+	Matthew Yi		(user analysis)
+	Campbell Nicholas	(pert chart, retrospective)
+
+Thanks to:
+	Andrew Trotman		(professor)

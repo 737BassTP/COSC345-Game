@@ -1,0 +1,25 @@
+Duneatin'
+	All Rights Reserved (2023)
+		Thomas Pedersen
+		Sean Russell
+		Matthew Yi
+		Campbell Nicholas
+	
+	Based off Assignment 2 in INF-1100 at UiT (Norway) [1]
+		- Set up SDL2
+		- SDL2 main loop
+	
+	Unless stated otherwise, members have the copyright to their own contributions.
+	The use of our assets requires a written permission from the member who owns its copyright.
+	
+SDL
+	https://www.libsdl.org/
+
+Strawberry Perl
+	https://github.com/StrawberryPerl/Perl-Dist-Strawberry/blob/master/LICENSE
+
+--------------------
+
+[1]
+https://uit.no/utdanning/emner/emne?p_document_id=806701
+
